@@ -25,8 +25,8 @@ public class MyController {
 	}
 
 	private String calcolaAggKey(String lega) throws Exception {
-		int giornata=Main.GIORNATA-2;
-		if (lega.equalsIgnoreCase("luccicar")) giornata=Main.GIORNATA-3;
+		int giornata=Main.GIORNATA-Main.deltaFG;
+		if (lega.equalsIgnoreCase("luccicar")) giornata=Main.GIORNATA-Main.deltaFGLuccicar;
 		String url = "https://leghe.fantacalcio.it/" + lega + "/formazioni/" + giornata;
 		String string = Main.callHTTP(url);
 		string = string.substring(string.indexOf(".s('tmp', ")+11);
@@ -35,15 +35,14 @@ public class MyController {
 		String[] split = string.split("@");
 		return split[1];
 	}
-
-	
 	
 	public void aggKeyFG() throws Exception {
 		int giornata=Main.GIORNATA;
 		Main.keyFG=new HashMap<String, String>();
-		Main.keyFG.put("fantaviva", "id_comp=250964&r=" + String.valueOf(giornata - 2)  + "&f=" + String.valueOf(giornata - 2) + "_" + calcolaAggKey("fanta-viva") + ".json");
-		Main.keyFG.put("luccicar", "id_comp=306919&r=" + String.valueOf(giornata - 3) + "&f=" + String.valueOf(giornata - 3) + "_" + calcolaAggKey("luccicar") + ".json");
+		Main.keyFG.put("fantaviva", "id_comp=" + Main.COMP_VIVA + "&r=" + String.valueOf(giornata - Main.deltaFG)  + "&f=" + String.valueOf(giornata - Main.deltaFG) + "_" + calcolaAggKey("fanta-viva") + ".json");
+		Main.keyFG.put("luccicar", "id_comp=" + Main.COMP_LUCCICAR + "&r=" + String.valueOf(giornata - Main.deltaFGLuccicar) + "&f=" + String.valueOf(giornata - Main.deltaFGLuccicar) + "_" + calcolaAggKey("luccicar") + ".json");
 	}
+	
 	@RequestMapping("/test")
 	public Map<String, Return>  test(boolean conLive) throws Exception {
 		Map<String, Return> go = Main.go(conLive);
@@ -64,19 +63,7 @@ public class MyController {
 		}
 		return ret;
 	}
-	
-	/*
-	@PostMapping("/caricaFile")
-	public void caricaFile(@RequestBody Map<String,Object> body,HttpServletRequest request) throws Exception {
-		String content = (String) body.get("file");
-		for (int i=0;i<8;i++) {
-			if (!Files.exists(Paths.get("./" + "be" + i))) {
-				Files.write(Paths.get("./" + "be" + i), content.getBytes());
-				break;
-			}
-		}
-	}
-	*/
+
 	@PostMapping("/addSqEv")
 	public void addSqEv(@RequestBody Map<String,String> body)  {
 		Main.getSqDaEv().add(body.get("sqEv"));
@@ -119,17 +106,12 @@ public class MyController {
 	public void setFantaSoccerAuth(@RequestBody Map<String,String> body)  {
 		Main.FantaSoccerAuth=body.get("body");
 	}
-//	@PostMapping("/cancellaSquadre")
-//	public void cancellaSquadre() throws Exception {
-//		Main.cancellaSquadre();
-//	}
 	@PostMapping("/preparaSquadre")
 	public void preparaSquadre() throws Exception {
 		aggKeyFG();
 		Main.cancellaSquadre();
-//		Main.serializzaRosa();
-		Main.getSquadre("luccicar",false);
-		Main.getSquadre("fantaviva",false);
+		Main.getSquadre("luccicar");
+		Main.getSquadre("fanta-viva");
 		Main.scaricaBe();
 	}
 	@GetMapping("/getFantaSoccerAuth")
