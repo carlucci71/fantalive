@@ -66,6 +66,7 @@ public class Main {
 		sqBeCaricate=new ArrayList<String>();
 		if (eventi ==null) {
 			eventi = new HashMap<Integer, String[]>();
+			eventi.put(1000, new String[] {"portiere imbattuto","1"});
 			eventi.put(22, new String[] {"assist hight","1.5"});
 			eventi.put(11, new String[] {"gol vittoria","0"});
 			eventi.put(12, new String[] {"gol pareggio","0"});
@@ -580,6 +581,12 @@ public class Main {
 		for (Squadra squadra : squadre.get(file)) {
 			for (Giocatore giocatore : squadra.getTitolari()) {
 				findGiocatoreInLives(giocatore, lives,tipo);
+				if (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P")) {
+					if (giocatore.getVoto()>0 && !giocatore.getCodEventi().contains(4)) {
+						giocatore.getCodEventi().add(1000);
+						giocatore.setModificatore(giocatore.getModificatore()+1);
+					}
+				}
 				if (giocatore != null && giocatore.getSquadra()!=null) {
 					giocatore.setOrario(orari.get(giocatore.getSquadra().toUpperCase()));
 				}
@@ -588,6 +595,12 @@ public class Main {
 		for (Squadra squadra : squadre.get(file)) {
 			for (Giocatore giocatore : squadra.getRiserve()) {
 				findGiocatoreInLives(giocatore, lives,tipo);
+				if (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P")) {
+					if (giocatore.getVoto()>0 && !giocatore.getCodEventi().contains(4)) {
+						giocatore.getCodEventi().add(1000);
+						giocatore.setModificatore(giocatore.getModificatore()+1);
+					}
+				}
 				if (giocatore != null && giocatore.getSquadra()!=null) {
 					giocatore.setOrario(orari.get(giocatore.getSquadra().toUpperCase()));
 				}

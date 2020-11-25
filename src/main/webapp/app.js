@@ -283,6 +283,7 @@ app.run(
 					"15": "entrato",
 					"16": "gol annullato",
 					"17": "infortunio",
+					"1000": "portiere imbattuto +1",
 					"1": "ammonito -0.5",
 					"2": "espulso -1",
 					"3": "gol +3",
