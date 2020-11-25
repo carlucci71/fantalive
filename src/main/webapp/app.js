@@ -43,14 +43,11 @@ app.run(
 			$rootScope.ricaricaIndex=function(){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
-//				$rootScope.init();
 				$rootScope.loading=true;
 				//$rootScope.result=[];
 				var conLive=false;
 				$resource('./test',{conLive}).get().$promise.then(function(data) {
-//					$rootScope.loading=false;
 					$rootScope.result=data;
-//					$rootScope.fine=new Date();
 					conLive=true;
 					$resource('./test',{conLive}).get().$promise.then(function(data) {
 						$rootScope.loading=false;
@@ -67,21 +64,6 @@ app.run(
 					alert("Errore: " + error.data.message);
 				});
 			}
-			/*
-			$rootScope.cancellaSquadre = function(){
-				$rootScope.inizio=new Date();
-				$rootScope.fine="";
-				$rootScope.loading=true;
-				$resource('./cancellaSquadre',{}).save({}).$promise.then(function(data) {
-					$rootScope.loading=false;
-					$rootScope.fine=new Date();
-				}).catch(function(error) {
-					$rootScope.loading=false;
-					$rootScope.fine=new Date();
-					alert("Errore: " + error.data.message);
-				});
-			}
-			*/
 			$rootScope.preparaSquadre = function(){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
@@ -130,18 +112,10 @@ app.run(
 				$rootScope.fine="";
 				$rootScope.loading=true;
 				$resource('./addSqBeDaEscluedere',{}).save({'sqBeDaEscluedere':$rootScope.sqBeDaEscluedere}).$promise.then(function(data) {
-
-					
 					$rootScope.nomiSquadre().then(function(){
 						$rootScope.fine=new Date();
 						$rootScope.loading=false;
 			        });
-					
-					
-					
-//					$rootScope.nomiSquadre();
-//					$rootScope.fine=new Date();
-//					$rootScope.loading=false;
 				}).catch(function(error) {
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
@@ -149,16 +123,9 @@ app.run(
 				});
 			}
 			$rootScope.ricaricaSqBeDaEscluedere = function(){
-//				$rootScope.inizio=new Date();
-//				$rootScope.fine="";
-//				$rootScope.loading=true;
 				$resource('./ricaricaSqBeDaEscluedere',{}).get().$promise.then(function(data) {
 					$rootScope.listaSqBeDaEscluedere=data.sq;
-//					$rootScope.fine=new Date();
-//					$rootScope.loading=false;
 				}).catch(function(error) {
-//					$rootScope.fine=new Date();
-//					$rootScope.loading=false;
 					alert("Errore: " + error);
 				});
 			}
@@ -172,24 +139,16 @@ app.run(
 				return ret;
 			}
 			$rootScope.ricaricaSqEv = function(){
-//				$rootScope.inizio=new Date();
-//				$rootScope.fine="";
-//				$rootScope.loading=true;
 				$resource('./ricaricaSqEv',{}).get().$promise.then(function(data) {
 					$rootScope.squadre2=[];
 					$rootScope.listaSqEv=data.sq;
-//					console.log($rootScope.squadre);
 	                   angular.forEach($rootScope.squadre, function(value,chiave) {
 	                	   if (!$rootScope.isInLista(value))
 	                	   {
 	                		   $rootScope.squadre2.push(value);
 	                	   }
 	                   });
-//					$rootScope.fine=new Date();
-//					$rootScope.loading=false;
 				}).catch(function(error) {
-//					$rootScope.fine=new Date();
-//					$rootScope.loading=false;
 					alert("Errore: " + error);
 				});
 			}
@@ -202,11 +161,6 @@ app.run(
 						$rootScope.fine=new Date();
 						$rootScope.loading=false;
 			        });
-
-					
-					//					$rootScope.nomiSquadre();
-//					$rootScope.fine=new Date();
-//					$rootScope.loading=false;
 				}).catch(function(error) {
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
@@ -222,11 +176,6 @@ app.run(
 						$rootScope.fine=new Date();
 						$rootScope.loading=false;
 			        });
-
-					
-					//					$rootScope.nomiSquadre();
-//					$rootScope.fine=new Date();
-//					$rootScope.loading=false;
 				}).catch(function(error) {
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
@@ -242,38 +191,12 @@ app.run(
 						$rootScope.fine=new Date();
 						$rootScope.loading=false;
 			        });
-
-					
-					
-					//					$rootScope.nomiSquadre();
-//					$rootScope.fine=new Date();
-//					$rootScope.loading=false;
 				}).catch(function(error) {
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
 					alert("Errore: " + error.data.message);
 				});
 			}
-			/*
-			$rootScope.caricaFile = function(){
-				$rootScope.inizio=new Date();
-				$rootScope.fine="";
-				$rootScope.loading=true;
-				var f = document.getElementById('file').files[0], r = new FileReader();
-				r.onloadend = function(e) {
-					var data = e.target.result;
-					$resource('./caricaFile',{}).save({'file':data}).$promise.then(function(data) {
-						$rootScope.fine=new Date();
-						$rootScope.loading=false;
-					}).catch(function(error) {
-						$rootScope.fine=new Date();
-						$rootScope.loading=false;
-						alert("Errore: " + error.data.message);
-					});
-				}
-				r.readAsBinaryString(f);
-			}
-			*/
 			$rootScope.ico={
 					"22": "assist hight +1.5",
 					"11": "gol vittoria",

@@ -36,7 +36,7 @@ table, th, td {
  		<div  ng-repeat="r in result">
      		<label ng-click="changeVis(r.nome)" style="color:red;background-color:yellow">CAMPIONATO: {{r.nome}}</label>
  			<div ng-show="hiddenVis.indexOf(r.nome)<0" ng-repeat="squadra in r.squadre | sqFilter">
-				 <label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">SQUADRA: {{squadra.nome}} --> {{squadra.proiezione}}</label>
+				 <label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} --> {{squadra.proiezione}}</label>
 				 <div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1" >
 						 	<table style="widthX:600px">
 						 		<tr ng-repeat="giocatore in squadra.titolari | giocFilter " ng-style="{'font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">

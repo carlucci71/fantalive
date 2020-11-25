@@ -25,8 +25,8 @@ public class MyController {
 	}
 
 	private String calcolaAggKey(String lega) throws Exception {
-		int giornata=Main.GIORNATA-Main.deltaFG;
-		if (lega.equalsIgnoreCase("luccicar")) giornata=Main.GIORNATA-Main.deltaFGLuccicar;
+		int giornata=Main.GIORNATA-Main.DELTA_VIVA_FG;
+		if (lega.equalsIgnoreCase("luccicar")) giornata=Main.GIORNATA-Main.DELTA_LUCCICAR_FG;
 		String url = "https://leghe.fantacalcio.it/" + lega + "/formazioni/" + giornata;
 		String string = Main.callHTTP(url);
 		string = string.substring(string.indexOf(".s('tmp', ")+11);
@@ -39,8 +39,8 @@ public class MyController {
 	public void aggKeyFG() throws Exception {
 		int giornata=Main.GIORNATA;
 		Main.keyFG=new HashMap<String, String>();
-		Main.keyFG.put("fantaviva", "id_comp=" + Main.COMP_VIVA + "&r=" + String.valueOf(giornata - Main.deltaFG)  + "&f=" + String.valueOf(giornata - Main.deltaFG) + "_" + calcolaAggKey("fanta-viva") + ".json");
-		Main.keyFG.put("luccicar", "id_comp=" + Main.COMP_LUCCICAR + "&r=" + String.valueOf(giornata - Main.deltaFGLuccicar) + "&f=" + String.valueOf(giornata - Main.deltaFGLuccicar) + "_" + calcolaAggKey("luccicar") + ".json");
+		Main.keyFG.put("fantaviva", "id_comp=" + Main.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Main.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Main.DELTA_VIVA_FG) + "_" + calcolaAggKey("fanta-viva") + ".json");
+		Main.keyFG.put("luccicar", "id_comp=" + Main.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey("luccicar") + ".json");
 	}
 	
 	@RequestMapping("/test")
@@ -104,7 +104,7 @@ public class MyController {
 	}
 	@PostMapping("/setFantaSoccerAuth")
 	public void setFantaSoccerAuth(@RequestBody Map<String,String> body)  {
-		Main.FantaSoccerAuth=body.get("body");
+		Main.AUTH_FS=body.get("body");
 	}
 	@PostMapping("/preparaSquadre")
 	public void preparaSquadre() throws Exception {
@@ -117,7 +117,7 @@ public class MyController {
 	@GetMapping("/getFantaSoccerAuth")
 	public Map<String, String> getFantaSoccerAuth() {
 		Map<String, String> ret=new HashMap<String, String>();
-		ret.put("body", Main.FantaSoccerAuth);
+		ret.put("body", Main.AUTH_FS);
 		return ret;
 	}
 	

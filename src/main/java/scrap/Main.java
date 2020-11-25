@@ -2,22 +2,20 @@ package scrap;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookieStore;
-import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
@@ -30,11 +28,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -46,16 +39,22 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
-	private static final String APPKEY = "4ab27d6de1e92c810c6d4efc8607065a735b917f";
-	public static String FantaSoccerAuth = "DF2C5A1915CAF97D420731EB3FE6DBD0C1617B69F7F5FC7E5CF9BECE33EF182AF74AC88BC38F96B5F36E4A8C6AD930245B25DE87698C47EA5CE8766D56814C60AC245EE92D16156079234C5DE9FC31C9DEAD482F5084231D732E6FF652ED7F07F524037A4BC72BFBC8042993EC37F7E74ED287EF";
-	public static final int deltaFS=3;
-	public static final int deltaFG=2;
-	public static final int deltaFGLuccicar=3;
-	public static final String COMP_VIVA = "250964";
-	public static final String COMP_LUCCICAR = "306919";
-	public static final String COMP_BE = "123506";
-	private static final int PRIMA_GIORNATA_BE = 10675622;
+	private static final String APPKEY_FG = "4ab27d6de1e92c810c6d4efc8607065a735b917f";
+	public static final int DELTA_VIVA_FG=2;
+	public static final int DELTA_LUCCICAR_FG=3;
+	public static final String COMP_VIVA_FG = "250964";
+	public static final String COMP_LUCCICAR_FG = "306919";
 	
+	public static String AUTH_FS = "DF2C5A1915CAF97D420731EB3FE6DBD0C1617B69F7F5FC7E5CF9BECE33EF182AF74AC88BC38F96B5F36E4A8C6AD930245B25DE87698C47EA5CE8766D56814C60AC245EE92D16156079234C5DE9FC31C9DEAD482F5084231D732E6FF652ED7F07F524037A4BC72BFBC8042993EC37F7E74ED287EF";
+	public static final int DELTA_FS=3;
+	private static final int NUM_PARTITE_FS = 4;
+	public static final String COMP_FS = "123506";
+	private static final int PRIMA_GIORNATA_FS = 10675622;
+
+	private static final String SPORT_ID_LIVE_GAZZETTA = "1";
+	private static final String COMP_ID_LIVE_GAZZETTA = "21";
+	private static final String I_LIVE_FANTACALCIO = "15";
+
 	public static int GIORNATA = 9;
 
 	static Map<Integer, String> sq=null;
@@ -122,8 +121,8 @@ public class Main {
 		if (files==null) {
 			files = new ArrayList<ConfigCampionato>();
 			files.add(new ConfigCampionato("luccicar",24,"FANTAGAZZETTA","luccicar"));
-			files.add(new ConfigCampionato("fantaviva",22,"FANTAGAZZETTA","alma"));
-			for (int i=0;i<8;i++) {
+			files.add(new ConfigCampionato("fantaviva",22,"FANTAGAZZETTA","fantaviva"));
+			for (int i=0;i<NUM_PARTITE_FS;i++) {
 				files.add(new ConfigCampionato("be"+i + ".html",22,"FANTASERVICE","be"));
 			}
 		}
@@ -155,14 +154,14 @@ public class Main {
 	public static void scaricaBe() throws IOException, ClientProtocolException {
 		BasicCookieStore cookieStore = new BasicCookieStore();
 		BasicClientCookie cookie;
-		cookie = new BasicClientCookie("FantaSoccer_Auth", FantaSoccerAuth);
+		cookie = new BasicClientCookie("FantaSoccer_Auth", AUTH_FS);
 		cookie.setDomain("www.fanta.soccer");
 		cookie.setPath("/");
 		cookieStore.addCookie(cookie);
 		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
 		try {
 			for (int i=0;i<4;i++) {
-				HttpGet httpget = new HttpGet("https://www.fanta.soccer/it/lega/privata/" + COMP_BE + "/dettaglipartita/" + String.valueOf(GIORNATA-deltaFS) + "/" + String.valueOf(i + PRIMA_GIORNATA_BE + (4*(GIORNATA-deltaFS))) + "/");
+				HttpGet httpget = new HttpGet("https://www.fanta.soccer/it/lega/privata/" + COMP_FS + "/dettaglipartita/" + String.valueOf(GIORNATA-DELTA_FS) + "/" + String.valueOf(i + PRIMA_GIORNATA_FS + (NUM_PARTITE_FS*(GIORNATA-DELTA_FS))) + "/");
 				ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 					@Override
 					public String handleResponse(
@@ -189,7 +188,7 @@ public class Main {
 
 	private static void partiteLive() throws Exception {
 		orari=new HashMap<String, Map<String,String>>();
-		String callHTTP = callHTTP("https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=1&competitionId=21");
+		String callHTTP = callHTTP("https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=" + SPORT_ID_LIVE_GAZZETTA + "&competitionId=" + COMP_ID_LIVE_GAZZETTA);
 		Map<String, Object> jsonToMap = jsonToMap(callHTTP);
 		List<Map> l = (List<Map>) ((Map)jsonToMap.get("data")).get("games");
 		for (Map map : l) {
@@ -235,7 +234,7 @@ public class Main {
 		lega=lega.replace("-", "");
 		List<Squadra> squadre=new ArrayList<Squadra>();
 		Map<String,String> headers = new HashMap<String, String>();
-		headers.put("app_key", APPKEY);
+		headers.put("app_key", APPKEY_FG);
 		String url = "https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?" + keyFG.get(lega);
 		String string = callHTTP(url, headers );
 		Map<String, Object> jsonToMap = jsonToMap(string);
@@ -299,7 +298,7 @@ public class Main {
 			Return r = getReturn(configCampionato, conLive);
 			go.add(r);
 		}
-		Map<String, Return> ret =new HashMap<String, Return>();
+		Map<String, Return> ret =new TreeMap<String, Return>();
 		for (Return retAtt : go) {
 			String campionato = retAtt.getCampionato();
 			Return returns = ret.get(campionato);
@@ -319,6 +318,7 @@ public class Main {
 					sqBeCaricate.add(sq.getNome());
 				}
 			}
+			Collections.sort(squadre);
 			returns.setSquadre(squadre);
 		}
 		return ret;
@@ -357,7 +357,7 @@ public class Main {
 						String[] strings = eventi.get(Integer.parseInt(string));
 						if (strings==null) {
 							ev = ev + "?" + "   ";
-							modificatore=modificatore-100;
+							modificatore=modificatore-1000;
 						}else {
 							ev = ev + strings[0] + "   ";
 							modificatore=modificatore+Double.parseDouble(strings[1]);
@@ -570,7 +570,7 @@ public class Main {
 
 
 	private static List<Map<String, Object>> sendGET(int sq, int giornata) throws Exception {
-		return jsonToList(callHTTP("https://www.fantacalcio.it/api/live/" + sq + "?g=" + giornata + "&i=15"));
+		return jsonToList(callHTTP("https://www.fantacalcio.it/api/live/" + sq + "?g=" + giornata + "&i=" + I_LIVE_FANTACALCIO));
 	}
 
 	public static List<String> getSqDaEv() {

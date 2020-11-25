@@ -1,9 +1,10 @@
 package scrap;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class Squadra {
+public class Squadra implements Comparable<Squadra> {
 String nome;
 private boolean evidenza=false;
 List<Giocatore> titolari=new ArrayList<Giocatore>();
@@ -108,6 +109,11 @@ public boolean isEvidenza() {
 }
 public void setEvidenza(boolean evidenza) {
 	this.evidenza = evidenza;
+}
+@Override
+public int compareTo(Squadra o) {
+	// TODO Auto-generated method stub
+	return this.getNome().toUpperCase().compareTo(o.getNome().toUpperCase());
 }
 
 }
