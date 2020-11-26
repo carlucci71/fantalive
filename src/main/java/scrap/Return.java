@@ -7,6 +7,7 @@ public class Return {
 
 	private String nome;
 	private String campionato;
+	private boolean conLive;
 	private List<Squadra> squadre=new ArrayList<Squadra>();
 	public String getNome() {
 		return nome;
@@ -26,9 +27,16 @@ public class Return {
 	public void setCampionato(String campionato) {
 		this.campionato = campionato;
 	}
+	public boolean isConLive() {
+		return conLive;
+	}
+	public void setConLive(boolean conLive) {
+		this.conLive = conLive;
+	}
 	@Override
 	public String toString() {
-		return "Return [nome=" + nome + ", campionato=" + campionato + ", squadre=" + squadre + "]";
+		return "Return [nome=" + nome + ", campionato=" + campionato + ", conLive=" + conLive + ", squadre=" + squadre
+				+ "]";
 	}
 	
 }

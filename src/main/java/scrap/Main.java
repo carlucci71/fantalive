@@ -304,6 +304,7 @@ public class Main {
 			Return returns = ret.get(campionato);
 			if(returns==null) {
 				returns=new Return();
+				returns.setConLive(conLive);
 				ret.put(campionato, returns);
 			}
 			returns.setCampionato(campionato);
@@ -399,6 +400,7 @@ public class Main {
 			}
 		}
 		r.setSquadre(squadre.get(file));
+		r.setConLive(conLive);
 		return r;
 	}
 

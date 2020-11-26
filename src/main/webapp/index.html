@@ -35,8 +35,9 @@ table, th, td {
 		<input type=text ng-model=giocFilter></input>
  		<div  ng-repeat="r in result">
      		<label ng-click="changeVis(r.nome)" style="color:red;background-color:yellow">CAMPIONATO: {{r.nome}}</label>
- 			<div ng-show="hiddenVis.indexOf(r.nome)<0" ng-repeat="squadra in r.squadre | sqFilter">
+ 			<div ng-show="hiddenVis.indexOf(r.nome)<0" ng-repeat="squadra in r.squadre | sqFilter track by $index">
 				 <label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} --> {{squadra.proiezione}}</label>
+				 <input type=button value="applica cambi" ng-show="visSimulaCambi(squadra)" ng-click="simulaCambi(r,squadra, $index)"></input>
 				 <div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1" >
 						 	<table style="widthX:600px">
 						 		<tr ng-repeat="giocatore in squadra.titolari | giocFilter " ng-style="{'font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">
@@ -49,8 +50,9 @@ table, th, td {
 						 					<img style="width:20px;" title="{{desIco(codE)}}" ng-src="./ico/{{codE}}.png"/>
 										</span> 
 						 			</td>
-						 			<td style="padding:2px;widthX:50px;text-align:center">{{getFantaVoto(giocatore)}}</td>
+						 			<td style="padding:2px;widthX:50px;text-align:center">{{getFantaVoto(giocatore)}}<label ng-show=giocatore.cambiato>(*)</label></td>
 						 			<td style="padding:2px;widthX:150px;text-align:center">{{getOrario(giocatore.orario)}}</td>
+						 			<td><input ng-show="r.conLive" type=checkbox ng-model="giocatore.cambio"></input></td>
 						 		</tr>
 						 	</table>
 						 	<br>
@@ -82,8 +84,9 @@ table, th, td {
 						 					<img style="width:20px;" title="{{desIco(codE)}}" ng-src="./ico/{{codE}}.png"/>
 										</span> 
 						 			</td>
-						 			<td style="padding:2px;widthX:50px;text-align:center">{{getFantaVoto(giocatore)}}</td>
+						 			<td style="padding:2px;widthX:50px;text-align:center">{{getFantaVoto(giocatore)}}<label ng-show=giocatore.cambiato>(*)</label></td>
 						 			<td style="padding:2px;widthX:150px;text-align:center">{{getOrario(giocatore.orario)}}</td>
+						 			<td><input ng-show="r.conLive" type=checkbox ng-model="giocatore.cambio"></input></td>
 						 		</tr>
 						 	</table>
 						 	<br>

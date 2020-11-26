@@ -19,6 +19,8 @@ public class Giocatore {
 	private String evento="";
 	private double modificatore=0;
 	private String squadra;
+	private boolean cambio;
+	private boolean cambiato;
 	public String getRuolo() {
 		return ruolo;
 	}
@@ -78,7 +80,8 @@ public class Giocatore {
 		return nome + "(" + ruolo + ") " + squadra + " " + id + " " + (squadraGioca?"":"N/A") + " " + evento + codEventi   
 				+ " voto=" + voto  
 				+ " modificatore=" + modificatore + ", FM=" + (modificatore + voto)
-				+ " orario=" + orario;
+				+ " orario=" + orario
+				+ " cambio=" + cambio;
 	}
 	public boolean isSquadraGioca() {
 		return squadraGioca;
@@ -103,6 +106,18 @@ public class Giocatore {
 	}
 	public void setOrario(Map<String,String> orario) {
 		this.orario = orario;
+	}
+	public boolean isCambio() {
+		return cambio;
+	}
+	public void setCambio(boolean cambio) {
+		this.cambio = cambio;
+	}
+	public boolean isCambiato() {
+		return cambiato;
+	}
+	public void setCambiato(boolean cambiato) {
+		this.cambiato = cambiato;
 	}
 
 }

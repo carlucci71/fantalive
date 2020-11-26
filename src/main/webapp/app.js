@@ -30,6 +30,36 @@ app.run(
 					alert("Errore: " + error.data.message);
 				});
 			}
+			$rootScope.visSimulaCambi=function(sq){
+				var iContaT=0;
+                angular.forEach(sq.titolari, function(value,chiave) {
+                	if (value.cambio) iContaT++;
+                });
+				if (iContaT==0) return false;
+				var iContaR=0;
+                angular.forEach(sq.riserve, function(value,chiave) {
+                	if (value.cambio) iContaR++;
+                });
+				if (iContaT==iContaR) 
+					return true;
+				else
+					return false;
+			}
+			$rootScope.simulaCambi=function(r,sq, ind){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./simulaCambi',{}).save({'sq':sq}).$promise.then(function(data) {
+					r.squadre.splice(ind, 1,data);
+//					console.log(data);
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				}).catch(function(error) {
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+					alert("Errore: " + error);
+				});
+			}
 			$rootScope.nomiSquadre=function(){
 				var deferred = $q.defer();
 				$resource('./nomiSquadre',{}).query().$promise.then(function(data) {
@@ -112,7 +142,7 @@ app.run(
 				$rootScope.fine="";
 				$rootScope.loading=true;
 				$resource('./addSqBeDaEscluedere',{}).save({'sqBeDaEscluedere':$rootScope.sqBeDaEscluedere}).$promise.then(function(data) {
-					$rootScope.nomiSquadre().then(function(){
+					$rootScope.nomiSquadre().then(function(data){
 						$rootScope.fine=new Date();
 						$rootScope.loading=false;
 			        });

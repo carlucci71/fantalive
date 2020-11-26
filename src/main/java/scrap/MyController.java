@@ -63,6 +63,50 @@ public class MyController {
 		}
 		return ret;
 	}
+	@PostMapping("/simulaCambi")
+	public Squadra simulaCambi(@RequestBody Map<String,Squadra> body)  {
+		Squadra sq = body.get("sq");
+		Squadra ret = new Squadra();
+		ret.setNome(sq.getNome());
+		ret.setEvidenza(sq.isEvidenza());
+		List<Giocatore> nuovaListaGiocatori=new ArrayList<Giocatore>();
+		int iContaPosizione=0;
+		for (Giocatore giocatore : sq.getTitolari()) {
+			if (giocatore.isCambio()) {
+				nuovaListaGiocatori.add(findPerScambio(sq.getRiserve(),iContaPosizione));
+				iContaPosizione++;
+			} else {
+				nuovaListaGiocatori.add(giocatore);
+			}
+		}
+		ret.setTitolari(nuovaListaGiocatori);
+
+		nuovaListaGiocatori=new ArrayList<Giocatore>();
+		iContaPosizione=0;
+		for (Giocatore giocatore : sq.getRiserve()) {
+			if (giocatore.isCambio()) {
+				nuovaListaGiocatori.add(findPerScambio(sq.getTitolari(),iContaPosizione));
+				iContaPosizione++;
+			} else {
+				nuovaListaGiocatori.add(giocatore);
+			}
+		}
+		ret.setRiserve(nuovaListaGiocatori);
+		return ret;
+	}
+	private Giocatore findPerScambio(List<Giocatore> giocatori, int iPosScambio) {
+		int iConta=0;
+		for (Giocatore giocatore : giocatori) {
+			if (giocatore.isCambio()) {
+				if (iConta==iPosScambio) {
+					giocatore.setCambiato(!giocatore.isCambiato());
+					return giocatore;
+				}
+				iConta++;
+			}
+		}
+		return null;
+	}
 
 	@PostMapping("/addSqEv")
 	public void addSqEv(@RequestBody Map<String,String> body)  {
