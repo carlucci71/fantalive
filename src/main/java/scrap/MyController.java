@@ -1,5 +1,8 @@
 package scrap;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -63,12 +66,17 @@ public class MyController {
 		}
 		return ret;
 	}
+	@PostMapping("/salva")
+	public void salva(@RequestBody Map<String,Return> body) throws Exception  {
+		Return r = body.get("r");
+		Files.write(Paths.get("./fomrazioneFG" + r.getNome().toLowerCase() + ".json"), Main.toJson(r.getSquadre()).getBytes());
+	}
 	@PostMapping("/simulaCambi")
 	public Squadra simulaCambi(@RequestBody Map<String,Squadra> body)  {
 		Squadra sq = body.get("sq");
-		Squadra ret = new Squadra();
-		ret.setNome(sq.getNome());
-		ret.setEvidenza(sq.isEvidenza());
+		Squadra squadra = new Squadra();
+		squadra.setNome(sq.getNome());
+		squadra.setEvidenza(sq.isEvidenza());
 		List<Giocatore> nuovaListaGiocatori=new ArrayList<Giocatore>();
 		int iContaPosizione=0;
 		for (Giocatore giocatore : sq.getTitolari()) {
@@ -79,7 +87,7 @@ public class MyController {
 				nuovaListaGiocatori.add(giocatore);
 			}
 		}
-		ret.setTitolari(nuovaListaGiocatori);
+		squadra.setTitolari(nuovaListaGiocatori);
 
 		nuovaListaGiocatori=new ArrayList<Giocatore>();
 		iContaPosizione=0;
@@ -91,8 +99,8 @@ public class MyController {
 				nuovaListaGiocatori.add(giocatore);
 			}
 		}
-		ret.setRiserve(nuovaListaGiocatori);
-		return ret;
+		squadra.setRiserve(nuovaListaGiocatori);
+		return squadra;
 	}
 	private Giocatore findPerScambio(List<Giocatore> giocatori, int iPosScambio) {
 		int iConta=0;

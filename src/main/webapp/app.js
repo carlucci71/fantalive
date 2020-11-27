@@ -45,13 +45,25 @@ app.run(
 				else
 					return false;
 			}
+			$rootScope.salva=function(r){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./salva',{}).save({'r':r}).$promise.then(function(data) {
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				}).catch(function(error) {
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+					alert("Errore: " + error);
+				});
+			}
 			$rootScope.simulaCambi=function(r,sq, ind){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
 				$resource('./simulaCambi',{}).save({'sq':sq}).$promise.then(function(data) {
 					r.squadre.splice(ind, 1,data);
-//					console.log(data);
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 				}).catch(function(error) {
@@ -101,6 +113,7 @@ app.run(
 				$resource('./preparaSquadre',{}).save({}).$promise.then(function(data) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
+					$rootScope.configura=false;
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();

@@ -35,6 +35,7 @@ table, th, td {
 		<input type=text ng-model=giocFilter></input>
  		<div  ng-repeat="r in result">
      		<label ng-click="changeVis(r.nome)" style="color:red;background-color:yellow">CAMPIONATO: {{r.nome}}</label>
+			 <input type=button value="salva" ng-click="salva(r)"></input>
  			<div ng-show="hiddenVis.indexOf(r.nome)<0" ng-repeat="squadra in r.squadre | sqFilter track by $index">
 				 <label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} --> {{squadra.proiezione}}</label>
 				 <input type=button value="applica cambi" ng-show="visSimulaCambi(squadra)" ng-click="simulaCambi(r,squadra, $index)"></input>
@@ -113,8 +114,6 @@ table, th, td {
  	</div>
 <div ng-show="configura">
 	------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
-	<!-- <button ng-click="nomiSquadre()">Ricarica nomi squadre</button>
-	<br> -->
 	<select ng-model=sqBeDaEscluedere>
 		<option ng-repeat="s in squadre  track by $index" value="{{s}}" >{{s}}</option>
 	</select>
@@ -122,10 +121,7 @@ table, th, td {
 	<select ng-model=delSqBeDaEscludere>
 		<option ng-repeat="s in listaSqBeDaEscluedere  track by $index" value="{{s}}" >{{s}}</option>
 	</select>
-	<!-- <button ng-click="ricaricaSqBeDaEscluedere()">Ricarica da escludere</button>  -->
 	<button ng-click="delSqBeDaEscluedere()">Del da escludere</button>
-	
-	
 	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
 	<select ng-model=sqEv>
 		<option ng-repeat="s in squadre2  track by $index" value="{{s}}" >{{vediEvidenza(s)}}</option>
@@ -134,28 +130,15 @@ table, th, td {
 	<select ng-model=delSqEv>
 		<option ng-repeat="s in listaSqEv  track by $index" value="{{s}}" >{{s}}</option>
 	</select>
-	<!-- <button ng-click="ricaricaSqEv()">Ricarica in evidenza</button>  -->
 	<button ng-click="delSqEvid()">Del in evidenza</button>
-	<!-- 
-	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
-	<input type="file" id="file" name="file"/>
-	<button ng-click="caricaFile()">Add be</button><label>fantaservice - dettaglio partita - salva pagina web solo HTML</label>
-	-->
 	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
 	<input style="width:2000px" type=text ng-model="getFantaSoccerAuth"></input>
 	<button ng-click="setFantaSoccerAuth()">setFantaSoccerAuth</button> 
-	<!-- 
-	<label>firefox -- cancella dati -- inspect -- https://leghe.fantacalcio.it/{lega}/formazioni -- filtra url servizi -- copia parametro finale con json (compreso estensione)</label>
-	 -->
 	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
 	giornata<input type=number ng-model="giornata"></input>
 	<button ng-click="setGiornata()">setGiornata</button>
 	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
 	<button ng-click="preparaSquadre()">Prepara squadre</button>
-	<!-- 
-	<br><br>
-	<button ng-click="cancellaSquadre()">Cancella squadre</button>
-	 -->
 </div>
 
 </body>

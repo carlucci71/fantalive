@@ -44,7 +44,7 @@ public class Main {
 	public static final int DELTA_LUCCICAR_FG=3;
 	public static final String COMP_VIVA_FG = "250964";
 	public static final String COMP_LUCCICAR_FG = "306919";
-	
+
 	public static String AUTH_FS = "DF2C5A1915CAF97D420731EB3FE6DBD0C1617B69F7F5FC7E5CF9BECE33EF182AF74AC88BC38F96B5F36E4A8C6AD930245B25DE87698C47EA5CE8766D56814C60AC245EE92D16156079234C5DE9FC31C9DEAD482F5084231D732E6FF652ED7F07F524037A4BC72BFBC8042993EC37F7E74ED287EF";
 	public static final int DELTA_FS=3;
 	private static final int NUM_PARTITE_FS = 4;
@@ -322,6 +322,13 @@ public class Main {
 			Collections.sort(squadre);
 			returns.setSquadre(squadre);
 		}
+		
+		if(conLive) {
+			Files.write(Paths.get("./fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get("FANTAVIVA").getSquadre()).getBytes());
+			Files.write(Paths.get("./fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get("LUCCICAR").getSquadre()).getBytes());
+		}
+		
+		
 		return ret;
 	}
 
@@ -452,7 +459,7 @@ public class Main {
 	private static List<Squadra> valorizzaSquadre(String nomefile, int numGiocatori, String tipo) throws Exception {
 		List<Squadra> squadre=new ArrayList<Squadra>();
 		if (tipo.equals("FANTAGAZZETTA")) {
-			 squadre.addAll(deserializzaSquadraFG(nomefile));
+			squadre.addAll(deserializzaSquadraFG(nomefile));
 		} else {
 			if (Files.exists(Paths.get("./" + nomefile))) {
 				byte[] inputS = Files.readAllBytes(Paths.get("./" + nomefile));
