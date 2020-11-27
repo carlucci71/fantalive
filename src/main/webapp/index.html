@@ -25,20 +25,21 @@ table, th, td {
 </script>
 <body data-ng-init="init()" x-ng-app="app" style="margin-left:20px">
 <button ng-show="!configura && !loading" ng-click="configura=true">Configura</button>
-<button ng-show="configura && !loading" ng-click="configura=false">Termina configurazione</button>
+<button ng-show="configura && !loading" ng-click="endConfigura()">Termina configurazione</button>
 <br><br>		{{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - {{fine | date:'yyyy-MM-dd HH:mm:ss sss'}} 
  		<label ng-show="loading">CARICAMENTO IN CORSO</label>
  	<br><br><br>
  	<div ng-show="!configura">
 		<button ng-show="!loading" ng-click="ricaricaIndex()">Ricarica</button>
 		<br><br>
-		<input type=text ng-model=giocFilter></input>
+		<span ng-show="!loading && result">calciatore <input type=text ng-model=giocFilter></input></span>
+		<br><br>
  		<div  ng-repeat="r in result">
      		<label ng-click="changeVis(r.nome)" style="color:red;background-color:yellow">CAMPIONATO: {{r.nome}}</label>
-			 <input type=button value="salva" ng-click="salva(r)"></input>
+			 <input type=button value="salva" ng-show="r.conLive" ng-click="salva(r)"></input>
  			<div ng-show="hiddenVis.indexOf(r.nome)<0" ng-repeat="squadra in r.squadre | sqFilter track by $index">
 				 <label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} --> {{squadra.proiezione}}</label>
-				 <input type=button value="applica cambi" ng-show="visSimulaCambi(squadra)" ng-click="simulaCambi(r,squadra, $index)"></input>
+				 <input type=button value="applica cambi" ng-show="visSimulaCambi(squadra,r)" ng-click="simulaCambi(r,squadra, $index)"></input>
 				 <div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1" >
 						 	<table style="widthX:600px">
 						 		<tr ng-repeat="giocatore in squadra.titolari | giocFilter " ng-style="{'font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">

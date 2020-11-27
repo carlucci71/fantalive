@@ -47,7 +47,7 @@ public class Main {
 
 	public static String AUTH_FS = "DF2C5A1915CAF97D420731EB3FE6DBD0C1617B69F7F5FC7E5CF9BECE33EF182AF74AC88BC38F96B5F36E4A8C6AD930245B25DE87698C47EA5CE8766D56814C60AC245EE92D16156079234C5DE9FC31C9DEAD482F5084231D732E6FF652ED7F07F524037A4BC72BFBC8042993EC37F7E74ED287EF";
 	public static final int DELTA_FS=3;
-	private static final int NUM_PARTITE_FS = 4;
+	static final int NUM_PARTITE_FS = 4;
 	public static final String COMP_FS = "123506";
 	private static final int PRIMA_GIORNATA_FS = 10675622;
 
@@ -122,9 +122,12 @@ public class Main {
 			files = new ArrayList<ConfigCampionato>();
 			files.add(new ConfigCampionato("luccicar",24,"FANTAGAZZETTA","luccicar"));
 			files.add(new ConfigCampionato("fantaviva",22,"FANTAGAZZETTA","fantaviva"));
+			files.add(new ConfigCampionato("be",22,"FANTASERVICE","be"));
+			/*
 			for (int i=0;i<NUM_PARTITE_FS;i++) {
 				files.add(new ConfigCampionato("be"+i + ".html",22,"FANTASERVICE","be"));
 			}
+			*/
 		}
 		partiteLive();
 	}
@@ -224,7 +227,7 @@ public class Main {
 			}
 			in.close();
 		} else {
-			throw new RuntimeException("GET request not worked");
+			throw new RuntimeException("GET request not worked:" + GET_URL);
 		}
 		return response.toString(); 
 	}
@@ -276,13 +279,18 @@ public class Main {
 	}
 
 	private static List<Squadra> deserializzaSquadraFG(String lega) throws Exception {
-		return jsonToSquadre(new String(Files.readAllBytes(Paths.get("./fomrazioneFG" + lega + ".json"))));
+		if (Files.exists(Paths.get("./fomrazioneFG" + lega + ".json"))) {
+			return jsonToSquadre(new String(Files.readAllBytes(Paths.get("./fomrazioneFG" + lega + ".json"))));
+		} else {
+			return new ArrayList<Squadra>();
+		}
 	}
 
 	public static void cancellaSquadre() throws Exception {
 		if (Files.exists(Paths.get("./fomrazioneFG" + "luccicar" + ".json")))  Files.delete(Paths.get("./fomrazioneFG" + "luccicar" + ".json"));
-		if (Files.exists(Paths.get("./fomrazioneFG" + "fantaviva" + ".json")))Files.delete(Paths.get("./fomrazioneFG" + "fantaviva" + ".json"));
-		for (int i=0;i<8;i++) {
+		if (Files.exists(Paths.get("./fomrazioneFG" + "fantaviva" + ".json"))) Files.delete(Paths.get("./fomrazioneFG" + "fantaviva" + ".json"));
+		if (Files.exists(Paths.get("./fomrazioneFG" + "be" + ".json"))) Files.delete(Paths.get("./fomrazioneFG" + "be" + ".json"));
+		for (int i=0;i<Main.NUM_PARTITE_FS;i++) {
 			if (Files.exists(Paths.get("./" + "be" + i + ".html"))) {
 				if (Files.exists(Paths.get("./" + "be" + i + ".html")))
 					Files.delete(Paths.get("./" + "be" + i + ".html"));
@@ -326,6 +334,7 @@ public class Main {
 		if(conLive) {
 			Files.write(Paths.get("./fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get("FANTAVIVA").getSquadre()).getBytes());
 			Files.write(Paths.get("./fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get("LUCCICAR").getSquadre()).getBytes());
+			Files.write(Paths.get("./fomrazioneFG" + "be" + ".json"), toJson(ret.get("BE").getSquadre()).getBytes());
 		}
 		
 		
@@ -381,8 +390,8 @@ public class Main {
 		for (Squadra squadra : squadre.get(file)) {
 			for (Giocatore giocatore : squadra.getTitolari()) {
 				findGiocatoreInLives(giocatore, lives,tipo);
-				if (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P")) {
-					if (giocatore.getVoto()>0 && !giocatore.getCodEventi().contains(4)) {
+				if (giocatore != null && giocatore.getRuolo() != null && (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P"))) {
+					if (giocatore.getVoto()>0 && !giocatore.getCodEventi().contains(4) && !giocatore.getCodEventi().contains(1000)) {
 						giocatore.getCodEventi().add(1000);
 						giocatore.setModificatore(giocatore.getModificatore()+1);
 					}
@@ -396,7 +405,7 @@ public class Main {
 			for (Giocatore giocatore : squadra.getRiserve()) {
 				findGiocatoreInLives(giocatore, lives,tipo);
 				if (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P")) {
-					if (giocatore.getVoto()>0 && !giocatore.getCodEventi().contains(4)) {
+					if (giocatore.getVoto()>0 && !giocatore.getCodEventi().contains(4) && !giocatore.getCodEventi().contains(1000)) {
 						giocatore.getCodEventi().add(1000);
 						giocatore.setModificatore(giocatore.getModificatore()+1);
 					}
@@ -458,6 +467,8 @@ public class Main {
 
 	private static List<Squadra> valorizzaSquadre(String nomefile, int numGiocatori, String tipo) throws Exception {
 		List<Squadra> squadre=new ArrayList<Squadra>();
+		squadre.addAll(deserializzaSquadraFG(nomefile));
+		/*
 		if (tipo.equals("FANTAGAZZETTA")) {
 			squadre.addAll(deserializzaSquadraFG(nomefile));
 		} else {
@@ -468,11 +479,11 @@ public class Main {
 				squadre.add(getFromFS(doc, "Trasferta"));
 			}
 		}
-
+		*/
 		return squadre;
 	}
 
-	private static Squadra getFromFS(Document doc, String dove ) {
+	public static Squadra getFromFS(Document doc, String dove ) {
 		Element first = doc.select(".table-formazione" + dove.toLowerCase() + "-fantapartita").first();
 		Elements select = first.select("th");
 		Squadra squadra = new Squadra();

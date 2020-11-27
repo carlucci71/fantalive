@@ -9,6 +9,7 @@ app.run(
 				$rootScope.loading=true;
 				$rootScope.loading1=true;
 				$rootScope.loading2=true;
+				$rootScope.ricaricaIndex();
 				$resource('./getFantaSoccerAuth',{}).get().$promise.then(function(data) {
 					$rootScope.getFantaSoccerAuth=data.body;
 					$rootScope.loading1=false;
@@ -30,7 +31,8 @@ app.run(
 					alert("Errore: " + error.data.message);
 				});
 			}
-			$rootScope.visSimulaCambi=function(sq){
+			$rootScope.visSimulaCambi=function(sq,r){
+				if (!r.conLive) return false;
 				var iContaT=0;
                 angular.forEach(sq.titolari, function(value,chiave) {
                 	if (value.cambio) iContaT++;
@@ -83,10 +85,10 @@ app.run(
 				return deferred.promise;	
 			}
 			$rootScope.ricaricaIndex=function(){
+				$rootScope.result={};
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
-				//$rootScope.result=[];
 				var conLive=false;
 				$resource('./test',{conLive}).get().$promise.then(function(data) {
 					$rootScope.result=data;
@@ -106,14 +108,20 @@ app.run(
 					alert("Errore: " + error.data.message);
 				});
 			}
+			$rootScope.endConfigura = function(){
+				$rootScope.configura=false;
+				$rootScope.ricaricaIndex();
+			}
 			$rootScope.preparaSquadre = function(){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
+				$rootScope.configura=false;
+				$rootScope.result={};
 				$resource('./preparaSquadre',{}).save({}).$promise.then(function(data) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
-					$rootScope.configura=false;
+					$rootScope.ricaricaIndex();
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();

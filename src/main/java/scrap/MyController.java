@@ -1,6 +1,5 @@
 package scrap;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -9,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -165,6 +166,18 @@ public class MyController {
 		Main.getSquadre("luccicar");
 		Main.getSquadre("fanta-viva");
 		Main.scaricaBe();
+		List<Squadra> squadre = new ArrayList<Squadra>();
+		for (int i=0;i<Main.NUM_PARTITE_FS;i++) {
+			String nomeFile = "./be"+i + ".html";
+			if (Files.exists(Paths.get(nomeFile))) {
+				byte[] inputS = Files.readAllBytes(Paths.get(nomeFile));
+				Document doc = Jsoup.parse(new String(inputS));
+				squadre.add(Main.getFromFS(doc, "Casa"));
+				squadre.add(Main.getFromFS(doc, "Trasferta"));
+				Files.delete(Paths.get(nomeFile));
+			}
+		}
+		Files.write(Paths.get("./fomrazioneFG" + "be" + ".json"), Main.toJson(squadre).getBytes());
 	}
 	@GetMapping("/getFantaSoccerAuth")
 	public Map<String, String> getFantaSoccerAuth() {
