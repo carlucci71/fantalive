@@ -3,32 +3,34 @@ app.run(
 		function($rootScope, $resource, $interval,$q,$timeout){
 			$rootScope.configura=false;
 			$rootScope.init=function(){
-				$rootScope.nomiSquadre();
-				$rootScope.inizio=new Date();
-				$rootScope.fine="";
-				$rootScope.loading=true;
-				$rootScope.loading1=true;
-				$rootScope.loading2=true;
-				$rootScope.ricaricaIndex();
-				$resource('./getFantaSoccerAuth',{}).get().$promise.then(function(data) {
-					$rootScope.getFantaSoccerAuth=data.body;
-					$rootScope.loading1=false;
-					$rootScope.loading=$rootScope.loading1&&$rootScope.loading2;
-					if (!$rootScope.loading) $rootScope.fine=new Date();
-				}).catch(function(error) {
-					$rootScope.loading=false;
-					$rootScope.fine=new Date();
-					alert("Errore: " + error.data.message);
-				});
-				$resource('./getGiornata',{}).get().$promise.then(function(data) {
-					$rootScope.giornata=data.giornata;
-					$rootScope.loading2=false;
-					$rootScope.loading=$rootScope.loading1&&$rootScope.loading2;
-					if (!$rootScope.loading) $rootScope.fine=new Date();
-				}).catch(function(error) {
-					$rootScope.loading=false;
-					$rootScope.fine=new Date();
-					alert("Errore: " + error.data.message);
+				$rootScope.nomiSquadre().then(function(){
+					$rootScope.ricaricaIndex().then(function(){
+						$rootScope.inizio=new Date();
+						$rootScope.fine="";
+						$rootScope.loading=true;
+						$rootScope.loading1=true;
+						$rootScope.loading2=true;
+						$resource('./getFantaSoccerAuth',{}).get().$promise.then(function(data) {
+							$rootScope.getFantaSoccerAuth=data.body;
+							$rootScope.loading1=false;
+							$rootScope.loading=$rootScope.loading1&&$rootScope.loading2;
+							if (!$rootScope.loading) $rootScope.fine=new Date();
+						}).catch(function(error) {
+							$rootScope.loading=false;
+							$rootScope.fine=new Date();
+							alert("Errore: " + error.data.message);
+						});
+						$resource('./getGiornata',{}).get().$promise.then(function(data) {
+							$rootScope.giornata=data.giornata;
+							$rootScope.loading2=false;
+							$rootScope.loading=$rootScope.loading1&&$rootScope.loading2;
+							if (!$rootScope.loading) $rootScope.fine=new Date();
+						}).catch(function(error) {
+							$rootScope.loading=false;
+							$rootScope.fine=new Date();
+							alert("Errore: " + error.data.message);
+						});
+					});
 				});
 			}
 			$rootScope.visSimulaCambi=function(sq,r){
@@ -85,6 +87,7 @@ app.run(
 				return deferred.promise;	
 			}
 			$rootScope.ricaricaIndex=function(){
+				var deferred = $q.defer();
 				$rootScope.result={};
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
@@ -97,6 +100,7 @@ app.run(
 						$rootScope.loading=false;
 						$rootScope.result=data;
 						$rootScope.fine=new Date();
+						deferred.resolve("Hix");
 					}).catch(function(error) {
 						$rootScope.loading=false;
 						$rootScope.fine=new Date();
@@ -107,6 +111,7 @@ app.run(
 					$rootScope.fine=new Date();
 					alert("Errore: " + error.data.message);
 				});
+				return deferred.promise;	
 			}
 			$rootScope.endConfigura = function(){
 				$rootScope.configura=false;
