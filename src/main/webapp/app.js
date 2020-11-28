@@ -331,7 +331,7 @@ app.run(
 					$rootScope.hiddenVisSq.push(r);
 				} 
 			}
-			$rootScope.ff=function(item){
+			$rootScope.doFilterGioc=function(item){
 	        	   var gF=true;
 	        	   if ($rootScope.giocFilter!=""){
 		        	   gF=false;
@@ -350,6 +350,7 @@ app.run(
 	        	   
 	        	   var lS=true;
 	        	   if($rootScope.liveFilter && (item.orario.tag=='FullTime' || item.orario.tag=='PreMatch')) lS=false;
+	        	   
 	        	   return gF && gS && lS;
 			}
 		}
@@ -364,7 +365,7 @@ app.filter('filtraGiocatore', function($rootScope){
 	      }
 	      else {
 	           return dataArray.filter(function(item){
-	        	   return $rootScope.ff(item);
+	        	   return $rootScope.doFilterGioc(item);
 	           });
 	      } 
 	  }    
@@ -379,12 +380,17 @@ app.filter('filtraSquadra', function($rootScope){
 	           return dataArray.filter(function(item){
 	        	   var ret = false;
                    angular.forEach(item.titolari, function(value,chiave) {
-                	   if ($rootScope.ff(value)) ret = true;
+                	   if ($rootScope.doFilterGioc(value)) ret = true;
 	        	   })
                    angular.forEach(item.riserve, function(value,chiave) {
-                	   if ($rootScope.ff(value)) ret = true;
+                	   if ($rootScope.doFilterGioc(value)) ret = true;
 	        	   })
-	        	   return ret;
+	        	   
+	        	   var fF=true;
+	        	   if($rootScope.favFilter && !item.evidenza) fF=false;
+	        	   
+	        	   
+	        	   return ret && fF;
 	           });
 	      } 
 	  }    
