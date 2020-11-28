@@ -343,10 +343,25 @@ app.filter('giocFilter', function($rootScope){
 	      }
 	      else {
 	           return dataArray.filter(function(item){
-	        	   if (!$rootScope.giocFilter) return true;
-	        	   if ($rootScope.giocFilter=="") return true;
-	        	   if (item.nome.toUpperCase().indexOf($rootScope.giocFilter.toUpperCase())>-1) return true;
-	        	   return false;
+	        	   var gF=true;
+	        	   if ($rootScope.giocFilter!=""){
+		        	   gF=false;
+		        	   if ($rootScope.giocFilter=="") gF = true;
+		        	   if (!$rootScope.giocFilter)  gF=true;
+		        	   else if (item.nome && item.nome.toUpperCase().indexOf($rootScope.giocFilter.toUpperCase())>-1) gF = true;
+	        	   }
+	        	   
+	        	   var gS=true;
+	        	   if ($rootScope.sqFilter!=""){
+		        	   gS=false;
+		        	   if ($rootScope.sqFilter=="") gS = true;
+		        	   if (!$rootScope.sqFilter) gS=true;
+		        	   else if (item.squadra && item.squadra.toUpperCase().indexOf($rootScope.sqFilter.toUpperCase())>-1) gS = true;
+	        	   }
+	        	   
+	        	   var lS=true;
+	        	   if($rootScope.liveFilter && (item.orario.tag=='FullTime' || item.orario.tag=='PreMatch')) lS=false;
+	        	   return gF && gS && lS;
 	           });
 	      } 
 	  }    

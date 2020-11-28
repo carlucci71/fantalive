@@ -21,6 +21,7 @@ public class Giocatore {
 	private String squadra;
 	private boolean cambio;
 	private boolean cambiato;
+	private String idGioc;
 	public String getRuolo() {
 		return ruolo;
 	}
@@ -80,8 +81,7 @@ public class Giocatore {
 		return nome + "(" + ruolo + ") " + squadra + " " + id + " " + (squadraGioca?"":"N/A") + " " + evento + codEventi   
 				+ " voto=" + voto  
 				+ " modificatore=" + modificatore + ", FM=" + (modificatore + voto)
-				+ " orario=" + orario
-				+ " cambio=" + cambio;
+				+ " orario=" + orario + " cambio=" + cambio + " idGioc=" + idGioc; 
 	}
 	public boolean isSquadraGioca() {
 		return squadraGioca;
@@ -118,6 +118,12 @@ public class Giocatore {
 	}
 	public void setCambiato(boolean cambiato) {
 		this.cambiato = cambiato;
+	}
+	public String getIdGioc() {
+		return idGioc;
+	}
+	public void setIdGioc(String idGioc) {
+		this.idGioc = idGioc;
 	}
 
 }

@@ -45,7 +45,7 @@ public class Main {
 	public static final String COMP_VIVA_FG = "250964";
 	public static final String COMP_LUCCICAR_FG = "306919";
 
-	public static String AUTH_FS = "DF2C5A1915CAF97D420731EB3FE6DBD0C1617B69F7F5FC7E5CF9BECE33EF182AF74AC88BC38F96B5F36E4A8C6AD930245B25DE87698C47EA5CE8766D56814C60AC245EE92D16156079234C5DE9FC31C9DEAD482F5084231D732E6FF652ED7F07F524037A4BC72BFBC8042993EC37F7E74ED287EF";
+	public static String AUTH_FS = "8538C0634FC56205D32B0CBE915A8D81A15DFFCA5105C6B7A99691A500E5A2707D72518CCA8A924C356C270B28E435C8DA4F82F5CD01347F4EE7AD0945CAE244689990582C79B1B820F3337E9CACCFC8CB4F91402F181C39B868CDE518ED6F3EFAC974A9C7EA206A03E3110334472C4B750AA70E";
 	public static final int DELTA_FS=3;
 	static final int NUM_PARTITE_FS = 4;
 	public static final String COMP_FS = "123506";
@@ -319,6 +319,14 @@ public class Main {
 			returns.setNome(campionato);
 			List<Squadra> squadre = returns.getSquadre();
 			for (Squadra sq : retAtt.getSquadre()) {
+				for (int i=0;i<sq.getTitolari().size();i++) {
+					Giocatore giocatore = sq.getTitolari().get(i);
+					giocatore.setIdGioc("T" + (i+1));
+				}
+				for (int i=0;i<sq.getRiserve().size();i++) {
+					Giocatore giocatore = sq.getRiserve().get(i);
+					giocatore.setIdGioc("R" + (i+1));
+				}
 				if (!getSqBeDaEscluedere().contains(sq.getNome()) && !sqBeCaricate.contains(sq.getNome())) {
 					if (sqDaEv.contains(sq.getNome())) {
 						sq.setEvidenza(true);
