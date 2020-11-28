@@ -331,18 +331,7 @@ app.run(
 					$rootScope.hiddenVisSq.push(r);
 				} 
 			}
-		}
-
-)
-
-
-app.filter('giocFilter', function($rootScope){
-	  return function(dataArray) {
-	      if (!dataArray) {
-	          return;
-	      }
-	      else {
-	           return dataArray.filter(function(item){
+			$rootScope.ff=function(item){
 	        	   var gF=true;
 	        	   if ($rootScope.giocFilter!=""){
 		        	   gF=false;
@@ -362,29 +351,40 @@ app.filter('giocFilter', function($rootScope){
 	        	   var lS=true;
 	        	   if($rootScope.liveFilter && (item.orario.tag=='FullTime' || item.orario.tag=='PreMatch')) lS=false;
 	        	   return gF && gS && lS;
-	           });
-	      } 
-	  }    
-	});
+			}
+		}
 
-app.filter('sqFilter', function($rootScope){
+)
+
+
+app.filter('filtraGiocatore', function($rootScope){
 	  return function(dataArray) {
 	      if (!dataArray) {
 	          return;
 	      }
 	      else {
 	           return dataArray.filter(function(item){
-	        	   if (!$rootScope.giocFilter) return true;
-	        	   if ($rootScope.giocFilter=="") return true;
+	        	   return $rootScope.ff(item);
+	           });
+	      } 
+	  }    
+	});
+
+app.filter('filtraSquadra', function($rootScope){
+	  return function(dataArray) {
+	      if (!dataArray) {
+	          return;
+	      }
+	      else {
+	           return dataArray.filter(function(item){
 	        	   var ret = false;
                    angular.forEach(item.titolari, function(value,chiave) {
-                	   if (value.nome.toUpperCase().indexOf($rootScope.giocFilter.toUpperCase())>-1) ret= true;
+                	   if ($rootScope.ff(value)) ret = true;
 	        	   })
                    angular.forEach(item.riserve, function(value,chiave) {
-                	   if (value.nome.toUpperCase().indexOf($rootScope.giocFilter.toUpperCase())>-1) ret= true;
+                	   if ($rootScope.ff(value)) ret = true;
 	        	   })
 	        	   return ret;
-
 	           });
 	      } 
 	  }    
