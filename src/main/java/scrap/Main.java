@@ -60,9 +60,9 @@ public class Main {
 	static Map<Integer, String> sq=null;
 	static HashMap<Integer, String[]> eventi=null;
 	static List<ConfigCampionato> files=null;
-	private static List<String> sqBeDaEscluedere= new ArrayList<String>();
+	public static List<String> sqBeDaEscluedere= new ArrayList<String>();
 	static List<String> sqBeCaricate=null;
-	private static List<String> sqDaEv= new ArrayList<String>();
+	public static List<String> sqDaEv= null;
 	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 	static ObjectMapper mapper;
 	public static Map<String, String> keyFG=null;
@@ -70,6 +70,7 @@ public class Main {
 
 
 	public static void init() throws Exception {
+		inizializzaSqDaEv();
 		mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		sqBeCaricate=new ArrayList<String>();
@@ -296,8 +297,14 @@ public class Main {
 					Files.delete(Paths.get("./" + "be" + i + ".html"));
 			}
 		}
+		inizializzaSqDaEv();
+		sqBeDaEscluedere = new ArrayList<String>();
+	}
+	private static void inizializzaSqDaEv() {
 		sqDaEv= new ArrayList<String>();
-		setSqBeDaEscluedere(new ArrayList<String>());
+		sqDaEv.add("tavolino 3-4-3");
+		sqDaEv.add("Tavolino");
+		sqDaEv.add("daddy");
 	}
 	public static Map<String, Return> go(boolean conLive) throws Exception {
 		init();
@@ -327,9 +334,11 @@ public class Main {
 					Giocatore giocatore = sq.getRiserve().get(i);
 					giocatore.setIdGioc("R" + (i+1));
 				}
-				if (!getSqBeDaEscluedere().contains(sq.getNome()) && !sqBeCaricate.contains(sq.getNome())) {
+				if (!sqBeDaEscluedere.contains(sq.getNome()) && !sqBeCaricate.contains(sq.getNome())) {
 					if (sqDaEv.contains(sq.getNome())) {
 						sq.setEvidenza(true);
+					} else {
+						sq.setEvidenza(false);
 					}
 					squadre.add(sq);
 					sqBeCaricate.add(sq.getNome());
@@ -600,23 +609,5 @@ public class Main {
 	private static List<Map<String, Object>> sendGET(int sq, int giornata) throws Exception {
 		return jsonToList(callHTTP("https://www.fantacalcio.it/api/live/" + sq + "?g=" + giornata + "&i=" + I_LIVE_FANTACALCIO));
 	}
-
-	public static List<String> getSqDaEv() {
-		return sqDaEv;
-	}
-
-	public static void setSqDaEv(List<String> sqDaEv) {
-		Main.sqDaEv = sqDaEv;
-	}
-
-	public static List<String> getSqBeDaEscluedere() {
-		return sqBeDaEscluedere;
-	}
-
-	public static void setSqBeDaEscluedere(List<String> sqBeDaEscluedere) {
-		Main.sqBeDaEscluedere = sqBeDaEscluedere;
-	}
-
-
 
 }

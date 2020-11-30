@@ -45,4 +45,40 @@
 		</dependency>
 	</dependencies>
 	<packaging>war</packaging>
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-ftp</artifactId>
+         <version>3.4.2</version>
+      </extension>
+    </extensions>
+ <plugins>
+     <plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>wagon-maven-plugin</artifactId>
+      <version>1.0</version>
+      <executions>
+        <execution>
+          <id>upload-assembly</id>
+          <phase>install</phase>
+          <goals>
+            <goal>upload-single</goal>
+          </goals>
+          <configuration>
+            <serverId>my-server-id</serverId> <!-- references the server declaration -->
+            <fromFile>${project.build.directory}/${project.build.finalName}.war</fromFile>
+            <url>ftp://192.168.1.83</url>
+            <toFile>Public/webapps/${project.build.finalName}.war</toFile>
+<!--
+/share/Public/webapps
+mount - -bind /share/HDA_DATA/.qpkg/Tomcat/tomcat/webapps/ webapps/ "leva spazio tra - -"
+-->
+          </configuration>
+          </execution>
+        </executions>
+      </plugin>
+     </plugins>    
+  </build>
+	
 </project>

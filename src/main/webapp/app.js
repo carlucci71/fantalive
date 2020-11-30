@@ -208,6 +208,10 @@ app.run(
 					alert("Errore: " + error);
 				});
 			}
+			$rootScope.backLoading=function(){
+				if ($rootScope.loading) return "lightyellow";
+				return "white";
+			}
 			$rootScope.delSqBeDaEscluedere = function(){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
@@ -224,6 +228,7 @@ app.run(
 				});
 			}
 			$rootScope.addSqEv = function(){
+				var deferred = $q.defer();
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
@@ -231,19 +236,23 @@ app.run(
 					$rootScope.nomiSquadre().then(function(){
 						$rootScope.fine=new Date();
 						$rootScope.loading=false;
+						deferred.resolve("Hi4");
 			        });
 				}).catch(function(error) {
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
 					alert("Errore: " + error.data.message);
 				});
+				return deferred.promise;	
 			}
 			$rootScope.delSqEvid = function(){
+				var deferred = $q.defer();
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
 				$resource('./delSqEv',{}).save({'sqEv':$rootScope.delSqEv}).$promise.then(function(data) {
 					$rootScope.nomiSquadre().then(function(){
+						deferred.resolve("Hi3");
 						$rootScope.fine=new Date();
 						$rootScope.loading=false;
 			        });
@@ -252,6 +261,7 @@ app.run(
 					$rootScope.loading=false;
 					alert("Errore: " + error.data.message);
 				});
+				return deferred.promise;	
 			}
 			$rootScope.ico={
 					"22": "assist hight +1.5",
@@ -279,6 +289,19 @@ app.run(
 			}
 			$rootScope.backColor=function(giocatore){
 				if (giocatore.squadraGioca) return "lightgray";
+			}
+			$rootScope.changeSqEv=function(squadra){
+				if (squadra.evidenza){
+					$rootScope.delSqEv=squadra.nome;
+					$rootScope.delSqEvid().then(function(){
+						$rootScope.ricaricaIndex();
+					});
+				} else {
+					$rootScope.sqEv=squadra.nome;
+					$rootScope.addSqEv().then(function(){
+						$rootScope.ricaricaIndex();
+					});
+				}
 			}
 			$rootScope.inEv=function(squadra){
 				if (squadra.evidenza) return "red";
@@ -350,6 +373,7 @@ app.run(
 	        	   
 	        	   var lS=true;
 	        	   if($rootScope.liveFilter && (item.orario.tag=='FullTime' || item.orario.tag=='PreMatch')) lS=false;
+	        	   if($rootScope.liveFilter && (item.codEventi.indexOf(14)>-1)) lS=false;
 	        	   
 	        	   return gF && gS && lS;
 			}
@@ -385,11 +409,8 @@ app.filter('filtraSquadra', function($rootScope){
                    angular.forEach(item.riserve, function(value,chiave) {
                 	   if ($rootScope.doFilterGioc(value)) ret = true;
 	        	   })
-	        	   
 	        	   var fF=true;
 	        	   if($rootScope.favFilter && !item.evidenza) fF=false;
-	        	   
-	        	   
 	        	   return ret && fF;
 	           });
 	      } 

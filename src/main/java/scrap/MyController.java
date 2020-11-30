@@ -119,31 +119,31 @@ public class MyController {
 
 	@PostMapping("/addSqEv")
 	public void addSqEv(@RequestBody Map<String,String> body)  {
-		Main.getSqDaEv().add(body.get("sqEv"));
+		Main.sqDaEv.add(body.get("sqEv"));
 	}
 	@PostMapping("/addSqBeDaEscluedere")
 	public void addSqBeDaEscluedere(@RequestBody Map<String,String> body)  {
-		Main.getSqBeDaEscluedere().add(body.get("sqBeDaEscluedere"));
+		Main.sqBeDaEscluedere.add(body.get("sqBeDaEscluedere"));
 	}
 	@PostMapping("/delSqEv")
 	public void delSqEv(@RequestBody Map<String,String> body)  {
-		Main.getSqDaEv().remove(body.get("sqEv"));
+		Main.sqDaEv.remove(body.get("sqEv"));
 	}
 	@GetMapping("/ricaricaSqBeDaEscluedere")
 	public Map<String,Object> ricaricaSqBeDaEscluedere()  {
 		Map<String,Object> ret = new HashMap<String, Object>();
-		ret.put("sq",Main.getSqBeDaEscluedere());
+		ret.put("sq",Main.sqBeDaEscluedere);
 		return ret;
 	}
 	@GetMapping("/ricaricaSqEv")
 	public Map<String,Object> ricaricaSqEv()  {
 		Map<String,Object> ret = new HashMap<String, Object>();
-		ret.put("sq",Main.getSqDaEv());
+		ret.put("sq",Main.sqDaEv);
 		return ret;
 	}
 	@PostMapping("/delSqBeDaEscluedere")
 	public void delSqBeDaEscluedere(@RequestBody Map<String,String> body)  {
-		Main.getSqBeDaEscluedere().remove(body.get("sqBeDaEscluedere"));
+		Main.sqBeDaEscluedere.remove(body.get("sqBeDaEscluedere"));
 	}
 	@PostMapping("/setGiornata")
 	public void setGiornata(@RequestBody Map<String,Integer> body)  {
