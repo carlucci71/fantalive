@@ -63,6 +63,7 @@ public class Main {
 	public static List<String> sqBeDaEscluedere= new ArrayList<String>();
 	static List<String> sqBeCaricate=null;
 	public static List<String> sqDaEv= null;
+
 	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 	static ObjectMapper mapper;
 	public static Map<String, String> keyFG=null;
@@ -70,7 +71,7 @@ public class Main {
 
 
 	public static void init() throws Exception {
-		inizializzaSqDaEv();
+		if (sqDaEv==null) inizializzaSqDaEv();
 		mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		sqBeCaricate=new ArrayList<String>();
