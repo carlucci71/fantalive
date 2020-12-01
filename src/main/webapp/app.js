@@ -8,23 +8,12 @@ app.run(
 						$rootScope.inizio=new Date();
 						$rootScope.fine="";
 						$rootScope.loading=true;
-						$rootScope.loading1=true;
-						$rootScope.loading2=true;
-						$resource('./getFantaSoccerAuth',{}).get().$promise.then(function(data) {
-							$rootScope.getFantaSoccerAuth=data.body;
-							$rootScope.loading1=false;
-							$rootScope.loading=$rootScope.loading1&&$rootScope.loading2;
-							if (!$rootScope.loading) $rootScope.fine=new Date();
-						}).catch(function(error) {
+						$resource('./getDati',{}).get().$promise.then(function(data) {
+							$rootScope.fantaSoccerAuth=data.body;
+							$rootScope.giornata=data.giornata;
+							$rootScope.eventi=data.eventi;
 							$rootScope.loading=false;
 							$rootScope.fine=new Date();
-							alert("Errore: " + error.data.message);
-						});
-						$resource('./getGiornata',{}).get().$promise.then(function(data) {
-							$rootScope.giornata=data.giornata;
-							$rootScope.loading2=false;
-							$rootScope.loading=$rootScope.loading1&&$rootScope.loading2;
-							if (!$rootScope.loading) $rootScope.fine=new Date();
 						}).catch(function(error) {
 							$rootScope.loading=false;
 							$rootScope.fine=new Date();
@@ -137,7 +126,7 @@ app.run(
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
-				$resource('./setFantaSoccerAuth',{}).save({'body':$rootScope.getFantaSoccerAuth}).$promise.then(function(data) {
+				$resource('./setFantaSoccerAuth',{}).save({'body':$rootScope.fantaSoccerAuth}).$promise.then(function(data) {
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
 				}).catch(function(error) {
@@ -263,26 +252,6 @@ app.run(
 				});
 				return deferred.promise;	
 			}
-			$rootScope.ico={
-					"22": "assist hight +1.5",
-					"11": "gol vittoria",
-					"12": "gol pareggio",
-					"24": "assist medium1 +1",
-					"14": "uscito",
-					"15": "entrato",
-					"16": "gol annullato",
-					"17": "infortunio",
-					"1000": "portiere imbattuto +1",
-					"1": "ammonito -0.5",
-					"2": "espulso -1",
-					"3": "gol +3",
-					"4": "gol subito -1",
-					"7": "rigore parato +3",
-					"8": "rigore sbagliato -3",
-					"9": "rigore segnato +3",
-					"20": "assist low +0.5",
-					"21": "assist medium2 +1",
-			};
 			$rootScope.weight=function(giocatore){
 				if (giocatore.orario.tag=='FullTime') return "bold";
 				if (giocatore.codEventi.indexOf(14)>-1) return "bold";
@@ -332,10 +301,20 @@ app.run(
 				if (g.voto==0) return "--";
 				return g.modificatore+g.voto;
 			}
-			$rootScope.desIco=function(r){
-				return $rootScope.ico[r];
+			$rootScope.desEvento=function(ev,r){
+				if (!$rootScope.eventi) return "";
+				var evento = $rootScope.eventi[ev];
+				var ret = evento[0];
+				ret = ret + " <-> " + $rootScope.valEvento(evento,r); 
+				return ret;
 			}
-
+			$rootScope.valEvento=function(evento,r){
+				var pos=0;
+				if (r=="FANTAVIVA") pos=1;
+				if (r=="LUCCICAR") pos=2;
+				if (r=="BE") pos=3;
+				return evento[pos];
+			}
 			$rootScope.hiddenVis=[];
 			$rootScope.hiddenVisSq=[];
 			$rootScope.changeVis=function(r){

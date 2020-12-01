@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -56,7 +55,9 @@ public class Main {
 	private static final String I_LIVE_FANTACALCIO = "15";
 
 	public static int GIORNATA = 9;
-
+	public static final String ROOT="/tmp/";
+	
+	
 	static Map<Integer, String> sq=null;
 	static HashMap<Integer, String[]> eventi=null;
 	static List<ConfigCampionato> files=null;
@@ -77,25 +78,25 @@ public class Main {
 		sqBeCaricate=new ArrayList<String>();
 		if (eventi ==null) {
 			eventi = new HashMap<Integer, String[]>();
-			eventi.put(1000, new String[] {"portiere imbattuto","1"});
-			eventi.put(22, new String[] {"assist hight","1.5"});
-			eventi.put(11, new String[] {"gol vittoria","0"});
-			eventi.put(12, new String[] {"gol pareggio","0"});
-			eventi.put(24, new String[] {"assist medium1","1"});
-			eventi.put(14, new String[] {"uscito","0"});
-			eventi.put(15, new String[] {"entrato","0"});
-			eventi.put(16, new String[] {"gol annullato","0"});
-			eventi.put(17, new String[] {"infortunio","0"});
-			eventi.put(1, new String[] {"ammonito","-0.5"});
-			eventi.put(2, new String[] {"espulso","-1"});
-			eventi.put(3, new String[] {"gol","3"});
-			eventi.put(4, new String[] {"gol subito","-1"});
-			eventi.put(7, new String[] {"rigore parato","3"});
-			eventi.put(8, new String[] {"rigore sbagliato","-3"});
-			eventi.put(9, new String[] {"rigore segnato","3"});
-			eventi.put(20, new String[] {"assist low","0.5"});
-			eventi.put(21, new String[] {"assist medium2","1"});
-			eventi.put(10, new String[] {"autogol","-2"});
+			eventi.put(1000, new String[] {"portiere imbattuto","1","1","1"});
+			eventi.put(22, new String[] {"assist hight","1.5","1","1"});
+			eventi.put(11, new String[] {"gol vittoria","0","0","0"});
+			eventi.put(12, new String[] {"gol pareggio","0","0","0"});
+			eventi.put(24, new String[] {"assist medium1","1","1","1"});
+			eventi.put(14, new String[] {"uscito","0","0","0"});
+			eventi.put(15, new String[] {"entrato","0","0","0"});
+			eventi.put(16, new String[] {"gol annullato","0","0","0"});
+			eventi.put(17, new String[] {"infortunio","0","0","0"});
+			eventi.put(1, new String[] {"ammonito","-0.5","-0.5","-0.5"});
+			eventi.put(2, new String[] {"espulso","-1","-1","-1"});
+			eventi.put(3, new String[] {"gol","3","3","3"});
+			eventi.put(4, new String[] {"gol subito","-1","-1","-1"});
+			eventi.put(7, new String[] {"rigore parato","3","3","3"});
+			eventi.put(8, new String[] {"rigore sbagliato","-3","-3","-3"});
+			eventi.put(9, new String[] {"rigore segnato","3","3","2"});
+			eventi.put(20, new String[] {"assist low","0.5","1","1"});
+			eventi.put(21, new String[] {"assist medium2","1","1","1"});
+			eventi.put(10, new String[] {"autogol","-2","-3","-3"});
 		}
 		if (sq==null) {
 			sq = new LinkedHashMap<Integer, String>();
@@ -122,14 +123,9 @@ public class Main {
 		}
 		if (files==null) {
 			files = new ArrayList<ConfigCampionato>();
-			files.add(new ConfigCampionato("luccicar",24,"FANTAGAZZETTA","luccicar"));
-			files.add(new ConfigCampionato("fantaviva",22,"FANTAGAZZETTA","fantaviva"));
-			files.add(new ConfigCampionato("be",22,"FANTASERVICE","be"));
-			/*
-			for (int i=0;i<NUM_PARTITE_FS;i++) {
-				files.add(new ConfigCampionato("be"+i + ".html",22,"FANTASERVICE","be"));
-			}
-			*/
+			files.add(new ConfigCampionato(24,"FANTAGAZZETTA","luccicar"));
+			files.add(new ConfigCampionato(22,"FANTAGAZZETTA","fantaviva"));
+			files.add(new ConfigCampionato(22,"FANTASERVICE","be"));
 		}
 		partiteLive();
 	}
@@ -182,7 +178,7 @@ public class Main {
 
 				};
 				String responseBody = httpclient.execute(httpget, responseHandler);
-				Files.write(Paths.get("./" + "be" + i + ".html"), responseBody.getBytes());
+				Files.write(Paths.get(ROOT + "be" + i + ".html"), responseBody.getBytes());
 			}
 		} finally {
 			httpclient.close();
@@ -276,26 +272,26 @@ public class Main {
 				}
 			}
 		}
-		Files.write(Paths.get("./fomrazioneFG" + lega + ".json"), toJson(squadre).getBytes());
+		Files.write(Paths.get(ROOT + "fomrazioneFG" + lega + ".json"), toJson(squadre).getBytes());
 		return squadre;
 	}
 
 	private static List<Squadra> deserializzaSquadraFG(String lega) throws Exception {
-		if (Files.exists(Paths.get("./fomrazioneFG" + lega + ".json"))) {
-			return jsonToSquadre(new String(Files.readAllBytes(Paths.get("./fomrazioneFG" + lega + ".json"))));
+		if (Files.exists(Paths.get(ROOT + "fomrazioneFG" + lega + ".json"))) {
+			return jsonToSquadre(new String(Files.readAllBytes(Paths.get(ROOT + "fomrazioneFG" + lega + ".json"))));
 		} else {
 			return new ArrayList<Squadra>();
 		}
 	}
 
 	public static void cancellaSquadre() throws Exception {
-		if (Files.exists(Paths.get("./fomrazioneFG" + "luccicar" + ".json")))  Files.delete(Paths.get("./fomrazioneFG" + "luccicar" + ".json"));
-		if (Files.exists(Paths.get("./fomrazioneFG" + "fantaviva" + ".json"))) Files.delete(Paths.get("./fomrazioneFG" + "fantaviva" + ".json"));
-		if (Files.exists(Paths.get("./fomrazioneFG" + "be" + ".json"))) Files.delete(Paths.get("./fomrazioneFG" + "be" + ".json"));
+		if (Files.exists(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json")))  Files.delete(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"));
+		if (Files.exists(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"))) Files.delete(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"));
+		if (Files.exists(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"))) Files.delete(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"));
 		for (int i=0;i<Main.NUM_PARTITE_FS;i++) {
-			if (Files.exists(Paths.get("./" + "be" + i + ".html"))) {
-				if (Files.exists(Paths.get("./" + "be" + i + ".html")))
-					Files.delete(Paths.get("./" + "be" + i + ".html"));
+			if (Files.exists(Paths.get(ROOT + "be" + i + ".html"))) {
+				if (Files.exists(Paths.get(ROOT + "be" + i + ".html")))
+					Files.delete(Paths.get(ROOT + "be" + i + ".html"));
 			}
 		}
 		inizializzaSqDaEv();
@@ -350,9 +346,9 @@ public class Main {
 		}
 		
 		if(conLive) {
-			Files.write(Paths.get("./fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get("FANTAVIVA").getSquadre()).getBytes());
-			Files.write(Paths.get("./fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get("LUCCICAR").getSquadre()).getBytes());
-			Files.write(Paths.get("./fomrazioneFG" + "be" + ".json"), toJson(ret.get("BE").getSquadre()).getBytes());
+			Files.write(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get("FANTAVIVA").getSquadre()).getBytes());
+			Files.write(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get("LUCCICAR").getSquadre()).getBytes());
+			Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get("BE").getSquadre()).getBytes());
 		}
 		
 		
@@ -360,14 +356,13 @@ public class Main {
 	}
 
 	private static Return getReturn(ConfigCampionato configCampionato, boolean conLive) throws Exception {
-		String file = configCampionato.getFile();
 		Integer numGiocatori = configCampionato.getNumGiocatori();
 		String tipo = configCampionato.getTipo();
 		String campionato = configCampionato.getCampionato();
 		Return r=new Return();
-		r.setNome(file.toUpperCase());
+		r.setNome(campionato.toUpperCase());
 		r.setCampionato(campionato.toUpperCase());
-		squadre.put(file, valorizzaSquadre(file,numGiocatori,tipo));
+		squadre.put(campionato, valorizzaSquadre(campionato,numGiocatori,tipo));
 		Iterator<Integer> iterator = sq.keySet().iterator();
 		List<Live> lives = new ArrayList<Live>();
 		if (conLive) {
@@ -395,7 +390,12 @@ public class Main {
 							modificatore=modificatore-1000;
 						}else {
 							ev = ev + strings[0] + "   ";
-							modificatore=modificatore+Double.parseDouble(strings[1]);
+							int pos=1;
+							if (r.getCampionato().equalsIgnoreCase("FANTAVIVA")) pos=1;
+							if (r.getCampionato().equalsIgnoreCase("LUCCICAR")) pos=2;
+							if (r.getCampionato().equalsIgnoreCase("BE")) pos=3;
+							
+							modificatore=modificatore+Double.parseDouble(strings[pos]);
 						}
 						codEventi.add(Integer.parseInt(string));
 					}
@@ -405,7 +405,7 @@ public class Main {
 				}
 			}
 		}
-		for (Squadra squadra : squadre.get(file)) {
+		for (Squadra squadra : squadre.get(campionato)) {
 			for (Giocatore giocatore : squadra.getTitolari()) {
 				findGiocatoreInLives(giocatore, lives,tipo);
 				if (giocatore != null && giocatore.getRuolo() != null && (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P"))) {
@@ -419,7 +419,7 @@ public class Main {
 				}
 			}
 		}
-		for (Squadra squadra : squadre.get(file)) {
+		for (Squadra squadra : squadre.get(campionato)) {
 			for (Giocatore giocatore : squadra.getRiserve()) {
 				findGiocatoreInLives(giocatore, lives,tipo);
 				if (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P")) {
@@ -433,7 +433,7 @@ public class Main {
 				}
 			}
 		}
-		r.setSquadre(squadre.get(file));
+		r.setSquadre(squadre.get(campionato));
 		r.setConLive(conLive);
 		return r;
 	}
@@ -486,18 +486,6 @@ public class Main {
 	private static List<Squadra> valorizzaSquadre(String nomefile, int numGiocatori, String tipo) throws Exception {
 		List<Squadra> squadre=new ArrayList<Squadra>();
 		squadre.addAll(deserializzaSquadraFG(nomefile));
-		/*
-		if (tipo.equals("FANTAGAZZETTA")) {
-			squadre.addAll(deserializzaSquadraFG(nomefile));
-		} else {
-			if (Files.exists(Paths.get("./" + nomefile))) {
-				byte[] inputS = Files.readAllBytes(Paths.get("./" + nomefile));
-				Document doc = Jsoup.parse(new String(inputS));
-				squadre.add(getFromFS(doc, "Casa"));
-				squadre.add(getFromFS(doc, "Trasferta"));
-			}
-		}
-		*/
 		return squadre;
 	}
 

@@ -1,26 +1,18 @@
 package scrap;
 
 public class ConfigCampionato {
-	String file;
 	Integer numGiocatori;
 	String tipo; 
 	String campionato;
-	public ConfigCampionato(String file, Integer numGiocatori, String tipo, String campionato) {
+	public ConfigCampionato(Integer numGiocatori, String tipo, String campionato) {
 		super();
-		this.file = file;
 		this.numGiocatori = numGiocatori;
 		this.tipo = tipo;
 		this.campionato = campionato;
 	}
 	@Override
 	public String toString() {
-		return "ConfigCampionato [file=" + file + ", numGiocatori=" + numGiocatori + ", tipo=" + tipo + ", campionato=" + campionato + "]";
-	}
-	public String getFile() {
-		return file;
-	}
-	public void setFile(String file) {
-		this.file = file;
+		return "ConfigCampionato [numGiocatori=" + numGiocatori + ", tipo=" + tipo + ", campionato=" + campionato + "]";
 	}
 	public Integer getNumGiocatori() {
 		return numGiocatori;

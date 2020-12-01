@@ -44,8 +44,8 @@ table, th, td {
 			<input type=button value="salva" ng-show="r.conLive" ng-click="salva(r)"></input>
  			<div ng-show="hiddenVis.indexOf(r.nome)<0" ng-repeat="squadra in r.squadre | filtraSquadra track by $index">
  				 <label ng-show="!loading" ng-click="changeSqEv(squadra)">
- 				 	<img ng-show=!squadra.evidenza style="width:10px;cursor: pointer;" title="add"  src="./ico/fav2.png"></img>
- 				 	<img ng-show=squadra.evidenza style="width:10px;cursor: pointer;" title="add"  src="./ico/fav1.png"></img>
+ 				 	<img ng-show=!squadra.evidenza style="width:10px;cursor: pointer;" title="add"  src="./ico/fav1.png"></img>
+ 				 	<img ng-show=squadra.evidenza style="width:10px;cursor: pointer;" title="add"  src="./ico/fav2.png"></img>
  				 </label>
 				 <label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} --> {{squadra.proiezione}}</label>
 				 <input type=button value="applica cambi" ng-show="visSimulaCambi(squadra,r)" ng-click="simulaCambi(r,squadra, $index)"></input>
@@ -59,7 +59,7 @@ table, th, td {
 						 			<td style="padding:2px;widthX:50px;text-align:center">{{getVoto(giocatore)}}</td>
 						 			<td style="padding:2px;widthX:200px;text-align:center">
 						 				<span ng-repeat="codE in giocatore.codEventi track by $index">
-						 					<img style="width:20px;" title="{{desIco(codE)}}" ng-src="./ico/{{codE}}.png"/>
+						 					<img style="width:20px;" title="{{desEvento(codE,r.campionato)}}" ng-src="./ico/{{codE}}.png"/>
 										</span> 
 						 			</td>
 						 			<td style="padding:2px;widthX:50px;text-align:center">{{getFantaVoto(giocatore)}}<label ng-show=giocatore.cambiato>(*)</label></td>
@@ -94,7 +94,7 @@ table, th, td {
 						 			<td style="padding:2px;widthX:50px;text-align:center">{{getVoto(giocatore)}}</td>
 						 			<td style="padding:2px;widthX:200px;text-align:center">
 						 				<span ng-repeat="codE in giocatore.codEventi track by $index">
-						 					<img style="width:20px;" title="{{desIco(codE)}}" ng-src="./ico/{{codE}}.png"/>
+						 					<img style="width:20px;" title="{{desEvento(codE,r.campionato)}}" ng-src="./ico/{{codE}}.png"/>
 										</span> 
 						 			</td>
 						 			<td style="padding:2px;widthX:50px;text-align:center">{{getFantaVoto(giocatore)}}<label ng-show=giocatore.cambiato>(*)</label></td>
@@ -134,7 +134,7 @@ table, th, td {
 	</select>
 	<button ng-click="delSqBeDaEscluedere()">Del da escludere</button>
 	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
-	<textarea style="width:1000px;" type=text ng-model="getFantaSoccerAuth"></textarea>
+	<textarea style="width:1000px;" type=text ng-model="fantaSoccerAuth"></textarea>
 	<br>
 	<button ng-click="setFantaSoccerAuth()">setFantaSoccerAuth</button> 
 	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>

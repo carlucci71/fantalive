@@ -70,7 +70,7 @@ public class MyController {
 	@PostMapping("/salva")
 	public void salva(@RequestBody Map<String,Return> body) throws Exception  {
 		Return r = body.get("r");
-		Files.write(Paths.get("./fomrazioneFG" + r.getNome().toLowerCase() + ".json"), Main.toJson(r.getSquadre()).getBytes());
+		Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + r.getNome().toLowerCase() + ".json"), Main.toJson(r.getSquadre()).getBytes());
 	}
 	@PostMapping("/simulaCambi")
 	public Squadra simulaCambi(@RequestBody Map<String,Squadra> body)  {
@@ -149,10 +149,12 @@ public class MyController {
 	public void setGiornata(@RequestBody Map<String,Integer> body)  {
 		Main.GIORNATA=body.get("giornata");
 	}
-	@GetMapping("/getGiornata")
-	public Map<String, Integer> getGiornata() {
-		Map<String, Integer> ret = new HashMap<String, Integer>();
+	@GetMapping("/getDati")
+	public Map<String, Object> getDati() {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		ret.put("body", Main.AUTH_FS);
 		ret.put("giornata", Main.GIORNATA);
+		ret.put("eventi", Main.eventi);
 		return ret;
 	}
 	@PostMapping("/setFantaSoccerAuth")
@@ -168,7 +170,7 @@ public class MyController {
 		Main.scaricaBe();
 		List<Squadra> squadre = new ArrayList<Squadra>();
 		for (int i=0;i<Main.NUM_PARTITE_FS;i++) {
-			String nomeFile = "./be"+i + ".html";
+			String nomeFile = Main.ROOT + "be"+i + ".html";
 			if (Files.exists(Paths.get(nomeFile))) {
 				byte[] inputS = Files.readAllBytes(Paths.get(nomeFile));
 				Document doc = Jsoup.parse(new String(inputS));
@@ -177,13 +179,7 @@ public class MyController {
 				Files.delete(Paths.get(nomeFile));
 			}
 		}
-		Files.write(Paths.get("./fomrazioneFG" + "be" + ".json"), Main.toJson(squadre).getBytes());
-	}
-	@GetMapping("/getFantaSoccerAuth")
-	public Map<String, String> getFantaSoccerAuth() {
-		Map<String, String> ret=new HashMap<String, String>();
-		ret.put("body", Main.AUTH_FS);
-		return ret;
+		Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + "be" + ".json"), Main.toJson(squadre).getBytes());
 	}
 	
 }
