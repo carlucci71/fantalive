@@ -41,14 +41,15 @@ table, th, td {
 		<br><br>
  		<div  ng-repeat="r in result">
      		<label ng-click="changeVis(r.nome)" style="color:red;background-color:yellow">CAMPIONATO: {{r.nome}}</label>
-			<input type=button value="salva" ng-show="r.conLive" ng-click="salva(r)"></input>
+            <img ng-click="salva(r)" ng-show="r.conLive" style="width:20px;cursor: pointer;" title="salva"  src="./ico/salva.jpeg"></img>
  			<div ng-show="hiddenVis.indexOf(r.nome)<0" ng-repeat="squadra in r.squadre | filtraSquadra track by $index">
  				 <label ng-show="!loading" ng-click="changeSqEv(squadra)">
  				 	<img ng-show=!squadra.evidenza style="width:10px;cursor: pointer;" title="add"  src="./ico/fav1.png"></img>
  				 	<img ng-show=squadra.evidenza style="width:10px;cursor: pointer;" title="add"  src="./ico/fav2.png"></img>
  				 </label>
 				 <label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} --> {{squadra.proiezione}}</label>
-				 <input type=button value="applica cambi" ng-show="visSimulaCambi(squadra,r)" ng-click="simulaCambi(r,squadra, $index)"></input>
+				 
+				 <img ng-click="simulaCambi(r,squadra, $index)" ng-show="visSimulaCambi(squadra,r)" style="width:20px;cursor: pointer;" title="applica cambi"  src="./ico/switch.png"></img>
 				 <div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1" >
 						 	<table style="widthX:600px">
 						 		<tr ng-repeat="giocatore in squadra.titolari | filtraGiocatore " ng-style="{'font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">
