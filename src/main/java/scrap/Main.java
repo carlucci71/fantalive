@@ -346,9 +346,9 @@ public class Main {
 		}
 		
 		if(conLive) {
-			Files.write(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get("FANTAVIVA").getSquadre()).getBytes());
-			Files.write(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get("LUCCICAR").getSquadre()).getBytes());
-			Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get("BE").getSquadre()).getBytes());
+			if (!toJson(ret.get("FANTAVIVA").getSquadre()).equals("")) Files.write(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get("FANTAVIVA").getSquadre()).getBytes());
+			if (!toJson(ret.get("LUCCICAR").getSquadre()).equals("")) Files.write(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get("LUCCICAR").getSquadre()).getBytes());
+			if (!toJson(ret.get("BE").getSquadre()).equals("")) Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get("BE").getSquadre()).getBytes());
 		}
 		
 		

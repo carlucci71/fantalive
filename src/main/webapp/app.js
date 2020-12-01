@@ -43,6 +43,7 @@ app.run(
 				$rootScope.fine="";
 				$rootScope.loading=true;
 				$resource('./salva',{}).save({'r':r}).$promise.then(function(data) {
+					$rootScope.result=data;
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 				}).catch(function(error) {

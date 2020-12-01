@@ -68,14 +68,16 @@ public class MyController {
 		return ret;
 	}
 	@PostMapping("/salva")
-	public void salva(@RequestBody Map<String,Return> body) throws Exception  {
+	public Map<String, Return> salva(@RequestBody Map<String,Return> body) throws Exception  {
 		Return r = body.get("r");
 		Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + r.getNome().toLowerCase() + ".json"), Main.toJson(r.getSquadre()).getBytes());
+		return test(true);
 	}
 	@PostMapping("/simulaCambi")
 	public Squadra simulaCambi(@RequestBody Map<String,Squadra> body)  {
 		Squadra sq = body.get("sq");
 		Squadra squadra = new Squadra();
+		squadra.setDeltaModificatore(sq.getDeltaModificatore());
 		squadra.setNome(sq.getNome());
 		squadra.setEvidenza(sq.isEvidenza());
 		List<Giocatore> nuovaListaGiocatori=new ArrayList<Giocatore>();

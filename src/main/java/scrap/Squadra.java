@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Squadra implements Comparable<Squadra> {
 String nome;
+private int deltaModificatore=0;
 private boolean evidenza=false;
 List<Giocatore> titolari=new ArrayList<Giocatore>();
 private List<Giocatore> riserve=new ArrayList<Giocatore>();
@@ -41,6 +42,7 @@ public String toString() {
 	sb.append("\n" + getTotaleRiserve()/getContaRiserve());
 	sb.append(" media votati");
 	sb.append("\n\n" + getProiezione());
+	sb.append("\n\n" + getDeltaModificatore());
 	return sb.toString();
 }
 public List<Giocatore> getRiserve() {
@@ -102,7 +104,7 @@ public double getMediaRiserve() {
 	return getTotaleRiserve()/getContaRiserve();
 }
 public double getProiezione() {
-	return getTotaleTitolari() + 6 * (11-getContaTitolari());
+	return getTotaleTitolari() + 6 * (11-getContaTitolari()) + getDeltaModificatore();
 }
 public boolean isEvidenza() {
 	return evidenza;
@@ -114,6 +116,12 @@ public void setEvidenza(boolean evidenza) {
 public int compareTo(Squadra o) {
 	// TODO Auto-generated method stub
 	return this.getNome().toUpperCase().compareTo(o.getNome().toUpperCase());
+}
+public int getDeltaModificatore() {
+	return deltaModificatore;
+}
+public void setDeltaModificatore(int deltaModificatore) {
+	this.deltaModificatore = deltaModificatore;
 }
 
 }
