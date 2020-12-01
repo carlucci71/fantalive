@@ -48,7 +48,7 @@ table, th, td {
  				 	<img ng-show=squadra.evidenza style="width:10px;cursor: pointer;" title="add"  src="./ico/fav2.png"></img>
  				 </label>
 				 <label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} --> {{squadra.proiezione}}</label>
-				 <input style="width:45" type=number ng-model="squadra.deltaModificatore"></input>
+				 <input style="width:45" ng-show="r.conLive" type=number ng-model="squadra.deltaModificatore"></input>
 				 <img ng-click="simulaCambi(r,squadra, $index)" ng-show="visSimulaCambi(squadra,r)" style="width:20px;cursor: pointer;" title="applica cambi"  src="./ico/switch.png"></img>
 				 <div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1" >
 						 	<table style="widthX:600px">

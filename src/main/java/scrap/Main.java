@@ -306,8 +306,12 @@ public class Main {
 	public static Map<String, Return> go(boolean conLive) throws Exception {
 		init();
 		List<Return> go = new ArrayList<Return>();
+		List<Live> lives=new ArrayList<Live>();
+		if (conLive) {
+			lives = getLives();
+		}
 		for (ConfigCampionato configCampionato : files) {
-			Return r = getReturn(configCampionato, conLive);
+			Return r = getReturn(configCampionato, conLive, lives);
 			go.add(r);
 		}
 		Map<String, Return> ret =new TreeMap<String, Return>();
@@ -326,10 +330,12 @@ public class Main {
 				for (int i=0;i<sq.getTitolari().size();i++) {
 					Giocatore giocatore = sq.getTitolari().get(i);
 					giocatore.setIdGioc("T" + (i+1));
+//					if (giocatore.getVoto()==0 && conLive && returns.getCampionato().equalsIgnoreCase("BE")) System.out.println(giocatore.getNome() + ";" + giocatore.getRuolo() + ";" + giocatore.getSquadra());
 				}
 				for (int i=0;i<sq.getRiserve().size();i++) {
 					Giocatore giocatore = sq.getRiserve().get(i);
 					giocatore.setIdGioc("R" + (i+1));
+//					if (giocatore.getVoto()==0 && conLive && returns.getCampionato().equalsIgnoreCase("BE")) System.out.println(giocatore.getNome() + ";" + giocatore.getRuolo() + ";" + giocatore.getSquadra());
 				}
 				if (!sqBeDaEscluedere.contains(sq.getNome()) && !sqBeCaricate.contains(sq.getNome())) {
 					if (sqDaEv.contains(sq.getNome())) {
@@ -354,8 +360,22 @@ public class Main {
 		
 		return ret;
 	}
+	
+	private static List<Live> getLives() throws Exception {
+		Iterator<Integer> iterator = sq.keySet().iterator();
+		List<Live> lives = new ArrayList<Live>();
+		while (iterator.hasNext()) {
+			Integer integer = (Integer) iterator.next();
+			List<Map<String, Object>> sendGET = sendGET(integer,GIORNATA);
+			Live live = new Live();
+			live.setSquadra(sq.get(integer));
+			live.setGiocatori(sendGET);
+			lives.add(live);
+		}
+		return lives;
+	}
 
-	private static Return getReturn(ConfigCampionato configCampionato, boolean conLive) throws Exception {
+	private static Return getReturn(ConfigCampionato configCampionato, boolean conLive, List<Live> lives) throws Exception {
 		Integer numGiocatori = configCampionato.getNumGiocatori();
 		String tipo = configCampionato.getTipo();
 		String campionato = configCampionato.getCampionato();
@@ -363,20 +383,9 @@ public class Main {
 		r.setNome(campionato.toUpperCase());
 		r.setCampionato(campionato.toUpperCase());
 		squadre.put(campionato, valorizzaSquadre(campionato,numGiocatori,tipo));
-		Iterator<Integer> iterator = sq.keySet().iterator();
-		List<Live> lives = new ArrayList<Live>();
-		if (conLive) {
-			while (iterator.hasNext()) {
-				Integer integer = (Integer) iterator.next();
-				List<Map<String, Object>> sendGET = sendGET(integer,GIORNATA);
-				Live live = new Live();
-				live.setSquadra(sq.get(integer));
-				live.setGiocatori(sendGET);
-				lives.add(live);
-			}
-		}
 		for (Live live : lives) {
 			for (Map<String, Object> gg : live.getGiocatori()) {
+//				System.out.println(gg.get("nome") + ";" + gg.get("ruolo") + ";" + live.getSquadra());
 				double modificatore=0;
 				String evento = (String) gg.get("evento");
 				String ev="";
@@ -533,6 +542,28 @@ public class Main {
 				if (nomeG.equalsIgnoreCase("Gerard Deulofeu .")) nomeG="DEULOFEU ";
 				if (nomeG.equalsIgnoreCase("Brahim Diaz .")) nomeG="DIAZ B. ";
 				if (nomeG.equalsIgnoreCase("Nwankwo S.")) nomeG="SIMY ";
+				if (nomeG.equalsIgnoreCase("Cristiano Ronaldo .")) nomeG="Ronaldo ";
+				if (nomeG.equalsIgnoreCase("Roger Ibanez .")) nomeG="Ibanez ";
+				if (nomeG.equalsIgnoreCase("Lopez M.")) nomeG="Lopez M. ";
+				if (nomeG.equalsIgnoreCase("Gonzalo Villar .")) nomeG="Villar ";
+				if (nomeG.equalsIgnoreCase("Kouame C.")) nomeG="Kouame' ";
+				if (nomeG.equalsIgnoreCase("Ferrari G.")) nomeG="Ferrari G. ";
+				if (nomeG.equalsIgnoreCase("Montipo L.")) nomeG="Montipo' ";
+				if (nomeG.equalsIgnoreCase("Nkoulou N.")) nomeG="N'Koulou ";
+				if (nomeG.equalsIgnoreCase("Jose Callejon .")) nomeG="Callejon ";
+				if (nomeG.equalsIgnoreCase("Rodriguez R.")) nomeG="Rodriguez R. ";
+				if (nomeG.equalsIgnoreCase("Pellegrini L.")) nomeG="Pellegrini Lo. ";
+				if (nomeG.equalsIgnoreCase("Balde K.")) nomeG="Keita B. ";
+				if (nomeG.equalsIgnoreCase("Donnarumma A.")) nomeG="Donnarumma An. ";
+				if (nomeG.equalsIgnoreCase("Alex Sandro .")) nomeG="Alex Sandro ";
+
+				
+				if (nomeG.equalsIgnoreCase("")) nomeG="";
+				if (nomeG.equalsIgnoreCase("")) nomeG="";
+				if (nomeG.equalsIgnoreCase("")) nomeG="";
+				if (nomeG.equalsIgnoreCase("")) nomeG="";
+				if (nomeG.equalsIgnoreCase("")) nomeG="";
+				if (nomeG.equalsIgnoreCase("")) nomeG="";
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
 				/*
