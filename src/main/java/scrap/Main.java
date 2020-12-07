@@ -599,7 +599,7 @@ public class Main {
 				c.setTimeZone(tz);
 				SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 				*/
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss Z");
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 				ZoneId zoneId = ZoneId.of( "Europe/Rome" );
 				ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
 				returns.setAggiornamento(zdt.format(formatter));
