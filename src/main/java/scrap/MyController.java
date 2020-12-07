@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,17 +23,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping({ "/" })
 public class MyController {
 
+	
 	public MyController() throws Exception {
 		super();
 		Main.init();
 		aggKeyFG();
 	}
 
+    @Scheduled(fixedRate = 60000)
+	public void chckNotifica() throws Exception {
+    	Main.snapshot();
+	}
+	
+    
 	private String calcolaAggKey(String lega) throws Exception {
 		int giornata=Main.GIORNATA-Main.DELTA_VIVA_FG;
 		if (lega.equalsIgnoreCase("luccicar")) giornata=Main.GIORNATA-Main.DELTA_LUCCICAR_FG;
 		String url = "https://leghe.fantacalcio.it/" + lega + "/formazioni/" + giornata;
-		String string = Main.callHTTP(url);
+		String string = Main.getHTTP(url);
 		string = string.substring(string.indexOf(".s('tmp', ")+11);
 		string=string.substring(0,string.indexOf(")"));
 		string = string.replace("|", "@");
@@ -49,14 +57,14 @@ public class MyController {
 	
 	@RequestMapping("/test")
 	public Map<String, Return>  test(boolean conLive) throws Exception {
-		Map<String, Return> go = Main.go(conLive);
+		Map<String, Return> go = Main.go(conLive,true);
 		return go;
 	}
 	
 	@GetMapping("/nomiSquadre")
 	public List<String> getNomiSquadre() throws Exception {
 		List<String> ret = new ArrayList<String>();
-		Map<String, Return> go = Main.go(false);
+		Map<String, Return> go = Main.go(false,false);
 		Iterator<String> iterator = go.keySet().iterator();
 		while (iterator.hasNext()) {
 			String key = (String) iterator.next();

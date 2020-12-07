@@ -3,8 +3,11 @@ package scrap;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.codec.Charsets;
@@ -38,13 +42,20 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
+	private static final String SPONTIT_USERID = "daniele_carlucci6695";
+	private static final String SPONTIT_KEY = "AHWBE7T65FG8ED9N7OTV3D84P6G8YESOUJ4DGP25IW7P9DEDGETVF24EYMH63O9H8ZWB6Y37Q1IIFP4AV8ZNW5DYF7FNPRPAYWHB";
+	private static final String PUSHOVER_USERKEY = "uw954kdfx5t6osgzc2ui24qi1zhhw3";
+	private static final String PUSHOVER_TOKEN = "agg59xr6jtavbnmnpt5b97nino25u2";
+	private static final String ID_ICONA_NOTIFICA = "170";
+	private static final String URL_NOTIFICA = "http://192.168.1.83:7080/fantalive-0.0.1-SNAPSHOT/";
+	private static final String KEY_PUSHSAFER = "fjEebDC2MDAFaFNU3Ndx";
 	private static final String APPKEY_FG = "4ab27d6de1e92c810c6d4efc8607065a735b917f";
 	public static final int DELTA_VIVA_FG=2;
 	public static final int DELTA_LUCCICAR_FG=3;
 	public static final String COMP_VIVA_FG = "250964";
 	public static final String COMP_LUCCICAR_FG = "306919";
 
-	public static String AUTH_FS = "8538C0634FC56205D32B0CBE915A8D81A15DFFCA5105C6B7A99691A500E5A2707D72518CCA8A924C356C270B28E435C8DA4F82F5CD01347F4EE7AD0945CAE244689990582C79B1B820F3337E9CACCFC8CB4F91402F181C39B868CDE518ED6F3EFAC974A9C7EA206A03E3110334472C4B750AA70E";
+	public static String AUTH_FS = "E4919FA22B99D77B3C784F5E241F2BE9516813B2E51B4EE3EA5A1F33F2D2EC684C010AB311B58BB8B5178A800AE0CF12AFF5AF83C37F983B6B81997CE046DC5AC2D2E126D7CBFD41F72D61BC94A9A25E79787E8FFFB059C8985A720964804B6545F525324C27961054EEA49DC8BBAA2963190E3E";
 	public static final int DELTA_FS=3;
 	static final int NUM_PARTITE_FS = 4;
 	public static final String COMP_FS = "123506";
@@ -54,7 +65,7 @@ public class Main {
 	private static final String COMP_ID_LIVE_GAZZETTA = "21";
 	private static final String I_LIVE_FANTACALCIO = "15";
 
-	public static int GIORNATA = 9;
+	public static int GIORNATA = 10;
 	public static final String ROOT="/tmp/";
 	
 	
@@ -64,8 +75,9 @@ public class Main {
 	public static List<String> sqBeDaEscluedere= new ArrayList<String>();
 	static List<String> sqBeCaricate=null;
 	public static List<String> sqDaEv= null;
+	static Map<String, Giocatore> oldSnapshot=null;
 
-	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
+//	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 	static ObjectMapper mapper;
 	public static Map<String, String> keyFG=null;
 	private static Map<String, Map<String, String>> orari=null;
@@ -78,25 +90,25 @@ public class Main {
 		sqBeCaricate=new ArrayList<String>();
 		if (eventi ==null) {
 			eventi = new HashMap<Integer, String[]>();
-			eventi.put(1000, new String[] {"portiere imbattuto","1","1","1"});
-			eventi.put(22, new String[] {"assist hight","1.5","1","1"});
-			eventi.put(11, new String[] {"gol vittoria","0","0","0"});
-			eventi.put(12, new String[] {"gol pareggio","0","0","0"});
-			eventi.put(24, new String[] {"assist medium1","1","1","1"});
-			eventi.put(14, new String[] {"uscito","0","0","0"});
-			eventi.put(15, new String[] {"entrato","0","0","0"});
-			eventi.put(16, new String[] {"gol annullato","0","0","0"});
-			eventi.put(17, new String[] {"infortunio","0","0","0"});
-			eventi.put(1, new String[] {"ammonito","-0.5","-0.5","-0.5"});
-			eventi.put(2, new String[] {"espulso","-1","-1","-1"});
-			eventi.put(3, new String[] {"gol","3","3","3"});
-			eventi.put(4, new String[] {"gol subito","-1","-1","-1"});
-			eventi.put(7, new String[] {"rigore parato","3","3","3"});
-			eventi.put(8, new String[] {"rigore sbagliato","-3","-3","-3"});
-			eventi.put(9, new String[] {"rigore segnato","3","3","2"});
-			eventi.put(20, new String[] {"assist low","0.5","1","1"});
-			eventi.put(21, new String[] {"assist medium2","1","1","1"});
-			eventi.put(10, new String[] {"autogol","-2","-3","-3"});
+			eventi.put(1000, new String[] {"portiere imbattuto","1","1","1","S"});
+			eventi.put(22, new String[] {"assist hight","1.5","1","1","S"});
+			eventi.put(11, new String[] {"gol vittoria","0","0","0","N"});
+			eventi.put(12, new String[] {"gol pareggio","0","0","0","N"});
+			eventi.put(24, new String[] {"assist medium1","1","1","1","S"});
+			eventi.put(14, new String[] {"uscito","0","0","0","S"});
+			eventi.put(15, new String[] {"entrato","0","0","0","S"});
+			eventi.put(16, new String[] {"gol annullato","0","0","0","S"});
+			eventi.put(17, new String[] {"infortunio","0","0","0","N"});
+			eventi.put(1, new String[] {"ammonito","-0.5","-0.5","-0.5","S"});
+			eventi.put(2, new String[] {"espulso","-1","-1","-1","S"});
+			eventi.put(3, new String[] {"gol","3","3","3","S"});
+			eventi.put(4, new String[] {"gol subito","-1","-1","-1","S"});
+			eventi.put(7, new String[] {"rigore parato","3","3","3","S"});
+			eventi.put(8, new String[] {"rigore sbagliato","-3","-3","-3","S"});
+			eventi.put(9, new String[] {"rigore segnato","3","3","2","S"});
+			eventi.put(20, new String[] {"assist low","0.5","1","1","S"});
+			eventi.put(21, new String[] {"assist medium2","1","1","1","S"});
+			eventi.put(10, new String[] {"autogol","-2","-3","-3","S"});
 		}
 		if (sq==null) {
 			sq = new LinkedHashMap<Integer, String>();
@@ -130,13 +142,183 @@ public class Main {
 		partiteLive();
 	}
 
+	public static void snapshot() throws Exception {
+    	Map<String, Return> go = go(true,false);
+    	Iterator<String> campionati = go.keySet().iterator();
+    	Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
+    	while (campionati.hasNext()) {
+			String campionato = (String) campionati.next();
+			Return r = go.get(campionato);
+			List<Squadra> squadre = r.getSquadre();
+			for (Squadra squadra : squadre) {
+				if (sqDaEv.contains(squadra.getNome())) 
+				{
+					for (Giocatore giocatore : squadra.getTitolari()) {
+						snapshot.put(r.getCampionato() + "-" + squadra.getNome() + "-" + giocatore.getNome(), giocatore);
+					}
+					for (Giocatore giocatore : squadra.getRiserve()) {
+						snapshot.put(r.getCampionato() + "-" + squadra.getNome() + "-" + giocatore.getNome(), giocatore);
+					}
+				}
+			}
+    	}
+    	
+    	if (oldSnapshot!=null) {
+    		Iterator<String> iterator = oldSnapshot.keySet().iterator();
+    		Map<String, Map<String,List<Notifica>>> notifiche = new HashMap();
+    		while (iterator.hasNext()) {
+				String key = (String) iterator.next();
+				Giocatore oldGioc = oldSnapshot.get(key);
+				Giocatore newGioc = snapshot.get(key);
+				List<Integer> findNuoviEventi = findNuoviEventi(oldGioc, newGioc);
+				List<String> eventi=new ArrayList<String>();
+				if (!oldGioc.getOrario().get("tag").equalsIgnoreCase(newGioc.getOrario().get("tag"))) {
+					eventi.add(newGioc.getOrario().get("tag"));
+				}
+				if (findNuoviEventi.size()>0 || !oldGioc.getOrario().get("tag").equalsIgnoreCase(newGioc.getOrario().get("tag"))) {
+					for (Integer integer : findNuoviEventi) {
+						eventi.add(Main.eventi.get(integer)[0]);
+					}
+				}
+				if (eventi.size()>0) {
+					String[] splitKey = key.split("-");
+					Notifica notifica = new Notifica();
+					Map<String,List<Notifica>> notificheSquadreDelCampionato   = notifiche.get(splitKey[0]);
+					if (notificheSquadreDelCampionato == null) {
+						notificheSquadreDelCampionato=new HashMap<String, List<Notifica>>();
+						notifiche.put(splitKey[0], notificheSquadreDelCampionato);
+					}
+					List<Notifica> notificheSquadra = notificheSquadreDelCampionato.get(splitKey[1]);
+					if (notificheSquadra==null) {
+						notificheSquadra=new ArrayList();
+						notificheSquadreDelCampionato.put(splitKey[1], notificheSquadra);
+					}
+					notificheSquadra.add(notifica);
+					notifica.setCampionato(splitKey[0]);
+					notifica.setSquadra(splitKey[1]);
+					notifica.setGiocatore(splitKey[2]);
+					notifica.setId(newGioc.getIdGioc());
+					notifica.setEventi(eventi);
+					if (newGioc.isCambio()) {
+						notifica.setCambio("(*)");
+					}
+				}
+			}
+    		Set<String> keySet = notifiche.keySet();
+    		if (keySet!= null && keySet.size()>0) {
+        		StringBuilder des = new StringBuilder();
+    			for (String camp : keySet) {
+					des.append(camp).append(":\r");
+					Map<String, List<Notifica>> sq = notifiche.get(camp);
+					Iterator<String> itSq = sq.keySet().iterator();
+					while (itSq.hasNext()) {
+						String sqN = (String) itSq.next();
+						des.append("\t").append(sqN).append(":\r");
+						List<Notifica> listN = sq.get(sqN);
+						for (Notifica notifica : listN) {
+							des.append("\t\t").append(notifica.toString()).append("\r");
+						}
+					}
+				}
+        		Main.inviaNotifica(des.toString());
+    		}
+    	}
+    	oldSnapshot=snapshot;
+    	
+	}
+	
+	
 	public static void main(String[] args) throws Exception {
+		Iterator<String> iterator;
+    	snapshot();
+    	snapshot();
+		iterator = oldSnapshot.keySet().iterator();
+		while (iterator.hasNext()) {
+			String k = (String) iterator.next();
+			Giocatore giocatore = oldSnapshot.get(k);
+			if (giocatore.getNome().toUpperCase().startsWith("MILI")){
+				giocatore.getOrario().put("tag","xx");
+				giocatore.getCodEventi().add(3);
+			}
+		}
+    	snapshot();
+		iterator = oldSnapshot.keySet().iterator();
+		while (iterator.hasNext()) {
+			String k = (String) iterator.next();
+			Giocatore giocatore = oldSnapshot.get(k);
+			if (giocatore.getNome().toUpperCase().startsWith("MILI")){
+				giocatore.getCodEventi().add(11);
+				giocatore.getCodEventi().add(3);
+			}
+		}
+    	snapshot();
+		iterator = oldSnapshot.keySet().iterator();
+		while (iterator.hasNext()) {
+			String k = (String) iterator.next();
+			Giocatore giocatore = oldSnapshot.get(k);
+			if (giocatore.getNome().toUpperCase().startsWith("MILI")){
+				giocatore.getCodEventi().add(16);
+			}
+		}
+    	snapshot();
+		iterator = oldSnapshot.keySet().iterator();
+		while (iterator.hasNext()) {
+			String k = (String) iterator.next();
+			Giocatore giocatore = oldSnapshot.get(k);
+			if (giocatore.getNome().toUpperCase().startsWith("MILI")){
+				giocatore.getCodEventi().add(14);
+			}
+		}
+    	snapshot();
+	}
+	
+	public static void inviaNotifica(String msg) throws Exception {
+		String urlNotifica;
+		Map<String, String> body;
+		Map<String, String> headers;
+		if (false) {
+			urlNotifica = "https://www.pushsafer.com/api?k=" + KEY_PUSHSAFER + "&ut=FantaLive&m=" + URLEncoder.encode(msg, StandardCharsets.UTF_8.toString()) + "&i=" + ID_ICONA_NOTIFICA + "&u=" + URL_NOTIFICA;
+			body = new HashMap<String, String>();
+			postHTTP(urlNotifica,body,headers);
+		}
+		if (false) {
+			urlNotifica="https://api.pushover.net/1/messages.json";
+			body = new HashMap<String, String>();
+			body.put("token", PUSHOVER_TOKEN);
+			body.put("user", PUSHOVER_USERKEY);
+			body.put("message", msg);
+			postHTTP(urlNotifica,body,headers);
+		}
+		if (false) {
+			System.out.println(msg);
+		}
+		if(true) {
+			urlNotifica = "https://api.spontit.com/v3/push";
+			body = new HashMap<String, String>();
+			body.put("pushTitle", "FantaLive");
+			//body.put("subtitle", "Aggiornamento");
+			body.put("content", msg);
+			body.put("link", URL_NOTIFICA);
+
+//			body.put("channelName", "daniele");
+			//body.put("schedule", 1591982947);
+			//body.put("expirationStamp", 1592414947);
+			//body.put("openLinkInApp", "true");
+			//body.put("iOSDeepLink", "photos-redirect://");
+
+
+			headers = new HashMap<String, String>();
+			headers.put("X-Authorization", SPONTIT_KEY);
+			headers.put("X-UserId", SPONTIT_USERID);
+			postHTTP(urlNotifica,body, headers);
+			
+		}
 	}
 
 	private static Map<String, String> getNomiFG(String lega) throws Exception {
 		Map<String, String> ret = new HashMap<String, String>();
 		String url = "https://leghe.fantacalcio.it/" + lega + "/area-gioco/rose?";
-		String response = callHTTP(url);
+		String response = getHTTP(url);
 		Document doc = Jsoup.parse(response);
 		Elements select1 = doc.select(".list-rosters-item");
 		Elements select = doc.select(".left-heading-link");
@@ -189,23 +371,80 @@ public class Main {
 
 	private static void partiteLive() throws Exception {
 		orari=new HashMap<String, Map<String,String>>();
-		String callHTTP = callHTTP("https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=" + SPORT_ID_LIVE_GAZZETTA + "&competitionId=" + COMP_ID_LIVE_GAZZETTA);
+		String callHTTP = getHTTP("https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=" + SPORT_ID_LIVE_GAZZETTA + "&competitionId=" + COMP_ID_LIVE_GAZZETTA);
 		Map<String, Object> jsonToMap = jsonToMap(callHTTP);
 		List<Map> l = (List<Map>) ((Map)jsonToMap.get("data")).get("games");
 		for (Map map : l) {
 			List<Map> lm = (List<Map>) map.get("matches");
 			for (Map map2 : lm) {
 				HashMap<String,String> orario=new HashMap<String,String>();
-				orario.put("tag", (String)((Map)map2.get("timing")).get("tag"));
-				orario.put("val", ((Map)map2.get("timing")).get("val").toString());
+				Map timing = (Map)map2.get("timing");
+				orario.put("tag", (String)timing.get("tag"));
+				Object valTiming=timing.get("val");
+				if (timing.get("val") != null) {
+					valTiming= valTiming.toString();
+
+				}
+				else {
+					valTiming="N/A";
+				}
+				orario.put("val", valTiming.toString());
 				orari.put(((String)((Map)map2.get("awayTeam")).get("teamCode")).toUpperCase(), orario);
 				orari.put(((String)((Map)map2.get("homeTeam")).get("teamCode")).toUpperCase(), orario);
 			}
 		}
 	}
 
-	public static String callHTTP(String GET_URL, Map<String, String>... headers) throws Exception {
-		URL obj = new URL(GET_URL);
+	public static String postHTTP(String url, Map<String, String> body, Map<String, String>... headers) throws Exception {
+		URL obj = new URL(url);
+		HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
+		postConnection.setRequestMethod("POST");
+		if (headers!=null && headers.length>0) {
+			Iterator<String> iterator = headers[0].keySet().iterator();
+			while (iterator.hasNext()) {
+				String key = (String) iterator.next();
+				postConnection.setRequestProperty(key, headers[0].get(key));
+			}
+		}
+		postConnection.setRequestProperty("Content-Type", "application/json");
+		postConnection.setDoOutput(true);
+		OutputStream os = postConnection.getOutputStream();
+		os.write(toJson(body).getBytes());
+		os.flush();
+		os.close();
+		
+		
+		
+		int responseCode = postConnection.getResponseCode();
+		StringBuffer response = new StringBuffer();
+		if (responseCode == HttpURLConnection.HTTP_OK) {
+			BufferedReader in = new BufferedReader(new InputStreamReader(postConnection.getInputStream()));
+			String inputLine;
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+		} else {
+			BufferedReader bfOutputResponse = new BufferedReader(
+					new InputStreamReader(postConnection.getErrorStream()));
+			String outputLine;
+			StringBuffer sfResponse = new StringBuffer();
+			while ((outputLine = bfOutputResponse.readLine()) != null) {
+				sfResponse.append(outputLine);
+			}
+			bfOutputResponse.close();
+
+			// print result
+			String stringResponse = sfResponse.toString();
+			throw new RuntimeException("POST NOT WORKED ".concat(url).concat(" -> ").concat(toJson(body)).concat("STACK:")
+					.concat(stringResponse));
+		}
+		return response.toString(); 
+	}
+
+	
+	public static String getHTTP(String url, Map<String, String>... headers) throws Exception {
+		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("GET");
 		if (headers!=null && headers.length>0) {
@@ -225,7 +464,7 @@ public class Main {
 			}
 			in.close();
 		} else {
-			throw new RuntimeException("GET request not worked:" + GET_URL);
+			throw new RuntimeException("GET HTTP request not worked:" + " " + url);
 		}
 		return response.toString(); 
 	}
@@ -237,7 +476,7 @@ public class Main {
 		Map<String,String> headers = new HashMap<String, String>();
 		headers.put("app_key", APPKEY_FG);
 		String url = "https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?" + keyFG.get(lega);
-		String string = callHTTP(url, headers );
+		String string = getHTTP(url, headers );
 		Map<String, Object> jsonToMap = jsonToMap(string);
 		if (jsonToMap.get("data") == null) throw new RuntimeException("aggiornare KeyFG per " + lega);
 		List<Map> l = (List<Map>) ((Map<String, Object>)jsonToMap.get("data")).get("formazioni");
@@ -299,11 +538,37 @@ public class Main {
 	}
 	private static void inizializzaSqDaEv() {
 		sqDaEv= new ArrayList<String>();
-		sqDaEv.add("tavolino 3-4-3");
+		sqDaEv.add("tavolino");
 		sqDaEv.add("Tavolino");
 		sqDaEv.add("daddy");
 	}
-	public static Map<String, Return> go(boolean conLive) throws Exception {
+	
+    private static List<Integer> findNuoviEventi(Giocatore og, Giocatore ng) {
+    	List<Integer> ret = new ArrayList<Integer>();
+    	for (Integer integer : og.getCodEventi()) {
+    		if (eventi.get(integer)[4].equalsIgnoreCase("S")) {
+    			int contaNuoviEventiOld = contaNuoviEventi(integer,og);
+    			int contaNuoviEventiNew = contaNuoviEventi(integer,ng);
+    			if (contaNuoviEventiOld != contaNuoviEventiNew) {
+    				if (!ret.contains(integer)) {
+        				ret.add(integer);
+    				}
+    			}
+    		}
+    	}
+    	return ret;
+    }
+    private static int contaNuoviEventi(Integer i, Giocatore g) {
+    	List<Integer> codEventi = g.getCodEventi();
+    	int ret=0;
+    	for (Integer integer : codEventi) {
+			if (integer.intValue() == i.intValue()) ret++;
+		}
+    	return ret;
+    }
+	
+	
+	public synchronized static Map<String, Return> go(boolean conLive, boolean salva) throws Exception {
 		init();
 		List<Return> go = new ArrayList<Return>();
 		List<Live> lives=new ArrayList<Live>();
@@ -351,7 +616,7 @@ public class Main {
 			returns.setSquadre(squadre);
 		}
 		
-		if(conLive) {
+		if(conLive && salva) {
 			if (ret.get("FANTAVIVA").getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get("FANTAVIVA").getSquadre()).getBytes());
 			if (ret.get("LUCCICAR").getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get("LUCCICAR").getSquadre()).getBytes());
 			if (ret.get("BE").getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get("BE").getSquadre()).getBytes());
@@ -366,10 +631,10 @@ public class Main {
 		List<Live> lives = new ArrayList<Live>();
 		while (iterator.hasNext()) {
 			Integer integer = (Integer) iterator.next();
-			List<Map<String, Object>> sendGET = sendGET(integer,GIORNATA);
+			List<Map<String, Object>> getLiveFromFG = getLiveFromFG(integer,GIORNATA);
 			Live live = new Live();
 			live.setSquadra(sq.get(integer));
-			live.setGiocatori(sendGET);
+			live.setGiocatori(getLiveFromFG);
 			lives.add(live);
 		}
 		return lives;
@@ -382,6 +647,7 @@ public class Main {
 		Return r=new Return();
 		r.setNome(campionato.toUpperCase());
 		r.setCampionato(campionato.toUpperCase());
+		Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 		squadre.put(campionato, valorizzaSquadre(campionato,numGiocatori,tipo));
 		for (Live live : lives) {
 			for (Map<String, Object> gg : live.getGiocatori()) {
@@ -502,7 +768,8 @@ public class Main {
 		Element first = doc.select(".table-formazione" + dove.toLowerCase() + "-fantapartita").first();
 		Elements select = first.select("th");
 		Squadra squadra = new Squadra();
-		squadra.setNome(select.first().text());
+		String nomeSq = select.first().text();
+		squadra.setNome(nomeSq.substring(0,nomeSq.lastIndexOf(" ")));
 		for (int i=0;i<11;i++) {
 			Giocatore giocatore = estraiGiocatoreFromFS(doc,i,dove,"Titolari");
 			if (giocatore != null) {
@@ -626,8 +893,8 @@ public class Main {
 
 
 
-	private static List<Map<String, Object>> sendGET(int sq, int giornata) throws Exception {
-		return jsonToList(callHTTP("https://www.fantacalcio.it/api/live/" + sq + "?g=" + giornata + "&i=" + I_LIVE_FANTACALCIO));
+	private static List<Map<String, Object>> getLiveFromFG(int sq, int giornata) throws Exception {
+		return jsonToList(getHTTP("https://www.fantacalcio.it/api/live/" + sq + "?g=" + giornata + "&i=" + I_LIVE_FANTACALCIO));
 	}
 
 }

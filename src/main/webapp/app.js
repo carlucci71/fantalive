@@ -352,7 +352,7 @@ app.run(
 	        	   }
 	        	   
 	        	   var lS=true;
-	        	   if($rootScope.liveFilter && (item.orario.tag=='FullTime' || item.orario.tag=='PreMatch')) lS=false;
+	        	   if($rootScope.liveFilter && (item.orario.tag=='Postponed' || item.orario.tag=='FullTime' || item.orario.tag=='PreMatch')) lS=false;
 	        	   if($rootScope.liveFilter && (item.codEventi.indexOf(14)>-1)) lS=false;
 	        	   
 	        	   return gF && gS && lS;
