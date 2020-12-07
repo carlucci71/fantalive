@@ -199,6 +199,7 @@ public class Main {
 					notifica.setGiocatore(splitKey[2]);
 					notifica.setId(newGioc.getIdGioc());
 					notifica.setEventi(eventi);
+					notifica.setVoto(newGioc.getVoto());
 					if (newGioc.isCambio()) {
 						notifica.setCambio("(*)");
 					}

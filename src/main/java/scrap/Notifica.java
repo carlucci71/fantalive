@@ -7,6 +7,7 @@ public class Notifica {
 	private String giocatore;
 	private String squadra;
 	private String id;
+	private double voto=0;
 	private List<String> eventi;
 	private String cambio="";
 	public String getCambio() {
@@ -41,13 +42,19 @@ public class Notifica {
 	}
 	@Override
 	public String toString() {
-		return giocatore + cambio + " " + id + " " + getEventi() ;
+		return giocatore + cambio + " " + id + " " + getEventi() + " " + voto;
 	}
 	public List<String> getEventi() {
 		return eventi;
 	}
 	public void setEventi(List<String> eventi) {
 		this.eventi = eventi;
+	}
+	public double getVoto() {
+		return voto;
+	}
+	public void setVoto(double voto) {
+		this.voto = voto;
 	}
 
 }
