@@ -26,7 +26,11 @@ table, th, td {
 <body data-ng-init="init()" x-ng-app="app" ng-style="{'margin-left':'20px','background-color':backLoading()}">
 <button ng-show="!configura && !loading" ng-click="configura=true">Configura</button>
 <button ng-show="configura && !loading" ng-click="endConfigura()">Termina configurazione</button>
-<br><br>		{{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - {{fine | date:'yyyy-MM-dd HH:mm:ss sss'}} 
+<br><br>
+<!-- 		Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}  -->
+
+<label ng-show="aggiornamento" >Dati aggiornati alle: {{aggiornamento}} </label>
+<br>
  		<label ng-show="loading">CARICAMENTO IN CORSO</label>
  	<br><br><br>
  	<div ng-show="!configura">

@@ -10,7 +10,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
@@ -142,8 +145,8 @@ public class Main {
 		partiteLive();
 	}
 
-	public static void snapshot() throws Exception {
-    	Map<String, Return> go = go(true,false);
+	public static void snapshot(SocketHandler socketHandler) throws Exception {
+    	Map<String, Return> go = go(true,true);
     	Iterator<String> campionati = go.keySet().iterator();
     	Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
     	while (campionati.hasNext()) {
@@ -225,14 +228,16 @@ public class Main {
     		}
     	}
     	oldSnapshot=snapshot;
-    	
+    	if (socketHandler != null) {
+    		socketHandler.invia(toJson(go));
+    	}
 	}
 	
 	
 	public static void main(String[] args) throws Exception {
 		Iterator<String> iterator;
-    	snapshot();
-    	snapshot();
+    	snapshot(null);
+    	snapshot(null);
 		iterator = oldSnapshot.keySet().iterator();
 		while (iterator.hasNext()) {
 			String k = (String) iterator.next();
@@ -242,7 +247,7 @@ public class Main {
 				giocatore.getCodEventi().add(3);
 			}
 		}
-    	snapshot();
+    	snapshot(null);
 		iterator = oldSnapshot.keySet().iterator();
 		while (iterator.hasNext()) {
 			String k = (String) iterator.next();
@@ -252,7 +257,7 @@ public class Main {
 				giocatore.getCodEventi().add(3);
 			}
 		}
-    	snapshot();
+    	snapshot(null);
 		iterator = oldSnapshot.keySet().iterator();
 		while (iterator.hasNext()) {
 			String k = (String) iterator.next();
@@ -261,7 +266,7 @@ public class Main {
 				giocatore.getCodEventi().add(16);
 			}
 		}
-    	snapshot();
+    	snapshot(null);
 		iterator = oldSnapshot.keySet().iterator();
 		while (iterator.hasNext()) {
 			String k = (String) iterator.next();
@@ -270,7 +275,7 @@ public class Main {
 				giocatore.getCodEventi().add(14);
 			}
 		}
-    	snapshot();
+    	snapshot(null);
 	}
 	
 	public static void inviaNotifica(String msg) throws Exception {
@@ -586,6 +591,10 @@ public class Main {
 			Return returns = ret.get(campionato);
 			if(returns==null) {
 				returns=new Return();
+				Calendar c = Calendar.getInstance();
+				SimpleDateFormat sd = new SimpleDateFormat("HH:mm:ss");
+				returns.setAggiornamento(sd.format(c.getTime()));
+
 				returns.setConLive(conLive);
 				ret.put(campionato, returns);
 			}
@@ -633,6 +642,16 @@ public class Main {
 		while (iterator.hasNext()) {
 			Integer integer = (Integer) iterator.next();
 			List<Map<String, Object>> getLiveFromFG = getLiveFromFG(integer,GIORNATA);
+//			if (true && getLiveFromFG.size()>0) {//FIXME togli
+//				String object = (String) getLiveFromFG.get(0).get("evento");
+//				if (object.length()>0) {
+//					int randomNum = ThreadLocalRandom.current().nextInt(1, 4+ 1);
+//					for (int i=0;i<randomNum;i++) {
+//						object=object + ",7";
+//					}
+//					getLiveFromFG.get(0).put("evento",object);
+//				}
+//			}
 			Live live = new Live();
 			live.setSquadra(sq.get(integer));
 			live.setGiocatori(getLiveFromFG);

@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Return {
 
+	private String aggiornamento;
 	private String nome;
 	private String campionato;
 	private boolean conLive;
@@ -33,10 +34,16 @@ public class Return {
 	public void setConLive(boolean conLive) {
 		this.conLive = conLive;
 	}
+	public String getAggiornamento() {
+		return aggiornamento;
+	}
+	public void setAggiornamento(String aggiornamento) {
+		this.aggiornamento = aggiornamento;
+	}
 	@Override
 	public String toString() {
-		return "Return [nome=" + nome + ", campionato=" + campionato + ", conLive=" + conLive + ", squadre=" + squadre
-				+ "]";
+		return "Return [aggiornamento=" + aggiornamento + ", nome=" + nome + ", campionato=" + campionato + ", conLive="
+				+ conLive + ", squadre=" + squadre + "]";
 	}
 	
 }

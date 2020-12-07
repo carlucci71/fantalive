@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping({ "/" })
 public class MyController {
 
+	@Autowired SocketHandler socketHandler;
 	
 	public MyController() throws Exception {
 		super();
@@ -32,7 +34,7 @@ public class MyController {
 
     @Scheduled(fixedRate = 60000)
 	public void chckNotifica() throws Exception {
-    	Main.snapshot();
+    	Main.snapshot(socketHandler);
 	}
 	
     
@@ -64,7 +66,7 @@ public class MyController {
 	@GetMapping("/nomiSquadre")
 	public List<String> getNomiSquadre() throws Exception {
 		List<String> ret = new ArrayList<String>();
-		Map<String, Return> go = Main.go(false,false);
+		Map<String, Return> go = Main.go(false,true);
 		Iterator<String> iterator = go.keySet().iterator();
 		while (iterator.hasNext()) {
 			String key = (String) iterator.next();

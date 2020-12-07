@@ -3,6 +3,7 @@ app.run(
 		function($rootScope, $resource, $interval,$q,$timeout){
 			$rootScope.configura=false;
 			$rootScope.init=function(){
+				$rootScope.connectWS();
 				$rootScope.nomiSquadre().then(function(){
 					$rootScope.ricaricaIndex().then(function(){
 						$rootScope.inizio=new Date();
@@ -21,6 +22,43 @@ app.run(
 						});
 					});
 				});
+			}
+			$rootScope.$watch("result", function(newValue, oldValue) {
+				$rootScope.aggiornamento="";
+                angular.forEach(newValue, function(value,chiave) {
+                	if (value.aggiornamento){
+                		$rootScope.aggiornamento=value.aggiornamento;
+                	}
+                });
+			});
+			$rootScope.getMessaggio = function(message){
+				if (message){
+					var msg = JSON.parse(message);
+					$rootScope.result=msg;
+					$rootScope.$apply();
+				}
+			};
+			$rootScope.connectWS = function() {
+				var alreadyConnected;
+				var deferred = $q.defer();
+				deferred.resolve("Hi");
+				var loc = window.location, new_uri;
+				if (loc.protocol === "https:") {
+					new_uri = "wss:";
+				} else {
+					new_uri = "ws:";
+				}
+				new_uri += "//" + loc.host;
+				new_uri += '/' + "messaggi-websocket";
+				document.cookie = 'PAGINA=' + window.location.href + '; path=/';				
+				ws = new WebSocket(new_uri);
+				ws.onmessage = function(data){
+					$rootScope.getMessaggio(data.data);
+				}
+				ws.onclose = function(){
+					console.log("connessione chiusa");
+				}
+				return deferred.promise;			
 			}
 			$rootScope.visSimulaCambi=function(sq,r){
 				if (!r.conLive) return false;
