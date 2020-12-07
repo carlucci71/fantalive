@@ -42,15 +42,15 @@ app.run(
 				var alreadyConnected;
 				var deferred = $q.defer();
 				deferred.resolve("Hi");
-				var loc = window.location, new_uri;
+				var loc = window.location;
+				var new_uri;
 				if (loc.protocol === "https:") {
 					new_uri = "wss:";
 				} else {
 					new_uri = "ws:";
 				}
-				new_uri += "//" + loc.host;
-				new_uri += '/' + "messaggi-websocket";
-				document.cookie = 'PAGINA=' + window.location.href + '; path=/';				
+				new_uri += loc.href.substring(loc.protocol.length) + "messaggi-websocket";
+				document.cookie = 'PAGINA=' + loc.href + '; path=/';				
 				ws = new WebSocket(new_uri);
 				ws.onmessage = function(data){
 					$rootScope.getMessaggio(data.data);

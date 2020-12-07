@@ -10,9 +10,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
@@ -591,9 +592,17 @@ public class Main {
 			Return returns = ret.get(campionato);
 			if(returns==null) {
 				returns=new Return();
+				Instant instant = Instant.now();
+				/*
 				Calendar c = Calendar.getInstance();
-				SimpleDateFormat sd = new SimpleDateFormat("HH:mm:ss");
-				returns.setAggiornamento(sd.format(c.getTime()));
+				TimeZone tz = TimeZone.getTimeZone("UTC");
+				c.setTimeZone(tz);
+				SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+				*/
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss Z");
+				ZoneId zoneId = ZoneId.of( "Europe/Rome" );
+				ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
+				returns.setAggiornamento(zdt.format(formatter));
 
 				returns.setConLive(conLive);
 				ret.put(campionato, returns);
