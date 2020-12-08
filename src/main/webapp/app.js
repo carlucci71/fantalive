@@ -23,6 +23,7 @@ app.run(
 					});
 				});
 			}
+			var a=$interval(function() {$rootScope.chkConnectWS();}, 5000);
 			$rootScope.$watch("result", function(newValue, oldValue) {
 				$rootScope.aggiornamento="";
                 angular.forEach(newValue, function(value,chiave) {
@@ -34,12 +35,26 @@ app.run(
 			$rootScope.getMessaggio = function(message){
 				if (message){
 					var msg = JSON.parse(message);
-					$rootScope.result=msg;
-					$rootScope.$apply();
+//					console.log(msg);
+					if (msg.res){
+						$rootScope.result=msg.res;
+					}
+					if (msg.conta){
+						$rootScope.timeRefresh=msg.conta;
+					}
 				}
+				$rootScope.$apply();
 			};
+			$rootScope.chkConnectWS = function() {
+				if (!ws)
+				{ 
+					$rootScope.connectWS();					
+				}
+				else if (ws.readyState != 1) {
+					$rootScope.connectWS();					
+				}
+			}
 			$rootScope.connectWS = function() {
-				var alreadyConnected;
 				var deferred = $q.defer();
 				deferred.resolve("Hi");
 				var loc = window.location;

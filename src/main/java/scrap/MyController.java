@@ -25,18 +25,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class MyController {
 
 	@Autowired SocketHandler socketHandler;
-	
 	public MyController() throws Exception {
 		super();
 		Main.init();
 		aggKeyFG();
 	}
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
-    	Main.snapshot(socketHandler);
+    	int conta = Main.conta.get("conta");
+    	if (conta==60000) {//FIXME 60000
+    		conta=0;
+    		Main.snapshot(socketHandler);
+    	}
+    	conta=conta+5000;
+    	Main.conta.put("conta", conta);
+		socketHandler.invia(Main.conta );
 	}
-	
     
 	private String calcolaAggKey(String lega) throws Exception {
 		int giornata=Main.GIORNATA-Main.DELTA_VIVA_FG;
@@ -59,14 +64,14 @@ public class MyController {
 	
 	@RequestMapping("/test")
 	public Map<String, Return>  test(boolean conLive) throws Exception {
-		Map<String, Return> go = Main.go(conLive,true);
+		Map<String, Return> go = Main.go(conLive);
 		return go;
 	}
 	
 	@GetMapping("/nomiSquadre")
 	public List<String> getNomiSquadre() throws Exception {
 		List<String> ret = new ArrayList<String>();
-		Map<String, Return> go = Main.go(false,true);
+		Map<String, Return> go = Main.go(false);
 		Iterator<String> iterator = go.keySet().iterator();
 		while (iterator.hasNext()) {
 			String key = (String) iterator.next();

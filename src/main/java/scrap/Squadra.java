@@ -114,7 +114,6 @@ public void setEvidenza(boolean evidenza) {
 }
 @Override
 public int compareTo(Squadra o) {
-	// TODO Auto-generated method stub
 	return this.getNome().toUpperCase().compareTo(o.getNome().toUpperCase());
 }
 public int getDeltaModificatore() {

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.stereotype.Component;
@@ -15,6 +16,9 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 @Component
 public class SocketHandler extends TextWebSocketHandler implements WebSocketHandler {
 
+	public void invia(Map map) throws IOException {
+		invia(Main.toJson(map));
+	}
 	
 	public void invia(String payload) throws IOException {
 		for (WebSocketSession webSocketSession : getSessions()) {

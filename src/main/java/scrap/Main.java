@@ -71,27 +71,32 @@ public class Main {
 
 	public static int GIORNATA = 10;
 	public static final String ROOT="/tmp/";
+	public static Map<String,Integer> conta;
 	
 	
 	static Map<Integer, String> sq=null;
 	static HashMap<Integer, String[]> eventi=null;
 	static List<ConfigCampionato> files=null;
 	public static List<String> sqBeDaEscluedere= new ArrayList<String>();
-	static List<String> sqBeCaricate=null;
 	public static List<String> sqDaEv= null;
 	static Map<String, Giocatore> oldSnapshot=null;
 
 //	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 	static ObjectMapper mapper;
 	public static Map<String, String> keyFG=null;
-	private static Map<String, Map<String, String>> orari=null;
-
 
 	public static void init() throws Exception {
-		if (sqDaEv==null) inizializzaSqDaEv();
-		mapper = new ObjectMapper();
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		sqBeCaricate=new ArrayList<String>();
+		if (sqDaEv==null) {
+			inizializzaSqDaEv();
+		}
+		if (conta==null) {
+			conta=new HashMap<>();
+			conta.put("conta", 0);
+		}
+		if (mapper==null) {
+			mapper = new ObjectMapper();
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		}
 		if (eventi ==null) {
 			eventi = new HashMap<Integer, String[]>();
 			eventi.put(1000, new String[] {"portiere imbattuto","1","1","1","S"});
@@ -143,11 +148,10 @@ public class Main {
 			files.add(new ConfigCampionato(22,"FANTAGAZZETTA","fantaviva"));
 			files.add(new ConfigCampionato(22,"FANTASERVICE","be"));
 		}
-		partiteLive();
 	}
 
 	public static void snapshot(SocketHandler socketHandler) throws Exception {
-    	Map<String, Return> go = go(true,true);
+		Map<String, Return> go = go(true);
     	Iterator<String> campionati = go.keySet().iterator();
     	Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
     	while (campionati.hasNext()) {
@@ -158,10 +162,10 @@ public class Main {
 				if (sqDaEv.contains(squadra.getNome())) 
 				{
 					for (Giocatore giocatore : squadra.getTitolari()) {
-						snapshot.put(r.getCampionato() + "-" + squadra.getNome() + "-" + giocatore.getNome(), giocatore);
+						snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
 					}
 					for (Giocatore giocatore : squadra.getRiserve()) {
-						snapshot.put(r.getCampionato() + "-" + squadra.getNome() + "-" + giocatore.getNome(), giocatore);
+						snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
 					}
 				}
 			}
@@ -174,18 +178,39 @@ public class Main {
 				String key = (String) iterator.next();
 				Giocatore oldGioc = oldSnapshot.get(key);
 				Giocatore newGioc = snapshot.get(key);
-				List<Integer> findNuoviEventi = findNuoviEventi(oldGioc, newGioc);
-				List<String> eventi=new ArrayList<String>();
-				if (!oldGioc.getOrario().get("tag").equalsIgnoreCase(newGioc.getOrario().get("tag"))) {
-					eventi.add(newGioc.getOrario().get("tag"));
+				List<Map<Integer,Integer>> findNuoviEventi = findNuoviEventi(oldGioc, newGioc);
+				Map<String,Integer> eventi=new HashMap<>();
+				String oldTag = oldGioc.getOrario().get("tag");
+				String newTag = newGioc.getOrario().get("tag");
+				if (newTag.equalsIgnoreCase("PreMatch") && newGioc.getVoto() ==0 && newGioc.isSquadraGioca() && !oldGioc.isSquadraGioca()) {
+					eventi.put("NON SCHIERATO",null);
 				}
-				if (findNuoviEventi.size()>0 || !oldGioc.getOrario().get("tag").equalsIgnoreCase(newGioc.getOrario().get("tag"))) {
-					for (Integer integer : findNuoviEventi) {
-						eventi.add(Main.eventi.get(integer)[0]);
+				if (newTag.equalsIgnoreCase("PreMatch") && oldGioc.getVoto() != newGioc.getVoto()) {
+					eventi.put("SCHIERATO",null);
+				}
+				if (!oldTag.equalsIgnoreCase(newTag)) {
+					
+/*
+PreMatch
+Postponed
+Cancelled
+Walkover
+FirstHalf
+HalfTime
+SecondHalf
+FullTime
+*/
+					
+					eventi.put(newTag,null);
+				}
+				if (findNuoviEventi.size()>0 || !oldTag.equalsIgnoreCase(newTag)) {
+					for (Map<Integer,Integer> nuovoEvento : findNuoviEventi) {
+						Integer ev = nuovoEvento.keySet().iterator().next();
+						eventi.put(Main.eventi.get(ev)[0],nuovoEvento.get(ev));
 					}
 				}
 				if (eventi.size()>0) {
-					String[] splitKey = key.split("-");
+					String[] splitKey = key.split("#");
 					Notifica notifica = new Notifica();
 					Map<String,List<Notifica>> notificheSquadreDelCampionato   = notifiche.get(splitKey[0]);
 					if (notificheSquadreDelCampionato == null) {
@@ -203,7 +228,7 @@ public class Main {
 					notifica.setGiocatore(splitKey[2]);
 					notifica.setId(newGioc.getIdGioc());
 					notifica.setEventi(eventi);
-					notifica.setVoto(newGioc.getVoto());
+					notifica.setVoto(newGioc.getVoto() + newGioc.getModificatore()); 
 					if (newGioc.isCambio()) {
 						notifica.setCambio("(*)");
 					}
@@ -220,6 +245,7 @@ public class Main {
 						String sqN = (String) itSq.next();
 						des.append("\t").append(sqN).append(":\r");
 						List<Notifica> listN = sq.get(sqN);
+						Collections.sort(listN);
 						for (Notifica notifica : listN) {
 							des.append("\t\t").append(notifica.toString()).append("\r");
 						}
@@ -230,25 +256,28 @@ public class Main {
     	}
     	oldSnapshot=snapshot;
     	if (socketHandler != null) {
-    		socketHandler.invia(toJson(go));
+    		Map<String, Object> map=new HashMap<>();
+    		map.put("res", go);
+    		socketHandler.invia(map);
     	}
 	}
 	
 	
 	public static void main(String[] args) throws Exception {
+		init();
 		Iterator<String> iterator;
-    	snapshot(null);
     	snapshot(null);
 		iterator = oldSnapshot.keySet().iterator();
 		while (iterator.hasNext()) {
 			String k = (String) iterator.next();
 			Giocatore giocatore = oldSnapshot.get(k);
-			if (giocatore.getNome().toUpperCase().startsWith("MILI")){
+			if (giocatore.getNome().toUpperCase().startsWith("RIBER")){
 				giocatore.getOrario().put("tag","xx");
 				giocatore.getCodEventi().add(3);
 			}
 		}
     	snapshot(null);
+		/*
 		iterator = oldSnapshot.keySet().iterator();
 		while (iterator.hasNext()) {
 			String k = (String) iterator.next();
@@ -277,6 +306,7 @@ public class Main {
 			}
 		}
     	snapshot(null);
+    	*/
 	}
 	
 	public static void inviaNotifica(String msg) throws Exception {
@@ -296,10 +326,10 @@ public class Main {
 			body.put("message", msg);
 			postHTTP(urlNotifica,body,headers);
 		}
-		if (false) {
+		if (false) {//FIXME false
 			System.out.println(msg);
 		}
-		if(true) {
+		if(true) {//FIXME true
 			urlNotifica = "https://api.spontit.com/v3/push";
 			body = new HashMap<String, String>();
 			body.put("pushTitle", "FantaLive");
@@ -376,7 +406,8 @@ public class Main {
 
 
 
-	private static void partiteLive() throws Exception {
+	private static Map<String, Map<String, String>> partiteLive() throws Exception {
+		Map<String, Map<String, String>> orari=null;
 		orari=new HashMap<String, Map<String,String>>();
 		String callHTTP = getHTTP("https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=" + SPORT_ID_LIVE_GAZZETTA + "&competitionId=" + COMP_ID_LIVE_GAZZETTA);
 		Map<String, Object> jsonToMap = jsonToMap(callHTTP);
@@ -400,6 +431,7 @@ public class Main {
 				orari.put(((String)((Map)map2.get("homeTeam")).get("teamCode")).toUpperCase(), orario);
 			}
 		}
+		return orari;
 	}
 
 	public static String postHTTP(String url, Map<String, String> body, Map<String, String>... headers) throws Exception {
@@ -550,21 +582,28 @@ public class Main {
 		sqDaEv.add("daddy");
 	}
 	
-    private static List<Integer> findNuoviEventi(Giocatore og, Giocatore ng) {
-    	List<Integer> ret = new ArrayList<Integer>();
-    	for (Integer integer : og.getCodEventi()) {
+    private static List<Map<Integer,Integer>> findNuoviEventi(Giocatore og, Giocatore ng) {
+    	List<Map<Integer,Integer>> ret = new ArrayList<>();
+    	ciclaEventi(og, ng, ret,+1);
+    	ciclaEventi(ng, og, ret,-1);
+    	return ret;
+    }
+
+	private static void ciclaEventi(Giocatore og, Giocatore ng, List<Map<Integer, Integer>> ret, Integer verso) {
+		for (Integer integer : ng.getCodEventi()) {
     		if (eventi.get(integer)[4].equalsIgnoreCase("S")) {
     			int contaNuoviEventiOld = contaNuoviEventi(integer,og);
     			int contaNuoviEventiNew = contaNuoviEventi(integer,ng);
     			if (contaNuoviEventiOld != contaNuoviEventiNew) {
     				if (!ret.contains(integer)) {
-        				ret.add(integer);
+    					Map<Integer, Integer> m = new HashMap<>();
+    					m.put(integer,verso*(contaNuoviEventiNew-contaNuoviEventiOld));
+        				ret.add(m);
     				}
     			}
     		}
     	}
-    	return ret;
-    }
+	}
     private static int contaNuoviEventi(Integer i, Giocatore g) {
     	List<Integer> codEventi = g.getCodEventi();
     	int ret=0;
@@ -575,15 +614,18 @@ public class Main {
     }
 	
 	
-	public synchronized static Map<String, Return> go(boolean conLive, boolean salva) throws Exception {
-		init();
+	public synchronized static Map<String, Return> go(boolean conLive) throws Exception {
+//		init();//TODO serve?
 		List<Return> go = new ArrayList<Return>();
 		List<Live> lives=new ArrayList<Live>();
+		Map<String, Map<String, String>> orari=null;
 		if (conLive) {
-			lives = getLives();
+			Map<String, Object> getLives = getLives();
+			lives = (List<Live>) getLives.get("lives");
+			orari = (Map<String, Map<String, String>>) getLives.get("orari");
 		}
 		for (ConfigCampionato configCampionato : files) {
-			Return r = getReturn(configCampionato, conLive, lives);
+			Return r = getReturn(configCampionato, conLive, lives, orari);
 			go.add(r);
 		}
 		Map<String, Return> ret =new TreeMap<String, Return>();
@@ -593,35 +635,27 @@ public class Main {
 			if(returns==null) {
 				returns=new Return();
 				Instant instant = Instant.now();
-				/*
-				Calendar c = Calendar.getInstance();
-				TimeZone tz = TimeZone.getTimeZone("UTC");
-				c.setTimeZone(tz);
-				SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-				*/
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 				ZoneId zoneId = ZoneId.of( "Europe/Rome" );
 				ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
 				returns.setAggiornamento(zdt.format(formatter));
-
 				returns.setConLive(conLive);
 				ret.put(campionato, returns);
 			}
 			returns.setCampionato(campionato);
 			returns.setNome(campionato);
 			List<Squadra> squadre = returns.getSquadre();
+			List<String> sqBeCaricate=new ArrayList<String>();
 			for (Squadra sq : retAtt.getSquadre()) {
 				for (int i=0;i<sq.getTitolari().size();i++) {
 					Giocatore giocatore = sq.getTitolari().get(i);
 					giocatore.setIdGioc("T" + (i+1));
-//					if (giocatore.getVoto()==0 && conLive && returns.getCampionato().equalsIgnoreCase("BE")) System.out.println(giocatore.getNome() + ";" + giocatore.getRuolo() + ";" + giocatore.getSquadra());
 				}
 				for (int i=0;i<sq.getRiserve().size();i++) {
 					Giocatore giocatore = sq.getRiserve().get(i);
 					giocatore.setIdGioc("R" + (i+1));
-//					if (giocatore.getVoto()==0 && conLive && returns.getCampionato().equalsIgnoreCase("BE")) System.out.println(giocatore.getNome() + ";" + giocatore.getRuolo() + ";" + giocatore.getSquadra());
 				}
-				if (!sqBeDaEscluedere.contains(sq.getNome()) && !sqBeCaricate.contains(sq.getNome())) {
+				if (!sqBeDaEscluedere.contains(sq.getNome()) ) {//&& !sqBeCaricate.contains(sq.getNome())//TODO serve?
 					if (sqDaEv.contains(sq.getNome())) {
 						sq.setEvidenza(true);
 					} else {
@@ -635,7 +669,7 @@ public class Main {
 			returns.setSquadre(squadre);
 		}
 		
-		if(conLive && salva) {
+		if(conLive) {
 			if (ret.get("FANTAVIVA").getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get("FANTAVIVA").getSquadre()).getBytes());
 			if (ret.get("LUCCICAR").getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get("LUCCICAR").getSquadre()).getBytes());
 			if (ret.get("BE").getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get("BE").getSquadre()).getBytes());
@@ -645,31 +679,35 @@ public class Main {
 		return ret;
 	}
 	
-	private static List<Live> getLives() throws Exception {
-		Iterator<Integer> iterator = sq.keySet().iterator();
+	private static Map<String, Object> getLives() throws Exception {
+		Map orari=partiteLive();
 		List<Live> lives = new ArrayList<Live>();
-		while (iterator.hasNext()) {
-			Integer integer = (Integer) iterator.next();
-			List<Map<String, Object>> getLiveFromFG = getLiveFromFG(integer,GIORNATA);
-//			if (true && getLiveFromFG.size()>0) {//FIXME togli
-//				String object = (String) getLiveFromFG.get(0).get("evento");
-//				if (object.length()>0) {
-//					int randomNum = ThreadLocalRandom.current().nextInt(1, 4+ 1);
-//					for (int i=0;i<randomNum;i++) {
-//						object=object + ",7";
-//					}
-//					getLiveFromFG.get(0).put("evento",object);
-//				}
-//			}
-			Live live = new Live();
-			live.setSquadra(sq.get(integer));
-			live.setGiocatori(getLiveFromFG);
-			lives.add(live);
+		if (false) {//FIXME false
+			orari =  jsonToMap(new String(Files.readAllBytes(Paths.get(ROOT + "orari.json"))));
+			lives =  jsonToLives(new String(Files.readAllBytes(Paths.get(ROOT + "lives.json"))));
+		} else {
+			Iterator<Integer> iterator = sq.keySet().iterator();
+			while (iterator.hasNext()) {
+				Integer integer = (Integer) iterator.next();
+				String sqFromLive = getHTTP("https://www.fantacalcio.it/api/live/" + integer + "?g=" + GIORNATA + "&i=" + I_LIVE_FANTACALCIO);
+				List<Map<String, Object>> getLiveFromFG = jsonToList(sqFromLive);
+				Live live = new Live();
+				live.setSquadra(sq.get(integer));
+				live.setGiocatori(getLiveFromFG);
+				lives.add(live);
+			}
+			if (false) {//false
+				Files.write(Paths.get(ROOT + "orari.json"), toJson(orari).getBytes());//
+				Files.write(Paths.get(ROOT + "lives.json"), toJson(lives).getBytes());
+			}
 		}
-		return lives;
+		Map<String, Object> ret = new HashMap<>();
+		ret.put("orari", orari);
+		ret.put("lives", lives);
+		return ret;
 	}
 
-	private static Return getReturn(ConfigCampionato configCampionato, boolean conLive, List<Live> lives) throws Exception {
+	private static Return getReturn(ConfigCampionato configCampionato, boolean conLive, List<Live> lives,Map<String, Map<String, String>> orari) throws Exception {
 		Integer numGiocatori = configCampionato.getNumGiocatori();
 		String tipo = configCampionato.getTipo();
 		String campionato = configCampionato.getCampionato();
@@ -678,6 +716,28 @@ public class Main {
 		r.setCampionato(campionato.toUpperCase());
 		Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 		squadre.put(campionato, valorizzaSquadre(campionato,numGiocatori,tipo));
+		Set<String> keySet = squadre.keySet();
+		for (String string : keySet) {
+			List<Squadra> list = squadre.get(string);
+			for (Squadra squadra : list) {
+				for (int i=0;i<squadra.getTitolari().size();i++) {
+					Giocatore giocatore = squadra.getTitolari().get(i);
+					giocatore.setModificatore(0);
+					giocatore.setVoto(0);
+					giocatore.setSquadraGioca(false);
+					giocatore.setEvento("");
+					giocatore.setCodEventi(new ArrayList<Integer>());
+				}
+				for (int i=0;i<squadra.getRiserve().size();i++) {
+					Giocatore giocatore = squadra.getRiserve().get(i);
+					giocatore.setModificatore(0);
+					giocatore.setVoto(0);
+					giocatore.setSquadraGioca(false);
+					giocatore.setEvento("");
+					giocatore.setCodEventi(new ArrayList<Integer>());
+				}
+			}
+		}
 		for (Live live : lives) {
 			for (Map<String, Object> gg : live.getGiocatori()) {
 //				System.out.println(gg.get("nome") + ";" + gg.get("ruolo") + ";" + live.getSquadra());
@@ -719,7 +779,9 @@ public class Main {
 					}
 				}
 				if (giocatore != null && giocatore.getSquadra()!=null) {
-					giocatore.setOrario(orari.get(giocatore.getSquadra().toUpperCase()));
+					if (orari != null) {
+						giocatore.setOrario(orari.get(giocatore.getSquadra().toUpperCase()));
+					}
 				}
 			}
 		}
@@ -733,7 +795,9 @@ public class Main {
 					}
 				}
 				if (giocatore != null && giocatore.getSquadra()!=null) {
-					giocatore.setOrario(orari.get(giocatore.getSquadra().toUpperCase()));
+					if (orari != null) {
+						giocatore.setOrario(orari.get(giocatore.getSquadra().toUpperCase()));
+					}
 				}
 			}
 		}
@@ -749,10 +813,9 @@ public class Main {
 				//								System.out.println(live + "-" + giocatore);
 			}
 			if (giocatore != null && giocatore.getSquadra() != null && live.getSquadra().equals(giocatore.getSquadra().toUpperCase())) {
-				if (live.getGiocatori().size()>0)
+				if (live.getGiocatori().size()>0) {
 					giocatore.setSquadraGioca(true);
-				else
-					giocatore.setSquadraGioca(false);
+				}
 				for (Map<String, Object> g : live.getGiocatori()) {
 					String nomeGiocatoreLive=g.get("nome").toString();
 					List<Integer> codEventi=new ArrayList<Integer>();
@@ -898,6 +961,15 @@ public class Main {
 			throw new RuntimeException(e);
 		}
 	}
+	private static List<Live> jsonToLives(String json){
+		try
+		{
+			return mapper.readValue(json, new TypeReference<List<Live>>(){});
+		} catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 	private static List<Map<String, Object>> jsonToList(String json)
 	{
 		try
@@ -909,7 +981,7 @@ public class Main {
 		}
 	}
 
-	private static Map<String, Object> jsonToMap(String json)
+	public static Map<String, Object> jsonToMap(String json)
 	{
 		try
 		{
@@ -918,12 +990,6 @@ public class Main {
 		{
 			throw new RuntimeException(e);
 		}
-	}
-
-
-
-	private static List<Map<String, Object>> getLiveFromFG(int sq, int giornata) throws Exception {
-		return jsonToList(getHTTP("https://www.fantacalcio.it/api/live/" + sq + "?g=" + giornata + "&i=" + I_LIVE_FANTACALCIO));
 	}
 
 }
