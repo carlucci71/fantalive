@@ -77,7 +77,6 @@ public class Main {
 	static Map<Integer, String> sq=null;
 	static HashMap<Integer, String[]> eventi=null;
 	static List<ConfigCampionato> files=null;
-	public static List<String> sqBeDaEscluedere= new ArrayList<String>();
 	public static List<String> sqDaEv= null;
 	static Map<String, Giocatore> oldSnapshot=null;
 
@@ -151,7 +150,7 @@ public class Main {
 	}
 
 	public static void snapshot(SocketHandler socketHandler) throws Exception {
-		Map<String, Return> go = go(true);
+		Map<String, Return> go = go(true, null, null);
     	Iterator<String> campionati = go.keySet().iterator();
     	Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
     	while (campionati.hasNext()) {
@@ -573,13 +572,14 @@ FullTime
 			}
 		}
 		inizializzaSqDaEv();
-		sqBeDaEscluedere = new ArrayList<String>();
 	}
 	private static void inizializzaSqDaEv() {
 		sqDaEv= new ArrayList<String>();
 		sqDaEv.add("tavolino");
 		sqDaEv.add("Tavolino");
 		sqDaEv.add("daddy");
+		sqDaEv.add("Team Alberto..04");
+		sqDaEv.add("Team Frank..10");
 	}
 	
     private static List<Map<Integer,Integer>> findNuoviEventi(Giocatore og, Giocatore ng) {
@@ -614,7 +614,7 @@ FullTime
     }
 	
 	
-	public synchronized static Map<String, Return> go(boolean conLive) throws Exception {
+	public synchronized static Map<String, Return> go(boolean conLive, String sqDaAddEvid, String sqDaDelEvid) throws Exception {
 //		init();//TODO serve?
 		List<Return> go = new ArrayList<Return>();
 		List<Live> lives=new ArrayList<Live>();
@@ -646,7 +646,11 @@ FullTime
 			returns.setNome(campionato);
 			List<Squadra> squadre = returns.getSquadre();
 			List<String> sqBeCaricate=new ArrayList<String>();
+			sqDaEv= new ArrayList<String>();
 			for (Squadra sq : retAtt.getSquadre()) {
+				if ((sq.isEvidenza() || sq.getNome().equalsIgnoreCase(sqDaAddEvid)) && !sq.getNome().equalsIgnoreCase(sqDaDelEvid)) {
+					sqDaEv.add(sq.getNome());
+				}
 				for (int i=0;i<sq.getTitolari().size();i++) {
 					Giocatore giocatore = sq.getTitolari().get(i);
 					giocatore.setIdGioc("T" + (i+1));
@@ -655,7 +659,7 @@ FullTime
 					Giocatore giocatore = sq.getRiserve().get(i);
 					giocatore.setIdGioc("R" + (i+1));
 				}
-				if (!sqBeDaEscluedere.contains(sq.getNome()) ) {//&& !sqBeCaricate.contains(sq.getNome())//TODO serve?
+				if (!sqBeCaricate.contains(sq.getNome())) {
 					if (sqDaEv.contains(sq.getNome())) {
 						sq.setEvidenza(true);
 					} else {

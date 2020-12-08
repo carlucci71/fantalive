@@ -64,14 +64,14 @@ public class MyController {
 	
 	@RequestMapping("/test")
 	public Map<String, Return>  test(boolean conLive) throws Exception {
-		Map<String, Return> go = Main.go(conLive);
+		Map<String, Return> go = Main.go(conLive,null, null);
 		return go;
 	}
 	
 	@GetMapping("/nomiSquadre")
 	public List<String> getNomiSquadre() throws Exception {
 		List<String> ret = new ArrayList<String>();
-		Map<String, Return> go = Main.go(false);
+		Map<String, Return> go = Main.go(false, null, null);
 		Iterator<String> iterator = go.keySet().iterator();
 		while (iterator.hasNext()) {
 			String key = (String) iterator.next();
@@ -135,32 +135,12 @@ public class MyController {
 	}
 
 	@PostMapping("/addSqEv")
-	public void addSqEv(@RequestBody Map<String,String> body)  {
-		Main.sqDaEv.add(body.get("sqEv"));
-	}
-	@PostMapping("/addSqBeDaEscluedere")
-	public void addSqBeDaEscluedere(@RequestBody Map<String,String> body)  {
-		Main.sqBeDaEscluedere.add(body.get("sqBeDaEscluedere"));
+	public Map<String, Return>  addSqEv(@RequestBody Map<String,String> body) throws Exception  {
+		return Main.go(true,body.get("sqEv"),null);
 	}
 	@PostMapping("/delSqEv")
-	public void delSqEv(@RequestBody Map<String,String> body)  {
-		Main.sqDaEv.remove(body.get("sqEv"));
-	}
-	@GetMapping("/ricaricaSqBeDaEscluedere")
-	public Map<String,Object> ricaricaSqBeDaEscluedere()  {
-		Map<String,Object> ret = new HashMap<String, Object>();
-		ret.put("sq",Main.sqBeDaEscluedere);
-		return ret;
-	}
-	@GetMapping("/ricaricaSqEv")
-	public Map<String,Object> ricaricaSqEv()  {
-		Map<String,Object> ret = new HashMap<String, Object>();
-		ret.put("sq",Main.sqDaEv);
-		return ret;
-	}
-	@PostMapping("/delSqBeDaEscluedere")
-	public void delSqBeDaEscluedere(@RequestBody Map<String,String> body)  {
-		Main.sqBeDaEscluedere.remove(body.get("sqBeDaEscluedere"));
+	public Map<String, Return>  delSqEv(@RequestBody Map<String,String> body) throws Exception  {
+		return Main.go(true,null,body.get("sqEv"));
 	}
 	@PostMapping("/setGiornata")
 	public void setGiornata(@RequestBody Map<String,Integer> body)  {

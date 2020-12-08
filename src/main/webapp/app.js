@@ -4,7 +4,6 @@ app.run(
 			$rootScope.configura=false;
 			$rootScope.init=function(){
 				$rootScope.connectWS();
-				$rootScope.nomiSquadre().then(function(){
 					$rootScope.ricaricaIndex().then(function(){
 						$rootScope.inizio=new Date();
 						$rootScope.fine="";
@@ -21,7 +20,6 @@ app.run(
 							alert("Errore: " + error.data.message);
 						});
 					});
-				});
 			}
 			var a=$interval(function() {$rootScope.chkConnectWS();}, 5000);
 			$rootScope.$watch("result", function(newValue, oldValue) {
@@ -119,16 +117,6 @@ app.run(
 					alert("Errore: " + error);
 				});
 			}
-			$rootScope.nomiSquadre=function(){
-				var deferred = $q.defer();
-				$resource('./nomiSquadre',{}).query().$promise.then(function(data) {
-					$rootScope.squadre=data;
-					$rootScope.ricaricaSqBeDaEscluedere();
-					$rootScope.ricaricaSqEv();
-					deferred.resolve("Hi");
-				});
-				return deferred.promise;	
-			}
 			$rootScope.ricaricaIndex=function(){
 				var deferred = $q.defer();
 				$rootScope.result={};
@@ -206,28 +194,6 @@ app.run(
 				if ($rootScope.listaSqEv.indexOf(s)<0) return s;
 				return s + " (*)";
 			}
-			$rootScope.addSqBeDaEscluedere = function(){
-				$rootScope.inizio=new Date();
-				$rootScope.fine="";
-				$rootScope.loading=true;
-				$resource('./addSqBeDaEscluedere',{}).save({'sqBeDaEscluedere':$rootScope.sqBeDaEscluedere}).$promise.then(function(data) {
-					$rootScope.nomiSquadre().then(function(data){
-						$rootScope.fine=new Date();
-						$rootScope.loading=false;
-			        });
-				}).catch(function(error) {
-					$rootScope.fine=new Date();
-					$rootScope.loading=false;
-					alert("Errore: " + error.data.message);
-				});
-			}
-			$rootScope.ricaricaSqBeDaEscluedere = function(){
-				$resource('./ricaricaSqBeDaEscluedere',{}).get().$promise.then(function(data) {
-					$rootScope.listaSqBeDaEscluedere=data.sq;
-				}).catch(function(error) {
-					alert("Errore: " + error);
-				});
-			}
 			$rootScope.isInLista = function(s){
 				var ret = false;
                 angular.forEach($rootScope.listaSqEv, function(value,chiave) {
@@ -237,74 +203,9 @@ app.run(
                 });
 				return ret;
 			}
-			$rootScope.ricaricaSqEv = function(){
-				$resource('./ricaricaSqEv',{}).get().$promise.then(function(data) {
-					$rootScope.squadre2=[];
-					$rootScope.listaSqEv=data.sq;
-	                   angular.forEach($rootScope.squadre, function(value,chiave) {
-	                	   if (!$rootScope.isInLista(value))
-	                	   {
-	                		   $rootScope.squadre2.push(value);
-	                	   }
-	                   });
-				}).catch(function(error) {
-					alert("Errore: " + error);
-				});
-			}
 			$rootScope.backLoading=function(){
 				if ($rootScope.loading) return "lightyellow";
 				return "white";
-			}
-			$rootScope.delSqBeDaEscluedere = function(){
-				$rootScope.inizio=new Date();
-				$rootScope.fine="";
-				$rootScope.loading=true;
-				$resource('./delSqBeDaEscluedere',{}).save({'sqBeDaEscluedere':$rootScope.delSqBeDaEscludere}).$promise.then(function(data) {
-					$rootScope.nomiSquadre().then(function(){
-						$rootScope.fine=new Date();
-						$rootScope.loading=false;
-			        });
-				}).catch(function(error) {
-					$rootScope.fine=new Date();
-					$rootScope.loading=false;
-					alert("Errore: " + error.data.message);
-				});
-			}
-			$rootScope.addSqEv = function(){
-				var deferred = $q.defer();
-				$rootScope.inizio=new Date();
-				$rootScope.fine="";
-				$rootScope.loading=true;
-				$resource('./addSqEv',{}).save({'sqEv':$rootScope.sqEv}).$promise.then(function(data) {
-					$rootScope.nomiSquadre().then(function(){
-						$rootScope.fine=new Date();
-						$rootScope.loading=false;
-						deferred.resolve("Hi4");
-			        });
-				}).catch(function(error) {
-					$rootScope.fine=new Date();
-					$rootScope.loading=false;
-					alert("Errore: " + error.data.message);
-				});
-				return deferred.promise;	
-			}
-			$rootScope.delSqEvid = function(){
-				var deferred = $q.defer();
-				$rootScope.inizio=new Date();
-				$rootScope.fine="";
-				$rootScope.loading=true;
-				$resource('./delSqEv',{}).save({'sqEv':$rootScope.delSqEv}).$promise.then(function(data) {
-					$rootScope.nomiSquadre().then(function(){
-						deferred.resolve("Hi3");
-						$rootScope.fine=new Date();
-						$rootScope.loading=false;
-			        });
-				}).catch(function(error) {
-					$rootScope.fine=new Date();
-					$rootScope.loading=false;
-					alert("Errore: " + error.data.message);
-				});
-				return deferred.promise;	
 			}
 			$rootScope.weight=function(giocatore){
 				if (giocatore.orario.tag=='FullTime') return "bold";
@@ -314,17 +215,43 @@ app.run(
 				if (giocatore.squadraGioca) return "lightgray";
 			}
 			$rootScope.changeSqEv=function(squadra){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.result={};
+				$rootScope.loading=true;
 				if (squadra.evidenza){
 					$rootScope.delSqEv=squadra.nome;
 					$rootScope.delSqEvid().then(function(){
-						$rootScope.ricaricaIndex();
+						$rootScope.fine=new Date();
+						$rootScope.loading=false;
 					});
 				} else {
 					$rootScope.sqEv=squadra.nome;
 					$rootScope.addSqEv().then(function(){
-						$rootScope.ricaricaIndex();
+						$rootScope.fine=new Date();
+						$rootScope.loading=false;
 					});
 				}
+			}
+			$rootScope.addSqEv = function(){
+				var deferred = $q.defer();
+				$resource('./addSqEv',{}).save({'sqEv':$rootScope.sqEv}).$promise.then(function(data) {
+						$rootScope.result=data;
+						deferred.resolve("Hi4");
+				}).catch(function(error) {
+					alert("Errore: " + error.data.message);
+				});
+				return deferred.promise;	
+			}
+			$rootScope.delSqEvid = function(){
+				var deferred = $q.defer();
+				$resource('./delSqEv',{}).save({'sqEv':$rootScope.delSqEv}).$promise.then(function(data) {
+						$rootScope.result=data;
+						deferred.resolve("Hi3");
+				}).catch(function(error) {
+					alert("Errore: " + error.data.message);
+				});
+				return deferred.promise;	
 			}
 			$rootScope.inEv=function(squadra){
 				if (squadra.evidenza) return "red";

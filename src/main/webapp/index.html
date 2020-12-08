@@ -29,7 +29,7 @@ table, th, td {
 <br><br>
 <!-- 		Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}  -->
 
-<label ng-show="aggiornamento" >Dati aggiornati alle: {{aggiornamento}} </label> Refresh tra {{60-(timeRefresh/1000)}}s
+<label ng-show="aggiornamento" >Dati aggiornati alle: {{aggiornamento}} </label> <span ng-show="timeRefresh">Refresh tra {{60-(timeRefresh/1000)}}s</span>
 <br>
  		<label ng-show="loading">CARICAMENTO IN CORSO</label>
  	<br><br><br>
@@ -130,15 +130,6 @@ table, th, td {
  		</div>
  	</div>
 <div ng-show="configura">
-	<select ng-model=sqBeDaEscluedere>
-		<option ng-repeat="s in squadre  track by $index" value="{{s}}" >{{s}}</option>
-	</select>
-	<button ng-click="addSqBeDaEscluedere()">Add da escludere</button>
-	<select ng-model=delSqBeDaEscludere>
-		<option ng-repeat="s in listaSqBeDaEscluedere  track by $index" value="{{s}}" >{{s}}</option>
-	</select>
-	<button ng-click="delSqBeDaEscluedere()">Del da escludere</button>
-	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
 	<textarea style="width:1000px;" type=text ng-model="fantaSoccerAuth"></textarea>
 	<br>
 	<button ng-click="setFantaSoccerAuth()">setFantaSoccerAuth</button> 
