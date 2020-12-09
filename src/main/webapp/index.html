@@ -30,6 +30,7 @@ table, th, td {
 <!-- 		Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}  -->
 
 <label ng-show="aggiornamento" >Dati aggiornati alle: {{aggiornamento}} </label> <span ng-show="timeRefresh">Refresh tra {{60-(timeRefresh/1000)}}s</span>
+{{runningBot}} <button ng-click="startStopBot()">START/STOP BOT</button>
 <br>
  		<label ng-show="loading">CARICAMENTO IN CORSO</label>
  	<br><br><br>

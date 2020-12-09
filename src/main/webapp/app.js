@@ -37,12 +37,28 @@ app.run(
 					if (msg.res){
 						$rootScope.result=msg.res;
 					}
-					if (msg.conta){
-						$rootScope.timeRefresh=msg.conta;
+					if (msg.timeRefresh){
+						$rootScope.timeRefresh=msg.timeRefresh;
+					}
+					if (msg.runningBot){
+						$rootScope.runningBot=msg.runningBot;
 					}
 				}
 				$rootScope.$apply();
 			};
+			$rootScope.startStopBot = function() {
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./startStopBot',{}).save().$promise.then(function(data) {
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				}).catch(function(error) {
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+					alert("Errore: " + error);
+				});
+			}
 			$rootScope.chkConnectWS = function() {
 				if (!ws)
 				{ 

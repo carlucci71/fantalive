@@ -28,59 +28,45 @@ public class MyController {
 	public MyController() throws Exception {
 		super();
 		Main.init();
-		aggKeyFG();
+		Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 	}
 
     @Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
-    	int conta = Main.conta.get("conta");
+    	int conta = (int) Main.toSocket.get("timeRefresh");
     	if (conta==60000) {//FIXME 60000
     		conta=0;
     		Main.snapshot(socketHandler);
     	}
     	conta=conta+5000;
-    	Main.conta.put("conta", conta);
-		socketHandler.invia(Main.conta );
+    	Main.toSocket.put("timeRefresh", conta);
+    	String runningBot="STOPPED";
+    	if (Main.fantaLiveBot.isRunning()) {
+        	runningBot="RUNNING";
+    	}
+    	Main.toSocket.put("runningBot", runningBot);
+		socketHandler.invia(Main.toSocket );
 	}
     
-	private String calcolaAggKey(String lega) throws Exception {
-		int giornata=Main.GIORNATA-Main.DELTA_VIVA_FG;
-		if (lega.equalsIgnoreCase("luccicar")) giornata=Main.GIORNATA-Main.DELTA_LUCCICAR_FG;
-		String url = "https://leghe.fantacalcio.it/" + lega + "/formazioni/" + giornata;
-		String string = Main.getHTTP(url);
-		string = string.substring(string.indexOf(".s('tmp', ")+11);
-		string=string.substring(0,string.indexOf(")"));
-		string = string.replace("|", "@");
-		String[] split = string.split("@");
-		return split[1];
-	}
-	
-	public void aggKeyFG() throws Exception {
-		int giornata=Main.GIORNATA;
-		Main.keyFG=new HashMap<String, String>();
-		Main.keyFG.put("fantaviva", "id_comp=" + Main.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Main.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Main.DELTA_VIVA_FG) + "_" + calcolaAggKey("fanta-viva") + ".json");
-		Main.keyFG.put("luccicar", "id_comp=" + Main.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey("luccicar") + ".json");
-	}
-	
 	@RequestMapping("/test")
 	public Map<String, Return>  test(boolean conLive) throws Exception {
 		Map<String, Return> go = Main.go(conLive,null, null);
 		return go;
 	}
-	
+	/*
 	@GetMapping("/nomiSquadre")
 	public List<String> getNomiSquadre() throws Exception {
-		List<String> ret = new ArrayList<String>();
-		Map<String, Return> go = Main.go(false, null, null);
-		Iterator<String> iterator = go.keySet().iterator();
-		while (iterator.hasNext()) {
-			String key = (String) iterator.next();
-			List<Squadra> sq = go.get(key).getSquadre();
-			for (Squadra squadra : sq) {
-				ret.add(squadra.getNome());
-			}
+		return Main.getNomiSquadre();
+	}
+	*/
+	
+	@PostMapping("/startStopBot")
+	public void  startStopBot() throws Exception  {
+		if (Main.fantaLiveBot.isRunning()) {
+			Main.fantaLiveBot.stopBot();
+		} else {
+			Main.fantaLiveBot.startBot();
 		}
-		return ret;
 	}
 	@PostMapping("/salva")
 	public Map<String, Return> salva(@RequestBody Map<String,Return> body) throws Exception  {
@@ -160,7 +146,7 @@ public class MyController {
 	}
 	@PostMapping("/preparaSquadre")
 	public void preparaSquadre() throws Exception {
-		aggKeyFG();
+		Main.aggKeyFG();
 		Main.cancellaSquadre();
 		Main.getSquadre("luccicar");
 		Main.getSquadre("fanta-viva");

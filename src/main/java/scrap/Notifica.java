@@ -57,7 +57,7 @@ public class Notifica implements Comparable<Notifica> {
 		}
 		for (String key : keySet) {
 			if (getEventi().get(key) != null && getEventi().get(key)<0) {
-				ret = ret + "\r\t\t\t "  + (getEventi().get(key) * -1) + " **NO** " + key;
+				ret = ret + "\r\t\t\t "  + (getEventi().get(key) * -1) + " --NO-- " + key;
 			}
 		}
 		return ret;

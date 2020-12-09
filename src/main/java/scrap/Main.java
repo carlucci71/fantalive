@@ -71,8 +71,11 @@ public class Main {
 
 	public static int GIORNATA = 10;
 	public static final String ROOT="/tmp/";
-	public static Map<String,Integer> conta;
+	public static Map<String,Object> toSocket;
 	
+	public static FantaLiveBOT fantaLiveBot;
+
+	public static enum Campionati {BE, FANTAVIVA, LUCCICAR};
 	
 	static Map<Integer, String> sq=null;
 	static HashMap<Integer, String[]> eventi=null;
@@ -85,12 +88,13 @@ public class Main {
 	public static Map<String, String> keyFG=null;
 
 	public static void init() throws Exception {
+		Main.aggKeyFG();
 		if (sqDaEv==null) {
 			inizializzaSqDaEv();
 		}
-		if (conta==null) {
-			conta=new HashMap<>();
-			conta.put("conta", 0);
+		if (toSocket==null) {
+			toSocket=new HashMap<>();
+			toSocket.put("timeRefresh", 0);
 		}
 		if (mapper==null) {
 			mapper = new ObjectMapper();
@@ -229,7 +233,7 @@ FullTime
 					notifica.setEventi(eventi);
 					notifica.setVoto(newGioc.getVoto() + newGioc.getModificatore()); 
 					if (newGioc.isCambio()) {
-						notifica.setCambio("(*)");
+						notifica.setCambio("(X)");
 					}
 				}
 			}
@@ -328,7 +332,10 @@ FullTime
 		if (false) {//FIXME false
 			System.out.println(msg);
 		}
-		if(true) {//FIXME true
+		if (true) {//FIXME true?
+			fantaLiveBot.inviaMessaggio(msg,false);
+		}
+		if(false) {//FIXME false?
 			urlNotifica = "https://api.spontit.com/v3/push";
 			body = new HashMap<String, String>();
 			body.put("pushTitle", "FantaLive");
@@ -506,6 +513,25 @@ FullTime
 		}
 		return response.toString(); 
 	}
+	
+	public static void aggKeyFG() throws Exception {
+		int giornata=Main.GIORNATA;
+		Main.keyFG=new HashMap<String, String>();
+		Main.keyFG.put("fantaviva", "id_comp=" + Main.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Main.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Main.DELTA_VIVA_FG) + "_" + calcolaAggKey("fanta-viva") + ".json");
+		Main.keyFG.put("luccicar", "id_comp=" + Main.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey("luccicar") + ".json");
+	}
+	
+	private static String calcolaAggKey(String lega) throws Exception {
+		int giornata=Main.GIORNATA-Main.DELTA_VIVA_FG;
+		if (lega.equalsIgnoreCase("luccicar")) giornata=Main.GIORNATA-Main.DELTA_LUCCICAR_FG;
+		String url = "https://leghe.fantacalcio.it/" + lega + "/formazioni/" + giornata;
+		String string = Main.getHTTP(url);
+		string = string.substring(string.indexOf(".s('tmp', ")+11);
+		string=string.substring(0,string.indexOf(")"));
+		string = string.replace("|", "@");
+		String[] split = string.split("@");
+		return split[1];
+	}
 
 	public static List<Squadra> getSquadre(String lega) throws Exception {
 		Map<String, String> nomiFG = getNomiFG(lega);
@@ -674,9 +700,9 @@ FullTime
 		}
 		
 		if(conLive) {
-			if (ret.get("FANTAVIVA").getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get("FANTAVIVA").getSquadre()).getBytes());
-			if (ret.get("LUCCICAR").getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get("LUCCICAR").getSquadre()).getBytes());
-			if (ret.get("BE").getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get("BE").getSquadre()).getBytes());
+			if (ret.get(Campionati.FANTAVIVA.name()).getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get(Campionati.FANTAVIVA.name()).getSquadre()).getBytes());
+			if (ret.get(Campionati.LUCCICAR.name()).getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get(Campionati.LUCCICAR.name()).getSquadre()).getBytes());
+			if (ret.get(Campionati.BE.name()).getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get(Campionati.BE.name()).getSquadre()).getBytes());
 		}
 		
 		
@@ -700,7 +726,7 @@ FullTime
 				live.setGiocatori(getLiveFromFG);
 				lives.add(live);
 			}
-			if (false) {//false
+			if (false) {//FIXME false
 				Files.write(Paths.get(ROOT + "orari.json"), toJson(orari).getBytes());//
 				Files.write(Paths.get(ROOT + "lives.json"), toJson(lives).getBytes());
 			}
@@ -759,9 +785,9 @@ FullTime
 						}else {
 							ev = ev + strings[0] + "   ";
 							int pos=1;
-							if (r.getCampionato().equalsIgnoreCase("FANTAVIVA")) pos=1;
-							if (r.getCampionato().equalsIgnoreCase("LUCCICAR")) pos=2;
-							if (r.getCampionato().equalsIgnoreCase("BE")) pos=3;
+							if (r.getCampionato().equalsIgnoreCase(Campionati.FANTAVIVA.name())) pos=1;
+							if (r.getCampionato().equalsIgnoreCase(Campionati.LUCCICAR.name())) pos=2;
+							if (r.getCampionato().equalsIgnoreCase(Campionati.BE.name())) pos=3;
 							
 							modificatore=modificatore+Double.parseDouble(strings[pos]);
 						}
