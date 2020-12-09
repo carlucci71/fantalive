@@ -46,6 +46,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
+	public static final int CHAT_ID_FANTALIVE = 425497266;
+	public static final String TOKEN_BOT_FANTALIVE = "1363620575:AAEcdK-zRf1uZZu3SlDkFsBtD2s8jdU-oeU";
 	private static final String SPONTIT_USERID = "daniele_carlucci6695";
 	private static final String SPONTIT_KEY = "AHWBE7T65FG8ED9N7OTV3D84P6G8YESOUJ4DGP25IW7P9DEDGETVF24EYMH63O9H8ZWB6Y37Q1IIFP4AV8ZNW5DYF7FNPRPAYWHB";
 	private static final String PUSHOVER_USERKEY = "uw954kdfx5t6osgzc2ui24qi1zhhw3";
@@ -332,10 +334,10 @@ FullTime
 		if (false) {//FIXME false
 			System.out.println(msg);
 		}
-		if (true) {//FIXME true?
-			fantaLiveBot.inviaMessaggio(msg,false);
+		if (true) {//FIXME true
+			fantaLiveBot.inviaMessaggio(CHAT_ID_FANTALIVE,msg,false);
 		}
-		if(false) {//FIXME false?
+		if(false) {//FIXME false
 			urlNotifica = "https://api.spontit.com/v3/push";
 			body = new HashMap<String, String>();
 			body.put("pushTitle", "FantaLive");

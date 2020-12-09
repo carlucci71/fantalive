@@ -24,8 +24,6 @@ import scrap.Main.Campionati;
 
 public class FantaLiveBOT extends TelegramLongPollingBot{
 
-	private static final int CHAT_ID_FANTALIVE = 425497266;
-	private static final String TOKEN_BOT_FANTALIVE = "1363620575:AAEcdK-zRf1uZZu3SlDkFsBtD2s8jdU-oeU";
 	private static BotSession registerBot;
 	private static String CHI;
 
@@ -37,14 +35,14 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 			if(update.getMessage().hasText()){
 				if(update.getMessage().getText().equals("/campionati")){
 					try {
-						execute(sendInlineKeyBoardCampionati(chatId,text));
+						execute(sendInlineKeyBoardCampionati(chatId,text));//COMANDO CAMPIONATO
 					} catch (TelegramApiException e) {
 						throw new RuntimeException(e);
 					}
 				}
 				else {
 					try {
-						execute(sendMessage(chatId,text, true));
+						inviaMessaggio(chatId,text, true);//REPLY
 					} catch (TelegramApiException e) {
 						throw new RuntimeException(e);
 					}
@@ -56,7 +54,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 			if (testoCallback.startsWith("analizza")) {
 				try {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
-					execute(sendInlineKeyBoardSquadre(chatId,testoCallback));
+					execute(sendInlineKeyBoardSquadre(chatId,testoCallback));//COMANDO ANALIZZA CAMPIONATO
 				} catch (TelegramApiException e) {
 					throw new RuntimeException(e);
 				}
@@ -65,7 +63,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 				try {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					String[] split = testoCallback.split("#");
-					execute(new SendMessage().setText(getDettaglio(split[0],split[1])).setChatId(chatId));
+					inviaMessaggio(chatId,getDettaglio(split[0],split[1]), false);//SQUADRA
 				} catch (TelegramApiException e) {
 					throw new RuntimeException(e);
 				}
@@ -80,7 +78,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 
 	@Override
 	public String getBotToken() {
-		return TOKEN_BOT_FANTALIVE;
+		return Main.TOKEN_BOT_FANTALIVE;
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -102,20 +100,16 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 		return f;
 	}
 
-	public void inviaMessaggio(String msg,boolean bReply) throws Exception {
+	public void inviaMessaggio(long chatId,String msg,boolean bReply) throws TelegramApiException {
 		try {
-			execute(sendMessage(CHAT_ID_FANTALIVE, msg , bReply));
+			execute(creaSendMessage(chatId, msg , bReply));//INVIA
 		} catch (TelegramApiException e) {
-			throw new RuntimeException(e);
+			throw e;
 		}
 	}
 	
 	private void messaggioBenvenuto() throws Exception {
-		try {
-			inviaMessaggio("BOT AVVIATO", false);
-		} catch (TelegramApiException e) {
-			throw new RuntimeException(e);
-		}
+			inviaMessaggio(Main.CHAT_ID_FANTALIVE, "BOT AVVIATO", false);
 	}
 
 	private SendMessage sendInlineKeyBoardCampionati(long chatId, String msg){
@@ -181,8 +175,9 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 		}
 	}
 
-	private SendMessage sendMessage(long chatId,String msg, boolean bReply) {
+	private SendMessage creaSendMessage(long chatId,String msg, boolean bReply) {
 		SendMessage sendMessage = new SendMessage();
+		sendMessage.enableHtml(true);
 //		AGGIUNGE TASTIERA		
 //		sendMessage.enableMarkdown(true);
 //		setButtons(sendMessage);
@@ -193,7 +188,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 		sendMessage.setChatId(chatId);
 		String messaggio="";
 		if (bReply) {
-			messaggio="sono il bot reply da " + chatId + " ";
+			messaggio="<b>sono il bot reply</b> da  " + chatId + " ";
 		}
 		try {
 			messaggio = messaggio  + CHI + " " + InetAddress.getLocalHost().getHostAddress();
