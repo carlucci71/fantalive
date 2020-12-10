@@ -29,26 +29,27 @@ public class MyController {
 		super();
 		ValConst.inizializza();
 		Main.init();
+		System.out.println("********************************************************************************************************************");
 		Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 	}
 
-    @Scheduled(fixedRate = 5000)
+	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
-    	int conta = (int) Main.toSocket.get("timeRefresh");
-    	if (conta==60000) {//FIXME 60000
-    		conta=0;
-    		Main.snapshot(socketHandler);
-    	}
-    	conta=conta+5000;
-    	Main.toSocket.put("timeRefresh", conta);
-    	String runningBot="STOPPED";
-    	if (Main.fantaLiveBot.isRunning()) {
-        	runningBot="RUNNING";
-    	}
-    	Main.toSocket.put("runningBot", runningBot);
+		int conta = (int) Main.toSocket.get("timeRefresh");
+		if (conta==60000) {//FIXME 60000
+			conta=0;
+			Main.snapshot(socketHandler);
+		}
+		conta=conta+5000;
+		Main.toSocket.put("timeRefresh", conta);
+		String runningBot="STOPPED";
+		if (Main.fantaLiveBot.isRunning()) {
+			runningBot="RUNNING";
+		}
+		Main.toSocket.put("runningBot", runningBot);
 		socketHandler.invia(Main.toSocket );
 	}
-    
+
 	@RequestMapping("/test")
 	public Map<String, Return>  test(boolean conLive) throws Exception {
 		Map<String, Return> go = Main.go(conLive,null, null);
@@ -59,8 +60,8 @@ public class MyController {
 	public List<String> getNomiSquadre() throws Exception {
 		return Main.getNomiSquadre();
 	}
-	*/
-	
+	 */
+
 	@PostMapping("/startStopBot")
 	public void  startStopBot() throws Exception  {
 		if (Main.fantaLiveBot.isRunning()) {
@@ -149,28 +150,28 @@ public class MyController {
 	public void preparaSquadre() throws Exception {
 		try
 		{
-		Main.aggKeyFG();
-		Main.cancellaSquadre();
-		Main.getSquadre("luccicar");
-		Main.getSquadre("fanta-viva");
-		Main.scaricaBe();
-		List<Squadra> squadre = new ArrayList<Squadra>();
-		for (int i=0;i<Main.NUM_PARTITE_FS;i++) {
-			String nomeFile = Main.ROOT + "be"+i + ".html";
-			if (Files.exists(Paths.get(nomeFile))) {
-				byte[] inputS = Files.readAllBytes(Paths.get(nomeFile));
-				Document doc = Jsoup.parse(new String(inputS));
-				squadre.add(Main.getFromFS(doc, "Casa"));
-				squadre.add(Main.getFromFS(doc, "Trasferta"));
-				Files.delete(Paths.get(nomeFile));
+			Main.aggKeyFG();
+			Main.cancellaSquadre();
+			Main.getSquadre("luccicar");
+			Main.getSquadre("fanta-viva");
+			Main.scaricaBe();
+			List<Squadra> squadre = new ArrayList<Squadra>();
+			for (int i=0;i<Main.NUM_PARTITE_FS;i++) {
+				String nomeFile = Main.ROOT + "be"+i + ".html";
+				if (Files.exists(Paths.get(nomeFile))) {
+					byte[] inputS = Files.readAllBytes(Paths.get(nomeFile));
+					Document doc = Jsoup.parse(new String(inputS));
+					squadre.add(Main.getFromFS(doc, "Casa"));
+					squadre.add(Main.getFromFS(doc, "Trasferta"));
+					Files.delete(Paths.get(nomeFile));
+				}
 			}
-		}
-		Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + "be" + ".json"), Main.toJson(squadre).getBytes());
+			Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + "be" + ".json"), Main.toJson(squadre).getBytes());
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace(System.out);
 		}
 	}
-	
+
 }
