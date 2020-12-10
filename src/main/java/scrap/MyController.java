@@ -27,9 +27,9 @@ public class MyController {
 	@Autowired SocketHandler socketHandler;
 	public MyController() throws Exception {
 		super();
+		System.out.println("********************************************************************************************************************");
 		ValConst.inizializza();
 		Main.init();
-		System.out.println("********************************************************************************************************************");
 		Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 	}
 
@@ -149,6 +149,7 @@ public class MyController {
 	@PostMapping("/preparaSquadre")
 	public void preparaSquadre() throws Exception {
 		System.out.println("++++++++++++++++++++++++++++++*******************************************************************************************");
+		/*
 		try
 		{
 			Main.aggKeyFG();
@@ -173,6 +174,7 @@ public class MyController {
 		{
 			e.printStackTrace(System.out);
 		}
+		*/
 	}
 
 }
