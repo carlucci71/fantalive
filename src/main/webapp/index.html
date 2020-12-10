@@ -29,8 +29,9 @@ table, th, td {
 <br><br>
 <!-- 		Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}  -->
 
-<label ng-show="aggiornamento" >Dati aggiornati alle: {{aggiornamento}} </label> <span ng-show="timeRefresh">Refresh tra {{60-(timeRefresh/1000)}}s</span>
-{{runningBot}} <button ng-click="startStopBot()">START/STOP BOT</button>
+<label ng-show="aggiornamento" >Dati aggiornati alle: {{aggiornamento}} </label>
+<br><span ng-show="timeRefresh">Refresh tra {{60-(timeRefresh/1000)}}s</span>
+<br><span ng-show="!loading">{{runningBot}} <button ng-click="startStopBot()">START/STOP BOT</button></span>
 <br>
  		<label ng-show="loading">CARICAMENTO IN CORSO</label>
  	<br><br><br>
@@ -111,18 +112,12 @@ table, th, td {
 						 	<br>
 						 	<table style="widthX:600px">
 						 		<tr>
-						 			<!-- <td style="padding:2px;width:200px;border-top: 1px solid white;border-bottom: 1px solid white;border-left: 1px solid white"></td> -->
 						 			<td style="padding:2px;width:50px;text-align:center">giocatori con voto</td>
-						 			<!-- <td style="padding:2px;width:50px;text-align:center">media votati</td> -->
 						 			<td style="padding:2px;width:50px;text-align:center">ancora da giocare</td>
-						 			<!-- <td style="padding:2px;width:50px;text-align:center">totale</td>  -->
 								</tr>
 						 		<tr>
-						 			<!-- <td style="padding:2px;width:200px;border-top: 1px solid white;border-bottom: 1px solid white;border-left: 1px solid white"></td> -->
 						 			<td style="padding:2px;width:50px;text-align:center">{{squadra.contaRiserve}}</td>
-						 			<!-- <td style="padding:2px;width:50px;text-align:center">{{squadra.mediaRiserve | number:2}}</td>  -->
 						 			<td style="padding:2px;width:50px;text-align:center">{{squadra.contaSquadraRiserveNonGioca}}</td>
-						 			<!-- <td style="padding:2px;width:50px;text-align:center">{{squadra.totaleRiserve}}</td>  -->
 								</tr>
 							</table>
 						 	

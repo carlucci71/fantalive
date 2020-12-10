@@ -6,15 +6,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,22 +46,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
-	public static final int CHAT_ID_FANTALIVE = 425497266;
-	public static final String TOKEN_BOT_FANTALIVE = "1363620575:AAEcdK-zRf1uZZu3SlDkFsBtD2s8jdU-oeU";
-	private static final String SPONTIT_USERID = "daniele_carlucci6695";
-	private static final String SPONTIT_KEY = "AHWBE7T65FG8ED9N7OTV3D84P6G8YESOUJ4DGP25IW7P9DEDGETVF24EYMH63O9H8ZWB6Y37Q1IIFP4AV8ZNW5DYF7FNPRPAYWHB";
-	private static final String PUSHOVER_USERKEY = "uw954kdfx5t6osgzc2ui24qi1zhhw3";
-	private static final String PUSHOVER_TOKEN = "agg59xr6jtavbnmnpt5b97nino25u2";
-	private static final String ID_ICONA_NOTIFICA = "170";
-	private static final String URL_NOTIFICA = "http://192.168.1.83:7080/fantalive-0.0.1-SNAPSHOT/";
-	private static final String KEY_PUSHSAFER = "fjEebDC2MDAFaFNU3Ndx";
-	private static final String APPKEY_FG = "4ab27d6de1e92c810c6d4efc8607065a735b917f";
+	public static final String URL_NOTIFICA = "http://192.168.1.83:7080/fantalive-0.0.1-SNAPSHOT/";
 	public static final int DELTA_VIVA_FG=2;
 	public static final int DELTA_LUCCICAR_FG=3;
 	public static final String COMP_VIVA_FG = "250964";
 	public static final String COMP_LUCCICAR_FG = "306919";
 
-	public static String AUTH_FS = "E4919FA22B99D77B3C784F5E241F2BE9516813B2E51B4EE3EA5A1F33F2D2EC684C010AB311B58BB8B5178A800AE0CF12AFF5AF83C37F983B6B81997CE046DC5AC2D2E126D7CBFD41F72D61BC94A9A25E79787E8FFFB059C8985A720964804B6545F525324C27961054EEA49DC8BBAA2963190E3E";
 	public static final int DELTA_FS=3;
 	static final int NUM_PARTITE_FS = 4;
 	public static final String COMP_FS = "123506";
@@ -111,7 +101,7 @@ public class Main {
 			eventi.put(24, new String[] {"assist medium1","1","1","1","S"});
 			eventi.put(14, new String[] {"uscito","0","0","0","S"});
 			eventi.put(15, new String[] {"entrato","0","0","0","S"});
-			eventi.put(16, new String[] {"gol annullato","0","0","0","S"});
+			eventi.put(16, new String[] {"gol annullato","0","0","0","N"});
 			eventi.put(17, new String[] {"infortunio","0","0","0","N"});
 			eventi.put(1, new String[] {"ammonito","-0.5","-0.5","-0.5","S"});
 			eventi.put(2, new String[] {"espulso","-1","-1","-1","S"});
@@ -156,6 +146,9 @@ public class Main {
 	}
 
 	public static void snapshot(SocketHandler socketHandler) throws Exception {
+		if (false) {//FIXME false
+			System.out.println("FOTO");
+		}
 		Map<String, Return> go = go(true, null, null);
     	Iterator<String> campionati = go.keySet().iterator();
     	Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
@@ -243,19 +236,37 @@ FullTime
     		if (keySet!= null && keySet.size()>0) {
         		StringBuilder des = new StringBuilder();
     			for (String camp : keySet) {
-					des.append(camp).append(":\r");
+					des.append("\n").append(camp).append("\n");
 					Map<String, List<Notifica>> sq = notifiche.get(camp);
 					Iterator<String> itSq = sq.keySet().iterator();
 					while (itSq.hasNext()) {
 						String sqN = (String) itSq.next();
-						des.append("\t").append(sqN).append(":\r");
+						des.append("\t").append(sqN).append("\n");
 						List<Notifica> listN = sq.get(sqN);
 						Collections.sort(listN);
 						for (Notifica notifica : listN) {
-							des.append("\t\t").append(notifica.toString()).append("\r");
+							String ret = notifica.getGiocatore() + notifica.getCambio() + " " + notifica.getId() + " " + notifica.getVoto();
+							Set<String> ks = notifica.getEventi().keySet();
+							for (String key : ks) {
+								if (notifica.getEventi().get(key)==null) {
+									ret = ret + "\n\t\t\t "  + "  " + key;
+								}
+							}
+							for (String key : ks) {
+								if (notifica.getEventi().get(key) != null && notifica.getEventi().get(key)>0) {
+									ret = ret + "\n\t\t\t "  + notifica.getEventi().get(key) + " " + key;
+								}
+							}
+							for (String key : ks) {
+								if (notifica.getEventi().get(key) != null && notifica.getEventi().get(key)<0) {
+									ret = ret + "\n\t\t\t "  + (notifica.getEventi().get(key) * -1) + " --NO-- " + key;
+								}
+							}
+							des.append("\t\t").append(ret).append("\n");
 						}
 					}
 				}
+    			des.append("\n").append(URL_NOTIFICA);
         		Main.inviaNotifica(des.toString());
     		}
     	}
@@ -269,7 +280,12 @@ FullTime
 	
 	
 	public static void main(String[] args) throws Exception {
-		init();
+		
+	
+		
+		
+//		init();
+		/*
 		Iterator<String> iterator;
     	snapshot(null);
 		iterator = oldSnapshot.keySet().iterator();
@@ -282,7 +298,6 @@ FullTime
 			}
 		}
     	snapshot(null);
-		/*
 		iterator = oldSnapshot.keySet().iterator();
 		while (iterator.hasNext()) {
 			String k = (String) iterator.next();
@@ -318,25 +333,7 @@ FullTime
 		String urlNotifica;
 		Map<String, String> body;
 		Map<String, String> headers;
-		if (false) {
-			urlNotifica = "https://www.pushsafer.com/api?k=" + KEY_PUSHSAFER + "&ut=FantaLive&m=" + URLEncoder.encode(msg, StandardCharsets.UTF_8.toString()) + "&i=" + ID_ICONA_NOTIFICA + "&u=" + URL_NOTIFICA;
-			body = new HashMap<String, String>();
-			postHTTP(urlNotifica,body,headers);
-		}
-		if (false) {
-			urlNotifica="https://api.pushover.net/1/messages.json";
-			body = new HashMap<String, String>();
-			body.put("token", PUSHOVER_TOKEN);
-			body.put("user", PUSHOVER_USERKEY);
-			body.put("message", msg);
-			postHTTP(urlNotifica,body,headers);
-		}
-		if (false) {//FIXME false
-			System.out.println(msg);
-		}
-		if (true) {//FIXME true
-			fantaLiveBot.inviaMessaggio(CHAT_ID_FANTALIVE,msg,false);
-		}
+		fantaLiveBot.inviaMessaggio(Constant.CHAT_ID_FANTALIVE,msg,false);
 		if(false) {//FIXME false
 			urlNotifica = "https://api.spontit.com/v3/push";
 			body = new HashMap<String, String>();
@@ -353,8 +350,8 @@ FullTime
 
 
 			headers = new HashMap<String, String>();
-			headers.put("X-Authorization", SPONTIT_KEY);
-			headers.put("X-UserId", SPONTIT_USERID);
+			headers.put("X-Authorization", Constant.SPONTIT_KEY);
+			headers.put("X-UserId", Constant.SPONTIT_USERID);
 			postHTTP(urlNotifica,body, headers);
 			
 		}
@@ -382,7 +379,7 @@ FullTime
 	public static void scaricaBe() throws IOException, ClientProtocolException {
 		BasicCookieStore cookieStore = new BasicCookieStore();
 		BasicClientCookie cookie;
-		cookie = new BasicClientCookie("FantaSoccer_Auth", AUTH_FS);
+		cookie = new BasicClientCookie("FantaSoccer_Auth", Constant.AUTH_FS);
 		cookie.setDomain("www.fanta.soccer");
 		cookie.setPath("/");
 		cookieStore.addCookie(cookie);
@@ -492,26 +489,38 @@ FullTime
 	
 	public static String getHTTP(String url, Map<String, String>... headers) throws Exception {
 		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		con.setRequestMethod("GET");
+		HttpURLConnection getConnection = (HttpURLConnection) obj.openConnection();
+		getConnection.setRequestMethod("GET");
 		if (headers!=null && headers.length>0) {
 			Iterator<String> iterator = headers[0].keySet().iterator();
 			while (iterator.hasNext()) {
 				String key = (String) iterator.next();
-				con.setRequestProperty(key, headers[0].get(key));
+				getConnection.setRequestProperty(key, headers[0].get(key));
 			}
 		}
-		int responseCode = con.getResponseCode();
+		int responseCode = getConnection.getResponseCode();
 		StringBuffer response = new StringBuffer();
 		if (responseCode == HttpURLConnection.HTTP_OK) {
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			BufferedReader in = new BufferedReader(new InputStreamReader(getConnection.getInputStream()));
 			String inputLine;
 			while ((inputLine = in.readLine()) != null) {
 				response.append(inputLine);
 			}
 			in.close();
 		} else {
-			throw new RuntimeException("GET HTTP request not worked:" + " " + url);
+			BufferedReader bfOutputResponse = new BufferedReader(
+					new InputStreamReader(getConnection.getErrorStream()));
+			String outputLine;
+			StringBuffer sfResponse = new StringBuffer();
+			while ((outputLine = bfOutputResponse.readLine()) != null) {
+				sfResponse.append(outputLine);
+			}
+			bfOutputResponse.close();
+
+			// print result
+			String stringResponse = sfResponse.toString();
+			throw new RuntimeException("POST NOT WORKED ".concat(url).concat(" -> ").concat("STACK:")
+					.concat(stringResponse));
 		}
 		return response.toString(); 
 	}
@@ -540,7 +549,7 @@ FullTime
 		lega=lega.replace("-", "");
 		List<Squadra> squadre=new ArrayList<Squadra>();
 		Map<String,String> headers = new HashMap<String, String>();
-		headers.put("app_key", APPKEY_FG);
+		headers.put("app_key", Constant.APPKEY_FG);
 		String url = "https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?" + keyFG.get(lega);
 		String string = getHTTP(url, headers );
 		Map<String, Object> jsonToMap = jsonToMap(string);
@@ -618,14 +627,14 @@ FullTime
     }
 
 	private static void ciclaEventi(Giocatore og, Giocatore ng, List<Map<Integer, Integer>> ret, Integer verso) {
-		for (Integer integer : ng.getCodEventi()) {
-    		if (eventi.get(integer)[4].equalsIgnoreCase("S")) {
-    			int contaNuoviEventiOld = contaNuoviEventi(integer,og);
-    			int contaNuoviEventiNew = contaNuoviEventi(integer,ng);
+		for (Integer codEvento : ng.getCodEventi()) {
+    		if (eventi.get(codEvento)[4].equalsIgnoreCase("S")) {
+    			int contaNuoviEventiOld = contaNuoviEventi(codEvento,og);
+    			int contaNuoviEventiNew = contaNuoviEventi(codEvento,ng);
     			if (contaNuoviEventiOld != contaNuoviEventiNew) {
-    				if (!ret.contains(integer)) {
+    				if (!ret.contains(codEvento)) {
     					Map<Integer, Integer> m = new HashMap<>();
-    					m.put(integer,verso*(contaNuoviEventiNew-contaNuoviEventiOld));
+    					m.put(codEvento,verso*(contaNuoviEventiNew-contaNuoviEventiOld));
         				ret.add(m);
     				}
     			}
@@ -681,11 +690,15 @@ FullTime
 				}
 				for (int i=0;i<sq.getTitolari().size();i++) {
 					Giocatore giocatore = sq.getTitolari().get(i);
-					giocatore.setIdGioc("T" + (i+1));
+					String id= String.valueOf(i+1);
+					if (id.length()==1) id="0" + id;
+					giocatore.setIdGioc("T" + id);
 				}
 				for (int i=0;i<sq.getRiserve().size();i++) {
 					Giocatore giocatore = sq.getRiserve().get(i);
-					giocatore.setIdGioc("R" + (i+1));
+					String id= String.valueOf(i+1);
+					if (id.length()==1) id="0" + id;
+					giocatore.setIdGioc("R" + id);
 				}
 				if (!sqBeCaricate.contains(sq.getNome())) {
 					if (sqDaEv.contains(sq.getNome())) {
@@ -781,6 +794,7 @@ FullTime
 					String[] split = evento.split(",");
 					for (String string : split) {
 						String[] strings = eventi.get(Integer.parseInt(string));
+						if (strings[4].equals("N")) continue;
 						if (strings==null) {
 							ev = ev + "?" + "   ";
 							modificatore=modificatore-1000;

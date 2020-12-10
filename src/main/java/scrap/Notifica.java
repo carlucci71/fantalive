@@ -41,6 +41,7 @@ public class Notifica implements Comparable<Notifica> {
 	public void setId(String id) {
 		this.id = id;
 	}
+	/*
 	@Override
 	public String toString() {
 		String ret = giocatore + cambio + " " + id + " " + voto;
@@ -62,6 +63,7 @@ public class Notifica implements Comparable<Notifica> {
 		}
 		return ret;
 	}
+	*/
 	public Map<String,Integer> getEventi() {
 		return eventi;
 	}

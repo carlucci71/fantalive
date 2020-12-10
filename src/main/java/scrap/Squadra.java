@@ -82,7 +82,7 @@ public int getContaSquadraRiserveNonGioca() {
 	return conta;
 }
 public double getMediaTitolari() {
-	return getTotaleTitolari()/getContaTitolari();
+	return Math.ceil(getTotaleTitolari()/getContaTitolari()*100)/100;
 }
 public double getTotaleRiserve() {
 	double tot=0;
@@ -101,7 +101,7 @@ public int getContaRiserve() {
 	return conta;
 }
 public double getMediaRiserve() {
-	return getTotaleRiserve()/getContaRiserve();
+	return Math.ceil(getTotaleRiserve()/getContaRiserve()*100)/100;
 }
 public double getProiezione() {
 	return getTotaleTitolari() + 6 * (11-getContaTitolari()) + getDeltaModificatore();

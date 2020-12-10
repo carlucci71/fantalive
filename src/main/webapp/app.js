@@ -227,6 +227,9 @@ app.run(
 				if (giocatore.orario.tag=='FullTime') return "bold";
 				if (giocatore.codEventi.indexOf(14)>-1) return "bold";
 			}
+			$rootScope.txtColor=function(giocatore){
+				if (giocatore.voto==0) return "red";
+			}
 			$rootScope.backColor=function(giocatore){
 				if (giocatore.squadraGioca) return "lightgray";
 			}
@@ -273,11 +276,8 @@ app.run(
 				if (squadra.evidenza) return "red";
 				return "orange";
 			}
-			$rootScope.txtColor=function(giocatore){
-				if (giocatore.voto==0) return "red";
-			}
 			$rootScope.getOrario=function(orario){
-				if (orario.tag=='FullTime') return "";
+				if (orario.tag=='FullTime' || orario.tag=='Postponed' || orario.tag=='Cancelled' || orario.tag=='Walkover') return orario.tag;
 				if (orario.tag=='PreMatch'){
 					var ret="";
 					ret = ret + orario.val.substring(8,10);
@@ -286,16 +286,16 @@ app.run(
 					ret = ret + ":" + orario.val.substring(14,16);
 					return ret;
 				}
-				return orario.val;
+				return orario.val + "Min";
 			}
 			$rootScope.getVoto=function(g){
 				if (!g.squadraGioca) return " ";
-				if (g.voto==0) return "--";
+				if (g.voto==0) return "NV";
 				return g.voto;
 			}
 			$rootScope.getFantaVoto=function(g){
 				if (!g.squadraGioca) return " ";
-				if (g.voto==0) return "--";
+				if (g.voto==0) return "NV";
 				return g.modificatore+g.voto;
 			}
 			$rootScope.desEvento=function(ev,r){

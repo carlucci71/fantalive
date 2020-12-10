@@ -27,6 +27,7 @@ public class MyController {
 	@Autowired SocketHandler socketHandler;
 	public MyController() throws Exception {
 		super();
+		ValConst.inizializza();
 		Main.init();
 		Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 	}
@@ -135,14 +136,14 @@ public class MyController {
 	@GetMapping("/getDati")
 	public Map<String, Object> getDati() {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		ret.put("body", Main.AUTH_FS);
+		ret.put("body", Constant.AUTH_FS);
 		ret.put("giornata", Main.GIORNATA);
 		ret.put("eventi", Main.eventi);
 		return ret;
 	}
 	@PostMapping("/setFantaSoccerAuth")
 	public void setFantaSoccerAuth(@RequestBody Map<String,String> body)  {
-		Main.AUTH_FS=body.get("body");
+		Constant.AUTH_FS=body.get("body");
 	}
 	@PostMapping("/preparaSquadre")
 	public void preparaSquadre() throws Exception {
