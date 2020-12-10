@@ -147,6 +147,8 @@ public class MyController {
 	}
 	@PostMapping("/preparaSquadre")
 	public void preparaSquadre() throws Exception {
+		try
+		{
 		Main.aggKeyFG();
 		Main.cancellaSquadre();
 		Main.getSquadre("luccicar");
@@ -164,6 +166,11 @@ public class MyController {
 			}
 		}
 		Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + "be" + ".json"), Main.toJson(squadre).getBytes());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace(System.out);
+		}
 	}
 	
 }
