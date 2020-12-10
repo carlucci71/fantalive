@@ -148,6 +148,7 @@ public class MyController {
 	}
 	@PostMapping("/preparaSquadre")
 	public void preparaSquadre() throws Exception {
+		System.out.println("++++++++++++++++++++++++++++++*******************************************************************************************");
 		try
 		{
 			Main.aggKeyFG();
