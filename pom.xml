@@ -12,6 +12,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<properties>
+	    <start-class>MainClass</start-class>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
@@ -61,7 +62,7 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<build>
 		<!-- <extensions> <extension> <groupId>org.apache.maven.wagon</groupId> 
 			<artifactId>wagon-ftp</artifactId> <version>3.4.2</version> </extension> 
