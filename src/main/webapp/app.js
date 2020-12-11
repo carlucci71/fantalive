@@ -17,7 +17,12 @@ app.run(
 						}).catch(function(error) {
 							$rootScope.loading=false;
 							$rootScope.fine=new Date();
-							alert("Errore: " + error.data);
+							if (error && error.data && error.data.message)
+								alert("Errore: " + error.data.message);
+							else if (error && error.data)
+								alert("Errore: " + error.data);
+							else 
+								alert("Errore: " + error);
 						});
 					});
 			}
@@ -56,7 +61,12 @@ app.run(
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
-					alert("Errore: " + error);
+					if (error && error.data && error.data.message)
+						alert("Errore: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore: " + error.data);
+					else 
+						alert("Errore: " + error);
 				});
 			}
 			$rootScope.chkConnectWS = function() {
@@ -116,7 +126,12 @@ app.run(
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
-					alert("Errore: " + error);
+					if (error && error.data && error.data.message)
+						alert("Errore: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore: " + error.data);
+					else 
+						alert("Errore: " + error);
 				});
 			}
 			$rootScope.simulaCambi=function(r,sq, ind){
@@ -130,7 +145,12 @@ app.run(
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
-					alert("Errore: " + error);
+					if (error && error.data && error.data.message)
+						alert("Errore: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore: " + error.data);
+					else 
+						alert("Errore: " + error);
 				});
 			}
 			$rootScope.ricaricaIndex=function(){
@@ -151,12 +171,22 @@ app.run(
 					}).catch(function(error) {
 						$rootScope.loading=false;
 						$rootScope.fine=new Date();
-						alert("Errore: " + error.data);
+						if (error && error.data && error.data.message)
+							alert("Errore: " + error.data.message);
+						else if (error && error.data)
+							alert("Errore: " + error.data);
+						else 
+							alert("Errore: " + error);
 					});
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
-					alert("Errore: " + error.data);
+					if (error && error.data && error.data.message)
+						alert("Errore: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore: " + error.data);
+					else 
+						alert("Errore: " + error);
 				});
 				return deferred.promise;	
 			}
@@ -177,7 +207,12 @@ app.run(
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
-					alert("Errore: " + error.data);
+					if (error && error.data && error.data.message)
+						alert("Errore: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore: " + error.data);
+					else 
+						alert("Errore: " + error);
 				});
 			}
 			$rootScope.setFantaSoccerAuth = function(){
@@ -190,7 +225,12 @@ app.run(
 				}).catch(function(error) {
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
-					alert("Errore: " + error.data);
+					if (error && error.data && error.data.message)
+						alert("Errore: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore: " + error.data);
+					else 
+						alert("Errore: " + error);
 				});
 			}
 			$rootScope.setGiornata = function(){
@@ -203,7 +243,12 @@ app.run(
 				}).catch(function(error) {
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
-					alert("Errore: " + error.data);
+					if (error && error.data && error.data.message)
+						alert("Errore: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore: " + error.data);
+					else 
+						alert("Errore: " + error);
 				});
 			}
 			$rootScope.vediEvidenza=function(s){
@@ -258,7 +303,12 @@ app.run(
 						$rootScope.result=data;
 						deferred.resolve("Hi4");
 				}).catch(function(error) {
-					alert("Errore: " + error.data);
+					if (error && error.data && error.data.message)
+						alert("Errore: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore: " + error.data);
+					else 
+						alert("Errore: " + error);
 				});
 				return deferred.promise;	
 			}
@@ -268,7 +318,12 @@ app.run(
 						$rootScope.result=data;
 						deferred.resolve("Hi3");
 				}).catch(function(error) {
-					alert("Errore: " + error.data);
+					if (error && error.data && error.data.message)
+						alert("Errore: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore: " + error.data);
+					else 
+						alert("Errore: " + error);
 				});
 				return deferred.promise;	
 			}
