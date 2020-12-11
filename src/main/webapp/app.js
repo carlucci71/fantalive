@@ -452,7 +452,7 @@ app.factory('httpRequestInterceptor', function () {
 	  return {
 	    request: function (config) {
 //		      config.headers = {'X-CSRF-Token':'prova'}
-            'Content-Type': 'application/json'
+	    	config.headers = {'Content-Type'= 'application/json'}
 	      return config;
 	    }
 	  };
