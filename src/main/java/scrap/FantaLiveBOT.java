@@ -119,10 +119,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	
 	private void messaggioBenvenuto() throws Exception {
 			inviaMessaggio(Constant.CHAT_ID_FANTALIVE, "BOT AVVIATO", false);
-			
-			inviaMessaggio(Constant.CHAT_ID_FANTALIVE, getDettaglio(Constant.CHAT_ID_FANTALIVE,"BE", "tavolino"), false);
-			
-			
+//			inviaMessaggio(Constant.CHAT_ID_FANTALIVE, getDettaglio(Constant.CHAT_ID_FANTALIVE,"BE", "tavolino"), false);
 	}
 
 	private SendMessage sendInlineKeyBoardCampionati(long chatId, String msg){

@@ -1,1 +1,0 @@
-MyApp::Application.config.secret_token = 'prova'

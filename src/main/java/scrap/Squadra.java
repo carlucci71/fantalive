@@ -114,6 +114,8 @@ public void setEvidenza(boolean evidenza) {
 }
 @Override
 public int compareTo(Squadra o) {
+	if (this.getNome()==null) return -1;
+	if (o.getNome()==null) return 1;
 	return this.getNome().toUpperCase().compareTo(o.getNome().toUpperCase());
 }
 public int getDeltaModificatore() {

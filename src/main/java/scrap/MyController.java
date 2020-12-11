@@ -30,7 +30,6 @@ public class MyController {
 	public MyController() throws Exception {
 		super();
 		String prova = System.getenv("mia_var");
-		System.out.println("6 " + prova + " ********************************************************************************************************************");
 		ValConst.inizializza();
 		Main.init();
 		Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
@@ -153,7 +152,6 @@ public class MyController {
 	}
 	@PostMapping("/preparaSquadre")
 	public void preparaSquadre(@RequestBody Map<String,Integer> body) throws Exception {
-		System.out.println("222**" + body.get("giornata"));
 		try
 		{
 			Main.aggKeyFG();

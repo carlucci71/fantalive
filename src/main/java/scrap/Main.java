@@ -685,7 +685,8 @@ FullTime
 			List<String> sqBeCaricate=new ArrayList<String>();
 			sqDaEv= new ArrayList<String>();
 			for (Squadra sq : retAtt.getSquadre()) {
-				if ((sq.isEvidenza() || sq.getNome().equalsIgnoreCase(sqDaAddEvid)) && !sq.getNome().equalsIgnoreCase(sqDaDelEvid)) {
+				
+				if (sq.getNome() != null && (sq.isEvidenza() || sq.getNome().equalsIgnoreCase(sqDaAddEvid)) && !sq.getNome().equalsIgnoreCase(sqDaDelEvid)) {
 					sqDaEv.add(sq.getNome());
 				}
 				for (int i=0;i<sq.getTitolari().size();i++) {
@@ -907,7 +908,10 @@ FullTime
 		Elements select = first.select("th");
 		Squadra squadra = new Squadra();
 		String nomeSq = select.first().text();
-		squadra.setNome(nomeSq.substring(0,nomeSq.lastIndexOf(" ")));
+		if (nomeSq.contains("-") &&  nomeSq.lastIndexOf(" ")>-1) {
+			nomeSq=nomeSq.substring(0,nomeSq.lastIndexOf(" "));
+		}
+		squadra.setNome(nomeSq);
 		for (int i=0;i<11;i++) {
 			Giocatore giocatore = estraiGiocatoreFromFS(doc,i,dove,"Titolari");
 			if (giocatore != null) {
