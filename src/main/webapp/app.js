@@ -17,7 +17,7 @@ app.run(
 						}).catch(function(error) {
 							$rootScope.loading=false;
 							$rootScope.fine=new Date();
-							alert("Errore: " + error.data.message);
+							alert("Errore: " + error.data);
 						});
 					});
 			}
@@ -151,12 +151,12 @@ app.run(
 					}).catch(function(error) {
 						$rootScope.loading=false;
 						$rootScope.fine=new Date();
-						alert("Errore: " + error.data.message);
+						alert("Errore: " + error.data);
 					});
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
-					alert("Errore: " + error.data.message);
+					alert("Errore: " + error.data);
 				});
 				return deferred.promise;	
 			}
@@ -177,7 +177,7 @@ app.run(
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
-					alert("Errore: " + error.data.message);
+					alert("Errore: " + error.data);
 				});
 			}
 			$rootScope.setFantaSoccerAuth = function(){
@@ -190,7 +190,7 @@ app.run(
 				}).catch(function(error) {
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
-					alert("Errore: " + error.data.message);
+					alert("Errore: " + error.data);
 				});
 			}
 			$rootScope.setGiornata = function(){
@@ -203,7 +203,7 @@ app.run(
 				}).catch(function(error) {
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
-					alert("Errore: " + error.data.message);
+					alert("Errore: " + error.data);
 				});
 			}
 			$rootScope.vediEvidenza=function(s){
@@ -258,7 +258,7 @@ app.run(
 						$rootScope.result=data;
 						deferred.resolve("Hi4");
 				}).catch(function(error) {
-					alert("Errore: " + error.data.message);
+					alert("Errore: " + error.data);
 				});
 				return deferred.promise;	
 			}
@@ -268,7 +268,7 @@ app.run(
 						$rootScope.result=data;
 						deferred.resolve("Hi3");
 				}).catch(function(error) {
-					alert("Errore: " + error.data.message);
+					alert("Errore: " + error.data);
 				});
 				return deferred.promise;	
 			}
