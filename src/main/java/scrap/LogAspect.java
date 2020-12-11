@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
   
 @Aspect
-@Component
+//@Component
 public class LogAspect {
 	@AfterThrowing(
 			pointcut = "within(scrap.*)",
