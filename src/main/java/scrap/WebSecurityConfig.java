@@ -11,7 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 	  @Override
 	  protected void configure(HttpSecurity http) throws Exception {
 	    http
-	    .csrf().disable()	    .requiresChannel()
+	    .csrf().disable()
+	    .requiresChannel()
 	      .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
 	      .requiresSecure();
 	    
