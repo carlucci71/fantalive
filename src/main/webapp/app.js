@@ -393,8 +393,6 @@ app.filter('filtraSquadra', function($rootScope){
 	  }    
 	});
 
-]
-
 app.factory('httpRequestInterceptor', function () {
 	  return {
 	    request: function (config) {
