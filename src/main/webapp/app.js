@@ -170,7 +170,7 @@ app.run(
 				$rootScope.loading=true;
 				$rootScope.configura=false;
 				$rootScope.result={};
-				$resource('./preparaSquadre?_crfs=prova',{}).save({}).$promise.then(function(data) {
+				$resource('./preparaSquadre',{}).save({}).$promise.then(function(data) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 					$rootScope.ricaricaIndex();
@@ -392,3 +392,10 @@ app.filter('filtraSquadra', function($rootScope){
 	      } 
 	  }    
 	});
+app.config ["$httpProvider", ($httpProvider) ->
+csrfToken = $('meta[name=csrf-token]').attr('content')
+$httpProvider.defaults.headers.post['X-CSRF-Token'] = csrfToken
+$httpProvider.defaults.headers.put['X-CSRF-Token'] = csrfToken
+$httpProvider.defaults.headers.patch['X-CSRF-Token'] = csrfToken
+$httpProvider.defaults.headers.delete['X-CSRF-Token'] = csrfToken
+]
