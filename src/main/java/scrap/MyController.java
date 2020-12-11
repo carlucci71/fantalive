@@ -134,8 +134,10 @@ public class MyController {
 		return Main.go(true,null,body.get("sqEv"));
 	}
 	@PostMapping("/setGiornata")
-	public void setGiornata(@RequestBody Map<String,Integer> body)  {
+	public Map<String, Object> setGiornata(@RequestBody Map<String,Integer> body)  {
+		Map<String, Object> ret = new HashMap<String, Object>();
 		Main.GIORNATA=body.get("giornata");
+		return ret;
 	}
 	@GetMapping("/getDati")
 	public Map<String, Object> getDati() {
