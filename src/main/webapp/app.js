@@ -200,7 +200,7 @@ app.run(
 				$rootScope.loading=true;
 				$rootScope.configura=false;
 				$rootScope.result={};
-				$resource('./preparaSquadre',{}).save({'giornata':1}).$promise.then(function(data) {
+				$resource('./preparaSquadre',{}).save({}).$promise.then(function(data) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 					$rootScope.ricaricaIndex();
@@ -451,11 +451,8 @@ app.filter('filtraSquadra', function($rootScope){
 app.factory('httpRequestInterceptor', function () {
 	  return {
 	    request: function (config) {
-	      // use this to destroying other existing headers
-//ORIGI		      config.headers = {'X-CSRF-Token':$('meta[name=csrf-token]').attr('content')}
-		      config.headers = {'X-CSRF-Token':'prova'}
-	      // use this to prevent destroying other existing headers
-	      // config.headers['Authorization'] = 'authentication';
+//		      config.headers = {'X-CSRF-Token':'prova'}
+            'Content-Type': 'application/json'
 	      return config;
 	    }
 	  };
