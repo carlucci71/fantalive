@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping({ "/" })
 public class MyController {
 
-	@Value("${process.env.mia_var}")
+	@Value("${mia_var}")
 	String prova;
 	
 	@Autowired SocketHandler socketHandler;
