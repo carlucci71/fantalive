@@ -396,13 +396,11 @@ app.filter('filtraSquadra', function($rootScope){
 app.factory('httpRequestInterceptor', function () {
 	  return {
 	    request: function (config) {
-
 	      // use this to destroying other existing headers
-	      config.headers = {'X-CSRF-Token':$('meta[name=csrf-token]').attr('content')}
-
+//ORIGI		      config.headers = {'X-CSRF-Token':$('meta[name=csrf-token]').attr('content')}
+		      config.headers = {'X-CSRF-Token':'prova'}
 	      // use this to prevent destroying other existing headers
 	      // config.headers['Authorization'] = 'authentication';
-
 	      return config;
 	    }
 	  };
