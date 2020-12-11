@@ -170,7 +170,7 @@ app.run(
 				$rootScope.loading=true;
 				$rootScope.configura=false;
 				$rootScope.result={};
-				$resource('./preparaSquadre',{}).save({}).$promise.then(function(data) {
+				$resource('./preparaSquadre',{}).save({'_crfs':'prova'}).$promise.then(function(data) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 					$rootScope.ricaricaIndex();
