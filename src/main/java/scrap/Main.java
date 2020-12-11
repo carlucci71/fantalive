@@ -46,7 +46,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
-	public static final String URL_NOTIFICA = "http://192.168.1.83:7080/fantalive-0.0.1-SNAPSHOT/";
+	public static final String URL_NOTIFICA_NAS = "http://192.168.1.83:7080/fantalive-0.0.1-SNAPSHOT/";
+	public static final String URL_NOTIFICA_HEROKU = "https://fantalive71.herokuapp.com/";
+	
 	public static final int DELTA_VIVA_FG=2;
 	public static final int DELTA_LUCCICAR_FG=3;
 	public static final String COMP_VIVA_FG = "250964";
@@ -64,6 +66,7 @@ public class Main {
 	public static int GIORNATA = 10;
 	public static final String ROOT="/tmp/";
 	public static Map<String,Object> toSocket;
+	public static String MIO_IP;
 	
 	public static FantaLiveBOT fantaLiveBot;
 
@@ -266,7 +269,7 @@ FullTime
 						}
 					}
 				}
-    			des.append("\n").append(URL_NOTIFICA);
+    			des.append("\n").append(getUrlNotifica());
         		Main.inviaNotifica(des.toString());
     		}
     	}
@@ -276,6 +279,16 @@ FullTime
     		map.put("res", go);
     		socketHandler.invia(map);
     	}
+	}
+	
+	public static String getUrlNotifica() {
+		if (MIO_IP.equals("192.168.1.83")) {
+			return "http://" + MIO_IP + URL_NOTIFICA_NAS;
+		}
+		else if (MIO_IP.startsWith("192"))
+			return "http://" + MIO_IP + ":7080/";
+		else
+			return URL_NOTIFICA_HEROKU;
 	}
 	
 	
@@ -340,7 +353,7 @@ FullTime
 			body.put("pushTitle", "FantaLive");
 			//body.put("subtitle", "Aggiornamento");
 			body.put("content", msg);
-			body.put("link", URL_NOTIFICA);
+			body.put("link", getUrlNotifica());
 
 //			body.put("channelName", "daniele");
 			//body.put("schedule", 1591982947);

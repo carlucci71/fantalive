@@ -32,7 +32,6 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	private final  String SENZA_VOTO = "\u2753";
 	private final  String SQUADRA_GIOCA = "\u26BD";
 	private final  String NON_GIOCA  = "\u23F0";//274E
-	private static String MIO_IP;
 	
 
 	@Override
@@ -104,7 +103,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 			throw new RuntimeException(e);
 		}
 		CHI=chi;
-		MIO_IP = InetAddress.getLocalHost().getHostAddress();
+		Main.MIO_IP = InetAddress.getLocalHost().getHostAddress();
 		f.messaggioBenvenuto();
 		return f;
 	}
@@ -159,8 +158,8 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 					testo.append("Giocatori con voto: ").append(sq.getContaRiserve()).append("\n");
 					testo.append("Ancora da giocare: ").append(sq.getContaSquadraRiserveNonGioca()).append("\n");
 					
-					if(chatId == Constant.CHAT_ID_FANTALIVE) {
-						testo.append("\n").append(Main.URL_NOTIFICA);
+					if(chatId.intValue() == Constant.CHAT_ID_FANTALIVE.intValue()) {
+						testo.append("\n").append(Main.getUrlNotifica());
 					}
 					
 					
@@ -298,7 +297,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 		messaggio = messaggio + " " + msg;
 
 		if (chatId == Constant.CHAT_ID_FANTALIVE) {
-			messaggio = messaggio + "\n\n<i>" + CHI + " " + MIO_IP + "</i>";
+			messaggio = messaggio + "\n\n<i>" + CHI + " " + Main.MIO_IP + "</i>";
 		}
 		
 		sendMessage.setText(messaggio);
