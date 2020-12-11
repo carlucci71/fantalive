@@ -134,9 +134,9 @@ public class MyController {
 		return Main.go(true,null,body.get("sqEv"));
 	}
 	@PostMapping("/setGiornata")
-	public Map<String, Object> setGiornata(@RequestBody Map<String,Integer> body)  {
+	public Map<String, Object> setGiornata(@RequestBody Map<String,Object> body)  {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		Main.GIORNATA=body.get("giornata");
+		Main.GIORNATA=(Integer)body.get("giornata");
 		return ret;
 	}
 	@GetMapping("/getDati")
@@ -152,8 +152,8 @@ public class MyController {
 		Constant.AUTH_FS=body.get("body");
 	}
 	@PostMapping("/preparaSquadre")
-	public void preparaSquadre() throws Exception {
-		System.out.println("2********************************************************************************************************************");
+	public void preparaSquadre(@RequestBody Map<String,Integer> body) throws Exception {
+		System.out.println("222**" + body.get("giornata"));
 		try
 		{
 			Main.aggKeyFG();
