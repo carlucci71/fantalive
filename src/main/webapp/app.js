@@ -392,6 +392,24 @@ app.filter('filtraSquadra', function($rootScope){
 	      } 
 	  }    
 	});
-app.config ["$httpProvider", ($httpProvider) ->
-$httpProvider.defaults.headers.common['X-CSRF-Token'] = $('meta[name=csrf-token]').attr('content')
+
 ]
+
+app.factory('httpRequestInterceptor', function () {
+	  return {
+	    request: function (config) {
+
+	      // use this to destroying other existing headers
+	      config.headers = {'X-CSRF-Token':$('meta[name=csrf-token]').attr('content')}
+
+	      // use this to prevent destroying other existing headers
+	      // config.headers['Authorization'] = 'authentication';
+
+	      return config;
+	    }
+	  };
+	});
+
+	app.config(function ($httpProvider) {
+	  $httpProvider.interceptors.push('httpRequestInterceptor');
+	});
