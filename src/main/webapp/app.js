@@ -200,7 +200,7 @@ app.run(
 				$rootScope.loading=true;
 				$rootScope.configura=false;
 				$rootScope.result={};
-				$resource('./preparaSquadre',{}).save({{'giornata':1}}).$promise.then(function(data) {
+				$resource('./preparaSquadre',{}).save({'giornata':1}).$promise.then(function(data) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 					$rootScope.ricaricaIndex();
