@@ -25,13 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping({ "/" })
 public class MyController {
 
-	@Value("${mia_var}")
+	@Value("${env.mia_var}")
 	String prova;
 	
 	@Autowired SocketHandler socketHandler;
 	public MyController() throws Exception {
 		super();
-		System.out.println("4" + prova + "********************************************************************************************************************");
+		System.out.println("5" + prova + "********************************************************************************************************************");
 		ValConst.inizializza();
 		Main.init();
 		Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
