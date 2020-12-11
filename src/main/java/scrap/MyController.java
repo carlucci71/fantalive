@@ -11,6 +11,7 @@ import java.util.Map;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,10 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping({ "/" })
 public class MyController {
 
+	@Value("${process.env.DATABASE_URL}")
+	String prova;
+	
 	@Autowired SocketHandler socketHandler;
 	public MyController() throws Exception {
 		super();
-		System.out.println("1********************************************************************************************************************");
+		System.out.println("3" + prova + "********************************************************************************************************************");
 		ValConst.inizializza();
 		Main.init();
 		Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
