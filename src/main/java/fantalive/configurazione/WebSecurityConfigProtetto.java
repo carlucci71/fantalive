@@ -14,7 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Profile(value = "protetto")
 	public class WebSecurityConfigProtetto extends WebSecurityConfigurerAdapter {
 
-	@Value("${security.user.name}")
+	@Value("${SECURITY_USER_NAME}")
 	private String nomeLega;
 
 	@Override
