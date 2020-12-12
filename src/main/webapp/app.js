@@ -18,11 +18,11 @@ app.run(
 							$rootScope.loading=false;
 							$rootScope.fine=new Date();
 							if (error && error.data && error.data.message)
-								alert("Errore: " + error.data.message);
+								alert("Errore-1-1: " + error.data.message);
 							else if (error && error.data)
-								alert("Errore: " + error.data);
+								alert("Errore-1-2: " + error.data);
 							else 
-								alert("Errore: " + error);
+								alert("Errore-1-3: " + angular.toJson(error));
 						});
 					});
 			}
@@ -62,11 +62,11 @@ app.run(
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 					if (error && error.data && error.data.message)
-						alert("Errore: " + error.data.message);
+						alert("Errore-2-1: " + error.data.message);
 					else if (error && error.data)
-						alert("Errore: " + error.data);
+						alert("Errore-2-2: " + error.data);
 					else 
-						alert("Errore: " + error);
+						alert("Errore-2-3: " + angular.toJson(error));
 				});
 			}
 			$rootScope.chkConnectWS = function() {
@@ -77,6 +77,35 @@ app.run(
 				else if (ws.readyState != 1) {
 					$rootScope.connectWS();					
 				}
+			}
+			$rootScope.getFile = function(tipoFile){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$rootScope.file="";
+				if (tipoFile == 'L'){
+					$resource('./getLivesFromDb',{}).get({}).$promise.then(function(data) {
+						$rootScope.file=data.file;
+						$rootScope.loading=false;
+						$rootScope.fine=new Date();
+					});
+				}
+				if (tipoFile == 'O'){
+					$resource('./getOrariFromDb',{}).get({}).$promise.then(function(data) {
+						$rootScope.file=data.file;
+						$rootScope.loading=false;
+						$rootScope.fine=new Date();
+					});
+				}
+			}
+			$rootScope.caricaFile = function(tipoFile){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./caricaFile',{}).save({'file':$rootScope.file,'tipoFile':tipoFile}).$promise.then(function(data) {
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				});
 			}
 			$rootScope.connectWS = function() {
 				var deferred = $q.defer();
@@ -127,11 +156,11 @@ app.run(
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 					if (error && error.data && error.data.message)
-						alert("Errore: " + error.data.message);
+						alert("Errore-3-1: " + error.data.message);
 					else if (error && error.data)
-						alert("Errore: " + error.data);
+						alert("Errore-3-2: " + error.data);
 					else 
-						alert("Errore: " + error);
+						alert("Errore-3-3: " + angular.toJson(error));
 				});
 			}
 			$rootScope.simulaCambi=function(r,sq, ind){
@@ -146,11 +175,11 @@ app.run(
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 					if (error && error.data && error.data.message)
-						alert("Errore: " + error.data.message);
+						alert("Errore-4-1: " + error.data.message);
 					else if (error && error.data)
-						alert("Errore: " + error.data);
+						alert("Errore-4-2: " + error.data);
 					else 
-						alert("Errore: " + error);
+						alert("Errore-4-3: " + angular.toJson(error));
 				});
 			}
 			$rootScope.ricaricaIndex=function(){
@@ -172,21 +201,21 @@ app.run(
 						$rootScope.loading=false;
 						$rootScope.fine=new Date();
 						if (error && error.data && error.data.message)
-							alert("Errore: " + error.data.message);
+							alert("Errore-5-1: " + error.data.message);
 						else if (error && error.data)
-							alert("Errore: " + error.data);
+							alert("Errore-5-2: " + error.data);
 						else 
-							alert("Errore: " + error);
+							alert("Errore-5-3: " + angular.toJson(error));
 					});
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 					if (error && error.data && error.data.message)
-						alert("Errore: " + error.data.message);
+						alert("Errore-6-1: " + error.data.message);
 					else if (error && error.data)
-						alert("Errore: " + error.data);
+						alert("Errore-6-2: " + error.data);
 					else 
-						alert("Errore: " + error);
+						alert("Errore-6-3: " + angular.toJson(error));
 				});
 				return deferred.promise;	
 			}
@@ -208,11 +237,11 @@ app.run(
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 					if (error && error.data && error.data.message)
-						alert("Errore: " + error.data.message);
+						alert("Errore-7-1: " + error.data.message);
 					else if (error && error.data)
-						alert("Errore: " + error.data);
+						alert("Errore-7-2: " + error.data);
 					else 
-						alert("Errore: " + error);
+						alert("Errore-7-3: " + angular.toJson(error));
 				});
 			}
 			$rootScope.setFantaSoccerAuth = function(){
@@ -226,11 +255,11 @@ app.run(
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
 					if (error && error.data && error.data.message)
-						alert("Errore: " + error.data.message);
+						alert("Errore-8-1: " + error.data.message);
 					else if (error && error.data)
-						alert("Errore: " + error.data);
+						alert("Errore-8-2: " + error.data);
 					else 
-						alert("Errore: " + error);
+						alert("Errore-8-3: " + angular.toJson(error));
 				});
 			}
 			$rootScope.setGiornata = function(){
@@ -244,11 +273,11 @@ app.run(
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
 					if (error && error.data && error.data.message)
-						alert("Errore: " + error.data.message);
+						alert("Errore-9-1: " + error.data.message);
 					else if (error && error.data)
-						alert("Errore: " + error.data);
+						alert("Errore-9-2: " + error.data);
 					else 
-						alert("Errore: " + error);
+						alert("Errore-9-3: " + angular.toJson(error));
 				});
 			}
 			$rootScope.vediEvidenza=function(s){
@@ -304,11 +333,11 @@ app.run(
 						deferred.resolve("Hi4");
 				}).catch(function(error) {
 					if (error && error.data && error.data.message)
-						alert("Errore: " + error.data.message);
+						alert("Errore-10-1: " + error.data.message);
 					else if (error && error.data)
-						alert("Errore: " + error.data);
+						alert("Errore-10-2: " + error.data);
 					else 
-						alert("Errore: " + error);
+						alert("Errore-10-3: " + angular.toJson(error));
 				});
 				return deferred.promise;	
 			}
@@ -319,11 +348,11 @@ app.run(
 						deferred.resolve("Hi3");
 				}).catch(function(error) {
 					if (error && error.data && error.data.message)
-						alert("Errore: " + error.data.message);
+						alert("Errore-11-1: " + error.data.message);
 					else if (error && error.data)
-						alert("Errore: " + error.data);
+						alert("Errore-11-2: " + error.data);
 					else 
-						alert("Errore: " + error);
+						alert("Errore-11-3: " + angular.toJson(error));
 				});
 				return deferred.promise;	
 			}

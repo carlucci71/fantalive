@@ -134,6 +134,14 @@ table, th, td {
 	<button ng-click="setGiornata()">setGiornata</button>
 	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
 	<button ng-click="preparaSquadre()">Prepara squadre</button>
+	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
+	<textarea style="width:1000px;" type=text ng-model="file"></textarea>
+	<br>
+	<button ng-click="getFile('O')">Get orari</button>
+	<button ng-click="getFile('L')">Get lives</button>
+	<button ng-click="caricaFile('O')">Carica orari</button>
+	<button ng-click="caricaFile('L')">Carica lives</button>
+	
 </div>
 
 </body>

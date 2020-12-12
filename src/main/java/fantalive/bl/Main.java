@@ -710,6 +710,7 @@ FullTime
 			go.add(r);
 		}
 		Map<String, Return> ret =new TreeMap<String, Return>();
+		sqDaEv= new ArrayList<String>();
 		for (Return retAtt : go) {
 			String campionato = retAtt.getCampionato();
 			Return returns = ret.get(campionato);
@@ -727,7 +728,6 @@ FullTime
 			returns.setNome(campionato);
 			List<Squadra> squadre = returns.getSquadre();
 			List<String> sqBeCaricate=new ArrayList<String>();
-			sqDaEv= new ArrayList<String>();
 			for (Squadra sq : retAtt.getSquadre()) {
 				
 				if (sq.getNome() != null && (sq.isEvidenza() || sq.getNome().equalsIgnoreCase(sqDaAddEvid)) && !sq.getNome().equalsIgnoreCase(sqDaDelEvid)) {
@@ -778,13 +778,17 @@ FullTime
 		return ret;
 	}
 	
-	private static Map<String, Object> getLives() throws Exception {
-		Map orari=partiteLive();
+	public static Map<String, Object> getLives() throws Exception {
+		Map orari;
 		List<Live> lives = new ArrayList<Live>();
 		if (false) {//FIXME false
-			orari =  jsonToMap(new String(Files.readAllBytes(Paths.get(ROOT + "orari.json"))));
-			lives =  jsonToLives(new String(Files.readAllBytes(Paths.get(ROOT + "lives.json"))));
+//			orari =  jsonToMap(new String(Files.readAllBytes(Paths.get(ROOT + "orari.json"))));
+//			lives =  jsonToLives(new String(Files.readAllBytes(Paths.get(ROOT + "lives.json"))));
+			orari =  jsonToMap(getTesto("orari.json"));
+			lives =  jsonToLives(getTesto("lives.json"));
+			
 		} else {
+			orari=partiteLive();
 			Iterator<Integer> iterator = sq.keySet().iterator();
 			while (iterator.hasNext()) {
 				Integer integer = (Integer) iterator.next();
@@ -796,8 +800,10 @@ FullTime
 				lives.add(live);
 			}
 			if (false) {//FIXME false
-				Files.write(Paths.get(ROOT + "orari.json"), toJson(orari).getBytes());//
-				Files.write(Paths.get(ROOT + "lives.json"), toJson(lives).getBytes());
+//				Files.write(Paths.get(ROOT + "orari.json"), toJson(orari).getBytes());
+//				Files.write(Paths.get(ROOT + "lives.json"), toJson(lives).getBytes());
+				upsertSalva("orari.json", toJson(orari));
+				upsertSalva("lives.json", toJson(lives));
 			}
 		}
 		Map<String, Object> ret = new HashMap<>();
@@ -1064,7 +1070,7 @@ FullTime
 			throw new RuntimeException(e);
 		}
 	}
-	private static List<Live> jsonToLives(String json){
+	public static List<Live> jsonToLives(String json){
 		try
 		{
 			return mapper.readValue(json, new TypeReference<List<Live>>(){});

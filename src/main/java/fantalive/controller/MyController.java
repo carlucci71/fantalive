@@ -1,11 +1,14 @@
 package fantalive.controller;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -22,6 +25,7 @@ import fantalive.bl.FantaLiveBOT;
 import fantalive.bl.Main;
 import fantalive.configurazione.SocketHandler;
 import fantalive.model.Giocatore;
+import fantalive.model.Live;
 import fantalive.model.Return;
 import fantalive.model.Squadra;
 import fantalive.repository.SalvaRepository;
@@ -70,7 +74,29 @@ public class MyController {
 		Main.toSocket.put("runningBot", runningBot);
 		socketHandler.invia(Main.toSocket );
 	}
-
+	@RequestMapping("/getOrariFromDb")
+	public Map<String, String> getOrariFromDb() throws Exception {
+		Map<String, String> ret = new HashMap<>();
+		ret.put("file", Main.getTesto("orari.json"));
+		return ret;
+	}
+	@RequestMapping("/getLivesFromDb")
+	public Map<String, String> getLivesFromDb() throws Exception {
+		Map<String, String> ret = new HashMap<>();
+		ret.put("file", Main.getTesto("lives.json"));
+		return ret;
+	}
+	@PostMapping("/caricaFile")
+	public void caricaFile(@RequestBody Map<String,Object> body) throws Exception {
+		String content = (String) body.get("file");
+		String tipoFile = (String) body.get("tipoFile");
+		if (tipoFile.equalsIgnoreCase("O")) {
+			Main.upsertSalva("orari.json", content);
+		}
+		if (tipoFile.equalsIgnoreCase("L")) {
+			Main.upsertSalva("lives.json", content);
+		}
+	}
 	@RequestMapping("/test")
 	public Map<String, Return>  test(boolean conLive) throws Exception {
 		Map<String, Return> go = Main.go(conLive,null, null);
@@ -143,7 +169,6 @@ public class MyController {
 		}
 		return null;
 	}
-
 	@PostMapping("/addSqEv")
 	public Map<String, Return>  addSqEv(@RequestBody Map<String,String> body) throws Exception  {
 		return Main.go(true,body.get("sqEv"),null);
