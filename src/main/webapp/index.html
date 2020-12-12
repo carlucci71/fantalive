@@ -27,8 +27,8 @@ table, th, td {
 <button ng-show="!configura && !loading" ng-click="configura=true">Configura</button>
 <button ng-show="configura && !loading" ng-click="endConfigura()">Termina configurazione</button>
 <br><br>
-<!-- 		Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}  -->
-
+Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}  
+<br><br>
 <label ng-show="aggiornamento" >Dati aggiornati alle: {{aggiornamento}} </label>
 <br><span ng-show="timeRefresh">Refresh tra {{20-(timeRefresh/1000)}}s</span>
 <br><span ng-show="!loading">{{runningBot}} <button ng-click="startStopBot()">START/STOP BOT</button></span>
