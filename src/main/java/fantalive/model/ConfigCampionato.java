@@ -1,4 +1,4 @@
-package fantalive.entity;
+package fantalive.model;
 
 public class ConfigCampionato {
 	Integer numGiocatori;

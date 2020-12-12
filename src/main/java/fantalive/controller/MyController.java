@@ -1,11 +1,11 @@
 package fantalive.controller;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,11 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 import fantalive.bl.FantaLiveBOT;
 import fantalive.bl.Main;
 import fantalive.configurazione.SocketHandler;
-import fantalive.entity.Giocatore;
-import fantalive.entity.Return;
-import fantalive.entity.Squadra;
+import fantalive.model.Giocatore;
+import fantalive.model.Return;
+import fantalive.model.Squadra;
+import fantalive.repository.SalvaRepository;
 import fantalive.util.Constant;
-import fantalive.util.ValConst;
 
 @Component
 @RestController
@@ -34,14 +34,26 @@ public class MyController {
 
 	
 	@Autowired SocketHandler socketHandler;
+	@Autowired SalvaRepository salvaRepository;
+
+	/*
 	public MyController() throws Exception {
 		super();
-		String prova = System.getenv("mia_var");
-		ValConst.inizializza();
-		Main.init();
+	}
+	*/
+
+	@PostConstruct
+	private void post() throws Exception {
+		Constant.CHAT_ID_FANTALIVE = Long.valueOf(System.getenv("CHAT_ID_FANTALIVE"));
+		Constant.SPONTIT_KEY = System.getenv("SPONTIT_KEY");
+		Constant.TOKEN_BOT_FANTALIVE = System.getenv("TOKEN_BOT_FANTALIVE");
+		Constant.SPONTIT_USERID = System.getenv("SPONTIT_USERID");
+		Constant.APPKEY_FG = System.getenv("APPKEY_FG");
+		Constant.AUTH_FS = System.getenv("AUTH_FS");
+		Main.init(salvaRepository);
 		Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 	}
-
+	
 	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
 		int conta = (int) Main.toSocket.get("timeRefresh");
@@ -82,7 +94,8 @@ public class MyController {
 	@PostMapping("/salva")
 	public Map<String, Return> salva(@RequestBody Map<String,Return> body) throws Exception  {
 		Return r = body.get("r");
-		Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + r.getNome().toLowerCase() + ".json"), Main.toJson(r.getSquadre()).getBytes());
+//		Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + r.getNome().toLowerCase() + ".json"), Main.toJson(r.getSquadre()).getBytes());
+		Main.upsertSalva("fomrazioneFG" + r.getNome().toLowerCase() + ".json", Main.toJson(r.getSquadre()));
 		return test(true);
 	}
 	@PostMapping("/simulaCambi")
@@ -168,6 +181,13 @@ public class MyController {
 			Main.scaricaBe();
 			List<Squadra> squadre = new ArrayList<Squadra>();
 			for (int i=0;i<Main.NUM_PARTITE_FS;i++) {
+				String nome = "be"+i + ".html";
+				String testo=Main.getTesto(nome);
+				Document doc = Jsoup.parse(testo);
+				squadre.add(Main.getFromFS(doc, "Casa"));
+				squadre.add(Main.getFromFS(doc, "Trasferta"));
+				Main.cancellaSalva(nome);
+				/*
 				String nomeFile = Main.ROOT + "be"+i + ".html";
 				if (Files.exists(Paths.get(nomeFile))) {
 					byte[] inputS = Files.readAllBytes(Paths.get(nomeFile));
@@ -176,8 +196,10 @@ public class MyController {
 					squadre.add(Main.getFromFS(doc, "Trasferta"));
 					Files.delete(Paths.get(nomeFile));
 				}
+				*/
 			}
-			Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + "be" + ".json"), Main.toJson(squadre).getBytes());
+//			Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + "be" + ".json"), Main.toJson(squadre).getBytes());
+			Main.upsertSalva("fomrazioneFG" + "be" + ".json", Main.toJson(squadre));
 		}
 		catch (Exception e)
 		{

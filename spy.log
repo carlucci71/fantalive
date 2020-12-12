@@ -1,0 +1,31 @@
+1607770665108|28|statement|connection 9|url jdbc:p6spy:mysql://localhost:3306/asta|create table salva (id bigint not null, testo varchar(255), primary key (id))|create table salva (id bigint not null, testo varchar(255), primary key (id))
+1607770734126|7|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|select salva0_.id as id1_0_0_, salva0_.testo as testo2_0_0_ from salva salva0_ where salva0_.id=?|select salva0_.id as id1_0_0_, salva0_.testo as testo2_0_0_ from salva salva0_ where salva0_.id=1607770734015
+1607770734208|2|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|insert into salva (testo, id) values (?, ?)|insert into salva (testo, id) values ('prova', 1607770734015)
+1607770734213|2|commit|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta||
+1607770734629|3|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_
+1607770734640|6|commit|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta||
+1607770734650|2|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_
+1607770734662|4|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|delete from salva where id=?|delete from salva where id=1607770734015
+1607770734666|2|commit|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta||
+1607770734671|0|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_
+1607770734672|0|commit|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta||
+1607770810442|3|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|select salva0_.id as id1_0_0_, salva0_.testo as testo2_0_0_ from salva salva0_ where salva0_.id=?|select salva0_.id as id1_0_0_, salva0_.testo as testo2_0_0_ from salva salva0_ where salva0_.id=1607770810368
+1607770810496|2|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|insert into salva (testo, id) values (?, ?)|insert into salva (testo, id) values ('prova', 1607770810368)
+1607770810502|2|commit|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta||
+1607770810700|0|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_
+1607770810705|0|commit|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta||
+1607770810709|0|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_
+1607770810715|1|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|delete from salva where id=?|delete from salva where id=1607770810368
+1607770810722|2|commit|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta||
+1607770810725|0|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_
+1607770810726|0|commit|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta||
+1607770917118|4|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|select salva0_.id as id1_0_0_, salva0_.testo as testo2_0_0_ from salva salva0_ where salva0_.id=?|select salva0_.id as id1_0_0_, salva0_.testo as testo2_0_0_ from salva salva0_ where salva0_.id=1607770917014
+1607770917193|2|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|insert into salva (testo, id) values (?, ?)|insert into salva (testo, id) values ('prova', 1607770917014)
+1607770917199|2|commit|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta||
+1607770917467|1|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_
+1607770917472|0|commit|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta||
+1607770917477|0|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_
+1607770917485|2|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|delete from salva where id=?|delete from salva where id=1607770917014
+1607770917491|3|commit|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta||
+1607770917494|1|statement|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_|select salva0_.id as id1_0_, salva0_.testo as testo2_0_ from salva salva0_
+1607770917496|0|commit|connection 8|url jdbc:p6spy:mysql://localhost:3306/asta||

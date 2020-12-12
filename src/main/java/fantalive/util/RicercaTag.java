@@ -7,7 +7,7 @@ import fantalive.bl.Main;
 
 public class RicercaTag {
 	public static void main(String[] args) throws Exception {
-		Main.init();
+		Main.init(null);
 		for (int i=1;i<2222;i++) {
 			String s = "https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=1&competitionId=" + i;
 			try {

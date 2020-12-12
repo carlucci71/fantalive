@@ -20,9 +20,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 
 import fantalive.bl.Main.Campionati;
-import fantalive.entity.Giocatore;
-import fantalive.entity.Return;
-import fantalive.entity.Squadra;
+import fantalive.model.Giocatore;
+import fantalive.model.Return;
+import fantalive.model.Squadra;
 import fantalive.util.Constant;
 
 public class FantaLiveBOT extends TelegramLongPollingBot{
@@ -92,7 +92,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	}
 
 	public static void main(String[] args) throws Exception {
-		Main.init();
+		Main.init(null);
 		inizializza("MAIN");
 	}
 

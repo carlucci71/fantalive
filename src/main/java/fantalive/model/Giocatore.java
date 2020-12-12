@@ -1,4 +1,4 @@
-package fantalive.entity;
+package fantalive.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;

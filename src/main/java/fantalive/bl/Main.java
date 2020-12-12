@@ -44,12 +44,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fantalive.configurazione.SocketHandler;
-import fantalive.entity.ConfigCampionato;
-import fantalive.entity.Giocatore;
-import fantalive.entity.Live;
-import fantalive.entity.Notifica;
-import fantalive.entity.Return;
-import fantalive.entity.Squadra;
+import fantalive.entity.Salva;
+import fantalive.model.ConfigCampionato;
+import fantalive.model.Giocatore;
+import fantalive.model.Live;
+import fantalive.model.Notifica;
+import fantalive.model.Return;
+import fantalive.model.Squadra;
+import fantalive.repository.SalvaRepository;
 import fantalive.util.Constant;
 
 public class Main {
@@ -70,7 +72,7 @@ public class Main {
 	private static final String COMP_ID_LIVE_GAZZETTA = "21";
 	private static final String I_LIVE_FANTACALCIO = "15";
 
-	public static int GIORNATA = 10;
+	public static int GIORNATA = 11;
 	public static final String ROOT="/tmp/";
 	public static Map<String,Object> toSocket;
 	public static String MIO_IP;
@@ -79,17 +81,19 @@ public class Main {
 
 	public static enum Campionati {BE, FANTAVIVA, LUCCICAR};
 	
-	static Map<Integer, String> sq=null;
+	private static Map<Integer, String> sq=null;
 	public static HashMap<Integer, String[]> eventi=null;
-	static List<ConfigCampionato> files=null;
+	private static List<ConfigCampionato> configsCampionato=null;
 	public static List<String> sqDaEv= null;
-	static Map<String, Giocatore> oldSnapshot=null;
-
+	private static Map<String, Giocatore> oldSnapshot=null;
+	private static SalvaRepository salvaRepository=null;
+	
+	
 //	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 	static ObjectMapper mapper;
 	public static Map<String, String> keyFG=null;
-
-	public static void init() throws Exception {
+	public static void init(SalvaRepository salvaRepositorySpring) throws Exception {
+		salvaRepository=salvaRepositorySpring;
 		Main.aggKeyFG();
 		if (sqDaEv==null) {
 			inizializzaSqDaEv();
@@ -147,11 +151,11 @@ public class Main {
 			sq.put(19, "UDI");
 			sq.put(20, "VER");
 		}
-		if (files==null) {
-			files = new ArrayList<ConfigCampionato>();
-			files.add(new ConfigCampionato(24,"FANTAGAZZETTA","luccicar"));
-			files.add(new ConfigCampionato(22,"FANTAGAZZETTA","fantaviva"));
-			files.add(new ConfigCampionato(22,"FANTASERVICE","be"));
+		if (configsCampionato==null) {
+			configsCampionato = new ArrayList<ConfigCampionato>();
+			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA","luccicar"));
+			configsCampionato.add(new ConfigCampionato(22,"FANTAGAZZETTA","fantaviva"));
+			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE","be"));
 		}
 	}
 
@@ -422,7 +426,8 @@ FullTime
 
 				};
 				String responseBody = httpclient.execute(httpget, responseHandler);
-				Files.write(Paths.get(ROOT + "be" + i + ".html"), responseBody.getBytes());
+//				Files.write(Paths.get(ROOT + "be" + i + ".html"), responseBody.getBytes());
+				upsertSalva("be" + i + ".html", responseBody);
 			}
 		} finally {
 			httpclient.close();
@@ -539,7 +544,7 @@ FullTime
 
 			// print result
 			String stringResponse = sfResponse.toString();
-			throw new RuntimeException("POST NOT WORKED ".concat(url).concat(" -> ").concat("STACK:")
+			throw new RuntimeException("GET NOT WORKED ".concat(url).concat(" -> ").concat("STACK:")
 					.concat(stringResponse));
 		}
 		return response.toString(); 
@@ -606,19 +611,30 @@ FullTime
 				}
 			}
 		}
-		Files.write(Paths.get(ROOT + "fomrazioneFG" + lega + ".json"), toJson(squadre).getBytes());
+//		Files.write(Paths.get(ROOT + "fomrazioneFG" + lega + ".json"), toJson(squadre).getBytes());
+		upsertSalva("fomrazioneFG" + lega + ".json", toJson(squadre));
 		return squadre;
 	}
 
 	private static List<Squadra> deserializzaSquadraFG(String lega) throws Exception {
-		if (Files.exists(Paths.get(ROOT + "fomrazioneFG" + lega + ".json"))) {
-			return jsonToSquadre(new String(Files.readAllBytes(Paths.get(ROOT + "fomrazioneFG" + lega + ".json"))));
+		/*
+		String nome = ROOT + "fomrazioneFG" + lega + ".json";
+		if (Files.exists(Paths.get(nome))) {
+			return jsonToSquadre(new String(Files.readAllBytes(Paths.get(nome))));
 		} else {
+			return new ArrayList<Squadra>();
+		}
+		*/
+		String testo = getTesto("fomrazioneFG" + lega + ".json");
+		if (testo!=null) {
+			return jsonToSquadre(testo);
+		}else {
 			return new ArrayList<Squadra>();
 		}
 	}
 
 	public static void cancellaSquadre() throws Exception {
+		/*
 		if (Files.exists(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json")))  Files.delete(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"));
 		if (Files.exists(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"))) Files.delete(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"));
 		if (Files.exists(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"))) Files.delete(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"));
@@ -628,7 +644,15 @@ FullTime
 					Files.delete(Paths.get(ROOT + "be" + i + ".html"));
 			}
 		}
+		*/
+		cancellaSalva("fomrazioneFG" + "luccicar" + ".json");
+		cancellaSalva("fomrazioneFG" + "fantaviva" + ".json");
+		cancellaSalva("fomrazioneFG" + "be" + ".json");
+		for (int i=0;i<Main.NUM_PARTITE_FS;i++) {
+			cancellaSalva("be" + i + ".html");
+		}
 		inizializzaSqDaEv();
+
 	}
 	private static void inizializzaSqDaEv() {
 		sqDaEv= new ArrayList<String>();
@@ -681,7 +705,7 @@ FullTime
 			lives = (List<Live>) getLives.get("lives");
 			orari = (Map<String, Map<String, String>>) getLives.get("orari");
 		}
-		for (ConfigCampionato configCampionato : files) {
+		for (ConfigCampionato configCampionato : configsCampionato) {
 			Return r = getReturn(configCampionato, conLive, lives, orari);
 			go.add(r);
 		}
@@ -736,9 +760,18 @@ FullTime
 		}
 		
 		if(conLive) {
-			if (ret.get(Campionati.FANTAVIVA.name()).getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get(Campionati.FANTAVIVA.name()).getSquadre()).getBytes());
-			if (ret.get(Campionati.LUCCICAR.name()).getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get(Campionati.LUCCICAR.name()).getSquadre()).getBytes());
-			if (ret.get(Campionati.BE.name()).getSquadre().size()>0) Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get(Campionati.BE.name()).getSquadre()).getBytes());
+			if (ret.get(Campionati.FANTAVIVA.name()).getSquadre().size()>0) {
+//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get(Campionati.FANTAVIVA.name()).getSquadre()).getBytes());
+				upsertSalva("fomrazioneFG" + "fantaviva" + ".json", toJson(ret.get(Campionati.FANTAVIVA.name()).getSquadre()));
+			}
+			if (ret.get(Campionati.LUCCICAR.name()).getSquadre().size()>0) {
+//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get(Campionati.LUCCICAR.name()).getSquadre()).getBytes());
+				upsertSalva("fomrazioneFG" + "luccicar" + ".json", toJson(ret.get(Campionati.LUCCICAR.name()).getSquadre()));
+			}
+			if (ret.get(Campionati.BE.name()).getSquadre().size()>0) {
+//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get(Campionati.BE.name()).getSquadre()).getBytes());
+				upsertSalva("fomrazioneFG" + "be" + ".json", toJson(ret.get(Campionati.BE.name()).getSquadre()));
+			}
 		}
 		
 		
@@ -1062,4 +1095,28 @@ FullTime
 		}
 	}
 
+	public static String getTesto(String nome) {
+		Salva findOne = salvaRepository.findOne(nome);
+		if (findOne==null) return null;
+		return findOne.getTesto();
+	}
+	
+	public static void upsertSalva(String nome, String testo) {
+		Salva findOne = salvaRepository.findOne(nome);
+		if (findOne==null) {
+			findOne=new Salva();
+			findOne.setNome(nome);
+		}
+		findOne.setTesto(testo);
+		salvaRepository.save(findOne);
+	}
+	public static boolean esisteSalva(String nome) {
+		return salvaRepository.exists(nome);
+	}
+	
+	public static void cancellaSalva(String nome) {
+		if (salvaRepository.exists(nome)) {
+			salvaRepository.delete(nome);
+		}
+	}
 }
