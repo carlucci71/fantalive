@@ -13,6 +13,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -57,7 +58,7 @@ import fantalive.util.Constant;
 public class Main {
 	public static final String URL_NOTIFICA_NAS = "http://192.168.1.83:7080/fantalive-0.0.1-SNAPSHOT/";
 	public static final String URL_NOTIFICA_HEROKU = "https://fantalive71.herokuapp.com/";
-	
+
 	public static final int DELTA_VIVA_FG=2;
 	public static final int DELTA_LUCCICAR_FG=3;
 	public static final String COMP_VIVA_FG = "250964";
@@ -76,20 +77,22 @@ public class Main {
 	public static final String ROOT="/tmp/";
 	public static Map<String,Object> toSocket;
 	public static String MIO_IP;
-	
+
 	public static FantaLiveBOT fantaLiveBot;
 
 	public static enum Campionati {BE, FANTAVIVA, LUCCICAR};
-	
+
 	private static Map<Integer, String> sq=null;
 	public static HashMap<Integer, String[]> eventi=null;
 	private static List<ConfigCampionato> configsCampionato=null;
 	public static List<String> sqDaEv= null;
 	private static Map<String, Giocatore> oldSnapshot=null;
 	private static SalvaRepository salvaRepository=null;
-	
-	
-//	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
+	private static List<Live> oldSnapLives=null;
+	private static Map<String, Map<String, String>> oldSnapOrari=null;
+
+
+	//	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 	static ObjectMapper mapper;
 	public static Map<String, String> keyFG=null;
 	public static void init(SalvaRepository salvaRepositorySpring) throws Exception {
@@ -158,140 +161,202 @@ public class Main {
 			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE","be"));
 		}
 	}
-
-	public static void snapshot(SocketHandler socketHandler) throws Exception {
-		if (false) {//FIXME false
-			System.out.println("FOTO");
-		}
-		Map<String, Return> go = go(true, null, null);
-    	Iterator<String> campionati = go.keySet().iterator();
-    	Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
-    	while (campionati.hasNext()) {
-			String campionato = (String) campionati.next();
-			Return r = go.get(campionato);
-			List<Squadra> squadre = r.getSquadre();
-			for (Squadra squadra : squadre) {
-				if (sqDaEv.contains(squadra.getNome())) 
-				{
-					for (Giocatore giocatore : squadra.getTitolari()) {
-						snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
-					}
-					for (Giocatore giocatore : squadra.getRiserve()) {
-						snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
-					}
-				}
-			}
-    	}
-    	
-    	if (oldSnapshot!=null) {
-    		Iterator<String> iterator = oldSnapshot.keySet().iterator();
-    		Map<String, Map<String,List<Notifica>>> notifiche = new HashMap();
-    		while (iterator.hasNext()) {
-				String key = (String) iterator.next();
-				Giocatore oldGioc = oldSnapshot.get(key);
-				Giocatore newGioc = snapshot.get(key);
-				List<Map<Integer,Integer>> findNuoviEventi = findNuoviEventi(oldGioc, newGioc);
-				Map<String,Integer> eventi=new HashMap<>();
-				String oldTag = oldGioc.getOrario().get("tag");
-				String newTag = newGioc.getOrario().get("tag");
-				if (newTag.equalsIgnoreCase("PreMatch") && newGioc.getVoto() ==0 && newGioc.isSquadraGioca() && !oldGioc.isSquadraGioca()) {
-					eventi.put("NON SCHIERATO",null);
-				}
-				if (newTag.equalsIgnoreCase("PreMatch") && oldGioc.getVoto() != newGioc.getVoto()) {
-					eventi.put("SCHIERATO",null);
-				}
-				if (!oldTag.equalsIgnoreCase(newTag)) {
-					
-/*
-PreMatch
-Postponed
-Cancelled
-Walkover
-FirstHalf
-HalfTime
-SecondHalf
-FullTime
-*/
-					
-					eventi.put(newTag,null);
-				}
-				if (findNuoviEventi.size()>0 || !oldTag.equalsIgnoreCase(newTag)) {
-					for (Map<Integer,Integer> nuovoEvento : findNuoviEventi) {
-						Integer ev = nuovoEvento.keySet().iterator().next();
-						eventi.put(Main.eventi.get(ev)[0],nuovoEvento.get(ev));
-					}
-				}
-				if (eventi.size()>0) {
-					String[] splitKey = key.split("#");
-					Notifica notifica = new Notifica();
-					Map<String,List<Notifica>> notificheSquadreDelCampionato   = notifiche.get(splitKey[0]);
-					if (notificheSquadreDelCampionato == null) {
-						notificheSquadreDelCampionato=new HashMap<String, List<Notifica>>();
-						notifiche.put(splitKey[0], notificheSquadreDelCampionato);
-					}
-					List<Notifica> notificheSquadra = notificheSquadreDelCampionato.get(splitKey[1]);
-					if (notificheSquadra==null) {
-						notificheSquadra=new ArrayList();
-						notificheSquadreDelCampionato.put(splitKey[1], notificheSquadra);
-					}
-					notificheSquadra.add(notifica);
-					notifica.setCampionato(splitKey[0]);
-					notifica.setSquadra(splitKey[1]);
-					notifica.setGiocatore(splitKey[2]);
-					notifica.setId(newGioc.getIdGioc());
-					notifica.setEventi(eventi);
-					notifica.setVoto(newGioc.getVoto() + newGioc.getModificatore()); 
-					if (newGioc.isCambio()) {
-						notifica.setCambio("(X)");
-					}
-				}
-			}
-    		Set<String> keySet = notifiche.keySet();
-    		if (keySet!= null && keySet.size()>0) {
-        		StringBuilder des = new StringBuilder();
-    			for (String camp : keySet) {
-					des.append("\n").append(camp).append("\n");
-					Map<String, List<Notifica>> sq = notifiche.get(camp);
-					Iterator<String> itSq = sq.keySet().iterator();
-					while (itSq.hasNext()) {
-						String sqN = (String) itSq.next();
-						des.append("\t").append(sqN).append("\n");
-						List<Notifica> listN = sq.get(sqN);
-						Collections.sort(listN);
-						for (Notifica notifica : listN) {
-							String ret = notifica.getGiocatore() + notifica.getCambio() + " " + notifica.getId() + " " + notifica.getVoto();
-							Set<String> ks = notifica.getEventi().keySet();
-							for (String key : ks) {
-								if (notifica.getEventi().get(key)==null) {
-									ret = ret + "\n\t\t\t "  + "  " + key;
+	
+	private static boolean livesUguali(List<Live> snapLives) {
+		try {
+			for (Live snapLive : snapLives) {
+				String snapSq=snapLive.getSquadra();
+				for (Live oldLive : oldSnapLives) {
+					if(oldLive.getSquadra().equals(snapSq)) {
+						for (Map<String,Object> snapMap : snapLive.getGiocatori()) {
+							String snapGioc=(String) snapMap.get("nome");
+							for (Map<String,Object> oldMap : oldLive.getGiocatori()) {
+								String oldGioc=(String) oldMap.get("nome");
+								if (snapGioc.equals(oldGioc)) {
+									if (!snapMap.get("evento").toString().equals(oldMap.get("evento").toString())) {
+										return false;
+									}
+									
 								}
 							}
-							for (String key : ks) {
-								if (notifica.getEventi().get(key) != null && notifica.getEventi().get(key)>0) {
-									ret = ret + "\n\t\t\t "  + notifica.getEventi().get(key) + " " + key;
-								}
-							}
-							for (String key : ks) {
-								if (notifica.getEventi().get(key) != null && notifica.getEventi().get(key)<0) {
-									ret = ret + "\n\t\t\t "  + (notifica.getEventi().get(key) * -1) + " --NO-- " + key;
-								}
-							}
-							des.append("\t\t").append(ret).append("\n");
 						}
 					}
 				}
-    			des.append("\n").append(getUrlNotifica());
-        		Main.inviaNotifica(des.toString());
-    		}
-    	}
-    	oldSnapshot=snapshot;
-    	if (socketHandler != null) {
-    		Map<String, Object> map=new HashMap<>();
-    		map.put("res", go);
-    		socketHandler.invia(map);
-    	}
+			}
+			return true;
+		}
+			catch (Exception e) {
+				return true;
+			}
 	}
-	
+
+	private static boolean orariUguali(Map<String, Map<String, String>> snapOrari) {
+		try {
+			Set<String> keySet = snapOrari.keySet();
+			for (String key : keySet) {
+				Map<String, String> snapMap = snapOrari.get(key);
+				Map<String, String> oldMap = oldSnapOrari.get(key);
+				if (!snapMap.get("tag").equals(oldMap.get("tag"))) {
+					return false;
+				}
+			}
+			return true;
+		}
+		catch (Exception e) {
+			return true;
+		}
+	}
+
+	public static void snapshot(SocketHandler socketHandler) throws Exception {
+		Calendar c = Calendar.getInstance();
+		boolean snap=false;
+		Map<String, Object> getLives = getLives();
+		List<Live> snapLives = (List<Live>) getLives.get("lives");
+		Map<String, Map<String, String>> snapOrari = (Map<String, Map<String, String>>) getLives.get("orari");
+		if (oldSnapLives != null) {
+			if (!livesUguali(snapLives) || !orariUguali(snapOrari)) {
+				snap=true;
+			}
+		}
+		oldSnapLives=snapLives;
+		oldSnapOrari=snapOrari;
+		Calendar c2 = Calendar.getInstance();
+		System.out.println("GET LIVES:" + (c2.getTimeInMillis()-c.getTimeInMillis()));
+
+
+		if (snap) {
+			Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari);
+			Iterator<String> campionati = go.keySet().iterator();
+			Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
+			while (campionati.hasNext()) {
+				String campionato = (String) campionati.next();
+				Return r = go.get(campionato);
+				List<Squadra> squadre = r.getSquadre();
+				for (Squadra squadra : squadre) {
+					if (sqDaEv.contains(squadra.getNome())) 
+					{
+						for (Giocatore giocatore : squadra.getTitolari()) {
+							snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
+						}
+						for (Giocatore giocatore : squadra.getRiserve()) {
+							snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
+						}
+					}
+				}
+			}
+
+			if (oldSnapshot!=null) {
+				Iterator<String> iterator = oldSnapshot.keySet().iterator();
+				Map<String, Map<String,List<Notifica>>> notifiche = new HashMap();
+				while (iterator.hasNext()) {
+					String key = (String) iterator.next();
+					Giocatore oldGioc = oldSnapshot.get(key);
+					Giocatore newGioc = snapshot.get(key);
+					List<Map<Integer,Integer>> findNuoviEventi = findNuoviEventi(oldGioc, newGioc);
+					Map<String,Integer> eventi=new HashMap<>();
+					String oldTag = oldGioc.getOrario().get("tag");
+					String newTag = newGioc.getOrario().get("tag");
+					if (newTag.equalsIgnoreCase("PreMatch") && newGioc.getVoto() ==0 && newGioc.isSquadraGioca() && !oldGioc.isSquadraGioca()) {
+						eventi.put("NON SCHIERATO",null);
+					}
+					if (newTag.equalsIgnoreCase("PreMatch") && oldGioc.getVoto() != newGioc.getVoto()) {
+						eventi.put("SCHIERATO",null);
+					}
+					if (!oldTag.equalsIgnoreCase(newTag)) {
+						/*
+						PreMatch
+						Postponed
+						Cancelled
+						Walkover
+						FirstHalf
+						HalfTime
+						SecondHalf
+						FullTime
+						 */
+						eventi.put(newTag,null);
+					}
+					if (findNuoviEventi.size()>0 || !oldTag.equalsIgnoreCase(newTag)) {
+						for (Map<Integer,Integer> nuovoEvento : findNuoviEventi) {
+							Integer ev = nuovoEvento.keySet().iterator().next();
+							eventi.put(Main.eventi.get(ev)[0],nuovoEvento.get(ev));
+						}
+					}
+					if (eventi.size()>0) {
+						String[] splitKey = key.split("#");
+						Notifica notifica = new Notifica();
+						Map<String,List<Notifica>> notificheSquadreDelCampionato   = notifiche.get(splitKey[0]);
+						if (notificheSquadreDelCampionato == null) {
+							notificheSquadreDelCampionato=new HashMap<String, List<Notifica>>();
+							notifiche.put(splitKey[0], notificheSquadreDelCampionato);
+						}
+						List<Notifica> notificheSquadra = notificheSquadreDelCampionato.get(splitKey[1]);
+						if (notificheSquadra==null) {
+							notificheSquadra=new ArrayList();
+							notificheSquadreDelCampionato.put(splitKey[1], notificheSquadra);
+						}
+						notificheSquadra.add(notifica);
+						notifica.setCampionato(splitKey[0]);
+						notifica.setSquadra(splitKey[1]);
+						notifica.setGiocatore(splitKey[2]);
+						notifica.setId(newGioc.getIdGioc());
+						notifica.setEventi(eventi);
+						notifica.setVoto(newGioc.getVoto() + newGioc.getModificatore()); 
+						if (newGioc.isCambio()) {
+							notifica.setCambio("(X)");
+						}
+					}
+				}
+				Set<String> keySet = notifiche.keySet();
+				if (keySet!= null && keySet.size()>0) {
+					StringBuilder des = new StringBuilder();
+					for (String camp : keySet) {
+						des.append("\n").append(camp).append("\n");
+						Map<String, List<Notifica>> sq = notifiche.get(camp);
+						Iterator<String> itSq = sq.keySet().iterator();
+						while (itSq.hasNext()) {
+							String sqN = (String) itSq.next();
+							des.append("\t").append(sqN).append("\n");
+							List<Notifica> listN = sq.get(sqN);
+							Collections.sort(listN);
+							for (Notifica notifica : listN) {
+								String ret = notifica.getGiocatore() + notifica.getCambio() + " " + notifica.getId() + " " + notifica.getVoto();
+								Set<String> ks = notifica.getEventi().keySet();
+								for (String key : ks) {
+									if (notifica.getEventi().get(key)==null) {
+										ret = ret + "\n\t\t\t "  + "  " + key;
+									}
+								}
+								for (String key : ks) {
+									if (notifica.getEventi().get(key) != null && notifica.getEventi().get(key)>0) {
+										ret = ret + "\n\t\t\t "  + notifica.getEventi().get(key) + " " + key;
+									}
+								}
+								for (String key : ks) {
+									if (notifica.getEventi().get(key) != null && notifica.getEventi().get(key)<0) {
+										ret = ret + "\n\t\t\t "  + (notifica.getEventi().get(key) * -1) + " --NO-- " + key;
+									}
+								}
+								des.append("\t\t").append(ret).append("\n");
+							}
+						}
+					}
+					des.append("\n").append(getUrlNotifica());
+					Main.inviaNotifica(des.toString());
+				}
+			}
+			oldSnapshot=snapshot;
+			Calendar c3 = Calendar.getInstance();
+			System.out.println("SNAPSHOT:" + (c3.getTimeInMillis()-c.getTimeInMillis()));
+			if (socketHandler != null) {
+				Map<String, Object> map=new HashMap<>();
+				map.put("res", go);
+				socketHandler.invia(map);
+			}
+			Calendar c4 = Calendar.getInstance();
+			System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-c3.getTimeInMillis()));
+		}
+	}
+
 	public static String getUrlNotifica() {
 		if (MIO_IP.equals("192.168.1.83")) {
 			return "http://" + MIO_IP + URL_NOTIFICA_NAS;
@@ -301,14 +366,14 @@ FullTime
 		else
 			return URL_NOTIFICA_HEROKU;
 	}
-	
-	
+
+
 	public static void main(String[] args) throws Exception {
-		
-	
-		
-		
-//		init();
+
+
+
+
+		//		init();
 		/*
 		Iterator<String> iterator;
     	snapshot(null);
@@ -350,9 +415,9 @@ FullTime
 			}
 		}
     	snapshot(null);
-    	*/
+		 */
 	}
-	
+
 	public static void inviaNotifica(String msg) throws Exception {
 		String urlNotifica;
 		Map<String, String> body;
@@ -366,7 +431,7 @@ FullTime
 			body.put("content", msg);
 			body.put("link", getUrlNotifica());
 
-//			body.put("channelName", "daniele");
+			//			body.put("channelName", "daniele");
 			//body.put("schedule", 1591982947);
 			//body.put("expirationStamp", 1592414947);
 			//body.put("openLinkInApp", "true");
@@ -377,7 +442,7 @@ FullTime
 			headers.put("X-Authorization", Constant.SPONTIT_KEY);
 			headers.put("X-UserId", Constant.SPONTIT_USERID);
 			postHTTP(urlNotifica,body, headers);
-			
+
 		}
 	}
 
@@ -426,7 +491,7 @@ FullTime
 
 				};
 				String responseBody = httpclient.execute(httpget, responseHandler);
-//				Files.write(Paths.get(ROOT + "be" + i + ".html"), responseBody.getBytes());
+				//				Files.write(Paths.get(ROOT + "be" + i + ".html"), responseBody.getBytes());
 				upsertSalva("be" + i + ".html", responseBody);
 			}
 		} finally {
@@ -481,9 +546,9 @@ FullTime
 		os.write(toJson(body).getBytes());
 		os.flush();
 		os.close();
-		
-		
-		
+
+
+
 		int responseCode = postConnection.getResponseCode();
 		StringBuffer response = new StringBuffer();
 		if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -511,7 +576,7 @@ FullTime
 		return response.toString(); 
 	}
 
-	
+
 	public static String getHTTP(String url, Map<String, String>... headers) throws Exception {
 		URL obj = new URL(url);
 		HttpURLConnection getConnection = (HttpURLConnection) obj.openConnection();
@@ -549,14 +614,14 @@ FullTime
 		}
 		return response.toString(); 
 	}
-	
+
 	public static void aggKeyFG() throws Exception {
 		int giornata=Main.GIORNATA;
 		Main.keyFG=new HashMap<String, String>();
 		Main.keyFG.put("fantaviva", "id_comp=" + Main.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Main.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Main.DELTA_VIVA_FG) + "_" + calcolaAggKey("fanta-viva") + ".json");
 		Main.keyFG.put("luccicar", "id_comp=" + Main.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey("luccicar") + ".json");
 	}
-	
+
 	private static String calcolaAggKey(String lega) throws Exception {
 		int giornata=Main.GIORNATA-Main.DELTA_VIVA_FG;
 		if (lega.equalsIgnoreCase("luccicar")) giornata=Main.GIORNATA-Main.DELTA_LUCCICAR_FG;
@@ -611,7 +676,7 @@ FullTime
 				}
 			}
 		}
-//		Files.write(Paths.get(ROOT + "fomrazioneFG" + lega + ".json"), toJson(squadre).getBytes());
+		//		Files.write(Paths.get(ROOT + "fomrazioneFG" + lega + ".json"), toJson(squadre).getBytes());
 		upsertSalva("fomrazioneFG" + lega + ".json", toJson(squadre));
 		return squadre;
 	}
@@ -624,7 +689,7 @@ FullTime
 		} else {
 			return new ArrayList<Squadra>();
 		}
-		*/
+		 */
 		String testo = getTesto("fomrazioneFG" + lega + ".json");
 		if (testo!=null) {
 			return jsonToSquadre(testo);
@@ -644,7 +709,7 @@ FullTime
 					Files.delete(Paths.get(ROOT + "be" + i + ".html"));
 			}
 		}
-		*/
+		 */
 		cancellaSalva("fomrazioneFG" + "luccicar" + ".json");
 		cancellaSalva("fomrazioneFG" + "fantaviva" + ".json");
 		cancellaSalva("fomrazioneFG" + "be" + ".json");
@@ -662,49 +727,52 @@ FullTime
 		sqDaEv.add("Team Alberto..04");
 		sqDaEv.add("Team Frank..10");
 	}
-	
-    private static List<Map<Integer,Integer>> findNuoviEventi(Giocatore og, Giocatore ng) {
-    	List<Map<Integer,Integer>> ret = new ArrayList<>();
-    	ciclaEventi(og, ng, ret,+1);
-    	ciclaEventi(ng, og, ret,-1);
-    	return ret;
-    }
+
+	private static List<Map<Integer,Integer>> findNuoviEventi(Giocatore og, Giocatore ng) {
+		List<Map<Integer,Integer>> ret = new ArrayList<>();
+		ciclaEventi(og, ng, ret,+1);
+		ciclaEventi(ng, og, ret,-1);
+		return ret;
+	}
 
 	private static void ciclaEventi(Giocatore og, Giocatore ng, List<Map<Integer, Integer>> ret, Integer verso) {
 		for (Integer codEvento : ng.getCodEventi()) {
-    		if (eventi.get(codEvento)[4].equalsIgnoreCase("S")) {
-    			int contaNuoviEventiOld = contaNuoviEventi(codEvento,og);
-    			int contaNuoviEventiNew = contaNuoviEventi(codEvento,ng);
-    			if (contaNuoviEventiOld != contaNuoviEventiNew) {
-    				if (!ret.contains(codEvento)) {
-    					Map<Integer, Integer> m = new HashMap<>();
-    					m.put(codEvento,verso*(contaNuoviEventiNew-contaNuoviEventiOld));
-        				ret.add(m);
-    				}
-    			}
-    		}
-    	}
+			if (eventi.get(codEvento)[4].equalsIgnoreCase("S")) {
+				int contaNuoviEventiOld = contaNuoviEventi(codEvento,og);
+				int contaNuoviEventiNew = contaNuoviEventi(codEvento,ng);
+				if (contaNuoviEventiOld != contaNuoviEventiNew) {
+					if (!ret.contains(codEvento)) {
+						Map<Integer, Integer> m = new HashMap<>();
+						m.put(codEvento,verso*(contaNuoviEventiNew-contaNuoviEventiOld));
+						ret.add(m);
+					}
+				}
+			}
+		}
 	}
-    private static int contaNuoviEventi(Integer i, Giocatore g) {
-    	List<Integer> codEventi = g.getCodEventi();
-    	int ret=0;
-    	for (Integer integer : codEventi) {
+	private static int contaNuoviEventi(Integer i, Giocatore g) {
+		List<Integer> codEventi = g.getCodEventi();
+		int ret=0;
+		for (Integer integer : codEventi) {
 			if (integer.intValue() == i.intValue()) ret++;
 		}
-    	return ret;
-    }
-	
-	
+		return ret;
+	}
+
 	public synchronized static Map<String, Return> go(boolean conLive, String sqDaAddEvid, String sqDaDelEvid) throws Exception {
-//		init();//TODO serve?
-		List<Return> go = new ArrayList<Return>();
 		List<Live> lives=new ArrayList<Live>();
 		Map<String, Map<String, String>> orari=null;
 		if (conLive) {
 			Map<String, Object> getLives = getLives();
 			lives = (List<Live>) getLives.get("lives");
 			orari = (Map<String, Map<String, String>>) getLives.get("orari");
+
 		}
+		return postGo(conLive, sqDaAddEvid, sqDaDelEvid,lives,orari);
+	}
+
+	private synchronized static Map<String, Return> postGo(boolean conLive, String sqDaAddEvid, String sqDaDelEvid,List<Live> lives,Map<String, Map<String, String>> orari) throws Exception {
+		List<Return> go = new ArrayList<Return>();
 		for (ConfigCampionato configCampionato : configsCampionato) {
 			Return r = getReturn(configCampionato, conLive, lives, orari);
 			go.add(r);
@@ -729,7 +797,7 @@ FullTime
 			List<Squadra> squadre = returns.getSquadre();
 			List<String> sqBeCaricate=new ArrayList<String>();
 			for (Squadra sq : retAtt.getSquadre()) {
-				
+
 				if (sq.getNome() != null && (sq.isEvidenza() || sq.getNome().equalsIgnoreCase(sqDaAddEvid)) && !sq.getNome().equalsIgnoreCase(sqDaDelEvid)) {
 					sqDaEv.add(sq.getNome());
 				}
@@ -758,35 +826,35 @@ FullTime
 			Collections.sort(squadre);
 			returns.setSquadre(squadre);
 		}
-		
+
 		if(conLive) {
 			if (ret.get(Campionati.FANTAVIVA.name()).getSquadre().size()>0) {
-//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get(Campionati.FANTAVIVA.name()).getSquadre()).getBytes());
+				//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get(Campionati.FANTAVIVA.name()).getSquadre()).getBytes());
 				upsertSalva("fomrazioneFG" + "fantaviva" + ".json", toJson(ret.get(Campionati.FANTAVIVA.name()).getSquadre()));
 			}
 			if (ret.get(Campionati.LUCCICAR.name()).getSquadre().size()>0) {
-//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get(Campionati.LUCCICAR.name()).getSquadre()).getBytes());
+				//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get(Campionati.LUCCICAR.name()).getSquadre()).getBytes());
 				upsertSalva("fomrazioneFG" + "luccicar" + ".json", toJson(ret.get(Campionati.LUCCICAR.name()).getSquadre()));
 			}
 			if (ret.get(Campionati.BE.name()).getSquadre().size()>0) {
-//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get(Campionati.BE.name()).getSquadre()).getBytes());
+				//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get(Campionati.BE.name()).getSquadre()).getBytes());
 				upsertSalva("fomrazioneFG" + "be" + ".json", toJson(ret.get(Campionati.BE.name()).getSquadre()));
 			}
 		}
-		
-		
+
+
 		return ret;
 	}
-	
+
 	public static Map<String, Object> getLives() throws Exception {
 		Map orari;
 		List<Live> lives = new ArrayList<Live>();
-		if (false) {//FIXME false
-//			orari =  jsonToMap(new String(Files.readAllBytes(Paths.get(ROOT + "orari.json"))));
-//			lives =  jsonToLives(new String(Files.readAllBytes(Paths.get(ROOT + "lives.json"))));
+		if (true) {//FIXME false
+			//			orari =  jsonToMap(new String(Files.readAllBytes(Paths.get(ROOT + "orari.json"))));
+			//			lives =  jsonToLives(new String(Files.readAllBytes(Paths.get(ROOT + "lives.json"))));
 			orari =  jsonToMap(getTesto("orari.json"));
 			lives =  jsonToLives(getTesto("lives.json"));
-			
+
 		} else {
 			orari=partiteLive();
 			Iterator<Integer> iterator = sq.keySet().iterator();
@@ -800,8 +868,8 @@ FullTime
 				lives.add(live);
 			}
 			if (false) {//FIXME false
-//				Files.write(Paths.get(ROOT + "orari.json"), toJson(orari).getBytes());
-//				Files.write(Paths.get(ROOT + "lives.json"), toJson(lives).getBytes());
+				//				Files.write(Paths.get(ROOT + "orari.json"), toJson(orari).getBytes());
+				//				Files.write(Paths.get(ROOT + "lives.json"), toJson(lives).getBytes());
 				upsertSalva("orari.json", toJson(orari));
 				upsertSalva("lives.json", toJson(lives));
 			}
@@ -845,7 +913,7 @@ FullTime
 		}
 		for (Live live : lives) {
 			for (Map<String, Object> gg : live.getGiocatori()) {
-//				System.out.println(gg.get("nome") + ";" + gg.get("ruolo") + ";" + live.getSquadra());
+				//				System.out.println(gg.get("nome") + ";" + gg.get("ruolo") + ";" + live.getSquadra());
 				double modificatore=0;
 				String evento = (String) gg.get("evento");
 				String ev="";
@@ -864,7 +932,7 @@ FullTime
 							if (r.getCampionato().equalsIgnoreCase(Campionati.FANTAVIVA.name())) pos=1;
 							if (r.getCampionato().equalsIgnoreCase(Campionati.LUCCICAR.name())) pos=2;
 							if (r.getCampionato().equalsIgnoreCase(Campionati.BE.name())) pos=3;
-							
+
 							modificatore=modificatore+Double.parseDouble(strings[pos]);
 						}
 						codEventi.add(Integer.parseInt(string));
@@ -1025,7 +1093,7 @@ FullTime
 				if (nomeG.equalsIgnoreCase("Donnarumma A.")) nomeG="Donnarumma An. ";
 				if (nomeG.equalsIgnoreCase("Alex Sandro .")) nomeG="Alex Sandro ";
 
-				
+
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
@@ -1106,7 +1174,7 @@ FullTime
 		if (findOne==null) return null;
 		return findOne.getTesto();
 	}
-	
+
 	public static void upsertSalva(String nome, String testo) {
 		Salva findOne = salvaRepository.findOne(nome);
 		if (findOne==null) {
@@ -1119,7 +1187,7 @@ FullTime
 	public static boolean esisteSalva(String nome) {
 		return salvaRepository.exists(nome);
 	}
-	
+
 	public static void cancellaSalva(String nome) {
 		if (salvaRepository.exists(nome)) {
 			salvaRepository.delete(nome);

@@ -30,7 +30,7 @@ table, th, td {
 <!-- 		Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}  -->
 
 <label ng-show="aggiornamento" >Dati aggiornati alle: {{aggiornamento}} </label>
-<br><span ng-show="timeRefresh">Refresh tra {{60-(timeRefresh/1000)}}s</span>
+<br><span ng-show="timeRefresh">Refresh tra {{20-(timeRefresh/1000)}}s</span>
 <br><span ng-show="!loading">{{runningBot}} <button ng-click="startStopBot()">START/STOP BOT</button></span>
 <br>
  		<label ng-show="loading">CARICAMENTO IN CORSO</label>
@@ -139,8 +139,9 @@ table, th, td {
 	<br>
 	<button ng-click="getFile('O')">Get orari</button>
 	<button ng-click="getFile('L')">Get lives</button>
-	<button ng-click="caricaFile('O')">Carica orari</button>
-	<button ng-click="caricaFile('L')">Carica lives</button>
+	<br>
+	<button ng-click="caricaFile('O')">Put orari</button>
+	<button ng-click="caricaFile('L')">Put lives</button>
 	
 </div>
 
