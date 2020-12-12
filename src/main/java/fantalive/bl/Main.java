@@ -848,7 +848,7 @@ public class Main {
 	public static Map<String, Object> getLives() throws Exception {
 		Map orari;
 		List<Live> lives = new ArrayList<Live>();
-		if (true) {//FIXME false
+		if (false) {//FIXME false
 			//			orari =  jsonToMap(new String(Files.readAllBytes(Paths.get(ROOT + "orari.json"))));
 			//			lives =  jsonToLives(new String(Files.readAllBytes(Paths.get(ROOT + "lives.json"))));
 			orari =  jsonToMap(getTesto("orari.json"));
