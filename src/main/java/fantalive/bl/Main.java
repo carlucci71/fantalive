@@ -223,7 +223,6 @@ public class Main {
 		Calendar c2 = Calendar.getInstance();
 		System.out.println("GET LIVES:" + (c2.getTimeInMillis()-c.getTimeInMillis()));
 
-
 		if (snap) {
 			Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari);
 			Iterator<String> campionati = go.keySet().iterator();
