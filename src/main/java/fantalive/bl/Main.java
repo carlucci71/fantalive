@@ -257,6 +257,8 @@ public class Main {
 					String oldTag = oldGioc.getOrario().get("tag");
 					String newTag = newGioc.getOrario().get("tag");
 					if (newTag.equalsIgnoreCase("PreMatch") && newGioc.getVoto() ==0 && newGioc.isSquadraGioca() && !oldGioc.isSquadraGioca()) {
+						System.out.println(toJson(snapLives));
+						System.out.println(toJson(snapOrari));
 						eventi.put("NON SCHIERATO",null);
 					}
 					if (newTag.equalsIgnoreCase("PreMatch") && oldGioc.getVoto() != newGioc.getVoto()) {
