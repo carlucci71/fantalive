@@ -90,14 +90,16 @@ public class Main {
 	public static List<String> sqDaEv= null;
 	private static Map<String, Giocatore> oldSnapshot=null;
 	private static SalvaRepository salvaRepository=null;
+	private static SocketHandler socketHandler=null;
 	private static List<Live> oldSnapLives=null;
 	private static Map<String, Map<String, String>> oldSnapOrari=null;
 	//	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 	static ObjectMapper mapper;
 	public static Map<String, String> keyFG=null;
 
-	public static void init(SalvaRepository salvaRepositorySpring) throws Exception {
+	public static void init(SalvaRepository salvaRepositorySpring, SocketHandler socketHandlerSpring) throws Exception {
 		salvaRepository=salvaRepositorySpring;
+		socketHandler=socketHandlerSpring;
 		Main.aggKeyFG();
 		if (sqDaEv==null) {
 			inizializzaSqDaEv();
@@ -223,7 +225,7 @@ public class Main {
 		}
 	}
 
-	public static void snapshot(SocketHandler socketHandler) throws Exception {
+	public static void snapshot() throws Exception {
 		Calendar c = Calendar.getInstance();
 		boolean snap=false;
 		Map<String, Object> getLives = getLives(Constant.liveFromFile);
@@ -448,6 +450,10 @@ public class Main {
 		Map<String, String> body;
 		Map<String, String> headers;
 		fantaLiveBot.inviaMessaggio(Constant.CHAT_ID_FANTALIVE,msg,false);
+		Map<String, Object> map=new HashMap<>();
+		map.put("notifica", msg);
+		socketHandler.invia(map);
+
 		if(false) {//FIXME false
 			urlNotifica = "https://api.spontit.com/v3/push";
 			body = new HashMap<String, String>();

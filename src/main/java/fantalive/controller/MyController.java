@@ -46,7 +46,7 @@ public class MyController {
 		Constant.SPONTIT_USERID = System.getenv("SPONTIT_USERID");
 		Constant.APPKEY_FG = System.getenv("APPKEY_FG");
 		Constant.AUTH_FS = System.getenv("AUTH_FS");
-		Main.init(salvaRepository);
+		Main.init(salvaRepository,socketHandler);
 		Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 	}
 	
@@ -55,7 +55,7 @@ public class MyController {
 		int conta = (int) Main.toSocket.get("timeRefresh");
 		if (conta==20000) {//FIXME 20000
 			conta=0;
-			Main.snapshot(socketHandler);
+			Main.snapshot();
 		}
 		conta=conta+5000;
 		Main.toSocket.put("timeRefresh", conta);

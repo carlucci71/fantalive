@@ -20,10 +20,25 @@
 table, th, td {
   border: 1px solid black;
 }
+body {
+    position: relative
+}
+#floatingRectangle {
+    z-index: 1;
+    position: absolute;
+    left: 800;
+    top: 20px;
+    overflow-y: auto;
+    overflow-x: auto;
+    height: 800;
+    width: 400px;
+}
 </style>
 <script>
 </script>
 <body data-ng-init="init()" x-ng-app="app" ng-style="{'margin-left':'20px','background-color':backLoading()}">
+<div id="floatingRectangle"><input type=button value=clear ng-click="testoLog=''"></input><pre>{{testoLog}}</pre>
+</div>
 <label ng-show="liveFromFile">LIVE FROM FILE</label><br>
 <button ng-show="!configura && !loading" ng-click="configura=true">Configura</button>
 <button ng-show="configura && !loading" ng-click="endConfigura()">Termina configurazione</button>

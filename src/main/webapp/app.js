@@ -2,6 +2,7 @@ var app = angular.module('app', [ 'ngResource','ngAnimate', 'ngSanitize', 'ui.bo
 app.run(
 		function($rootScope, $resource, $interval,$q,$timeout){
 			$rootScope.configura=false;
+			$rootScope.testoLog="";
 			$rootScope.getOrari=false;
 			$rootScope.getLives=false;
 			$rootScope.init=function(){
@@ -39,13 +40,18 @@ app.run(
 			});
 			$rootScope.getMessaggio = function(message){
 				if (message){
+//					$rootScope.testoLog=$rootScope.testoLog + "REFRESH!!" + ""+ "REFRESH!!" + ""+ "REFRESH!!" + ""+ "REFRESH!!" + ""+ "REFRESH!!" + ""+ "REFRESH!!" + "\n";
 					var msg = JSON.parse(message);
 //					console.log(msg);
 					if (msg.res){
+						$rootScope.testoLog=$rootScope.testoLog + "REFRESH!!" + "\n";
 						$rootScope.result=msg.res;
 					}
 					if (msg.timeRefresh){
 						$rootScope.timeRefresh=msg.timeRefresh;
+					}
+					if (msg.notifica){
+						$rootScope.testoLog=$rootScope.testoLog + msg.notifica + "\n";
 					}
 					if (msg.liveFromFile){
 						$rootScope.liveFromFile=msg.liveFromFile;
