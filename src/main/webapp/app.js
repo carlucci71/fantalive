@@ -2,6 +2,8 @@ var app = angular.module('app', [ 'ngResource','ngAnimate', 'ngSanitize', 'ui.bo
 app.run(
 		function($rootScope, $resource, $interval,$q,$timeout){
 			$rootScope.configura=false;
+			$rootScope.getOrari=false;
+			$rootScope.getLives=false;
 			$rootScope.init=function(){
 				$rootScope.connectWS();
 					$rootScope.ricaricaIndex().then(function(){
@@ -87,6 +89,8 @@ app.run(
 				$rootScope.loading=true;
 				$rootScope.file="";
 				if (tipoFile == 'LD'){
+					$rootScope.getOrari=false;
+					$rootScope.getLives=true;
 					$resource('./getLivesFromDb',{}).get({}).$promise.then(function(data) {
 						$rootScope.file=data.file;
 						$rootScope.loading=false;
@@ -94,6 +98,8 @@ app.run(
 					});
 				}
 				if (tipoFile == 'OD'){
+					$rootScope.getOrari=true;
+					$rootScope.getLives=false;
 					$resource('./getOrariFromDb',{}).get({}).$promise.then(function(data) {
 						$rootScope.file=data.file;
 						$rootScope.loading=false;
@@ -101,6 +107,8 @@ app.run(
 					});
 				}
 				if (tipoFile == 'LL'){
+					$rootScope.getOrari=false;
+					$rootScope.getLives=true;
 					$resource('./getLivesFromLive',{}).get({}).$promise.then(function(data) {
 						$rootScope.file=data.file;
 						$rootScope.loading=false;
@@ -108,6 +116,8 @@ app.run(
 					});
 				}
 				if (tipoFile == 'OL'){
+					$rootScope.getOrari=true;
+					$rootScope.getLives=false;
 					$resource('./getOrariFromLive',{}).get({}).$promise.then(function(data) {
 						$rootScope.file=data.file;
 						$rootScope.loading=false;

@@ -83,14 +83,14 @@ public class MyController {
 	@RequestMapping("/getOrariFromLive")
 	public Map<String, String> getOrariFromLive() throws Exception {
 		Map<String, String> ret = new HashMap<>();
-		Map<String, Object> lives = Main.getLives();
+		Map<String, Object> lives = Main.getLives(false);
 		ret.put("file", Main.toJson(lives.get("orari")));
 		return ret;
 	}
 	@RequestMapping("/getLivesFromLive")
 	public Map<String, String> getLivesFromLive() throws Exception {
 		Map<String, String> ret = new HashMap<>();
-		Map<String, Object> lives = Main.getLives();
+		Map<String, Object> lives = Main.getLives(false);
 		ret.put("file", Main.toJson(lives.get("lives")));
 		return ret;
 	}

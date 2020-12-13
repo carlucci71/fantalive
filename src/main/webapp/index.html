@@ -144,8 +144,9 @@ Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-
 	<button style="width:200px;" ng-click="getFile('OL')">Get orari (Live)</button>
 	<button style="width:200px;" ng-click="getFile('LL')">Get lives (Live)</button>
 	<br>
-	<button style="width:200px;" ng-click="caricaFile('O')">Put orari (DB)</button>
-	<button style="width:200px;" ng-click="caricaFile('L')">Put lives (DB)</button>
+	<button style="width:200px;" ng-disabled="!getOrari" ng-click="caricaFile('O')">Put orari (DB)</button>
+	<button style="width:200px;" ng-disabled="!getLives" ng-click="caricaFile('L')">Put lives (DB)</button>
+	
 	
 </div>
 

@@ -165,30 +165,45 @@ public class Main {
 	
 	private static boolean livesUguali(List<Live> snapLives) {
 		try {
+			boolean liveGiocPresente=false;
+			boolean liveSqPresente=false;
 			for (Live snapLive : snapLives) {
+				liveSqPresente=false;
 				String snapSq=snapLive.getSquadra();
 				for (Live oldLive : oldSnapLives) {
 					if(oldLive.getSquadra().equals(snapSq)) {
+						liveSqPresente=true;
+						liveGiocPresente=false;
 						for (Map<String,Object> snapMap : snapLive.getGiocatori()) {
 							String snapGioc=(String) snapMap.get("nome");
 							for (Map<String,Object> oldMap : oldLive.getGiocatori()) {
 								String oldGioc=(String) oldMap.get("nome");
 								if (snapGioc.equals(oldGioc)) {
+									liveGiocPresente=true;
 									if (!snapMap.get("evento").toString().equals(oldMap.get("evento").toString())) {
+										System.out.println("evento diverso");
 										return false;
 									}
 									
 								}
 							}
+							if (!liveGiocPresente) {
+								System.out.println("live gioc non presente:" + snapGioc);
+								return false;
+							}
 						}
 					}
+				}
+				if (!liveSqPresente) {
+					System.out.println("live sq non presente:" + snapSq);
+					return false;
 				}
 			}
 			return true;
 		}
-			catch (Exception e) {
-				return true;
-			}
+		catch (Exception e) {
+			return true;
+		}
 	}
 
 	private static boolean orariUguali(Map<String, Map<String, String>> snapOrari) {
@@ -211,12 +226,17 @@ public class Main {
 	public static void snapshot(SocketHandler socketHandler) throws Exception {
 		Calendar c = Calendar.getInstance();
 		boolean snap=false;
-		Map<String, Object> getLives = getLives();
+		Map<String, Object> getLives = getLives(Constant.liveFromFile);
 		List<Live> snapLives = (List<Live>) getLives.get("lives");
 		Map<String, Map<String, String>> snapOrari = (Map<String, Map<String, String>>) getLives.get("orari");
 		if (oldSnapLives != null) {
-			if (!livesUguali(snapLives) || !orariUguali(snapOrari)) {
+			boolean bLiveUguali = livesUguali(snapLives);
+			boolean orariUguali = orariUguali(snapOrari);
+			if (!bLiveUguali || !orariUguali) {
 				snap=true;
+				if (!bLiveUguali) {
+					postGo(true, null, null, snapLives, snapOrari);
+				}
 			}
 		}
 		oldSnapLives=snapLives;
@@ -257,8 +277,6 @@ public class Main {
 					String oldTag = oldGioc.getOrario().get("tag");
 					String newTag = newGioc.getOrario().get("tag");
 					if (newTag.equalsIgnoreCase("PreMatch") && newGioc.getVoto() ==0 && newGioc.isSquadraGioca() && !oldGioc.isSquadraGioca()) {
-						System.out.println();
-						System.out.println(toJson(snapOrari));
 						upsertSalva(newGioc.getNome() + "lives.json", toJson(snapLives));
 						upsertSalva(newGioc.getNome() + "orari.json", toJson(snapOrari));
 						eventi.put("NON SCHIERATO",null);
@@ -770,7 +788,7 @@ public class Main {
 		List<Live> lives=new ArrayList<Live>();
 		Map<String, Map<String, String>> orari=null;
 		if (conLive) {
-			Map<String, Object> getLives = getLives();
+			Map<String, Object> getLives = getLives(Constant.liveFromFile);
 			lives = (List<Live>) getLives.get("lives");
 			orari = (Map<String, Map<String, String>>) getLives.get("orari");
 
@@ -853,10 +871,10 @@ public class Main {
 		return ret;
 	}
 
-	public static Map<String, Object> getLives() throws Exception {
+	public static Map<String, Object> getLives(boolean fromFile) throws Exception {
 		Map orari;
 		List<Live> lives = new ArrayList<Live>();
-		if (Constant.liveFromFile) {
+		if (fromFile) {
 			//			orari =  jsonToMap(new String(Files.readAllBytes(Paths.get(ROOT + "orari.json"))));
 			//			lives =  jsonToLives(new String(Files.readAllBytes(Paths.get(ROOT + "lives.json"))));
 			orari =  jsonToMap(getTesto("orari.json"));
