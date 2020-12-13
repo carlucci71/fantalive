@@ -215,7 +215,7 @@ public class Main {
 				Map<String, String> snapMap = snapOrari.get(key);
 				Map<String, String> oldMap = oldSnapOrari.get(key);
 				if (!snapMap.get("tag").equals(oldMap.get("tag"))) {
-					desMiniNotifica=desMiniNotifica + " orario cambia" + key;
+					desMiniNotifica=desMiniNotifica + " orario cambia:" + key;
 					return false;
 				}
 			}
