@@ -183,7 +183,7 @@ public class Main {
 								if (snapGioc.equals(oldGioc)) {
 									liveGiocPresente=true;
 									if (!snapMap.get("evento").toString().equals(oldMap.get("evento").toString())) {
-										desMiniNotifica=desMiniNotifica + " evento diverso";
+										desMiniNotifica=desMiniNotifica + " evento diverso:" + snapGioc ;
 										return false;
 									}
 									
