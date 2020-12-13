@@ -183,21 +183,21 @@ public class Main {
 								if (snapGioc.equals(oldGioc)) {
 									liveGiocPresente=true;
 									if (!snapMap.get("evento").toString().equals(oldMap.get("evento").toString())) {
-										System.out.println("evento diverso");
+										desMiniNotifica=desMiniNotifica + " evento diverso";
 										return false;
 									}
 									
 								}
 							}
 							if (!liveGiocPresente) {
-								System.out.println("live gioc non presente:" + snapGioc);
+								desMiniNotifica=desMiniNotifica + " live gioc non presente:" + snapGioc;
 								return false;
 							}
 						}
 					}
 				}
 				if (!liveSqPresente) {
-					System.out.println("live sq non presente:" + snapSq);
+					desMiniNotifica=desMiniNotifica + " live sq non presente:" + snapSq;
 					return false;
 				}
 			}
@@ -215,6 +215,7 @@ public class Main {
 				Map<String, String> snapMap = snapOrari.get(key);
 				Map<String, String> oldMap = oldSnapOrari.get(key);
 				if (!snapMap.get("tag").equals(oldMap.get("tag"))) {
+					desMiniNotifica=desMiniNotifica + " orario cambia" + key;
 					return false;
 				}
 			}
@@ -225,7 +226,9 @@ public class Main {
 		}
 	}
 
+	static String desMiniNotifica="";
 	public static void snapshot() throws Exception {
+		desMiniNotifica="";
 		Calendar c = Calendar.getInstance();
 		boolean snap=false;
 		Map<String, Object> getLives = getLives(Constant.liveFromFile);
@@ -248,7 +251,6 @@ public class Main {
 
 		if (snap) {
 			boolean inviaNotifica=false;
-			String desMiniNotifica="";
 			Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari);
 			Iterator<String> campionati = go.keySet().iterator();
 			Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
@@ -276,7 +278,6 @@ public class Main {
 					String key = (String) iterator.next();
 					Giocatore oldGioc = oldSnapshot.get(key);
 					Giocatore newGioc = snapshot.get(key);
-					desMiniNotifica=desMiniNotifica + newGioc.getNome() + "-";
 					List<Map<Integer,Integer>> findNuoviEventi = findNuoviEventi(oldGioc, newGioc);
 					Map<String,Integer> eventi=new HashMap<>();
 					String oldTag = oldGioc.getOrario().get("tag");
