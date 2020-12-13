@@ -53,7 +53,7 @@ public class MyController {
 	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
 		int conta = (int) Main.toSocket.get("timeRefresh");
-		if (conta==20000) {//FIXME 60000
+		if (conta==20000) {//FIXME 20000
 			conta=0;
 			Main.snapshot(socketHandler);
 		}

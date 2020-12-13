@@ -306,6 +306,7 @@ public class Main {
 						}
 					}
 				}
+				Calendar cc=Calendar.getInstance();
 				Set<String> keySet = notifiche.keySet();
 				if (keySet!= null && keySet.size()>0) {
 					StringBuilder des = new StringBuilder();
@@ -342,6 +343,8 @@ public class Main {
 					}
 					des.append("\n").append(getUrlNotifica());
 					Main.inviaNotifica(des.toString());
+					Calendar c4 = Calendar.getInstance();
+					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));
 				}
 			}
 			oldSnapshot=snapshot;
@@ -353,7 +356,7 @@ public class Main {
 				socketHandler.invia(map);
 			}
 			Calendar c4 = Calendar.getInstance();
-			System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-c3.getTimeInMillis()));
+			System.out.println("ONLY WEB SOCKET:" + (c4.getTimeInMillis()-c3.getTimeInMillis()));
 		}
 	}
 
