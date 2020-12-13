@@ -24,6 +24,7 @@ table, th, td {
 <script>
 </script>
 <body data-ng-init="init()" x-ng-app="app" ng-style="{'margin-left':'20px','background-color':backLoading()}">
+<label ng-show="liveFromFile">LIVE FROM FILE</label><br>
 <button ng-show="!configura && !loading" ng-click="configura=true">Configura</button>
 <button ng-show="configura && !loading" ng-click="endConfigura()">Termina configurazione</button>
 <br><br>
@@ -137,11 +138,14 @@ Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-
 	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
 	<textarea style="width:1000px;" type=text ng-model="file"></textarea>
 	<br>
-	<button ng-click="getFile('O')">Get orari</button>
-	<button ng-click="getFile('L')">Get lives</button>
+	<button style="width:200px;"  ng-click="getFile('OD')">Get orari (DB)</button>
+	<button style="width:200px;" ng-click="getFile('LD')">Get lives (DB)</button>
 	<br>
-	<button ng-click="caricaFile('O')">Put orari</button>
-	<button ng-click="caricaFile('L')">Put lives</button>
+	<button style="width:200px;" ng-click="getFile('OL')">Get orari (Live)</button>
+	<button style="width:200px;" ng-click="getFile('LL')">Get lives (Live)</button>
+	<br>
+	<button style="width:200px;" ng-click="caricaFile('O')">Put orari (DB)</button>
+	<button style="width:200px;" ng-click="caricaFile('L')">Put lives (DB)</button>
 	
 </div>
 

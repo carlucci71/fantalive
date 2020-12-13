@@ -45,6 +45,9 @@ app.run(
 					if (msg.timeRefresh){
 						$rootScope.timeRefresh=msg.timeRefresh;
 					}
+					if (msg.liveFromFile){
+						$rootScope.liveFromFile=msg.liveFromFile;
+					}
 					if (msg.runningBot){
 						$rootScope.runningBot=msg.runningBot;
 					}
@@ -83,15 +86,29 @@ app.run(
 				$rootScope.fine="";
 				$rootScope.loading=true;
 				$rootScope.file="";
-				if (tipoFile == 'L'){
+				if (tipoFile == 'LD'){
 					$resource('./getLivesFromDb',{}).get({}).$promise.then(function(data) {
 						$rootScope.file=data.file;
 						$rootScope.loading=false;
 						$rootScope.fine=new Date();
 					});
 				}
-				if (tipoFile == 'O'){
+				if (tipoFile == 'OD'){
 					$resource('./getOrariFromDb',{}).get({}).$promise.then(function(data) {
+						$rootScope.file=data.file;
+						$rootScope.loading=false;
+						$rootScope.fine=new Date();
+					});
+				}
+				if (tipoFile == 'LL'){
+					$resource('./getLivesFromLive',{}).get({}).$promise.then(function(data) {
+						$rootScope.file=data.file;
+						$rootScope.loading=false;
+						$rootScope.fine=new Date();
+					});
+				}
+				if (tipoFile == 'OL'){
+					$resource('./getOrariFromLive',{}).get({}).$promise.then(function(data) {
 						$rootScope.file=data.file;
 						$rootScope.loading=false;
 						$rootScope.fine=new Date();

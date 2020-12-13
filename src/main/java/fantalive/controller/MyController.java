@@ -1,18 +1,16 @@
 package fantalive.controller;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +23,6 @@ import fantalive.bl.FantaLiveBOT;
 import fantalive.bl.Main;
 import fantalive.configurazione.SocketHandler;
 import fantalive.model.Giocatore;
-import fantalive.model.Live;
 import fantalive.model.Return;
 import fantalive.model.Squadra;
 import fantalive.repository.SalvaRepository;
@@ -40,14 +37,9 @@ public class MyController {
 	@Autowired SocketHandler socketHandler;
 	@Autowired SalvaRepository salvaRepository;
 
-	/*
-	public MyController() throws Exception {
-		super();
-	}
-	*/
-
 	@PostConstruct
 	private void post() throws Exception {
+		Constant.liveFromFile = Boolean.valueOf(System.getenv("LIVE_FROM_FILE"));
 		Constant.CHAT_ID_FANTALIVE = Long.valueOf(System.getenv("CHAT_ID_FANTALIVE"));
 		Constant.SPONTIT_KEY = System.getenv("SPONTIT_KEY");
 		Constant.TOKEN_BOT_FANTALIVE = System.getenv("TOKEN_BOT_FANTALIVE");
@@ -67,6 +59,8 @@ public class MyController {
 		}
 		conta=conta+5000;
 		Main.toSocket.put("timeRefresh", conta);
+		Main.toSocket.put("liveFromFile", Constant.liveFromFile);
+		
 		String runningBot="STOPPED";
 		if (Main.fantaLiveBot.isRunning()) {
 			runningBot="RUNNING";
@@ -84,6 +78,20 @@ public class MyController {
 	public Map<String, String> getLivesFromDb() throws Exception {
 		Map<String, String> ret = new HashMap<>();
 		ret.put("file", Main.getTesto("lives.json"));
+		return ret;
+	}
+	@RequestMapping("/getOrariFromLive")
+	public Map<String, String> getOrariFromLive() throws Exception {
+		Map<String, String> ret = new HashMap<>();
+		Map<String, Object> lives = Main.getLives();
+		ret.put("file", Main.toJson(lives.get("orari")));
+		return ret;
+	}
+	@RequestMapping("/getLivesFromLive")
+	public Map<String, String> getLivesFromLive() throws Exception {
+		Map<String, String> ret = new HashMap<>();
+		Map<String, Object> lives = Main.getLives();
+		ret.put("file", Main.toJson(lives.get("lives")));
 		return ret;
 	}
 	@PostMapping("/caricaFile")

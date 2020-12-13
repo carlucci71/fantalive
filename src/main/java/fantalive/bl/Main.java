@@ -38,6 +38,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -45,6 +46,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fantalive.configurazione.SocketHandler;
+import fantalive.controller.MyController;
 import fantalive.entity.Salva;
 import fantalive.model.ConfigCampionato;
 import fantalive.model.Giocatore;
@@ -90,11 +92,10 @@ public class Main {
 	private static SalvaRepository salvaRepository=null;
 	private static List<Live> oldSnapLives=null;
 	private static Map<String, Map<String, String>> oldSnapOrari=null;
-
-
 	//	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 	static ObjectMapper mapper;
 	public static Map<String, String> keyFG=null;
+
 	public static void init(SalvaRepository salvaRepositorySpring) throws Exception {
 		salvaRepository=salvaRepositorySpring;
 		Main.aggKeyFG();
@@ -848,7 +849,7 @@ public class Main {
 	public static Map<String, Object> getLives() throws Exception {
 		Map orari;
 		List<Live> lives = new ArrayList<Live>();
-		if (false) {//FIXME false
+		if (Constant.liveFromFile) {
 			//			orari =  jsonToMap(new String(Files.readAllBytes(Paths.get(ROOT + "orari.json"))));
 			//			lives =  jsonToLives(new String(Files.readAllBytes(Paths.get(ROOT + "lives.json"))));
 			orari =  jsonToMap(getTesto("orari.json"));
