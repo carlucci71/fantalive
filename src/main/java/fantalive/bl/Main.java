@@ -247,6 +247,8 @@ public class Main {
 		System.out.println("GET LIVES:" + (c2.getTimeInMillis()-c.getTimeInMillis()));
 
 		if (snap) {
+			boolean inviaNotifica=false;
+			String desMiniNotifica="";
 			Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari);
 			Iterator<String> campionati = go.keySet().iterator();
 			Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
@@ -274,6 +276,7 @@ public class Main {
 					String key = (String) iterator.next();
 					Giocatore oldGioc = oldSnapshot.get(key);
 					Giocatore newGioc = snapshot.get(key);
+					desMiniNotifica=desMiniNotifica + newGioc.getNome() + "-";
 					List<Map<Integer,Integer>> findNuoviEventi = findNuoviEventi(oldGioc, newGioc);
 					Map<String,Integer> eventi=new HashMap<>();
 					String oldTag = oldGioc.getOrario().get("tag");
@@ -366,6 +369,7 @@ public class Main {
 						}
 					}
 					des.append("\n").append(getUrlNotifica());
+					inviaNotifica=true;
 					Main.inviaNotifica(des.toString());
 					Calendar c4 = Calendar.getInstance();
 					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));
@@ -377,6 +381,9 @@ public class Main {
 			if (socketHandler != null) {
 				Map<String, Object> map=new HashMap<>();
 				map.put("res", go);
+				if (!inviaNotifica) {
+					map.put("miniNotifica", desMiniNotifica);
+				}
 				socketHandler.invia(map);
 			}
 			Calendar c4 = Calendar.getInstance();

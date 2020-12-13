@@ -53,6 +53,9 @@ app.run(
 					if (msg.notifica){
 						$rootScope.testoLog=$rootScope.testoLog + msg.notifica + "\n";
 					}
+					if (msg.miniNotifica){
+						$rootScope.testoLog=$rootScope.testoLog + msg.miniNotifica + "\n";
+					}
 					if (msg.liveFromFile){
 						$rootScope.liveFromFile=msg.liveFromFile;
 					}
