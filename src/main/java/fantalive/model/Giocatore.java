@@ -22,6 +22,7 @@ public class Giocatore {
 	private boolean cambio;
 	private boolean cambiato;
 	private String idGioc;
+	private boolean notificaLive;
 	public String getRuolo() {
 		return ruolo;
 	}
@@ -124,6 +125,12 @@ public class Giocatore {
 	}
 	public void setIdGioc(String idGioc) {
 		this.idGioc = idGioc;
+	}
+	public boolean isNotificaLive() {
+		return notificaLive;
+	}
+	public void setNotificaLive(boolean notificaLive) {
+		this.notificaLive = notificaLive;
 	}
 
 }
