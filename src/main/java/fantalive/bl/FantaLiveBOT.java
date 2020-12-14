@@ -29,12 +29,13 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 
 	private static BotSession registerBot;
 	private static String CHI;
-	private final  String FINITO = "\u2709";
+	private final  String BUSTA = "\u2709";
 	private final  String CLESSIDRA  = "\u23F3";
-	private final  String CON_VOTO = "\u2714";
-	private final  String SENZA_VOTO = "\u2753";
-	private final  String SQUADRA_GIOCA = "\u26BD";
-	private final  String NON_GIOCA  = "\u23F0";//274E
+	private final  String SPUNTA = "\u2714";
+	private final  String INTERROGATIVO = "\u2753";
+	private final  String PALLONE = "\u26BD";
+	private final  String SVEGLIA  = "\u23F0";
+	private final  String X_VERDE  = "\u274E";
 	
 
 	@Override
@@ -154,6 +155,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 					testo.append("Ancora da giocare: ").append(sq.getContaSquadraTitolariNonGioca()).append("\n");
 					testo.append("Totale: ").append(sq.getTotaleTitolari()).append("\n");
 					testo.append("\n");
+
 					for (Giocatore giocatore : sq.getRiserve()) {
 						dettaglioTestoGiocatore(testo, giocatore,campionato);
 					}
@@ -179,7 +181,9 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 
 	private void dettaglioTestoGiocatore(StringBuilder testo, Giocatore giocatore, String campionato) {
 		testo.append(giocatore.getIdGioc()).append("\t");
-		testo.append(partitaFinita(giocatore)).append(conVoto(giocatore)).append(squadraGioca(giocatore)).append("  ");
+		testo.append(partitaFinita(giocatore)).append(conVoto(giocatore)).
+//		append(squadraGioca(giocatore)).
+		append("  ");
 		testo.append("<b>").append(giocatore.getNome()).append("</b>").append("\t");
 		testo.append(giocatore.getSquadra()).append("\t");
 		testo.append(giocatore.getRuolo()).append("\t");
@@ -211,17 +215,24 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	}
 
 	private String partitaFinita(Giocatore giocatore){
-		if (giocatore.getOrario().get("tag").equals("FullTime")) return FINITO;
-		if (giocatore.getCodEventi().contains(14)) return FINITO;
+		if (giocatore.getOrario().get("tag").equals("FullTime")) return BUSTA;
+		if (giocatore.getCodEventi().contains(14)) return BUSTA;
 		return CLESSIDRA;
 	}
 	private String conVoto(Giocatore giocatore){
-		if (giocatore.getVoto()==0) return SENZA_VOTO;
-		return CON_VOTO;
+		if (giocatore.getVoto()==0) {
+			if (giocatore.isSquadraGioca()) {
+				return X_VERDE;
+			}
+			else {
+				return INTERROGATIVO;
+			}
+		}
+		return SPUNTA;
 	}
 	private String squadraGioca(Giocatore giocatore){
-		if (giocatore.isSquadraGioca()) return SQUADRA_GIOCA;
-		return NON_GIOCA;
+		if (giocatore.isSquadraGioca()) return PALLONE;
+		return SVEGLIA;
 	}
 	private String getVoto(Giocatore g) {
 		if (!g.isSquadraGioca()) return " ";
