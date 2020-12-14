@@ -81,6 +81,12 @@ public class MyController {
 		ret.put("file", Main.getTesto("lives.json"));
 		return ret;
 	}
+	@PostMapping("/getFreeFromDb")
+	public Map<String, String> getFreeFromDb(@RequestBody Map<String, String> body) throws Exception {
+		Map<String, String> ret = new HashMap<>();
+		ret.put("file", Main.getTesto(body.get("nomeFileGet")));
+		return ret;
+	}
 	@RequestMapping("/getOrariFromLive")
 	public Map<String, String> getOrariFromLive() throws Exception {
 		Map<String, String> ret = new HashMap<>();

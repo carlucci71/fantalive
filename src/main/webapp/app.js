@@ -106,6 +106,15 @@ app.run(
 						$rootScope.fine=new Date();
 					});
 				}
+				if (tipoFile == 'FREE'){
+					$rootScope.getOrari=false;
+					$rootScope.getLives=false;
+					$resource('./getFreeFromDb',{}).save({'nomeFileGet':$rootScope.nomeFileGet}).$promise.then(function(data) {
+						$rootScope.file=data.file;
+						$rootScope.loading=false;
+						$rootScope.fine=new Date();
+					});
+				}
 				if (tipoFile == 'OD'){
 					$rootScope.getOrari=true;
 					$rootScope.getLives=false;

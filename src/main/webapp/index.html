@@ -154,7 +154,7 @@ Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-
 	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
 	<button ng-click="preparaSquadre()">Prepara squadre</button>
 	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
-	<textarea style="width:1000px;height:200px" type=text ng-model="file"></textarea>
+	<textarea style="width:1000px;height:200px " type=text ng-model="file"></textarea>
 	<br>
 	<button style="width:200px;"  ng-click="getFile('OD')">Get orari (DB)</button>
 	<button style="width:200px;" ng-click="getFile('LD')">Get lives (DB)</button>
@@ -164,7 +164,9 @@ Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-
 	<br>
 	<button style="width:200px;" ng-disabled="!getOrari" ng-click="caricaFile('O')">Put orari (DB)</button>
 	<button style="width:200px;" ng-disabled="!getLives" ng-click="caricaFile('L')">Put lives (DB)</button>
-	
+	<br>
+	<button style="width:200px;"  ng-click="getFile('FREE')">Get free (DB)</button
+	><input style="width:200px;"  type=text ng-model="nomeFileGet"></input>
 	
 </div>
 
