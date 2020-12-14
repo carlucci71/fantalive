@@ -46,6 +46,7 @@ public class MyController {
 		Constant.SPONTIT_USERID = System.getenv("SPONTIT_USERID");
 		Constant.APPKEY_FG = System.getenv("APPKEY_FG");
 		Constant.AUTH_FS = System.getenv("AUTH_FS");
+		Constant.GIORNATA = Integer.valueOf(System.getenv("GIORNATA"));
 		Main.init(salvaRepository,socketHandler);
 		Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 	}
@@ -188,14 +189,14 @@ public class MyController {
 	@PostMapping("/setGiornata")
 	public Map<String, Object> setGiornata(@RequestBody Map<String,Object> body)  {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		Main.GIORNATA=(Integer)body.get("giornata");
+		Constant.GIORNATA=(Integer)body.get("giornata");
 		return ret;
 	}
 	@GetMapping("/getDati")
 	public Map<String, Object> getDati() {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		ret.put("body", Constant.AUTH_FS);
-		ret.put("giornata", Main.GIORNATA);
+		ret.put("giornata", Constant.GIORNATA);
 		ret.put("eventi", Main.eventi);
 		return ret;
 	}

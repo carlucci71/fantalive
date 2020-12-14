@@ -75,7 +75,6 @@ public class Main {
 	private static final String COMP_ID_LIVE_GAZZETTA = "21";
 	private static final String I_LIVE_FANTACALCIO = "15";
 
-	public static int GIORNATA = 11;
 	public static final String ROOT="/tmp/";
 	public static Map<String,Object> toSocket;
 	public static String MIO_IP;
@@ -516,7 +515,7 @@ public class Main {
 		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
 		try {
 			for (int i=0;i<4;i++) {
-				HttpGet httpget = new HttpGet("https://www.fanta.soccer/it/lega/privata/" + COMP_FS + "/dettaglipartita/" + String.valueOf(GIORNATA-DELTA_FS) + "/" + String.valueOf(i + PRIMA_GIORNATA_FS + (NUM_PARTITE_FS*(GIORNATA-DELTA_FS))) + "/");
+				HttpGet httpget = new HttpGet("https://www.fanta.soccer/it/lega/privata/" + COMP_FS + "/dettaglipartita/" + String.valueOf(Constant.GIORNATA-DELTA_FS) + "/" + String.valueOf(i + PRIMA_GIORNATA_FS + (NUM_PARTITE_FS*(Constant.GIORNATA-DELTA_FS))) + "/");
 				ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 					@Override
 					public String handleResponse(
@@ -657,15 +656,15 @@ public class Main {
 	}
 
 	public static void aggKeyFG() throws Exception {
-		int giornata=Main.GIORNATA;
+		int giornata=Constant.GIORNATA;
 		Main.keyFG=new HashMap<String, String>();
 		Main.keyFG.put("fantaviva", "id_comp=" + Main.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Main.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Main.DELTA_VIVA_FG) + "_" + calcolaAggKey("fanta-viva") + ".json");
 		Main.keyFG.put("luccicar", "id_comp=" + Main.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey("luccicar") + ".json");
 	}
 
 	private static String calcolaAggKey(String lega) throws Exception {
-		int giornata=Main.GIORNATA-Main.DELTA_VIVA_FG;
-		if (lega.equalsIgnoreCase("luccicar")) giornata=Main.GIORNATA-Main.DELTA_LUCCICAR_FG;
+		int giornata=Constant.GIORNATA-Main.DELTA_VIVA_FG;
+		if (lega.equalsIgnoreCase("luccicar")) giornata=Constant.GIORNATA-Main.DELTA_LUCCICAR_FG;
 		String url = "https://leghe.fantacalcio.it/" + lega + "/formazioni/" + giornata;
 		String string = Main.getHTTP(url);
 		string = string.substring(string.indexOf(".s('tmp', ")+11);
@@ -901,7 +900,7 @@ public class Main {
 			Iterator<Integer> iterator = sq.keySet().iterator();
 			while (iterator.hasNext()) {
 				Integer integer = (Integer) iterator.next();
-				String sqFromLive = getHTTP("https://www.fantacalcio.it/api/live/" + integer + "?g=" + GIORNATA + "&i=" + I_LIVE_FANTACALCIO);
+				String sqFromLive = getHTTP("https://www.fantacalcio.it/api/live/" + integer + "?g=" + Constant.GIORNATA + "&i=" + I_LIVE_FANTACALCIO);
 				List<Map<String, Object>> getLiveFromFG = jsonToList(sqFromLive);
 				Live live = new Live();
 				live.setSquadra(sq.get(integer));
