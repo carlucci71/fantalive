@@ -14,6 +14,7 @@
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
 <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
 <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.6.1/angular-locale_it-it.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     
 <script type="text/javascript" src="./app.js"></script>
 <style>
@@ -64,6 +65,8 @@ Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-
  		<div  ng-repeat="r in result">
      		<label ng-click="changeVis(r.nome)" style="color:red;background-color:yellow">CAMPIONATO: {{r.nome}}</label>
             <img ng-click="salva(r)" ng-show="r.conLive" style="width:20px;cursor: pointer;" title="salva"  src="./ico/salva.jpeg"></img>
+		<i class="fa fa-chevron-down" ng-show="hiddenVis.indexOf(r.nome)<0"></i>
+		<i class="fa fa-chevron-up" ng-show="hiddenVis.indexOf(r.nome)>=0"></i>
  			<div ng-show="hiddenVis.indexOf(r.nome)<0" ng-repeat="squadra in r.squadre | filtraSquadra track by $index">
  				 <label ng-show="!loading" ng-click="changeSqEv(squadra)">
  				 	<img ng-show=!squadra.evidenza style="width:10px;cursor: pointer;" title="add"  src="./ico/fav1.png"></img>
