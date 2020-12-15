@@ -56,7 +56,8 @@ public class MyController {
 	
 	@Scheduled(fixedRate = 1500000)
 	public void getFile() throws Exception {
-		Main.getHTTP("https://fantalive71.herokuapp.com/");
+		String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
+		System.out.println(http);
 	}
 	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
