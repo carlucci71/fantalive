@@ -54,6 +54,10 @@ public class MyController {
 		}
 	}
 	
+	@Scheduled(fixedRate = 1500000)
+	public void getFile() throws Exception {
+		Main.getHTTP("https://fantalive71.herokuapp.com/");
+	}
 	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
 		int conta = (int) Main.toSocket.get("timeRefresh");
