@@ -53,7 +53,11 @@ public class MyController {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 		}
 	}
-	
+	@RequestMapping("/getMyFile")
+	public void getMyFile() throws Exception {
+		String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
+		System.out.println(http);
+	}
 	@Scheduled(fixedRate = 1500000)
 	public void getFile() throws Exception {
 		String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
