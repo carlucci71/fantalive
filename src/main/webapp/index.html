@@ -40,18 +40,18 @@ body {
 <body data-ng-init="init()" x-ng-app="app" ng-style="{'margin-left':'20px','background-color':backLoading()}">
 <div id="floatingRectangle"><input type=button value=clear ng-click="testoLog=''"></input><pre>{{testoLog}}</pre>
 </div>
+<label ng-show="disabilitaNotificaTelegram">TELEGRAM DISABILITATO</label><br>
 <label ng-show="liveFromFile">LIVE FROM FILE</label><br>
+Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}<br>  
 <button ng-show="!configura && !loading" ng-click="configura=true">Configura</button>
 <button ng-show="configura && !loading" ng-click="endConfigura()">Termina configurazione</button>
-<br><br>
-Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}  
-<br><br>
+<br>
 <label ng-show="aggiornamento" >Dati aggiornati alle: {{aggiornamento}} </label>
 <br><span ng-show="timeRefresh">Refresh tra {{20-(timeRefresh/1000)}}s</span>
-<br><span ng-show="!loading">{{runningBot}} <button ng-click="startStopBot()">START/STOP BOT</button></span>
+<span ng-show="!loading && !disabilitaNotificaTelegram"><br>{{runningBot}} <button ng-click="startStopBot()">START/STOP BOT</button></span>
 <br>
  		<label ng-show="loading">CARICAMENTO IN CORSO</label>
- 	<br><br><br>
+ 	<br>
  	<div ng-show="!configura">
 		<button ng-show="!loading" ng-click="ricaricaIndex()">Ricarica</button>
 		<br><br>
@@ -158,15 +158,24 @@ Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-
 	<br>
 	<button style="width:200px;"  ng-click="getFile('OD')">Get orari (DB)</button>
 	<button style="width:200px;" ng-click="getFile('LD')">Get lives (DB)</button>
+	<button style="width:200px;" ng-click="getNomiTesto()">Get nomiTesto (DB)</button>
+	<select ng-model=nomeFileGet>
+		<option ng-repeat="s in nomiTesto  track by $index" value="{{s}}" >{{s}}</option>
+	</select>
+	<!--  
+	<input style="width:200px;"  type=text ng-model="nomeFileGet"></input>{{nomiTesto}}
+	-->
 	<br>
 	<button style="width:200px;" ng-click="getFile('OL')">Get orari (Live)</button>
 	<button style="width:200px;" ng-click="getFile('LL')">Get lives (Live)</button>
+	<button style="width:200px;" ng-disabled="!nomeFileGet"  ng-click="getFile('FREE')">Get free (DB)</button>
 	<br>
 	<button style="width:200px;" ng-disabled="!getOrari" ng-click="caricaFile('O')">Put orari (DB)</button>
 	<button style="width:200px;" ng-disabled="!getLives" ng-click="caricaFile('L')">Put lives (DB)</button>
-	<br>
-	<button style="width:200px;"  ng-click="getFile('FREE')">Get free (DB)</button
-	><input style="width:200px;"  type=text ng-model="nomeFileGet"></input>
+	<button style="width:200px;" ng-disabled="!getFree" ng-click="caricaFile('FREE')">Put Free (DB)</button>
+	<button style="width:200px;" ng-click="svecchiaFile()">Del Free (DB)</button>
+	
+	
 	
 </div>
 

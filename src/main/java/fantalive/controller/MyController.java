@@ -39,7 +39,8 @@ public class MyController {
 
 	@PostConstruct
 	private void post() throws Exception {
-		Constant.liveFromFile = Boolean.valueOf(System.getenv("LIVE_FROM_FILE"));
+		Constant.DISABILITA_NOTIFICA_TELEGRAM = Boolean.valueOf(System.getenv("DISABILITA_NOTIFICA_TELEGRAM"));
+		Constant.LIVE_FROM_FILE = Boolean.valueOf(System.getenv("LIVE_FROM_FILE"));
 		Constant.CHAT_ID_FANTALIVE = Long.valueOf(System.getenv("CHAT_ID_FANTALIVE"));
 		Constant.SPONTIT_KEY = System.getenv("SPONTIT_KEY");
 		Constant.TOKEN_BOT_FANTALIVE = System.getenv("TOKEN_BOT_FANTALIVE");
@@ -48,7 +49,9 @@ public class MyController {
 		Constant.AUTH_FS = System.getenv("AUTH_FS");
 		Constant.GIORNATA = Integer.valueOf(System.getenv("GIORNATA"));
 		Main.init(salvaRepository,socketHandler);
-		Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
+		if (!Constant.DISABILITA_NOTIFICA_TELEGRAM) {
+			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
+		}
 	}
 	
 	@Scheduled(fixedRate = 5000)
@@ -60,10 +63,11 @@ public class MyController {
 		}
 		conta=conta+5000;
 		Main.toSocket.put("timeRefresh", conta);
-		Main.toSocket.put("liveFromFile", Constant.liveFromFile);
+		Main.toSocket.put("liveFromFile", Constant.LIVE_FROM_FILE);
+		Main.toSocket.put("disabilitaNotificaTelegram", Constant.DISABILITA_NOTIFICA_TELEGRAM);
 		
 		String runningBot="STOPPED";
-		if (Main.fantaLiveBot.isRunning()) {
+		if (Main.fantaLiveBot != null && Main.fantaLiveBot.isRunning()) {
 			runningBot="RUNNING";
 		}
 		Main.toSocket.put("runningBot", runningBot);
@@ -111,6 +115,21 @@ public class MyController {
 		if (tipoFile.equalsIgnoreCase("L")) {
 			Main.upsertSalva("lives.json", content);
 		}
+		if (tipoFile.equalsIgnoreCase("Free")) {
+			Main.upsertSalva((String) body.get("nomeFileGet"), content);
+		}
+	}
+	@RequestMapping("/getNomiTesto")
+	public Map<String, Object> getNomiTesto() throws Exception {
+		Map<String, Object> ret = new HashMap<>();
+		ret.put("nomiTesto", Main.getNomiTesto());
+		return ret;
+	}
+	@RequestMapping("/svecchiaFile")
+	public Map<String, Object> svecchiaFile() throws Exception {
+		Map<String, Object> ret = new HashMap<>();
+		ret.put("nomiTesto", Main.svecchiaFile());
+		return ret;
 	}
 	@RequestMapping("/test")
 	public Map<String, Return>  test(boolean conLive) throws Exception {

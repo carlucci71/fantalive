@@ -4,6 +4,7 @@ app.run(
 			$rootScope.configura=false;
 			$rootScope.testoLog="";
 			$rootScope.getOrari=false;
+			$rootScope.getFree=false;
 			$rootScope.getLives=false;
 			$rootScope.init=function(){
 				$rootScope.connectWS();
@@ -44,7 +45,7 @@ app.run(
 					var msg = JSON.parse(message);
 //					console.log(msg);
 					if (msg.res){
-						$rootScope.testoLog=$rootScope.testoLog + "REFRESH!!" + "\n";
+						$rootScope.testoLog=$rootScope.testoLog + "REFRESH:" + "\n";
 						$rootScope.result=msg.res;
 					}
 					if (msg.timeRefresh){
@@ -58,6 +59,9 @@ app.run(
 					}
 					if (msg.liveFromFile){
 						$rootScope.liveFromFile=msg.liveFromFile;
+					}
+					if (msg.disabilitaNotificaTelegram){
+						$rootScope.disabilitaNotificaTelegram=msg.disabilitaNotificaTelegram;
 					}
 					if (msg.runningBot){
 						$rootScope.runningBot=msg.runningBot;
@@ -92,6 +96,28 @@ app.run(
 					$rootScope.connectWS();					
 				}
 			}
+			$rootScope.getNomiTesto = function(tipoFile){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./getNomiTesto',{}).get({}).$promise.then(function(data) {
+					$rootScope.nomiTesto=data.nomiTesto;
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				});
+				
+			}
+			$rootScope.svecchiaFile = function(tipoFile){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./svecchiaFile',{}).get({}).$promise.then(function(data) {
+					$rootScope.nomiTesto=data.nomiTesto;
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				});
+				
+			}
 			$rootScope.getFile = function(tipoFile){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
@@ -99,6 +125,7 @@ app.run(
 				$rootScope.file="";
 				if (tipoFile == 'LD'){
 					$rootScope.getOrari=false;
+					$rootScope.getFree=false;
 					$rootScope.getLives=true;
 					$resource('./getLivesFromDb',{}).get({}).$promise.then(function(data) {
 						$rootScope.file=data.file;
@@ -107,6 +134,7 @@ app.run(
 					});
 				}
 				if (tipoFile == 'FREE'){
+					$rootScope.getFree=true;
 					$rootScope.getOrari=false;
 					$rootScope.getLives=false;
 					$resource('./getFreeFromDb',{}).save({'nomeFileGet':$rootScope.nomeFileGet}).$promise.then(function(data) {
@@ -116,6 +144,7 @@ app.run(
 					});
 				}
 				if (tipoFile == 'OD'){
+					$rootScope.getFree=false;
 					$rootScope.getOrari=true;
 					$rootScope.getLives=false;
 					$resource('./getOrariFromDb',{}).get({}).$promise.then(function(data) {
@@ -125,6 +154,7 @@ app.run(
 					});
 				}
 				if (tipoFile == 'LL'){
+					$rootScope.getFree=false;
 					$rootScope.getOrari=false;
 					$rootScope.getLives=true;
 					$resource('./getLivesFromLive',{}).get({}).$promise.then(function(data) {
@@ -134,6 +164,7 @@ app.run(
 					});
 				}
 				if (tipoFile == 'OL'){
+					$rootScope.getFree=false;
 					$rootScope.getOrari=true;
 					$rootScope.getLives=false;
 					$resource('./getOrariFromLive',{}).get({}).$promise.then(function(data) {
@@ -147,7 +178,7 @@ app.run(
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
-				$resource('./caricaFile',{}).save({'file':$rootScope.file,'tipoFile':tipoFile}).$promise.then(function(data) {
+				$resource('./caricaFile',{}).save({'file':$rootScope.file,'tipoFile':tipoFile,'nomeFileGet':$rootScope.nomeFileGet}).$promise.then(function(data) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 				});

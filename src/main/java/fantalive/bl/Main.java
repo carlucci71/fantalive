@@ -183,7 +183,7 @@ public class Main {
 								if (snapGioc.equals(oldGioc)) {
 									liveGiocPresente=true;
 									if (!snapMap.get("evento").toString().equals(oldMap.get("evento").toString())) {
-										desMiniNotifica.append(" Sono cambiati gli eventi per: " + snapGioc + " - " + snapMap.get("evento").toString());
+										desMiniNotifica.append(" Sono cambiati gli eventi per: " + snapGioc + " : " + snapMap.get("evento").toString());
 									}
 									
 								}
@@ -229,7 +229,7 @@ public class Main {
 	public static void snapshot() throws Exception {
 		Calendar c = Calendar.getInstance();
 		boolean snap=false;
-		Map<String, Object> getLives = getLives(Constant.liveFromFile);
+		Map<String, Object> getLives = getLives(Constant.LIVE_FROM_FILE);
 		List<Live> snapLives = (List<Live>) getLives.get("lives");
 		Map<String, Map<String, String>> snapOrari = (Map<String, Map<String, String>>) getLives.get("orari");
 		String desMiniNotifica="";
@@ -250,6 +250,14 @@ public class Main {
 		System.out.println("GET LIVES:" + (c2.getTimeInMillis()-c.getTimeInMillis()));
 
 		if (snap || oldSnapshot==null) {
+			Instant instant = Instant.now();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
+			ZoneId zoneId = ZoneId.of( "Europe/Rome" );
+			ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
+			String time=zdt.format(formatter);
+			upsertSalva(time + "-" + "orari.json", toJson(snapOrari));
+			upsertSalva(time + "-" + "lives.json", toJson(snapLives));
+
 			boolean inviaNotifica=false;
 			Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari);
 			Iterator<String> campionati = go.keySet().iterator();
@@ -380,7 +388,7 @@ public class Main {
 			Calendar c3 = Calendar.getInstance();
 			System.out.println("SNAPSHOT:" + (c3.getTimeInMillis()-c.getTimeInMillis()));
 			if (socketHandler != null) {
-				Map<String, Object> map=new HashMap<>();
+				Map<String, Object> map=new LinkedHashMap<>();
 				map.put("res", go);
 				if (!inviaNotifica) {
 					map.put("miniNotifica", desMiniNotifica);
@@ -394,6 +402,7 @@ public class Main {
 	}
 
 	public static String getUrlNotifica() {
+		if (MIO_IP == null) return "";
 		if (MIO_IP.equals("192.168.1.83")) {
 			return "http://" + MIO_IP + URL_NOTIFICA_NAS;
 		}
@@ -458,7 +467,12 @@ public class Main {
 		String urlNotifica;
 		Map<String, String> body;
 		Map<String, String> headers;
-		fantaLiveBot.inviaMessaggio(Constant.CHAT_ID_FANTALIVE,msg,false);
+		if (!Constant.DISABILITA_NOTIFICA_TELEGRAM) {
+			fantaLiveBot.inviaMessaggio(Constant.CHAT_ID_FANTALIVE,msg,false);
+		}
+		else {
+			System.out.println("Notifica:\n" + msg);
+		}
 		Map<String, Object> map=new HashMap<>();
 		map.put("notifica", msg);
 		socketHandler.invia(map);
@@ -803,7 +817,7 @@ public class Main {
 		List<Live> lives=new ArrayList<Live>();
 		Map<String, Map<String, String>> orari=null;
 		if (conLive) {
-			Map<String, Object> getLives = getLives(Constant.liveFromFile);
+			Map<String, Object> getLives = getLives(Constant.LIVE_FROM_FILE);
 			lives = (List<Live>) getLives.get("lives");
 			orari = (Map<String, Map<String, String>>) getLives.get("orari");
 
@@ -906,12 +920,6 @@ public class Main {
 				live.setSquadra(sq.get(integer));
 				live.setGiocatori(getLiveFromFG);
 				lives.add(live);
-			}
-			if (false) {//FIXME false
-				//				Files.write(Paths.get(ROOT + "orari.json"), toJson(orari).getBytes());
-				//				Files.write(Paths.get(ROOT + "lives.json"), toJson(lives).getBytes());
-				upsertSalva("orari.json", toJson(orari));
-				upsertSalva("lives.json", toJson(lives));
 			}
 		}
 		Map<String, Object> ret = new HashMap<>();
@@ -1211,13 +1219,31 @@ public class Main {
 			throw new RuntimeException(e);
 		}
 	}
-
+	public static List<String> svecchiaFile() {
+		List<String> ret = new ArrayList<>();
+		Iterable<Salva> findAll = salvaRepository.findAll();
+		for (Salva salva : findAll) {
+			if(!salva.getNome().equals("lives.json") && !salva.getNome().equals("orari.json") && !salva.getNome().startsWith("fomrazioneFG")) {
+				salvaRepository.delete(salva);
+			} else {
+				ret.add(salva.getNome());
+			}
+		}
+		return ret;
+	}
+	public static List<String> getNomiTesto() {
+		List<String> ret = new ArrayList<>();
+		Iterable<Salva> findAll = salvaRepository.findAll();
+		for (Salva salva : findAll) {
+			ret.add(salva.getNome());
+		}
+		return ret;
+	}
 	public static String getTesto(String nome) {
 		Salva findOne = salvaRepository.findOne(nome);
 		if (findOne==null) return null;
 		return findOne.getTesto();
 	}
-
 	public static void upsertSalva(String nome, String testo) {
 		Salva findOne = salvaRepository.findOne(nome);
 		if (findOne==null) {

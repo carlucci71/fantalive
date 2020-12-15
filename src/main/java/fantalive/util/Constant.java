@@ -8,5 +8,6 @@ public class Constant {
 	public static String SPONTIT_USERID;
 	public static String APPKEY_FG;
 	public static String AUTH_FS;
-	public static boolean liveFromFile;
+	public static boolean LIVE_FROM_FILE;
+	public static boolean DISABILITA_NOTIFICA_TELEGRAM;
 }
