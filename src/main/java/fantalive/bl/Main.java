@@ -1219,17 +1219,13 @@ public class Main {
 			throw new RuntimeException(e);
 		}
 	}
-	public static List<String> svecchiaFile() {
-		List<String> ret = new ArrayList<>();
+	public static void svecchiaFile() {
 		Iterable<Salva> findAll = salvaRepository.findAll();
 		for (Salva salva : findAll) {
 			if(!salva.getNome().equals("lives.json") && !salva.getNome().equals("orari.json") && !salva.getNome().startsWith("fomrazioneFG")) {
 				salvaRepository.delete(salva);
-			} else {
-				ret.add(salva.getNome());
 			}
 		}
-		return ret;
 	}
 	public static List<String> getNomiTesto() {
 		List<String> ret = new ArrayList<>();
@@ -1237,6 +1233,7 @@ public class Main {
 		for (Salva salva : findAll) {
 			ret.add(salva.getNome());
 		}
+		Collections.sort(ret, Collections.reverseOrder());
 		return ret;
 	}
 	public static String getTesto(String nome) {

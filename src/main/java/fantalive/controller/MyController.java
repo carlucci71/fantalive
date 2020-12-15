@@ -128,7 +128,8 @@ public class MyController {
 	@RequestMapping("/svecchiaFile")
 	public Map<String, Object> svecchiaFile() throws Exception {
 		Map<String, Object> ret = new HashMap<>();
-		ret.put("nomiTesto", Main.svecchiaFile());
+		Main.svecchiaFile();
+		ret.put("nomiTesto", Main.getNomiTesto());
 		return ret;
 	}
 	@RequestMapping("/test")
