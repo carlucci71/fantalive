@@ -57,16 +57,20 @@ Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-
 		<br><br>
 		<span ng-show="!loading && result">
 			calciatore <input type=text ng-model=giocFilter></input>
+			<span style="cursor: pointer;"><i class="fa fa-trash" ng-click="giocFilter=''" ng-show="giocFilter"></i></span>
 			squadra <input type=text ng-model=sqFilter></input>
+			<span style="cursor: pointer;"><i class="fa fa-trash" ng-click="sqFilter=''" ng-show="sqFilter"></i></span>
 			live <input type=checkBox ng-model=liveFilter></input>
 			preferiti <input type=checkBox ng-model=favFilter></input>
 		</span>
 		<br><br>
  		<div  ng-repeat="r in result">
-     		<label ng-click="changeVis(r.nome)" style="color:red;background-color:yellow">CAMPIONATO: {{r.nome}}</label>
+ 			<span ng-click="changeVis(r.nome)" style="color:red;background-color:yellow;cursor: pointer;">
+	     		<label >CAMPIONATO: {{r.nome}}</label>
+				<i class="fa fa-chevron-down" ng-show="hiddenVis.indexOf(r.nome)<0"></i>
+				<i class="fa fa-chevron-up" ng-show="hiddenVis.indexOf(r.nome)>=0"></i>
+			</span>&nbsp;
             <img ng-click="salva(r)" ng-show="r.conLive" style="width:20px;cursor: pointer;" title="salva"  src="./ico/salva.jpeg"></img>
-		<i class="fa fa-chevron-down" ng-show="hiddenVis.indexOf(r.nome)<0"></i>
-		<i class="fa fa-chevron-up" ng-show="hiddenVis.indexOf(r.nome)>=0"></i>
  			<div ng-show="hiddenVis.indexOf(r.nome)<0" ng-repeat="squadra in r.squadre | filtraSquadra track by $index">
  				 <label ng-show="!loading" ng-click="changeSqEv(squadra)">
  				 	<img ng-show=!squadra.evidenza style="width:10px;cursor: pointer;" title="add"  src="./ico/fav1.png"></img>

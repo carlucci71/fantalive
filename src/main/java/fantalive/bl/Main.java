@@ -249,36 +249,36 @@ public class Main {
 		Calendar c2 = Calendar.getInstance();
 		System.out.println("GET LIVES:" + (c2.getTimeInMillis()-c.getTimeInMillis()));
 
-		if (snap || oldSnapshot==null) {
-			Instant instant = Instant.now();
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
-			ZoneId zoneId = ZoneId.of( "Europe/Rome" );
-			ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
-			String time=zdt.format(formatter);
-			upsertSalva(time + "-" + "orari.json", toJson(snapOrari));
-			upsertSalva(time + "-" + "lives.json", toJson(snapLives));
+		Instant instant = Instant.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
+		ZoneId zoneId = ZoneId.of( "Europe/Rome" );
+		ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
+		String time=zdt.format(formatter);
+		upsertSalva(time + "-" + "orari.json", toJson(snapOrari));
+		upsertSalva(time + "-" + "lives.json", toJson(snapLives));
 
-			boolean inviaNotifica=false;
-			Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari);
-			Iterator<String> campionati = go.keySet().iterator();
-			Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
-			while (campionati.hasNext()) {
-				String campionato = (String) campionati.next();
-				Return r = go.get(campionato);
-				List<Squadra> squadre = r.getSquadre();
-				for (Squadra squadra : squadre) {
-					if (sqDaEv.contains(squadra.getNome())) 
-					{
-						for (Giocatore giocatore : squadra.getTitolari()) {
-							snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
-						}
-						for (Giocatore giocatore : squadra.getRiserve()) {
-							snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
-						}
+		boolean inviaNotifica=false;
+		Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari);
+		Iterator<String> campionati = go.keySet().iterator();
+		Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
+		while (campionati.hasNext()) {
+			String campionato = (String) campionati.next();
+			Return r = go.get(campionato);
+			List<Squadra> squadre = r.getSquadre();
+			for (Squadra squadra : squadre) {
+				if (sqDaEv.contains(squadra.getNome())) 
+				{
+					for (Giocatore giocatore : squadra.getTitolari()) {
+						snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
+					}
+					for (Giocatore giocatore : squadra.getRiserve()) {
+						snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
 					}
 				}
 			}
+		}
 
+		if (snap || oldSnapshot==null) {
 			if (oldSnapshot!=null) {
 				Iterator<String> iterator = snapshot.keySet().iterator();
 				Map<String, Map<String,List<Notifica>>> notifiche = new HashMap();
@@ -384,7 +384,6 @@ public class Main {
 					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));
 				}
 			}
-			oldSnapshot=snapshot;
 			Calendar c3 = Calendar.getInstance();
 			System.out.println("SNAPSHOT:" + (c3.getTimeInMillis()-c.getTimeInMillis()));
 			if (socketHandler != null) {
@@ -398,6 +397,7 @@ public class Main {
 			Calendar c4 = Calendar.getInstance();
 			System.out.println("ONLY WEB SOCKET:" + (c4.getTimeInMillis()-c3.getTimeInMillis()));
 		}
+		oldSnapshot=snapshot;
 		System.out.println("FINE SNAPSHOT");
 	}
 
