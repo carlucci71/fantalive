@@ -249,13 +249,6 @@ public class Main {
 		Calendar c2 = Calendar.getInstance();
 		System.out.println("GET LIVES:" + (c2.getTimeInMillis()-c.getTimeInMillis()));
 
-		Instant instant = Instant.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
-		ZoneId zoneId = ZoneId.of( "Europe/Rome" );
-		ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
-		String time=zdt.format(formatter);
-		upsertSalva(time + "-" + "orari.json", toJson(snapOrari));
-		upsertSalva(time + "-" + "lives.json", toJson(snapLives));
 
 		boolean inviaNotifica=false;
 		Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari);
@@ -277,8 +270,15 @@ public class Main {
 				}
 			}
 		}
+		if (snap) {
+			Instant instant = Instant.now();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
+			ZoneId zoneId = ZoneId.of( "Europe/Rome" );
+			ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
+			String time=zdt.format(formatter);
+			upsertSalva(time + "-" + "orari.json", toJson(snapOrari));
+			upsertSalva(time + "-" + "lives.json", toJson(snapLives));
 
-		if (snap || oldSnapshot==null) {
 			if (oldSnapshot!=null) {
 				Iterator<String> iterator = snapshot.keySet().iterator();
 				Map<String, Map<String,List<Notifica>>> notifiche = new HashMap();
