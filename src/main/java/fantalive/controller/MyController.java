@@ -53,11 +53,6 @@ public class MyController {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 		}
 	}
-	@RequestMapping("/getMyFile")
-	public void getMyFile() throws Exception {
-		String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
-		System.out.println(http);
-	}
 	@Scheduled(fixedRate = 1500000)
 	public void getFile() throws Exception {
 		String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
@@ -226,6 +221,11 @@ public class MyController {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Constant.GIORNATA=(Integer)body.get("giornata");
 		return ret;
+	}
+	@GetMapping("/getMyFile")
+	public void getMyFile() throws Exception {
+		String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
+		System.out.println(http);
 	}
 	@GetMapping("/getDati")
 	public Map<String, Object> getDati() {
