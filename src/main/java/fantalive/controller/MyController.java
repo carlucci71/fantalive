@@ -39,18 +39,18 @@ public class MyController {
 	
 	@Autowired SocketHandler socketHandler;
 	@Autowired SalvaRepository salvaRepository;
+	DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
 
 	@PostConstruct
 	private void post() throws Exception {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
 		if(System.getenv("KEEP_ALIVE_START") != null) {
-			Constant.KEEP_ALIVE_START = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_START"), formatter);
+			Constant.KEEP_ALIVE_START = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_START"), dateTimeFormatter);
 		}
 		else {
 			Constant.KEEP_ALIVE_START = ZonedDateTime.now();
 		}
 		if(System.getenv("KEEP_ALIVE_END") != null) {
-			Constant.KEEP_ALIVE_END = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_END"), formatter);
+			Constant.KEEP_ALIVE_END = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_END"), dateTimeFormatter);
 		}
 		else {
 			Constant.KEEP_ALIVE_END = ZonedDateTime.now();
@@ -79,7 +79,7 @@ public class MyController {
 			ret="Keep Alive!";
 			Main.inviaNotifica(ret);
 		} else {
-			ret = Constant.KEEP_ALIVE_START.toString() + "/" + Constant.KEEP_ALIVE_END.toString() + "-->" + now.toString();
+			ret = dateTimeFormatter.format(now) + " --> " + dateTimeFormatter.format(Constant.KEEP_ALIVE_START) + " / " + dateTimeFormatter.format(Constant.KEEP_ALIVE_END);
 			System.out.println(ret);
 		}
 		return ret;
