@@ -1,5 +1,7 @@
 package fantalive.controller;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +12,6 @@ import javax.annotation.PostConstruct;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +41,19 @@ public class MyController {
 
 	@PostConstruct
 	private void post() throws Exception {
-		Constant.KEEP_ALIVE = Boolean.valueOf(System.getenv("KEEP_ALIVE"));
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+		if(System.getenv("KEEP_ALIVE_START") != null) {
+			Constant.KEEP_ALIVE_START = LocalDateTime.parse(System.getenv("KEEP_ALIVE_START"), formatter);
+		}
+		else {
+			Constant.KEEP_ALIVE_START = LocalDateTime.now();
+		}
+		if(System.getenv("KEEP_ALIVE_END") != null) {
+			Constant.KEEP_ALIVE_END = LocalDateTime.parse(System.getenv("KEEP_ALIVE_END"), formatter);
+		}
+		else {
+			Constant.KEEP_ALIVE_END = LocalDateTime.now();
+		}
 		Constant.DISABILITA_NOTIFICA_TELEGRAM = Boolean.valueOf(System.getenv("DISABILITA_NOTIFICA_TELEGRAM"));
 		Constant.LIVE_FROM_FILE = Boolean.valueOf(System.getenv("LIVE_FROM_FILE"));
 		Constant.CHAT_ID_FANTALIVE = Long.valueOf(System.getenv("CHAT_ID_FANTALIVE"));
@@ -58,7 +71,7 @@ public class MyController {
 	@Scheduled(fixedRate = 1500000)
 	@GetMapping("/getMyFile")
 	public void getFile() throws Exception {
-		if (Constant.KEEP_ALIVE) {
+		if (Constant.KEEP_ALIVE_START.isBefore(LocalDateTime.now()) && Constant.KEEP_ALIVE_END.isAfter(LocalDateTime.now())) {
 			String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
 			System.out.println(http);
 			Main.inviaNotifica("Keep Alive!");
