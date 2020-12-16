@@ -42,7 +42,7 @@ public class MyController {
 
 	@PostConstruct
 	private void post() throws Exception {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/London"));
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
 		if(System.getenv("KEEP_ALIVE_START") != null) {
 			Constant.KEEP_ALIVE_START = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_START"), formatter);
 		}
