@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fantalive.bl.FantaLiveBOT;
 import fantalive.bl.Main;
 import fantalive.configurazione.SocketHandler;
+import fantalive.entity.Salva;
 import fantalive.model.Giocatore;
 import fantalive.model.Return;
 import fantalive.model.Squadra;
@@ -61,8 +62,9 @@ public class MyController {
 			String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
 			System.out.println(http);
 			Main.inviaNotifica("Keep Alive!");
+		} else {
+//			Main.inviaNotifica("NO!!! Keep Alive!");
 		}
-		Main.inviaNotifica("NO!!! Keep Alive!");
 	}
 	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
@@ -115,6 +117,31 @@ public class MyController {
 		ret.put("file", Main.toJson(lives.get("lives")));
 		return ret;
 	}
+	@PostMapping("/getTestiFromData")
+	public Map<String, String> getTestiFromData(@RequestBody Map<String,String> body) throws Exception {
+		Map<String, String>  ret=new HashMap<>();
+		List<Salva> valTesto = Main.getValTesto(body.get("getTestiFromData"));
+		for (Salva salva : valTesto) {
+			ret.put(salva.getNome().substring(24).replace(".json", ""), salva.getTesto());
+		}
+		return ret;
+	}
+	@PostMapping("/caricaFileFromDataByName")
+	public Map<String, String>  caricaFileFromDataByName(@RequestBody Map<String,String> body) throws Exception {
+		Map<String, String>  ret=new HashMap<>();
+		String orari = Main.getTesto(body.get("name")+"-orari.json");
+		String lives = Main.getTesto(body.get("name")+"-lives.json");
+		Main.upsertSalva("orari.json", orari);
+		Main.upsertSalva("lives.json", lives);
+		ret.put("orari", orari );
+		ret.put("lives", lives );
+		return ret;
+	}
+	@PostMapping("/caricaFileFromData")
+	public void caricaFileFromData(@RequestBody Map<String,Object> body) throws Exception {
+		Main.upsertSalva("orari.json", (String) body.get("orari"));
+		Main.upsertSalva("lives.json", (String) body.get("lives"));
+	}
 	@PostMapping("/caricaFile")
 	public void caricaFile(@RequestBody Map<String,Object> body) throws Exception {
 		String content = (String) body.get("file");
@@ -135,11 +162,18 @@ public class MyController {
 		ret.put("nomiTesto", Main.getNomiTesto("%"));
 		return ret;
 	}
-
 	@RequestMapping("/getNomiData")
 	public Map<String, Object> getNomiData() throws Exception {
 		Map<String, Object> ret = new HashMap<>();
-		ret.put("nomiTesto", Main.getNomiTesto("202"));
+		List<String> nomiTesto = Main.getNomiTesto("202");
+		List<String> lista=new ArrayList<>();
+		for (String testo : nomiTesto) {
+			String data = testo.substring(0,23);
+			if (!lista.contains(data)) {
+				lista.add(data);
+			}
+		}
+		ret.put("nomiTesto", lista);
 		return ret;
 	}
 	@RequestMapping("/svecchiaFile")

@@ -1233,6 +1233,15 @@ public class Main {
 		Collections.sort(ret, Collections.reverseOrder());
 		return ret;
 	}
+	public static List<Salva> getValTesto(String like) {
+		List<Salva> ret = new ArrayList<>();
+		Iterable<Salva> findAll = salvaRepository.findAll();
+		for (Salva salva : findAll) {
+			if (like.equals("%") || (salva != null && salva.getNome() != null && salva.getNome().startsWith(like)))
+				ret.add(salva);
+		}
+		return ret;
+	}
 	public static String getTesto(String nome) {
 		Salva findOne = salvaRepository.findOne(nome);
 		if (findOne==null) return null;

@@ -39,11 +39,18 @@ body {
 </script>
 <body data-ng-init="init()" x-ng-app="app" ng-style="{'margin-left':'20px','background-color':backLoading()}">
 
-	<button style="width:200px;" ng-click="getNomiData()">Get nomiTesto (DB)</button>
-	<select ng-model=nomeFileGet>
-		<option ng-repeat="s in nomiData  track by $index" value="{{s}}" >{{s}}</option>
+	<button style="width:150px;" ng-click="getNomiData()">Get nomiTesto (DB)</button>
+	<select style="width:200px" ng-model=nomeFileGet>
+		<option ng-repeat="s in nomiData  track by $index" value="{{s}}" >{{$index}}-{{s}}</option>
 	</select>
-
-
+	<button ng-show="nomeFileGet" style="width:150px;" ng-click="getTestiFromData()">Get testi from data</button>
+	<button ng-show="nomeFileGet" style="width:150px;" ng-click="putTestiFromData()">Put testi to data</button>
+	<button style="width:200px;" ng-show="contaNomiDati>-1" ng-click="getPutTestiFromData()">Get & Put testi to data {{contaNomiDati}}</button>
+	<input style="width:50px;" ng-show="contaNomiDati>-1" type=number ng-model=contaNomiDati></input>
+	<br>
+	<textarea style="width:1000px;height:200px " type=text ng-model="fileLives"></textarea>
+	<br>
+	<textarea style="width:1000px;height:200px " type=text ng-model="fileOrari"></textarea>
+	
 </body>
 </html>

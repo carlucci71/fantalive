@@ -6,6 +6,7 @@ app.run(
 			$rootScope.getOrari=false;
 			$rootScope.getFree=false;
 			$rootScope.getLives=false;
+			$rootScope.contaNomiDati=-1;
 			$rootScope.init=function(){
 				$rootScope.connectWS();
 					$rootScope.ricaricaIndex().then(function(){
@@ -113,6 +114,7 @@ app.run(
 				$rootScope.loading=true;
 				$resource('./getNomiData',{}).get({}).$promise.then(function(data) {
 					$rootScope.nomiData=data.nomiTesto;
+					$rootScope.contaNomiDati=$rootScope.nomiData.length-1;
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 				});
@@ -126,6 +128,50 @@ app.run(
 					$rootScope.nomiTesto=data.nomiTesto;
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
+				});
+				
+			}
+			$rootScope.putTestiFromData = function(){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./caricaFileFromData',{}).save({'orari':$rootScope.fileOrari,'lives':$rootScope.fileLives}).$promise.then(function(data) {
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				});
+			}
+			$rootScope.getPutTestiFromData = function(){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				var name=$rootScope.nomiData[$rootScope.contaNomiDati];
+				$rootScope.contaNomiDati--;
+				$resource('./caricaFileFromDataByName',{}).save({'name':name}).$promise.then(function(data) {
+					$rootScope.fileLives=data.lives;
+					$rootScope.fileOrari=data.orari;
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				});
+			}
+			$rootScope.getTestiFromData = function(){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./getTestiFromData',{}).save({'getTestiFromData':$rootScope.nomeFileGet}).$promise.then(function(data) {
+					$rootScope.fileLives=data.lives;
+					$rootScope.fileOrari=data.orari;
+					$rootScope.file=data.file;
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				}).catch(function(error) {
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+					if (error && error.data && error.data.message)
+						alert("Errore-12-1: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore-12-2: " + error.data);
+					else 
+						alert("Errore-12-3: " + angular.toJson(error));
 				});
 				
 			}
@@ -204,7 +250,9 @@ app.run(
 				} else {
 					new_uri = "ws:";
 				}
-				new_uri += loc.href.substring(loc.protocol.length) + "messaggi-websocket";
+//				new_uri += loc.href.substring(loc.protocol.length) + "messaggi-websocket";
+//				new_uri = "ws://localhost:8080/messaggi-websocket";
+				new_uri += "//" + loc.host  + "/messaggi-websocket";
 				document.cookie = 'PAGINA=' + loc.href + '; path=/';				
 				ws = new WebSocket(new_uri);
 				ws.onmessage = function(data){
