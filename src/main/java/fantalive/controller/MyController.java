@@ -84,6 +84,7 @@ public class MyController {
 		}
 		return ret;
 	}
+	
 	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
 		int conta = (int) Main.toSocket.get("timeRefresh");
