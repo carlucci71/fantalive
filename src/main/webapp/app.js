@@ -96,12 +96,23 @@ app.run(
 					$rootScope.connectWS();					
 				}
 			}
-			$rootScope.getNomiTesto = function(tipoFile){
+			$rootScope.getNomiTesto = function(){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
 				$resource('./getNomiTesto',{}).get({}).$promise.then(function(data) {
 					$rootScope.nomiTesto=data.nomiTesto;
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				});
+				
+			}
+			$rootScope.getNomiData = function(){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./getNomiData',{}).get({}).$promise.then(function(data) {
+					$rootScope.nomiData=data.nomiTesto;
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 				});

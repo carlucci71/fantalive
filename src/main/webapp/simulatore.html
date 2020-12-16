@@ -1,0 +1,49 @@
+<!-- filezilla C:\Users\d.carlucci\Documents\GitHub\fantalive\target\ /share/HDA_DATA/.qpkg/Tomcat/tomcat/webapps -->
+<html>
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>Fantalive simulatore</title>
+</head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-resource.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
+<script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
+<script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.6.1/angular-locale_it-it.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+<script type="text/javascript" src="./app.js"></script>
+<style>
+table, th, td {
+  border: 1px solid black;
+}
+body {
+    position: relative
+}
+#floatingRectangle {
+    z-index: 1;
+    position: absolute;
+    left: 800;
+    top: 20px;
+    overflow-y: auto;
+    overflow-x: auto;
+    height: 800;
+    width: 400px;
+}
+</style>
+<script>
+</script>
+<body data-ng-init="init()" x-ng-app="app" ng-style="{'margin-left':'20px','background-color':backLoading()}">
+
+	<button style="width:200px;" ng-click="getNomiData()">Get nomiTesto (DB)</button>
+	<select ng-model=nomeFileGet>
+		<option ng-repeat="s in nomiData  track by $index" value="{{s}}" >{{s}}</option>
+	</select>
+
+
+</body>
+</html>

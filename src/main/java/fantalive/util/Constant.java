@@ -10,4 +10,5 @@ public class Constant {
 	public static String AUTH_FS;
 	public static boolean LIVE_FROM_FILE;
 	public static boolean DISABILITA_NOTIFICA_TELEGRAM;
+	public static boolean KEEP_ALIVE;
 }

@@ -39,6 +39,7 @@ public class MyController {
 
 	@PostConstruct
 	private void post() throws Exception {
+		Constant.KEEP_ALIVE = Boolean.valueOf(System.getenv("KEEP_ALIVE"));
 		Constant.DISABILITA_NOTIFICA_TELEGRAM = Boolean.valueOf(System.getenv("DISABILITA_NOTIFICA_TELEGRAM"));
 		Constant.LIVE_FROM_FILE = Boolean.valueOf(System.getenv("LIVE_FROM_FILE"));
 		Constant.CHAT_ID_FANTALIVE = Long.valueOf(System.getenv("CHAT_ID_FANTALIVE"));
@@ -56,9 +57,12 @@ public class MyController {
 	@Scheduled(fixedRate = 1500000)
 	@GetMapping("/getMyFile")
 	public void getFile() throws Exception {
-		String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
-		System.out.println(http);
-		Main.inviaNotifica("Keep Alive!");
+		if (Constant.KEEP_ALIVE) {
+			String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
+			System.out.println(http);
+			Main.inviaNotifica("Keep Alive!");
+		}
+		Main.inviaNotifica("NO!!! Keep Alive!");
 	}
 	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
@@ -128,14 +132,21 @@ public class MyController {
 	@RequestMapping("/getNomiTesto")
 	public Map<String, Object> getNomiTesto() throws Exception {
 		Map<String, Object> ret = new HashMap<>();
-		ret.put("nomiTesto", Main.getNomiTesto());
+		ret.put("nomiTesto", Main.getNomiTesto("%"));
+		return ret;
+	}
+
+	@RequestMapping("/getNomiData")
+	public Map<String, Object> getNomiData() throws Exception {
+		Map<String, Object> ret = new HashMap<>();
+		ret.put("nomiTesto", Main.getNomiTesto("202"));
 		return ret;
 	}
 	@RequestMapping("/svecchiaFile")
 	public Map<String, Object> svecchiaFile() throws Exception {
 		Map<String, Object> ret = new HashMap<>();
 		Main.svecchiaFile();
-		ret.put("nomiTesto", Main.getNomiTesto());
+		ret.put("nomiTesto", Main.getNomiTesto("%"));
 		return ret;
 	}
 	@RequestMapping("/test")

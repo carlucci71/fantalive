@@ -1223,11 +1223,12 @@ public class Main {
 			}
 		}
 	}
-	public static List<String> getNomiTesto() {
+	public static List<String> getNomiTesto(String like) {
 		List<String> ret = new ArrayList<>();
 		Iterable<Salva> findAll = salvaRepository.findAll();
 		for (Salva salva : findAll) {
-			ret.add(salva.getNome());
+			if (like.equals("%") || salva.getNome().startsWith(like))
+				ret.add(salva.getNome());
 		}
 		Collections.sort(ret, Collections.reverseOrder());
 		return ret;
