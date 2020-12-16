@@ -54,9 +54,10 @@ public class MyController {
 		}
 	}
 	@Scheduled(fixedRate = 1500000)
+	@GetMapping("/getMyFile")
 	public void getFile() throws Exception {
 		String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
-		System.out.println(http);
+		Main.inviaNotifica("Keep Alive:" + http);
 	}
 	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
@@ -221,11 +222,6 @@ public class MyController {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Constant.GIORNATA=(Integer)body.get("giornata");
 		return ret;
-	}
-	@GetMapping("/getMyFile")
-	public void getMyFile() throws Exception {
-		String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
-		System.out.println(http);
 	}
 	@GetMapping("/getDati")
 	public Map<String, Object> getDati() {
