@@ -57,7 +57,8 @@ public class MyController {
 	@GetMapping("/getMyFile")
 	public void getFile() throws Exception {
 		String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
-		Main.inviaNotifica("Keep Alive:" + http);
+		System.out.println(http);
+		Main.inviaNotifica("Keep Alive!");
 	}
 	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
