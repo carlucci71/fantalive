@@ -71,14 +71,17 @@ public class MyController {
 	@Scheduled(fixedRate = 1500000)
 	@GetMapping("/getMyFile")
 	public String getFile() throws Exception {
-		if (Constant.KEEP_ALIVE_START.isBefore(LocalDateTime.now()) && Constant.KEEP_ALIVE_END.isAfter(LocalDateTime.now())) {
+		String ret="";
+		LocalDateTime now = LocalDateTime.now();
+		if (Constant.KEEP_ALIVE_START.isBefore(now) && Constant.KEEP_ALIVE_END.isAfter(now)) {
 			String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
-			System.out.println(http);
-			Main.inviaNotifica("Keep Alive!");
+			ret="Keep Alive!";
+			Main.inviaNotifica(ret);
 		} else {
-			return Constant.KEEP_ALIVE_START.toString() + "/" + Constant.KEEP_ALIVE_END.toString();
-//			Main.inviaNotifica("NO!!! Keep Alive!");
+			ret = Constant.KEEP_ALIVE_START.toString() + "/" + Constant.KEEP_ALIVE_END.toString() + "-->" + now.toString();
+			System.out.println(ret);
 		}
+		return ret;
 	}
 	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
