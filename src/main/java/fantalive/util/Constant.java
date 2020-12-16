@@ -1,6 +1,8 @@
 package fantalive.util;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Constant {
 	public static Integer GIORNATA;
@@ -14,4 +16,5 @@ public class Constant {
 	public static boolean DISABILITA_NOTIFICA_TELEGRAM;
 	public static ZonedDateTime KEEP_ALIVE_START;
 	public static ZonedDateTime KEEP_ALIVE_END;
+	public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
 }

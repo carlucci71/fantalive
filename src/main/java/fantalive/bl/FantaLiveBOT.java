@@ -1,5 +1,6 @@
 package fantalive.bl;
 
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import fantalive.model.Giocatore;
 import fantalive.model.Return;
 import fantalive.model.Squadra;
 import fantalive.util.Constant;
+import fantalive.util.ConstantDev;
 
 public class FantaLiveBOT extends TelegramLongPollingBot{
 
@@ -93,10 +95,13 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	}
 
 	public static void main(String[] args) throws Exception {
+		Constant c=null;
 		
+		Class<?> cl = Class.forName("fantalive.util.ConstantDev");
+		Method method = cl.getDeclaredMethod("constant");
+		c = (Constant) method.invoke(c);		
 		
-		Main.init(null,null);
-		
+		Main.init(null,null,c);
 		inizializza("MAIN");
 	}
 

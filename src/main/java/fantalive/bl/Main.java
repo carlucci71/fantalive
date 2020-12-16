@@ -86,15 +86,17 @@ public class Main {
 	private static Map<String, Giocatore> oldSnapshot=null;
 	private static SalvaRepository salvaRepository=null;
 	private static SocketHandler socketHandler=null;
+	private static Constant constant=null;
 	private static List<Live> oldSnapLives=null;
 	private static Map<String, Map<String, String>> oldSnapOrari=null;
 	//	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 	static ObjectMapper mapper;
 	public static Map<String, String> keyFG=null;
 
-	public static void init(SalvaRepository salvaRepositorySpring, SocketHandler socketHandlerSpring) throws Exception {
+	public static void init(SalvaRepository salvaRepositorySpring, SocketHandler socketHandlerSpring, Constant constantSpring) throws Exception {
 		salvaRepository=salvaRepositorySpring;
 		socketHandler=socketHandlerSpring;
+		constant=constantSpring;
 		Main.aggKeyFG();
 		if (sqDaEv==null) {
 			inizializzaSqDaEv();
@@ -225,7 +227,7 @@ public class Main {
 	public static void snapshot() throws Exception {
 		Calendar c = Calendar.getInstance();
 		boolean snap=false;
-		Map<String, Object> getLives = getLives(Constant.LIVE_FROM_FILE);
+		Map<String, Object> getLives = getLives(constant.LIVE_FROM_FILE);
 		List<Live> snapLives = (List<Live>) getLives.get("lives");
 		Map<String, Map<String, String>> snapOrari = (Map<String, Map<String, String>>) getLives.get("orari");
 		String desMiniNotifica="";
@@ -463,8 +465,8 @@ public class Main {
 		String urlNotifica;
 		Map<String, String> body;
 		Map<String, String> headers;
-		if (!Constant.DISABILITA_NOTIFICA_TELEGRAM) {
-			fantaLiveBot.inviaMessaggio(Constant.CHAT_ID_FANTALIVE,msg,false);
+		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
+			fantaLiveBot.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg,false);
 		}
 		else {
 			System.out.println("Notifica:\n" + msg);
@@ -489,8 +491,8 @@ public class Main {
 
 
 			headers = new HashMap<String, String>();
-			headers.put("X-Authorization", Constant.SPONTIT_KEY);
-			headers.put("X-UserId", Constant.SPONTIT_USERID);
+			headers.put("X-Authorization", constant.SPONTIT_KEY);
+			headers.put("X-UserId", constant.SPONTIT_USERID);
 			postHTTP(urlNotifica,body, headers);
 
 		}
@@ -518,14 +520,14 @@ public class Main {
 	public static void scaricaBe() throws IOException, ClientProtocolException {
 		BasicCookieStore cookieStore = new BasicCookieStore();
 		BasicClientCookie cookie;
-		cookie = new BasicClientCookie("FantaSoccer_Auth", Constant.AUTH_FS);
+		cookie = new BasicClientCookie("FantaSoccer_Auth", constant.AUTH_FS);
 		cookie.setDomain("www.fanta.soccer");
 		cookie.setPath("/");
 		cookieStore.addCookie(cookie);
 		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
 		try {
 			for (int i=0;i<4;i++) {
-				HttpGet httpget = new HttpGet("https://www.fanta.soccer/it/lega/privata/" + COMP_FS + "/dettaglipartita/" + String.valueOf(Constant.GIORNATA-DELTA_FS) + "/" + String.valueOf(i + PRIMA_GIORNATA_FS + (NUM_PARTITE_FS*(Constant.GIORNATA-DELTA_FS))) + "/");
+				HttpGet httpget = new HttpGet("https://www.fanta.soccer/it/lega/privata/" + COMP_FS + "/dettaglipartita/" + String.valueOf(constant.GIORNATA-DELTA_FS) + "/" + String.valueOf(i + PRIMA_GIORNATA_FS + (NUM_PARTITE_FS*(constant.GIORNATA-DELTA_FS))) + "/");
 				ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 					@Override
 					public String handleResponse(
@@ -666,15 +668,15 @@ public class Main {
 	}
 
 	public static void aggKeyFG() throws Exception {
-		int giornata=Constant.GIORNATA;
+		int giornata=constant.GIORNATA;
 		Main.keyFG=new HashMap<String, String>();
 		Main.keyFG.put("fantaviva", "id_comp=" + Main.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Main.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Main.DELTA_VIVA_FG) + "_" + calcolaAggKey("fanta-viva") + ".json");
 		Main.keyFG.put("luccicar", "id_comp=" + Main.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey("luccicar") + ".json");
 	}
 
 	private static String calcolaAggKey(String lega) throws Exception {
-		int giornata=Constant.GIORNATA-Main.DELTA_VIVA_FG;
-		if (lega.equalsIgnoreCase("luccicar")) giornata=Constant.GIORNATA-Main.DELTA_LUCCICAR_FG;
+		int giornata=constant.GIORNATA-Main.DELTA_VIVA_FG;
+		if (lega.equalsIgnoreCase("luccicar")) giornata=constant.GIORNATA-Main.DELTA_LUCCICAR_FG;
 		String url = "https://leghe.fantacalcio.it/" + lega + "/formazioni/" + giornata;
 		String string = Main.getHTTP(url);
 		string = string.substring(string.indexOf(".s('tmp', ")+11);
@@ -689,7 +691,7 @@ public class Main {
 		lega=lega.replace("-", "");
 		List<Squadra> squadre=new ArrayList<Squadra>();
 		Map<String,String> headers = new HashMap<String, String>();
-		headers.put("app_key", Constant.APPKEY_FG);
+		headers.put("app_key", constant.APPKEY_FG);
 		String url = "https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?" + keyFG.get(lega);
 		String string = getHTTP(url, headers );
 		Map<String, Object> jsonToMap = jsonToMap(string);
@@ -813,7 +815,7 @@ public class Main {
 		List<Live> lives=new ArrayList<Live>();
 		Map<String, Map<String, String>> orari=null;
 		if (conLive) {
-			Map<String, Object> getLives = getLives(Constant.LIVE_FROM_FILE);
+			Map<String, Object> getLives = getLives(constant.LIVE_FROM_FILE);
 			lives = (List<Live>) getLives.get("lives");
 			orari = (Map<String, Map<String, String>>) getLives.get("orari");
 
@@ -910,7 +912,7 @@ public class Main {
 			Iterator<Integer> iterator = sq.keySet().iterator();
 			while (iterator.hasNext()) {
 				Integer integer = (Integer) iterator.next();
-				String sqFromLive = getHTTP("https://www.fantacalcio.it/api/live/" + integer + "?g=" + Constant.GIORNATA + "&i=" + I_LIVE_FANTACALCIO);
+				String sqFromLive = getHTTP("https://www.fantacalcio.it/api/live/" + integer + "?g=" + constant.GIORNATA + "&i=" + I_LIVE_FANTACALCIO);
 				List<Map<String, Object>> getLiveFromFG = jsonToList(sqFromLive);
 				Live live = new Live();
 				live.setSquadra(sq.get(integer));

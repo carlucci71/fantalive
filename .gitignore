@@ -13,3 +13,4 @@ target/
 settings.xml
 fomrazioneFGbe.json
 src/main/java/fantalive/configurazione/ConfigSecurity.java
+src/main/java/fantalive/util/ConstantDev.java

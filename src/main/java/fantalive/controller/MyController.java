@@ -36,36 +36,38 @@ import fantalive.util.Constant;
 @RequestMapping({ "/" })
 public class MyController {
 
-	
+
+	@Autowired Constant constant;
 	@Autowired SocketHandler socketHandler;
 	@Autowired SalvaRepository salvaRepository;
-	DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
 
 	@PostConstruct
 	private void post() throws Exception {
-		if(System.getenv("KEEP_ALIVE_START") != null) {
-			Constant.KEEP_ALIVE_START = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_START"), dateTimeFormatter);
-		}
-		else {
-			Constant.KEEP_ALIVE_START = ZonedDateTime.now();
-		}
-		if(System.getenv("KEEP_ALIVE_END") != null) {
-			Constant.KEEP_ALIVE_END = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_END"), dateTimeFormatter);
-		}
-		else {
-			Constant.KEEP_ALIVE_END = ZonedDateTime.now();
-		}
-		Constant.DISABILITA_NOTIFICA_TELEGRAM = Boolean.valueOf(System.getenv("DISABILITA_NOTIFICA_TELEGRAM"));
-		Constant.LIVE_FROM_FILE = Boolean.valueOf(System.getenv("LIVE_FROM_FILE"));
-		Constant.CHAT_ID_FANTALIVE = Long.valueOf(System.getenv("CHAT_ID_FANTALIVE"));
-		Constant.SPONTIT_KEY = System.getenv("SPONTIT_KEY");
-		Constant.TOKEN_BOT_FANTALIVE = System.getenv("TOKEN_BOT_FANTALIVE");
-		Constant.SPONTIT_USERID = System.getenv("SPONTIT_USERID");
-		Constant.APPKEY_FG = System.getenv("APPKEY_FG");
-		Constant.AUTH_FS = System.getenv("AUTH_FS");
-		Constant.GIORNATA = Integer.valueOf(System.getenv("GIORNATA"));
-		Main.init(salvaRepository,socketHandler);
-		if (!Constant.DISABILITA_NOTIFICA_TELEGRAM) {
+		/*
+			if(System.getenv("KEEP_ALIVE_START") != null) {
+				constant.KEEP_ALIVE_START = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_START"), dateTimeFormatter);
+			}
+			else {
+				constant.KEEP_ALIVE_START = ZonedDateTime.now();
+			}
+			if(System.getenv("KEEP_ALIVE_END") != null) {
+				constant.KEEP_ALIVE_END = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_END"), dateTimeFormatter);
+			}
+			else {
+				constant.KEEP_ALIVE_END = ZonedDateTime.now();
+			}
+			constant.DISABILITA_NOTIFICA_TELEGRAM = Boolean.valueOf(System.getenv("DISABILITA_NOTIFICA_TELEGRAM"));
+			constant.LIVE_FROM_FILE = Boolean.valueOf(System.getenv("LIVE_FROM_FILE"));
+			constant.CHAT_ID_FANTALIVE = Long.valueOf(System.getenv("CHAT_ID_FANTALIVE"));
+			constant.SPONTIT_KEY = System.getenv("SPONTIT_KEY");
+			constant.TOKEN_BOT_FANTALIVE = System.getenv("TOKEN_BOT_FANTALIVE");
+			constant.SPONTIT_USERID = System.getenv("SPONTIT_USERID");
+			constant.APPKEY_FG = System.getenv("APPKEY_FG");
+			constant.AUTH_FS = System.getenv("AUTH_FS");
+			constant.GIORNATA = Integer.valueOf(System.getenv("GIORNATA"));
+*/
+		Main.init(salvaRepository,socketHandler,constant);
+		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 		}
 	}
@@ -74,17 +76,17 @@ public class MyController {
 	public String getFile() throws Exception {
 		String ret="";
 		ZonedDateTime now = ZonedDateTime.now();
-		if (Constant.KEEP_ALIVE_START.isBefore(now) && Constant.KEEP_ALIVE_END.isAfter(now)) {
+		if (constant.KEEP_ALIVE_START.isBefore(now) && constant.KEEP_ALIVE_END.isAfter(now)) {
 			String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
 			ret="Keep Alive!";
 			Main.inviaNotifica(ret);
 		} else {
-			ret = dateTimeFormatter.format(now) + " --> " + dateTimeFormatter.format(Constant.KEEP_ALIVE_START) + " / " + dateTimeFormatter.format(Constant.KEEP_ALIVE_END);
+			ret = Constant.dateTimeFormatter.format(now) + " --> " + Constant.dateTimeFormatter.format(constant.KEEP_ALIVE_START) + " / " + Constant.dateTimeFormatter.format(constant.KEEP_ALIVE_END);
 			System.out.println(ret);
 		}
 		return ret;
 	}
-	
+
 	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
 		int conta = (int) Main.toSocket.get("timeRefresh");
@@ -94,9 +96,9 @@ public class MyController {
 		}
 		conta=conta+5000;
 		Main.toSocket.put("timeRefresh", conta);
-		Main.toSocket.put("liveFromFile", Constant.LIVE_FROM_FILE);
-		Main.toSocket.put("disabilitaNotificaTelegram", Constant.DISABILITA_NOTIFICA_TELEGRAM);
-		
+		Main.toSocket.put("liveFromFile", constant.LIVE_FROM_FILE);
+		Main.toSocket.put("disabilitaNotificaTelegram", constant.DISABILITA_NOTIFICA_TELEGRAM);
+
 		String runningBot="STOPPED";
 		if (Main.fantaLiveBot != null && Main.fantaLiveBot.isRunning()) {
 			runningBot="RUNNING";
@@ -225,7 +227,7 @@ public class MyController {
 	@PostMapping("/salva")
 	public Map<String, Return> salva(@RequestBody Map<String,Return> body) throws Exception  {
 		Return r = body.get("r");
-//		Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + r.getNome().toLowerCase() + ".json"), Main.toJson(r.getSquadre()).getBytes());
+		//		Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + r.getNome().toLowerCase() + ".json"), Main.toJson(r.getSquadre()).getBytes());
 		Main.upsertSalva("fomrazioneFG" + r.getNome().toLowerCase() + ".json", Main.toJson(r.getSquadre()));
 		return test(true);
 	}
@@ -285,20 +287,20 @@ public class MyController {
 	@PostMapping("/setGiornata")
 	public Map<String, Object> setGiornata(@RequestBody Map<String,Object> body)  {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		Constant.GIORNATA=(Integer)body.get("giornata");
+		constant.GIORNATA=(Integer)body.get("giornata");
 		return ret;
 	}
 	@GetMapping("/getDati")
 	public Map<String, Object> getDati() {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		ret.put("body", Constant.AUTH_FS);
-		ret.put("giornata", Constant.GIORNATA);
+		ret.put("body", constant.AUTH_FS);
+		ret.put("giornata", constant.GIORNATA);
 		ret.put("eventi", Main.eventi);
 		return ret;
 	}
 	@PostMapping("/setFantaSoccerAuth")
 	public void setFantaSoccerAuth(@RequestBody Map<String,String> body)  {
-		Constant.AUTH_FS=body.get("body");
+		constant.AUTH_FS=body.get("body");
 	}
 	@PostMapping("/preparaSquadre")
 	public void preparaSquadre(@RequestBody Map<String,Integer> body) throws Exception {
@@ -326,9 +328,9 @@ public class MyController {
 					squadre.add(Main.getFromFS(doc, "Trasferta"));
 					Files.delete(Paths.get(nomeFile));
 				}
-				*/
+				 */
 			}
-//			Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + "be" + ".json"), Main.toJson(squadre).getBytes());
+			//			Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + "be" + ".json"), Main.toJson(squadre).getBytes());
 			Main.upsertSalva("fomrazioneFG" + "be" + ".json", Main.toJson(squadre));
 		}
 		catch (Exception e)
