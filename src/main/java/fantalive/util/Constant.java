@@ -1,6 +1,6 @@
 package fantalive.util;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public class Constant {
 	public static Integer GIORNATA;
@@ -12,6 +12,6 @@ public class Constant {
 	public static String AUTH_FS;
 	public static boolean LIVE_FROM_FILE;
 	public static boolean DISABILITA_NOTIFICA_TELEGRAM;
-	public static LocalDateTime KEEP_ALIVE_START;
-	public static LocalDateTime KEEP_ALIVE_END;
+	public static ZonedDateTime KEEP_ALIVE_START;
+	public static ZonedDateTime KEEP_ALIVE_END;
 }

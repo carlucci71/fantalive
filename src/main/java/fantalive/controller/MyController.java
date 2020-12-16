@@ -1,6 +1,7 @@
 package fantalive.controller;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,18 +42,18 @@ public class MyController {
 
 	@PostConstruct
 	private void post() throws Exception {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/London"));
 		if(System.getenv("KEEP_ALIVE_START") != null) {
-			Constant.KEEP_ALIVE_START = LocalDateTime.parse(System.getenv("KEEP_ALIVE_START"), formatter);
+			Constant.KEEP_ALIVE_START = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_START"), formatter);
 		}
 		else {
-			Constant.KEEP_ALIVE_START = LocalDateTime.now();
+			Constant.KEEP_ALIVE_START = ZonedDateTime.now();
 		}
 		if(System.getenv("KEEP_ALIVE_END") != null) {
-			Constant.KEEP_ALIVE_END = LocalDateTime.parse(System.getenv("KEEP_ALIVE_END"), formatter);
+			Constant.KEEP_ALIVE_END = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_END"), formatter);
 		}
 		else {
-			Constant.KEEP_ALIVE_END = LocalDateTime.now();
+			Constant.KEEP_ALIVE_END = ZonedDateTime.now();
 		}
 		Constant.DISABILITA_NOTIFICA_TELEGRAM = Boolean.valueOf(System.getenv("DISABILITA_NOTIFICA_TELEGRAM"));
 		Constant.LIVE_FROM_FILE = Boolean.valueOf(System.getenv("LIVE_FROM_FILE"));
@@ -72,7 +73,7 @@ public class MyController {
 	@GetMapping("/getMyFile")
 	public String getFile() throws Exception {
 		String ret="";
-		LocalDateTime now = LocalDateTime.now();
+		ZonedDateTime now = ZonedDateTime.now();
 		if (Constant.KEEP_ALIVE_START.isBefore(now) && Constant.KEEP_ALIVE_END.isAfter(now)) {
 			String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
 			ret="Keep Alive!";
