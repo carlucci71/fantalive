@@ -70,12 +70,13 @@ public class MyController {
 	}
 	@Scheduled(fixedRate = 1500000)
 	@GetMapping("/getMyFile")
-	public void getFile() throws Exception {
+	public String getFile() throws Exception {
 		if (Constant.KEEP_ALIVE_START.isBefore(LocalDateTime.now()) && Constant.KEEP_ALIVE_END.isAfter(LocalDateTime.now())) {
 			String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
 			System.out.println(http);
 			Main.inviaNotifica("Keep Alive!");
 		} else {
+			return Constant.KEEP_ALIVE_START.toString() + "/" + Constant.KEEP_ALIVE_END.toString();
 //			Main.inviaNotifica("NO!!! Keep Alive!");
 		}
 	}
