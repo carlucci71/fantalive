@@ -54,6 +54,11 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 				}
 				else {
 					try {
+						byte[] bytes = text.getBytes();
+						System.err.println();
+						for (byte b : bytes) {
+							System.err.print(b);
+						}
 						inviaMessaggio(chatId,text, true);//REPLY
 					} catch (TelegramApiException e) {
 						throw new RuntimeException(e);
@@ -128,8 +133,8 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	}
 	
 	private void messaggioBenvenuto() throws Exception {
-			inviaMessaggio(Constant.CHAT_ID_FANTALIVE, "BOT AVVIATO", false);
-//			inviaMessaggio(Constant.CHAT_ID_FANTALIVE, getDettaglio(Constant.CHAT_ID_FANTALIVE,"BE", "tavolino"), false);
+		byte[] b = new byte[] {-16, -97, -89, -102, -30, -128, -115, -30, -103, -128, -17, -72, -113};
+		inviaMessaggio(Constant.CHAT_ID_FANTALIVE, new String(b), false);
 	}
 
 	private SendMessage sendInlineKeyBoardCampionati(long chatId, String msg){

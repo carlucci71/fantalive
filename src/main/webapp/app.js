@@ -66,6 +66,9 @@ app.run(
 					if (msg.runningBot){
 						$rootScope.runningBot=msg.runningBot;
 					}
+					if (msg.lastKeepAlive){
+						$rootScope.lastKeepAlive=msg.lastKeepAlive;
+					}
 					$rootScope.testoLog=$rootScope.testoLog.replace("<b>","").replace("</b>","").replace("<i>","").replace("</i>","");
 				}
 				$rootScope.$apply();

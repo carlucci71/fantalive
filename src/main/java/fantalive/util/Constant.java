@@ -17,4 +17,5 @@ public class Constant {
 	public static ZonedDateTime KEEP_ALIVE_START;
 	public static ZonedDateTime KEEP_ALIVE_END;
 	public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
+	public static ZonedDateTime LAST_KEEP_ALIVE;
 }

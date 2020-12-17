@@ -1,8 +1,6 @@
 package fantalive.controller;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,9 +69,19 @@ public class MyController {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 		}
 	}
+
+	
 	@Scheduled(fixedRate = 1500000)
+	public String scheduleKeepAlive() throws Exception {
+		Constant.LAST_KEEP_ALIVE=ZonedDateTime.now();	
+		return keepAlive();
+	}
+
 	@GetMapping("/getMyFile")
 	public String getFile() throws Exception {
+		return keepAlive();
+	}
+	private String keepAlive() throws Exception {
 		String ret="";
 		ZonedDateTime now = ZonedDateTime.now();
 		if (constant.KEEP_ALIVE_START.isBefore(now) && constant.KEEP_ALIVE_END.isAfter(now)) {
@@ -86,7 +94,6 @@ public class MyController {
 		}
 		return ret;
 	}
-
 	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
 		int conta = (int) Main.toSocket.get("timeRefresh");
@@ -98,6 +105,8 @@ public class MyController {
 		Main.toSocket.put("timeRefresh", conta);
 		Main.toSocket.put("liveFromFile", constant.LIVE_FROM_FILE);
 		Main.toSocket.put("disabilitaNotificaTelegram", constant.DISABILITA_NOTIFICA_TELEGRAM);
+		Main.toSocket.put("lastKeepAlive", Constant.dateTimeFormatter.format(Constant.LAST_KEEP_ALIVE) );
+
 
 		String runningBot="STOPPED";
 		if (Main.fantaLiveBot != null && Main.fantaLiveBot.isRunning()) {

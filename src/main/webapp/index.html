@@ -46,7 +46,7 @@ Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-
 <button ng-show="!configura && !loading" ng-click="configura=true">Configura</button>
 <button ng-show="configura && !loading" ng-click="endConfigura()">Termina configurazione</button>
 <br>
-<label ng-show="aggiornamento" >Dati aggiornati alle: {{aggiornamento}} </label>
+<label ng-show="aggiornamento" >Dati aggiornati alle: {{aggiornamento}} </label>Last keep alive:{{lastKeepAlive}}
 <br><span ng-show="timeRefresh">Refresh tra {{20-(timeRefresh/1000)}}s</span>
 <span ng-show="!loading && !disabilitaNotificaTelegram"><br>{{runningBot}} <button ng-click="startStopBot()">START/STOP BOT</button></span>
 <br>
