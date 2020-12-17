@@ -16,6 +16,7 @@ public class Constant {
 	public static boolean DISABILITA_NOTIFICA_TELEGRAM;
 	public static ZonedDateTime KEEP_ALIVE_START;
 	public static ZonedDateTime KEEP_ALIVE_END;
-	public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
+	public static DateTimeFormatter dateTimeFormatterIn = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
+	public static DateTimeFormatter dateTimeFormatterOut = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").withZone(ZoneId.of("Europe/Rome"));
 	public static ZonedDateTime LAST_KEEP_ALIVE;
 }

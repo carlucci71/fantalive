@@ -14,13 +14,13 @@ public class ConstantProtetto {
 	public static Constant constant() {
 		Constant constant = new Constant();
 		if(System.getenv("KEEP_ALIVE_START") != null) {
-			constant.KEEP_ALIVE_START = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_START"), Constant.dateTimeFormatter);
+			constant.KEEP_ALIVE_START = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_START"), Constant.dateTimeFormatterIn);
 		}
 		else {
 			constant.KEEP_ALIVE_START = ZonedDateTime.now();
 		}
 		if(System.getenv("KEEP_ALIVE_END") != null) {
-			constant.KEEP_ALIVE_END = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_END"), Constant.dateTimeFormatter);
+			constant.KEEP_ALIVE_END = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_END"), Constant.dateTimeFormatterIn);
 		}
 		else {
 			constant.KEEP_ALIVE_END = ZonedDateTime.now();

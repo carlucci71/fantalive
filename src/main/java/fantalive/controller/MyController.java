@@ -89,7 +89,7 @@ public class MyController {
 			ret="Keep Alive!";
 			Main.inviaNotifica(ret);
 		} else {
-			ret = Constant.dateTimeFormatter.format(now) + " --> " + Constant.dateTimeFormatter.format(constant.KEEP_ALIVE_START) + " / " + Constant.dateTimeFormatter.format(constant.KEEP_ALIVE_END);
+			ret = Constant.dateTimeFormatterOut.format(now) + " --> " + Constant.dateTimeFormatterOut.format(constant.KEEP_ALIVE_START) + " / " + Constant.dateTimeFormatterOut.format(constant.KEEP_ALIVE_END);
 			System.out.println(ret);
 		}
 		return ret;
@@ -105,9 +105,9 @@ public class MyController {
 		Main.toSocket.put("timeRefresh", conta);
 		Main.toSocket.put("liveFromFile", constant.LIVE_FROM_FILE);
 		Main.toSocket.put("disabilitaNotificaTelegram", constant.DISABILITA_NOTIFICA_TELEGRAM);
-		Main.toSocket.put("lastKeepAlive", Constant.dateTimeFormatter.format(Constant.LAST_KEEP_ALIVE));
-		Main.toSocket.put("keepAliveStart", Constant.dateTimeFormatter.format(Constant.KEEP_ALIVE_START));
-		Main.toSocket.put("keepAliveEnd", Constant.dateTimeFormatter.format(Constant.KEEP_ALIVE_END));
+		Main.toSocket.put("lastKeepAlive", Constant.dateTimeFormatterOut.format(Constant.LAST_KEEP_ALIVE));
+		Main.toSocket.put("keepAliveStart", Constant.dateTimeFormatterOut.format(Constant.KEEP_ALIVE_START));
+		Main.toSocket.put("keepAliveEnd", Constant.dateTimeFormatterOut.format(Constant.KEEP_ALIVE_END));
 
 
 		String runningBot="STOPPED";
