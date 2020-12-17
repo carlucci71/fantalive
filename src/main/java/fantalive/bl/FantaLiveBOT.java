@@ -25,7 +25,6 @@ import fantalive.model.Giocatore;
 import fantalive.model.Return;
 import fantalive.model.Squadra;
 import fantalive.util.Constant;
-import fantalive.util.ConstantDev;
 
 public class FantaLiveBOT extends TelegramLongPollingBot{
 
