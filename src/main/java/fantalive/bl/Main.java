@@ -1045,6 +1045,7 @@ public class Main {
 						}
 					}
 				}
+				
 				for (Map<String, Object> g : giocatori) {
 					String nomeGiocatoreLive=g.get("nome").toString();
 					List<Integer> codEventi=new ArrayList<Integer>();
