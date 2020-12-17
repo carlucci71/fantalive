@@ -290,8 +290,6 @@ public class Main {
 					String oldTag = oldGioc.getOrario().get("tag");
 					String newTag = newGioc.getOrario().get("tag");
 					if (newTag.equalsIgnoreCase("PreMatch") && newGioc.isNotificaLive()==false && !oldGioc.isSquadraGioca() && newGioc.isSquadraGioca()) {
-//						upsertSalva(newGioc.getNome() + "lives.json", toJson(snapLives));
-//						upsertSalva(newGioc.getNome() + "orari.json", toJson(snapOrari));
 						eventi.put("NON SCHIERATO",null);
 					}
 					if (newTag.equalsIgnoreCase("PreMatch") && newGioc.isNotificaLive()==true && !oldGioc.isSquadraGioca() && newGioc.isSquadraGioca()) {
@@ -346,33 +344,33 @@ public class Main {
 				if (keySet!= null && keySet.size()>0) {
 					StringBuilder des = new StringBuilder();
 					for (String camp : keySet) {
-						des.append("\n").append(camp).append("\n");
+						des.append("\n<b><i>").append("\u26BD").append(camp).append("</i></b>\n");
 						Map<String, List<Notifica>> sq = notifiche.get(camp);
 						Iterator<String> itSq = sq.keySet().iterator();
 						while (itSq.hasNext()) {
 							String sqN = (String) itSq.next();
-							des.append("\t").append(sqN).append("\n");
+							des.append("\n<b>").append(sqN).append("</b>\n");
 							List<Notifica> listN = sq.get(sqN);
 							Collections.sort(listN);
 							for (Notifica notifica : listN) {
-								String ret = notifica.getGiocatore() + notifica.getCambio() + " " + notifica.getId() + " " + notifica.getVoto();
+								String ret = notifica.getGiocatore() + notifica.getCambio() + " <b>" + notifica.getId() + "</b> " + notifica.getVoto();
 								Set<String> ks = notifica.getEventi().keySet();
 								for (String key : ks) {
 									if (notifica.getEventi().get(key)==null) {
-										ret = ret + "\n\t\t\t "  + "  " + key;
+										ret = ret + "\n --> "  + "  " + key;
 									}
 								}
 								for (String key : ks) {
 									if (notifica.getEventi().get(key) != null && notifica.getEventi().get(key)>0) {
-										ret = ret + "\n\t\t\t "  + notifica.getEventi().get(key) + " " + key;
+										ret = ret + "\n --> "  + notifica.getEventi().get(key) + " " + key;
 									}
 								}
 								for (String key : ks) {
 									if (notifica.getEventi().get(key) != null && notifica.getEventi().get(key)<0) {
-										ret = ret + "\n\t\t\t "  + (notifica.getEventi().get(key) * -1) + " --NO-- " + key;
+										ret = ret + "\n --> "  + (notifica.getEventi().get(key) * -1) + " --NO-- " + key;
 									}
 								}
-								des.append("\t\t").append(ret).append("\n");
+								des.append("").append(ret).append("\n");
 							}
 						}
 					}

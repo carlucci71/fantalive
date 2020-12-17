@@ -42,7 +42,6 @@ app.run(
 			});
 			$rootScope.getMessaggio = function(message){
 				if (message){
-//					$rootScope.testoLog=$rootScope.testoLog + "REFRESH!!" + ""+ "REFRESH!!" + ""+ "REFRESH!!" + ""+ "REFRESH!!" + ""+ "REFRESH!!" + ""+ "REFRESH!!" + "\n";
 					var msg = JSON.parse(message);
 //					console.log(msg);
 					if (msg.res){
@@ -67,6 +66,7 @@ app.run(
 					if (msg.runningBot){
 						$rootScope.runningBot=msg.runningBot;
 					}
+					$rootScope.testoLog=$rootScope.testoLog.replace("<b>","").replace("</b>","").replace("<i>","").replace("</i>","");
 				}
 				$rootScope.$apply();
 			};
