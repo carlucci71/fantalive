@@ -32,6 +32,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
+import org.hibernate.engine.query.spi.OrdinalParameterDescriptor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -412,7 +413,8 @@ public class Main {
 
 
 	public static void main(String[] args) throws Exception {
-
+		List<String> gg = new ArrayList<>();
+		
 
 
 
@@ -1035,10 +1037,15 @@ public class Main {
 				//								System.out.println(live + "-" + giocatore);
 			}
 			if (giocatore != null && giocatore.getSquadra() != null && live.getSquadra().equals(giocatore.getSquadra().toUpperCase())) {
-				if (live.getGiocatori().size()>0) {
-					giocatore.setSquadraGioca(true);
+				List<Map<String, Object>> giocatori = live.getGiocatori();
+				if (giocatori.size()>0) {
+					for (Map<String, Object> map : giocatori) {
+						if (map.get("voto")!=null && Double.parseDouble(map.get("voto").toString()) > 0) {
+							giocatore.setSquadraGioca(true);
+						}
+					}
 				}
-				for (Map<String, Object> g : live.getGiocatori()) {
+				for (Map<String, Object> g : giocatori) {
 					String nomeGiocatoreLive=g.get("nome").toString();
 					List<Integer> codEventi=new ArrayList<Integer>();
 					if (g.get("codEventi") != null) {
@@ -1178,7 +1185,7 @@ public class Main {
 			throw new RuntimeException(e);
 		} 
 	}
-	private static List<Squadra> jsonToSquadre(String json){
+	public static List<Squadra> jsonToSquadre(String json){
 		try
 		{
 			return mapper.readValue(json, new TypeReference<List<Squadra>>(){});
@@ -1196,7 +1203,7 @@ public class Main {
 			throw new RuntimeException(e);
 		}
 	}
-	private static List<Map<String, Object>> jsonToList(String json)
+	public static List<Map<String, Object>> jsonToList(String json)
 	{
 		try
 		{
@@ -1206,7 +1213,6 @@ public class Main {
 			throw new RuntimeException(e);
 		}
 	}
-
 	public static Map<String, Object> jsonToMap(String json)
 	{
 		try

@@ -81,7 +81,7 @@ public class Notifica implements Comparable<Notifica> {
 		String oId=o.getId().toUpperCase();
 		if (thisId.startsWith("T") && oId.startsWith("R")) return -1;
 		if (thisId.startsWith("R") && oId.startsWith("T")) return 1;
-		return oId.compareTo(thisId);
+		return thisId.compareTo(oId);
 	}
 
 }
