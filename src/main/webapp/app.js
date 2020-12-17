@@ -69,6 +69,19 @@ app.run(
 					if (msg.lastKeepAlive){
 						$rootScope.lastKeepAlive=msg.lastKeepAlive;
 					}
+					if (msg.keepAliveStart){
+						$rootScope.keepAliveStart=msg.keepAliveStart;
+					}
+					if (msg.keepAliveEnd){
+						$rootScope.keepAliveEnd=msg.keepAliveEnd;
+					}
+					
+					
+					Main.toSocket.put("", Constant.dateTimeFormatter.format(Constant.KEEP_ALIVE_START));
+					Main.toSocket.put("", Constant.dateTimeFormatter.format(Constant.KEEP_ALIVE_END));
+					
+					
+					
 					$rootScope.testoLog=$rootScope.testoLog.replace("<b>","").replace("</b>","").replace("<i>","").replace("</i>","");
 				}
 				$rootScope.$apply();
