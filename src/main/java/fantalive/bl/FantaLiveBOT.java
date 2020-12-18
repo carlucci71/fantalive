@@ -21,7 +21,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 
 import fantalive.bl.Main.Campionati;
-import fantalive.model.Giocatore;
 import fantalive.model.Return;
 import fantalive.model.Squadra;
 import fantalive.util.Constant;
@@ -30,13 +29,6 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 
 	private static BotSession registerBot;
 	private static String CHI;
-	private final  String BUSTA = "\u2709";
-	private final  String CLESSIDRA  = "\u23F3";
-	private final  String SPUNTA = "\u2714";
-	private final  String INTERROGATIVO = "\u2753";
-	private final  String PALLONE = "\u26BD";
-	private final  String SVEGLIA  = "\u23F0";
-	private final  String X_VERDE  = "\u274E";
 	
 
 	@Override
@@ -54,11 +46,6 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 				}
 				else {
 					try {
-						byte[] bytes = text.getBytes();
-						System.err.println();
-						for (byte b : bytes) {
-							System.err.print(b);
-						}
 						inviaMessaggio(chatId,text, true);//REPLY
 					} catch (TelegramApiException e) {
 						throw new RuntimeException(e);
@@ -80,7 +67,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 				try {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					String[] split = testoCallback.split("#");
-					inviaMessaggio(chatId,getDettaglio(chatId,split[0],split[1]), false);//SQUADRA
+					inviaMessaggio(chatId,Main.getDettaglio(chatId,split[0],split[1]), false);//SQUADRA
 				} catch (TelegramApiException e) {
 					throw new RuntimeException(e);
 				}
@@ -133,8 +120,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	}
 	
 	private void messaggioBenvenuto() throws Exception {
-		byte[] b = new byte[] {-16, -97, -89, -102, -30, -128, -115, -30, -103, -128, -17, -72, -113};
-		inviaMessaggio(Constant.CHAT_ID_FANTALIVE, new String(b), false);
+		inviaMessaggio(Constant.CHAT_ID_FANTALIVE, "Benvenuto:" + Constant.DIVANO, false);
 	}
 
 	private SendMessage sendInlineKeyBoardCampionati(long chatId, String msg){
@@ -149,126 +135,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 		return new SendMessage().setChatId(chatId).setText(msg).setReplyMarkup(inlineKeyboardMarkup);
 	}
 
-	private String getDettaglio(Long chatId, String campionato, String squadra){
-		try {
-			Map<String, Return> go = Main.go(true, null, null);
-			Return return1 = go.get(campionato);
-			List<Squadra> squadre = return1.getSquadre();
-			for (Squadra sq : squadre) {
-				if (sq.getNome().equalsIgnoreCase(squadra)) {
-					StringBuilder testo = new StringBuilder();
-					testo.append("\n<b>").append(sq.getNome()).append("</b> --> <b><i>").append(sq.getProiezione()).append("</i></b>\n\n");
-					for (Giocatore giocatore : sq.getTitolari()) {
-						dettaglioTestoGiocatore(testo, giocatore,campionato);
-					}
-					testo.append("\n");
-					testo.append("Giocatori con voto: ").append(sq.getContaTitolari()).append("\n");
-					testo.append("Media votati: ").append(sq.getMediaTitolari()).append("\n");
-					testo.append("Ancora da giocare: ").append(sq.getContaSquadraTitolariNonGioca()).append("\n");
-					testo.append("Totale: ").append(sq.getTotaleTitolari()).append("\n");
-					testo.append("\n");
 
-					for (Giocatore giocatore : sq.getRiserve()) {
-						dettaglioTestoGiocatore(testo, giocatore,campionato);
-					}
-					testo.append("\n");
-					testo.append("Giocatori con voto: ").append(sq.getContaRiserve()).append("\n");
-					testo.append("Ancora da giocare: ").append(sq.getContaSquadraRiserveNonGioca()).append("\n");
-					
-					if(chatId.intValue() == Constant.CHAT_ID_FANTALIVE.intValue()) {
-						testo.append("\n").append(Main.getUrlNotifica());
-					}
-					
-					
-//					System.err.println(testo.toString());
-					return testo.toString(); 
-				}
-			}
-			return ""; 
-		}
-		catch (Exception e ) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private void dettaglioTestoGiocatore(StringBuilder testo, Giocatore giocatore, String campionato) {
-		testo.append(giocatore.getIdGioc()).append("\t");
-		testo.append(partitaFinita(giocatore)).append(conVoto(giocatore)).
-//		append(squadraGioca(giocatore)).
-		append("  ");
-		testo.append("<b>").append(giocatore.getNome()).append("</b>").append("\t");
-		testo.append(giocatore.getSquadra()).append("\t");
-		testo.append(giocatore.getRuolo()).append("\t");
-		testo.append(getVoto(giocatore)).append("\t");
-		for (Integer evento : giocatore.getCodEventi()) {
-			testo.append(desEvento(evento,campionato)).append("  ");
-		}
-		testo.append("<b>").append(getFantaVoto(giocatore)).append("</b>");
-		if (giocatore.isCambiato()) testo.append("(*)");
-		testo.append("\t");
-		testo.append(getOrario(giocatore.getOrario()));
-		testo.append("\n");
-	}
-	private String desEvento(Integer ev,String r){
-		String[] evento = Main.eventi.get(ev);
-		String ret = evento[0];
-		String valEvento = valEvento(evento,r);
-		if (!"0".equals(valEvento)) {
-			ret = ret + " (" + valEvento + ") "; 
-		}
-		return ret;
-	}
-	private String valEvento(String[] evento,String r){
-		int pos=0;
-		if (r.equals("FANTAVIVA")) pos=1;
-		if (r.equals("LUCCICAR")) pos=2;
-		if (r.equals("BE")) pos=3;
-		return evento[pos];
-	}
-
-	private String partitaFinita(Giocatore giocatore){
-		if (giocatore.getOrario().get("tag").equals("FullTime")) return BUSTA;
-		if (giocatore.getCodEventi().contains(14)) return BUSTA;
-		return CLESSIDRA;
-	}
-	private String conVoto(Giocatore giocatore){
-		if (giocatore.getVoto()==0) {
-			if (giocatore.isSquadraGioca()) {
-				return X_VERDE;
-			}
-			else {
-				return INTERROGATIVO;
-			}
-		}
-		return SPUNTA;
-	}
-	private String squadraGioca(Giocatore giocatore){
-		if (giocatore.isSquadraGioca()) return PALLONE;
-		return SVEGLIA;
-	}
-	private String getVoto(Giocatore g) {
-		if (!g.isSquadraGioca()) return " ";
-		if (g.getVoto()==0) return "NV";
-		return String.valueOf(g.getVoto());
-	}
-	private String getFantaVoto(Giocatore g) {
-		if (!g.isSquadraGioca()) return " ";
-		if (g.getVoto()==0) return "NV";
-		return String.valueOf(g.getVoto()+g.getModificatore());
-	}
-	private String getOrario(Map<String,String> orario){
-		String tag = orario.get("tag");
-		if (tag.equals("FullTime") || tag.equals("Postponed") || tag.equals("Cancelled") || tag.equals("Walkover")) return tag;
-		if (tag.equals("PreMatch")){
-			String ret="";
-			ret = ret + orario.get("val").substring(8,10);
-			ret = ret + "/" + orario.get("val").substring(5,7);
-			ret = ret + " " + (1+Integer.parseInt(orario.get("val").substring(11,13)));
-			ret = ret + ":" + orario.get("val").substring(14,16);
-			return ret;
-		}
-		return orario.get("val") + "Min";
-	}
 	private List<List<InlineKeyboardButton>> generaElencoSquadre(String campionato) {
 		try {
 			List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
@@ -316,8 +183,16 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 
 		sendMessage.setChatId(chatId);
 		String messaggio="";
+		String rep=" ";
 		if (bReply) {
-			messaggio="<b>sono il bot reply</b> da  " + chatId + " ";
+			
+			for(int i=0;i<msg.length();i++) {
+				rep = rep + "\\u" + Integer.toHexString(msg.charAt(i)).toUpperCase();
+//				rep = rep + " " + Integer.toString(msg.charAt(i));
+			}
+			rep=rep+" ";
+			
+			messaggio="<b>sono il bot reply</b> da  " + chatId + " --> " + rep;
 		}
 		
 		messaggio = messaggio + " " + msg;

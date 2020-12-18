@@ -2,6 +2,7 @@ package fantalive.controller;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,19 +91,16 @@ public class MyController {
 	}
 	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
-		int conta = (int) Main.toSocket.get("timeRefresh");
-		if (conta==20000) {//FIXME 20000
-			conta=0;
-			Main.snapshot();
+		Main.timeRefresh = (int) Main.toSocket.get("timeRefresh");
+		if (Main.timeRefresh==Constant.SCHEDULED_SNAP) {
+			Main.snapshot(true);
 		}
-		conta=conta+5000;
-		Main.toSocket.put("timeRefresh", conta);
+		Main.timeRefresh=Main.timeRefresh+5000;
+		Main.toSocket.put("timeRefresh", Main.timeRefresh);
 		Main.toSocket.put("liveFromFile", constant.LIVE_FROM_FILE);
 		Main.toSocket.put("disabilitaNotificaTelegram", constant.DISABILITA_NOTIFICA_TELEGRAM);
-		Main.toSocket.put("lastKeepAlive", Constant.dateTimeFormatterOut.format(Constant.LAST_KEEP_ALIVE));
+		if (Constant.LAST_KEEP_ALIVE != null) Main.toSocket.put("lastKeepAlive", Constant.dateTimeFormatterOut.format(Constant.LAST_KEEP_ALIVE));
 		Main.toSocket.put("keepAliveEnd", Constant.dateTimeFormatterOut.format(Constant.KEEP_ALIVE_END));
-
-
 		String runningBot="STOPPED";
 		if (Main.fantaLiveBot != null && Main.fantaLiveBot.isRunning()) {
 			runningBot="RUNNING";
@@ -151,6 +149,12 @@ public class MyController {
 		}
 		return ret;
 	}
+	@PostMapping("/verificaNotifica")
+	public Map<String, String>  verificaNotifica(@RequestBody Map<String,String> body) throws Exception {
+		Map<String, String>  ret=new HashMap<>();
+		Main.inviaNotifica(Main.getDettaglio(Constant.CHAT_ID_FANTALIVE,body.get("campionato"),body.get("squadra")));
+		return ret;
+	}
 	@PostMapping("/caricaFileFromDataByName")
 	public Map<String, String>  caricaFileFromDataByName(@RequestBody Map<String,String> body) throws Exception {
 		Map<String, String>  ret=new HashMap<>();
@@ -158,6 +162,7 @@ public class MyController {
 		String lives = Main.getTesto(body.get("name")+"-lives.json");
 		Main.upsertSalva("orari.json", orari);
 		Main.upsertSalva("lives.json", lives);
+		Main.snapshot(false);
 		ret.put("orari", orari );
 		ret.put("lives", lives );
 		return ret;

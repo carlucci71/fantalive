@@ -7,6 +7,8 @@ app.run(
 			$rootScope.getFree=false;
 			$rootScope.getLives=false;
 			$rootScope.contaNomiDati=-1;
+			$rootScope.notificaCampionato="BE";
+			$rootScope.notificaSquadra="Universal";
 			$rootScope.init=function(){
 				$rootScope.connectWS();
 					$rootScope.ricaricaIndex().then(function(){
@@ -40,6 +42,15 @@ app.run(
                 	}
                 });
 			});
+			function base64DecodeUnicode(str) {
+			    // Convert Base64 encoded bytes to percent-encoding, and then get the original string.
+			    percentEncodedStr = atob(str).split('').map(function(c) {
+			        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+			    }).join('');
+
+
+			    return decodeURIComponent(percentEncodedStr);
+			}
 			$rootScope.getMessaggio = function(message){
 				if (message){
 					var msg = JSON.parse(message);
@@ -52,7 +63,7 @@ app.run(
 						$rootScope.timeRefresh=msg.timeRefresh;
 					}
 					if (msg.notifica){
-						$rootScope.testoLog=$rootScope.testoLog + msg.notifica + "\n";
+						$rootScope.testoLog=$rootScope.testoLog + base64DecodeUnicode(msg.notifica) + "\n";
 					}
 					if (msg.miniNotifica){
 						$rootScope.testoLog=$rootScope.testoLog + msg.miniNotifica + "\n";
@@ -72,7 +83,6 @@ app.run(
 					if (msg.keepAliveEnd){
 						$rootScope.keepAliveEnd=msg.keepAliveEnd;
 					}
-					$rootScope.testoLog=$rootScope.testoLog.replace("<b>","").replace("</b>","").replace("<i>","").replace("</i>","");
 				}
 				$rootScope.$apply();
 			};
@@ -155,6 +165,16 @@ app.run(
 				$resource('./caricaFileFromDataByName',{}).save({'name':name}).$promise.then(function(data) {
 					$rootScope.fileLives=data.lives;
 					$rootScope.fileOrari=data.orari;
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				});
+			}
+			$rootScope.verificaNotifica = function(){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$rootScope.contaNomiDati--;
+				$resource('./verificaNotifica',{}).save({'campionato':$rootScope.notificaCampionato, 'squadra':$rootScope.notificaSquadra}).$promise.then(function(data) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 				});
@@ -617,7 +637,6 @@ app.filter('filtraSquadra', function($rootScope){
 	      } 
 	  }    
 	});
-
 app.factory('httpRequestInterceptor', function () {
 	  return {
 	    request: function (config) {

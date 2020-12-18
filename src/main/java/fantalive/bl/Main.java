@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,7 +33,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
-import org.hibernate.engine.query.spi.OrdinalParameterDescriptor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -55,6 +55,7 @@ import fantalive.repository.SalvaRepository;
 import fantalive.util.Constant;
 
 public class Main {
+	
 	public static final String URL_NOTIFICA_NAS = "http://192.168.1.83:7080/fantalive-0.0.1-SNAPSHOT/";
 	public static final String URL_NOTIFICA_HEROKU = "https://fantalive71.herokuapp.com/";
 
@@ -93,6 +94,7 @@ public class Main {
 	//	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 	static ObjectMapper mapper;
 	public static Map<String, String> keyFG=null;
+	public static int timeRefresh = 0;
 
 	public static void init(SalvaRepository salvaRepositorySpring, SocketHandler socketHandlerSpring, Constant constantSpring) throws Exception {
 		salvaRepository=salvaRepositorySpring;
@@ -225,7 +227,8 @@ public class Main {
 		return desMiniNotifica;
 	}
 
-	public static void snapshot() throws Exception {
+	public static void snapshot(boolean salva) throws Exception {
+		timeRefresh=0;
 		Calendar c = Calendar.getInstance();
 		boolean snap=false;
 		Map<String, Object> getLives = getLives(constant.LIVE_FROM_FILE);
@@ -275,9 +278,10 @@ public class Main {
 			ZoneId zoneId = ZoneId.of( "Europe/Rome" );
 			ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
 			String time=zdt.format(formatter);
-			upsertSalva(time + "-" + "orari.json", toJson(snapOrari));
-			upsertSalva(time + "-" + "lives.json", toJson(snapLives));
-
+			if (salva) {
+				upsertSalva(time + "-" + "orari.json", toJson(snapOrari));
+				upsertSalva(time + "-" + "lives.json", toJson(snapLives));
+			}
 			if (oldSnapshot!=null) {
 				Iterator<String> iterator = snapshot.keySet().iterator();
 				Map<String, Map<String,List<Notifica>>> notifiche = new HashMap();
@@ -347,7 +351,7 @@ public class Main {
 				if (keySet!= null && keySet.size()>0) {
 					StringBuilder des = new StringBuilder();
 					for (String camp : keySet) {
-						des.append("\n<b><i>").append("\u26BD").append(camp).append("</i></b>\n");
+						des.append("\n<b><i>").append(Constant.PALLONE).append(camp).append("</i></b>\n");
 						Map<String, List<Notifica>> sq = notifiche.get(camp);
 						Iterator<String> itSq = sq.keySet().iterator();
 						while (itSq.hasNext()) {
@@ -475,7 +479,7 @@ public class Main {
 			System.out.println("Notifica:\n" + msg);
 		}
 		Map<String, Object> map=new HashMap<>();
-		map.put("notifica", msg);
+		map.put("notifica", Base64.getEncoder().encodeToString(msg.getBytes()));
 		socketHandler.invia(map);
 
 		if(false) {//FIXME false
@@ -1280,4 +1284,133 @@ public class Main {
 			salvaRepository.delete(nome);
 		}
 	}
+	public static String getDettaglio(Long chatId, String campionato, String squadra){
+		try {
+			Map<String, Return> go = Main.go(true, null, null);
+			Return return1 = go.get(campionato);
+			List<Squadra> squadre = return1.getSquadre();
+			for (Squadra sq : squadre) {
+				if (sq.getNome().equalsIgnoreCase(squadra)) {
+					StringBuilder testo = new StringBuilder();
+					testo.append("\n<b>").append(sq.getNome()).append("</b> --> <b><i>").append(sq.getProiezione()).append("</i></b>\n\n");
+					for (Giocatore giocatore : sq.getTitolari()) {
+						dettaglioTestoGiocatore(testo, giocatore,campionato);
+					}
+					testo.append("\n");
+					testo.append("Giocatori con voto: ").append(sq.getContaTitolari()).append("\n");
+					testo.append("Media votati: ").append(sq.getMediaTitolari()).append("\n");
+					testo.append("Ancora da giocare: ").append(sq.getContaSquadraTitolariNonGioca()).append("\n");
+					testo.append("Totale: ").append(sq.getTotaleTitolari()).append("\n");
+					testo.append("\n");
+
+					for (Giocatore giocatore : sq.getRiserve()) {
+						dettaglioTestoGiocatore(testo, giocatore,campionato);
+					}
+					testo.append("\n");
+					testo.append("Giocatori con voto: ").append(sq.getContaRiserve()).append("\n");
+					testo.append("Ancora da giocare: ").append(sq.getContaSquadraRiserveNonGioca()).append("\n");
+					
+					if(chatId.intValue() == Constant.CHAT_ID_FANTALIVE.intValue()) {
+						testo.append("\n").append(Main.getUrlNotifica());
+					}
+					
+					
+//					System.err.println(testo.toString());
+					return testo.toString(); 
+				}
+			}
+			return ""; 
+		}
+		catch (Exception e ) {
+			throw new RuntimeException(e);
+		}
+	}
+	private static void dettaglioTestoGiocatore(StringBuilder testo, Giocatore giocatore, String campionato) {
+		testo.append(giocatore.getIdGioc()).append("\t");
+		testo.append(partitaFinita(giocatore)).append(conVoto(giocatore)).
+//		append(squadraGioca(giocatore)).
+		append("  ");
+		testo.append("<b>").append(giocatore.getNome()).append("</b>").append("\t");
+		testo.append(giocatore.getSquadra()).append("\t");
+		testo.append(giocatore.getRuolo()).append("\t");
+		testo.append(getVoto(giocatore)).append("\t");
+		for (Integer evento : giocatore.getCodEventi()) {
+			testo.append(desEvento(evento,campionato)).append("  ");
+		}
+		testo.append("<b>").append(getFantaVoto(giocatore)).append("</b>");
+		if (giocatore.isCambiato()) testo.append("(*)");
+		testo.append("\t");
+		testo.append(getOrario(giocatore.getOrario()));
+		testo.append("\n");
+	}
+	private static String squadraGioca(Giocatore giocatore){
+		if (giocatore.isSquadraGioca()) return Constant.PALLONE;
+		return Constant.SVEGLIA;
+	}
+	private static String getVoto(Giocatore g) {
+		if (!g.isSquadraGioca()) return " ";
+		if (g.getVoto()==0) return "NV";
+		return String.valueOf(g.getVoto());
+	}
+	private static String getFantaVoto(Giocatore g) {
+		if (!g.isSquadraGioca()) return " ";
+		if (g.getVoto()==0) return "NV";
+		return String.valueOf(g.getVoto()+g.getModificatore());
+	}
+	private static String getOrario(Map<String,String> orario){
+		String tag = orario.get("tag");
+		if (tag.equals("FullTime") || tag.equals("Postponed") || tag.equals("Cancelled") || tag.equals("Walkover")) return tag;
+		if (tag.equals("PreMatch")){
+			String ret="";
+			ret = ret + orario.get("val").substring(8,10);
+			ret = ret + "/" + orario.get("val").substring(5,7);
+			ret = ret + " " + (1+Integer.parseInt(orario.get("val").substring(11,13)));
+			ret = ret + ":" + orario.get("val").substring(14,16);
+			return ret;
+		}
+		return orario.get("val") + "Min";
+	}
+
+	private static boolean chkPartitaFinita(Giocatore giocatore){
+		if (giocatore.getOrario().get("tag").equals("FullTime")) return true;
+		if (giocatore.getCodEventi().contains(14)) return true;
+		return false;
+		
+	}
+	private static String partitaFinita(Giocatore giocatore){
+		if (chkPartitaFinita(giocatore))  return Constant.BUSTA;
+		return Constant.CLESSIDRA;
+	}
+	private static String conVoto(Giocatore giocatore){
+		if (giocatore.getVoto()==0) {
+			if (giocatore.isSquadraGioca() && chkPartitaFinita(giocatore) ) {
+				return Constant.X_VERDE;
+			}
+			else if (!giocatore.isSquadraGioca()) {
+				return Constant.INTERROGATIVO;
+			}
+			else {
+				return Constant.DIVANO;
+			}
+		}
+		return Constant.SPUNTA;
+	}
+	private static String desEvento(Integer ev,String r){
+		String[] evento = Main.eventi.get(ev);
+		String ret = evento[0];
+		String valEvento = valEvento(evento,r);
+		if (!"0".equals(valEvento)) {
+			ret = ret + " (" + valEvento + ") "; 
+		}
+		return ret;
+	}
+	private static String valEvento(String[] evento,String r){
+		int pos=0;
+		if (r.equals("FANTAVIVA")) pos=1;
+		if (r.equals("LUCCICAR")) pos=2;
+		if (r.equals("BE")) pos=3;
+		return evento[pos];
+	}
+
+
 }

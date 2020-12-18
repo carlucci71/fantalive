@@ -38,8 +38,8 @@ body {
 <script>
 </script>
 <body data-ng-init="init()" x-ng-app="app" ng-style="{'margin-left':'20px','background-color':backLoading()}">
-<div id="floatingRectangle"><input type=button value=clear ng-click="testoLog=''"></input><pre>{{testoLog}}</pre>
-</div>
+<div id="floatingRectangle"><input type=button value=clear ng-click="testoLog=''"></input><pre ng-bind-html="testoLog"></pre></div>
+
 <label ng-show="disabilitaNotificaTelegram">TELEGRAM DISABILITATO</label><br>
 <label ng-show="liveFromFile">LIVE FROM FILE</label><br>
 Inizio: {{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} - Fine: {{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}<br>  
