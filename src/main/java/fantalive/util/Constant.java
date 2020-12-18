@@ -14,7 +14,6 @@ public class Constant {
 	public static String AUTH_FS;
 	public static boolean LIVE_FROM_FILE;
 	public static boolean DISABILITA_NOTIFICA_TELEGRAM;
-	public static ZonedDateTime KEEP_ALIVE_START;
 	public static ZonedDateTime KEEP_ALIVE_END;
 	public static DateTimeFormatter dateTimeFormatterIn = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
 	public static DateTimeFormatter dateTimeFormatterOut = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Rome"));

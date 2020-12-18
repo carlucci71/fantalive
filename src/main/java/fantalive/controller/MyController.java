@@ -42,12 +42,6 @@ public class MyController {
 	@PostConstruct
 	private void post() throws Exception {
 		/*
-			if(System.getenv("KEEP_ALIVE_START") != null) {
-				constant.KEEP_ALIVE_START = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_START"), dateTimeFormatter);
-			}
-			else {
-				constant.KEEP_ALIVE_START = ZonedDateTime.now();
-			}
 			if(System.getenv("KEEP_ALIVE_END") != null) {
 				constant.KEEP_ALIVE_END = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_END"), dateTimeFormatter);
 			}
@@ -84,12 +78,12 @@ public class MyController {
 	private String keepAlive() throws Exception {
 		String ret="";
 		ZonedDateTime now = ZonedDateTime.now();
-		if (constant.KEEP_ALIVE_START.isBefore(now) && constant.KEEP_ALIVE_END.isAfter(now)) {
+		if (constant.KEEP_ALIVE_END.isAfter(now)) {
 			String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
 			ret="Keep Alive!";
 			Main.inviaNotifica(ret);
 		} else {
-			ret = Constant.dateTimeFormatterOut.format(now) + " --> " + Constant.dateTimeFormatterOut.format(constant.KEEP_ALIVE_START) + " / " + Constant.dateTimeFormatterOut.format(constant.KEEP_ALIVE_END);
+			ret = Constant.dateTimeFormatterOut.format(now) + " --> " + Constant.dateTimeFormatterOut.format(constant.KEEP_ALIVE_END);
 			System.out.println(ret);
 		}
 		return ret;
@@ -106,7 +100,6 @@ public class MyController {
 		Main.toSocket.put("liveFromFile", constant.LIVE_FROM_FILE);
 		Main.toSocket.put("disabilitaNotificaTelegram", constant.DISABILITA_NOTIFICA_TELEGRAM);
 		Main.toSocket.put("lastKeepAlive", Constant.dateTimeFormatterOut.format(Constant.LAST_KEEP_ALIVE));
-		Main.toSocket.put("keepAliveStart", Constant.dateTimeFormatterOut.format(Constant.KEEP_ALIVE_START));
 		Main.toSocket.put("keepAliveEnd", Constant.dateTimeFormatterOut.format(Constant.KEEP_ALIVE_END));
 
 

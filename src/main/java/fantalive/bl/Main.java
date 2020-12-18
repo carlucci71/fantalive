@@ -285,6 +285,9 @@ public class Main {
 					String key = (String) iterator.next();
 					Giocatore oldGioc = oldSnapshot.get(key);
 					Giocatore newGioc = snapshot.get(key);
+					if (newGioc.getNome().toUpperCase().startsWith("DZ")) {
+						System.out.println();
+					}
 					List<Map<Integer,Integer>> findNuoviEventi = findNuoviEventi(oldGioc, newGioc);
 					Map<String,Integer> eventi=new HashMap<>();
 					String oldTag = oldGioc.getOrario().get("tag");
@@ -1039,6 +1042,11 @@ public class Main {
 				if (giocatori.size()>0) {
 					for (Map<String, Object> map : giocatori) {
 						if (map.get("voto")!=null && Double.parseDouble(map.get("voto").toString()) > 0) {
+							/*
+							if (map.get("nome")!= null &&  map.get("nome").toString().toUpperCase().startsWith("DZ")) {
+								System.out.println();
+							}
+							*/
 							giocatore.setSquadraGioca(true);
 						}
 					}
