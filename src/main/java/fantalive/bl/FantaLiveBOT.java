@@ -120,7 +120,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	}
 	
 	private void messaggioBenvenuto() throws Exception {
-		inviaMessaggio(Constant.CHAT_ID_FANTALIVE, "Benvenuto:" + Constant.DIVANO, false);
+		inviaMessaggio(Constant.CHAT_ID_FANTALIVE, "Benvenuto:" + Constant.CIAO, false);
 	}
 
 	private SendMessage sendInlineKeyBoardCampionati(long chatId, String msg){
@@ -192,10 +192,14 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 			}
 			rep=rep+" ";
 			
-			messaggio="<b>sono il bot reply</b> da  " + chatId + " --> " + rep;
+			messaggio="<b>sono il bot reply</b> per  " + chatId;
 		}
 		
-		messaggio = messaggio + " " + msg;
+		messaggio = messaggio + "\n" + msg;
+		
+		if(bReply) {
+			messaggio = messaggio + "\n" + rep;
+		}
 
 		if (chatId == Constant.CHAT_ID_FANTALIVE) {
 			messaggio = messaggio + "\n\n<i>" + CHI + " " + Main.MIO_IP + "</i>";

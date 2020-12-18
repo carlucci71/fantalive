@@ -27,16 +27,23 @@ public class Constant {
 	public final static String PALLONE = "\u26BD";
 	public final static String SVEGLIA  = "\u23F0";
 	public final static String X_VERDE  = "\u274E";
-	public final static String DIVANO = "\uD83D\uDECB";//55357 + 57035 
-	public final static String PROVA = "\uD83D\uDC8B";
-	
-	
-	public static void main(String[] args) {
-		String str=DIVANO;
-		for(int i=0;i<str.length();i++) {
-			System.out.println("***");
-//			System.out.println(Integer.toHexString(str.charAt(i)));
-			System.out.println(Integer.toString(str.charAt(i)));
-		}
-	}
+	public final static String DIVANO = "\uD83D\uDECB";
+	public final static String SCHIERATO = "\uD83D\uDCAA";
+	public final static String NON_SCHIERATO = "\uD83D\uDE4F";
+	public final static String SEMAFORO = "\uD83D\uDEA6";
+	public static final String IMBATTUTO = "\uD83E\uDD45";
+	public static final String ASSIST = "\uD83C\uDF6C";	
+	public static final String GOL = "\uD83E\uDD42";
+	public static final String USCITO =  "\uD83D\uDE34";
+	public static final String ENTRATO =  "\uD83E\uDD2B";
+	public static final String GOL_ANNULLATO = "\uD83D\uDC7D";
+	public static final String INFORTUNIO = "\uD83D\uDE91";
+	public static final String AMMONITO = "\uD83D\uDFE8";
+	public static final String ESPULSO = "\uD83D\uDFE5";
+	public static final String GOL_SUBITO =  "\uD83C\uDF50";
+	public static final String RIGORE_PARATO = "\u26C4\uFE0F";
+	public static final String RIGORE_SBAGLIATO =   "\uD83D\uDE40";  
+	public static final String RIGORE_SEGNATO = "\uD83E\uDD4A";
+	public static final String AUTOGOL = "\uD83D\uDCA9";	
+	public static final String CIAO = "\uD83D\uDC4B";	
 }
