@@ -81,7 +81,7 @@ public class MyController {
 		ZonedDateTime now = ZonedDateTime.now();
 		if (constant.KEEP_ALIVE_END.isAfter(now)) {
 			String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
-			ret="Keep Alive!";
+			ret=Constant.KEEP_ALIVE + " Keep Alive!";
 			Main.inviaNotifica(ret);
 		} else {
 			ret = Constant.dateTimeFormatterOut.format(now) + " --> " + Constant.dateTimeFormatterOut.format(constant.KEEP_ALIVE_END);

@@ -45,5 +45,6 @@ public class Constant {
 	public static final String RIGORE_SBAGLIATO =   "\uD83D\uDE40";  
 	public static final String RIGORE_SEGNATO = "\uD83E\uDD4A";
 	public static final String AUTOGOL = "\uD83D\uDCA9";	
-	public static final String CIAO = "\uD83D\uDC4B";	
+	public static final String CIAO = "\uD83D\uDC4B";
+	public static final String KEEP_ALIVE = "\uD83E\uDE7A";	
 }
