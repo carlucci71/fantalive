@@ -357,14 +357,14 @@ public class Main {
 								for (String key : ks) {
 									RigaNotifica rigaNotifica = notifica.getEventi().get(key);
 									if (notifica.getEventi().get(key).getConta()==0) {
-										ret = ret + "\n --> "  + rigaNotifica.getIcona() + "  " + rigaNotifica.getTesto();
+										ret = ret + "\n     "  + rigaNotifica.getIcona() + "  " + rigaNotifica.getTesto();
 									}
 								}
 								for (String key : ks) {
 									RigaNotifica rigaNotifica = notifica.getEventi().get(key);
 									Integer contaEv=rigaNotifica.getConta();
 									if (contaEv != null && contaEv>0) {
-										ret = ret + "\n --> ";
+										ret = ret + "\n     ";
 										for (int i=0;i<contaEv;i++) {
 											ret = ret + rigaNotifica.getIcona() + " ";
 										}
@@ -375,7 +375,7 @@ public class Main {
 									RigaNotifica rigaNotifica = notifica.getEventi().get(key);
 									Integer contaEv=rigaNotifica.getConta();
 									if (contaEv != null && contaEv<0) {
-										ret = ret + "\n --> ";
+										ret = ret + "\n     ";
 										contaEv=contaEv*-1;
 										for (int i=0;i<contaEv;i++) {
 											ret = ret + rigaNotifica.getIcona() + " ";
