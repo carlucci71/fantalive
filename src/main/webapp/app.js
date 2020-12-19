@@ -51,6 +51,32 @@ app.run(
 
 			    return decodeURIComponent(percentEncodedStr);
 			}
+			function formatDate(d) {
+			        month = '' + (d.getMonth() + 1),
+			        day = '' + d.getDate(),
+			        year = d.getFullYear();
+
+			        hour = d.getHours();
+			        min = d.getMinutes();
+			        sec = d.getSeconds();
+			        
+			    if (month.length < 2) 
+			        month = '0' + month;
+			    if (day.length < 2) 
+			        day = '0' + day;
+
+			    if (hour.length < 2) 
+			    	hour = '0' + hour;
+			    if (min.length < 2) 
+			    	min = '0' + min;
+			    if (sec.length < 2) 
+			    	sec = '0' + sec;
+			    
+			    var ret=[year, month, day].join('-');
+			    ret=ret + " " + [hour,min,sec].join(':');
+			    return ret;
+			}
+
 			$rootScope.getMessaggio = function(message){
 				if (message){
 					var msg = JSON.parse(message);
@@ -63,10 +89,10 @@ app.run(
 						$rootScope.timeRefresh=msg.timeRefresh;
 					}
 					if (msg.notifica){
-						$rootScope.testoLog=$rootScope.testoLog + "<b>Notifica " + new Date() + ":</b>\n" + base64DecodeUnicode(msg.notifica) + "\n";
+						$rootScope.testoLog=$rootScope.testoLog + "<b>Notifica " + formatDate(new Date()) + "</b>\n" + base64DecodeUnicode(msg.notifica) + "\n";
 					}
 					if (msg.miniNotifica){
-						$rootScope.testoLog=$rootScope.testoLog + "<b>Live " + new Date() + ":</b>\n" + msg.miniNotifica + "\n";
+						$rootScope.testoLog=$rootScope.testoLog + "<b>Live " + formatDate(new Date()) + "</b>\n" + msg.miniNotifica + "\n";
 					}
 					if (msg.liveFromFile){
 						$rootScope.liveFromFile=msg.liveFromFile;
