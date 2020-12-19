@@ -43,13 +43,14 @@ body {
 	<select style="width:200px" ng-model=nomeFileGet>
 		<option ng-repeat="s in nomiData  track by $index" value="{{s}}" >{{$index}}-{{s}}</option>
 	</select>
-	<button ng-show="nomeFileGet" style="width:150px;" ng-click="getTestiFromData()">Get testi from data</button>
-	<button ng-show="nomeFileGet" style="width:150px;" ng-click="putTestiFromData()">Put testi to data</button>
-	<button style="width:200px;" ng-show="contaNomiDati>-1" ng-click="getPutTestiFromData()">Get & Put testi to data {{contaNomiDati}}</button>
-	<input style="width:50px;" ng-show="contaNomiDati>-1" type=number ng-model=contaNomiDati></input>
+	<button ng-show="nomeFileGet" style="width:80px;" ng-click="getTestiFromData()">Get testi</button>
+	<button ng-show="nomeFileGet" style="width:80px;" ng-click="putTestiFromData()">Put testi</button>
+	<button style="width:120px;" ng-show="contaNomiDati>-1" ng-click="getPutTestiFromData()">Get & Put testi</button>
+	<span ng-show="contaNomiDati>-1" ><label>Da fare:</label><input style="width:50px;" type=number ng-model=contaNomiDati></input></span>
 	<input type=button value=clear ng-click="testoLog=''">
+	<br>
 	<input style="width:50px;" type=text ng-model=notificaCampionato></input>
-	<input style="width:50px;" type=text ng-model=notificaSquadra></input>
+	<input style="width:150px;" type=text ng-model=notificaSquadra></input>
 	<input type=button value="verifica notifica" ng-click="verificaNotifica()">
 	<br>
 	<textarea style="width:1000px;height:200px " type=text ng-model="fileLives"></textarea>

@@ -180,22 +180,43 @@ public class Main {
 						for (Map<String,Object> snapMap : snapLive.getGiocatori()) {
 							liveGiocPresente=false;
 							String snapGioc=(String) snapMap.get("nome");
+							Double snapVoto = 0d;
+							if (snapMap.get("voto") != null) {
+								snapVoto=(Double) snapMap.get("voto");
+							}
 							for (Map<String,Object> oldMap : oldLive.getGiocatori()) {
 								String oldGioc=(String) oldMap.get("nome");
 								if (snapGioc.equals(oldGioc)) {
 									liveGiocPresente=true;
+									Double oldVoto = 0d;
+									if (oldMap.get("voto") != null) {
+										oldVoto=(Double) oldMap.get("voto");
+									}
+									if (!snapVoto.equals(oldVoto)) {
+										desMiniNotifica.append(" Sono cambiati i voti per: " + snapGioc + " da " + oldVoto + " a " + snapVoto);
+										desMiniNotifica.append("\n");
+									}
 									if (!snapMap.get("evento").toString().equals(oldMap.get("evento").toString())) {
-										desMiniNotifica.append(" Sono cambiati gli eventi per: " + snapGioc + " : " + snapMap.get("evento").toString());
+										desMiniNotifica.append("Sono cambiati gli eveti per: " + snapGioc + ". Ora sono: ");
+										String snapEvento = snapMap.get("evento").toString();
+										String[] splitSnapEvento = snapEvento.split(",");
+										for (String string : splitSnapEvento) {
+											Integer attSnapEvento = Integer.parseInt(string);
+											desMiniNotifica.append(desEvento(attSnapEvento, "BE") + " ");
+										}
+										desMiniNotifica.append("\n");
 									}
 									
 								}
 							}
 							if (!liveGiocPresente) {
 								desMiniNotifica.append(" Nel vecchio live il giocatore non era presente: " + snapGioc);
+								desMiniNotifica.append("\n");
 							}
 						}
 						if (snapLive.getGiocatori().size() > oldLive.getGiocatori().size() ) {
 							desMiniNotifica.append(" Squadra gioca: " + snapSq );
+							desMiniNotifica.append("\n");
 						}
 					}
 				}

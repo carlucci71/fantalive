@@ -125,6 +125,9 @@ app.run(
 				
 			}
 			$rootScope.getNomiData = function(){
+				$rootScope.fileLives="";
+				$rootScope.fileOrari="";
+				$rootScope.testoLog="";
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
@@ -157,6 +160,7 @@ app.run(
 				});
 			}
 			$rootScope.getPutTestiFromData = function(){
+				$rootScope.testoLog='';
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
