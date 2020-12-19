@@ -8,7 +8,7 @@ public class Notifica implements Comparable<Notifica> {
 	private String squadra;
 	private String id;
 	private double voto=0;
-	private Map<String,Integer> eventi;
+	private Map<String,RigaNotifica> eventi;
 	private String cambio="";
 	public String getCambio() {
 		return cambio;
@@ -63,10 +63,10 @@ public class Notifica implements Comparable<Notifica> {
 		return ret;
 	}
 	*/
-	public Map<String,Integer> getEventi() {
+	public Map<String,RigaNotifica> getEventi() {
 		return eventi;
 	}
-	public void setEventi(Map<String,Integer> eventi) {
+	public void setEventi(Map<String,RigaNotifica> eventi) {
 		this.eventi = eventi;
 	}
 	public double getVoto() {

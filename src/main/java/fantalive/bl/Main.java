@@ -50,6 +50,7 @@ import fantalive.model.Giocatore;
 import fantalive.model.Live;
 import fantalive.model.Notifica;
 import fantalive.model.Return;
+import fantalive.model.RigaNotifica;
 import fantalive.model.Squadra;
 import fantalive.repository.SalvaRepository;
 import fantalive.util.Constant;
@@ -293,32 +294,23 @@ public class Main {
 						System.out.println();
 					}
 					List<Map<Integer,Integer>> findNuoviEventi = findNuoviEventi(oldGioc, newGioc);
-					Map<String,Integer> mapEventi=new HashMap<>();
+					Map<String,RigaNotifica> mapEventi=new HashMap<>();
 					String oldTag = oldGioc.getOrario().get("tag");
 					String newTag = newGioc.getOrario().get("tag");
 					if (newTag.equalsIgnoreCase("PreMatch") && newGioc.isNotificaLive()==false && !oldGioc.isSquadraGioca() && newGioc.isSquadraGioca()) {
-						mapEventi.put(Constant.NON_SCHIERATO + " NON SCHIERATO",null);
+						mapEventi.put("NON SCHIERATO",new RigaNotifica(0, "NON SCHIERATO", Constant.NON_SCHIERATO));
 					}
 					if (newTag.equalsIgnoreCase("PreMatch") && newGioc.isNotificaLive()==true && !oldGioc.isSquadraGioca() && newGioc.isSquadraGioca()) {
-						mapEventi.put(Constant.SCHIERATO + " SCHIERATO",null);
+						mapEventi.put("SCHIERATO",new RigaNotifica(0, "SCHIERATO", Constant.SCHIERATO));
 					}
 					if (!oldTag.equalsIgnoreCase(newTag)) {
-						/*
-						PreMatch
-						Postponed
-						Cancelled
-						Walkover
-						FirstHalf
-						HalfTime
-						SecondHalf
-						FullTime
-						 */
-						mapEventi.put(Constant.SEMAFORO + " " + newTag,null);
+						/* PreMatch Postponed Cancelled Walkover FirstHalf HalfTime SecondHalf FullTime*/
+						mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.SEMAFORO));
 					}
 					if (findNuoviEventi.size()>0 || !oldTag.equalsIgnoreCase(newTag)) {
 						for (Map<Integer,Integer> nuovoEvento : findNuoviEventi) {
 							Integer ev = nuovoEvento.keySet().iterator().next();
-							mapEventi.put(Main.eventi.get(ev)[5] + " " + Main.eventi.get(ev)[0],nuovoEvento.get(ev));//TODO des, segno
+							mapEventi.put(Main.eventi.get(ev)[0],new RigaNotifica(nuovoEvento.get(ev), Main.eventi.get(ev)[0], Main.eventi.get(ev)[5]));
 						}
 					}
 					if (mapEventi.size()>0) {
@@ -363,18 +355,32 @@ public class Main {
 								String ret = notifica.getGiocatore() + notifica.getCambio() + " <b>" + notifica.getId() + "</b> " + notifica.getVoto();
 								Set<String> ks = notifica.getEventi().keySet();
 								for (String key : ks) {
-									if (notifica.getEventi().get(key)==null) {
-										ret = ret + "\n --> "  + "  " + key;
+									RigaNotifica rigaNotifica = notifica.getEventi().get(key);
+									if (notifica.getEventi().get(key).getConta()==0) {
+										ret = ret + "\n --> "  + rigaNotifica.getIcona() + "  " + rigaNotifica.getTesto();
 									}
 								}
 								for (String key : ks) {
-									if (notifica.getEventi().get(key) != null && notifica.getEventi().get(key)>0) {
-										ret = ret + "\n --> "  + notifica.getEventi().get(key) + " " + key;//TODO ripetere icona
+									RigaNotifica rigaNotifica = notifica.getEventi().get(key);
+									Integer contaEv=rigaNotifica.getConta();
+									if (contaEv != null && contaEv>0) {
+										ret = ret + "\n --> ";
+										for (int i=0;i<contaEv;i++) {
+											ret = ret + rigaNotifica.getIcona() + " ";
+										}
+										ret = ret + rigaNotifica.getTesto();//TODO ripetere icona
 									}
 								}
 								for (String key : ks) {
-									if (notifica.getEventi().get(key) != null && notifica.getEventi().get(key)<0) {
-										ret = ret + "\n --> "  + (notifica.getEventi().get(key) * -1) + " --NO-- " + key;//TODO ripetere icona
+									RigaNotifica rigaNotifica = notifica.getEventi().get(key);
+									Integer contaEv=rigaNotifica.getConta();
+									if (contaEv != null && contaEv<0) {
+										ret = ret + "\n --> ";
+										contaEv=contaEv*-1;
+										for (int i=0;i<contaEv;i++) {
+											ret = ret + rigaNotifica.getIcona() + " ";
+										}
+										ret = ret + " --NO-- " + rigaNotifica.getTesto();//TODO ripetere icona
 									}
 								}
 								des.append("").append(ret).append("\n");
