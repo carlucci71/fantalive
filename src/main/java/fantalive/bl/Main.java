@@ -416,7 +416,7 @@ public class Main {
 								}
 								if ((notifica.getOrario() != null && notifica.getOrario().get("tag") != null) 
 										&& (notifica.getOrario().get("tag").equalsIgnoreCase("FirstHalf") || notifica.getOrario().get("tag").equalsIgnoreCase("SecondHalf")) ) {
-									des.append(" al " + notifica.getOrario().get("val"));
+									des.append(" al " + notifica.getOrario().get("val") + " ");
 								}
 								
 								des.append(ret).append("\n");
