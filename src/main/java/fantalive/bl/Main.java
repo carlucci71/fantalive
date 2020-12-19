@@ -166,7 +166,19 @@ public class Main {
 		}
 	}
 	
-	private static StringBuilder livesUguali(List<Live> snapLives) {
+	private static String getMinuto(String squadra, Map<String, Map<String, String>> snapOrari) {
+		Set<String> keySet = snapOrari.keySet();
+		for (String key : keySet) {
+			if (squadra.equalsIgnoreCase(key) && snapOrari.get(key) != null && 
+					(snapOrari.get(key).get("tag").equalsIgnoreCase("FirstHalf")) || snapOrari.get(key).get("tag").equalsIgnoreCase("SecondHalf") ) {
+				return " al " + snapOrari.get(key).get("val");
+			}
+		}
+		return "";
+	}
+	
+	
+	private static StringBuilder livesUguali(List<Live> snapLives, Map<String, Map<String, String>> snapOrari) {
 		StringBuilder desMiniNotifica=new StringBuilder();
 		try {
 			boolean liveGiocPresente=false;
@@ -193,8 +205,8 @@ public class Main {
 										oldVoto=(Double) oldMap.get("voto");
 									}
 									if (!snapVoto.equals(oldVoto)) {
-										desMiniNotifica.append(" Sono cambiati i voti per: " + snapGioc + " da " + oldVoto + " a " + snapVoto);
-										desMiniNotifica.append("\n");
+										desMiniNotifica.append("Sono cambiati i voti per: " + snapGioc + " da " + oldVoto + " a " + snapVoto);
+										desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 									}
 									if (!snapMap.get("evento").toString().equals(oldMap.get("evento").toString())) {
 										desMiniNotifica.append("Sono cambiati gli eventi per: " + snapGioc + ". Ora sono: ");
@@ -204,19 +216,19 @@ public class Main {
 											Integer attSnapEvento = Integer.parseInt(string);
 											desMiniNotifica.append(desEvento(attSnapEvento, "BE") + " ");
 										}
-										desMiniNotifica.append("\n");
+										desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 									}
 									
 								}
 							}
 							if (!liveGiocPresente) {
 								desMiniNotifica.append(" Nel vecchio live il giocatore non era presente: " + snapGioc);
-								desMiniNotifica.append("\n");
+								desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 							}
 						}
 						if (snapLive.getGiocatori().size() > oldLive.getGiocatori().size() ) {
 							desMiniNotifica.append(" Squadra gioca: " + snapSq );
-							desMiniNotifica.append("\n");
+							desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 						}
 					}
 				}
@@ -258,7 +270,7 @@ public class Main {
 		Map<String, Map<String, String>> snapOrari = (Map<String, Map<String, String>>) getLives.get("orari");
 		String desMiniNotifica="";
 		if (oldSnapLives != null) {
-			StringBuilder desMiniNotificaLive= livesUguali(snapLives);
+			StringBuilder desMiniNotificaLive= livesUguali(snapLives, snapOrari);
 			StringBuilder desMiniNotificaOrari = orariUguali(snapOrari);
 			desMiniNotifica=desMiniNotificaLive.toString() + desMiniNotificaOrari.toString();
 			if (!desMiniNotifica.equals("")) {
@@ -274,7 +286,7 @@ public class Main {
 		System.out.println("GET LIVES:" + (c2.getTimeInMillis()-c.getTimeInMillis()));
 
 
-		boolean inviaNotifica=false;
+//		boolean inviaNotifica=false;
 		Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari);
 		Iterator<String> campionati = go.keySet().iterator();
 		Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
@@ -311,9 +323,6 @@ public class Main {
 					String key = (String) iterator.next();
 					Giocatore oldGioc = oldSnapshot.get(key);
 					Giocatore newGioc = snapshot.get(key);
-					if (newGioc.getNome().toUpperCase().startsWith("DZ")) {
-						System.out.println();
-					}
 					List<Map<Integer,Integer>> findNuoviEventi = findNuoviEventi(oldGioc, newGioc);
 					Map<String,RigaNotifica> mapEventi=new HashMap<>();
 					String oldTag = oldGioc.getOrario().get("tag");
@@ -351,6 +360,7 @@ public class Main {
 						notifica.setCampionato(splitKey[0]);
 						notifica.setSquadra(splitKey[1]);
 						notifica.setGiocatore(splitKey[2]);
+						notifica.setOrario(newGioc.getOrario());
 						notifica.setId(newGioc.getIdGioc());
 						notifica.setEventi(mapEventi);
 						notifica.setVoto(newGioc.getVoto() + newGioc.getModificatore()); 
@@ -404,12 +414,17 @@ public class Main {
 										ret = ret + " --NO-- " + rigaNotifica.getTesto();//TODO ripetere icona
 									}
 								}
-								des.append("").append(ret).append("\n");
+								if ((notifica.getOrario() != null && notifica.getOrario().get("tag") != null) 
+										&& (notifica.getOrario().get("tag").equalsIgnoreCase("FirstHalf") || notifica.getOrario().get("tag").equalsIgnoreCase("SecondHalf")) ) {
+									des.append(" al " + notifica.getOrario().get("val"));
+								}
+								
+								des.append(ret).append("\n");
 							}
 						}
 					}
 					des.append("\n").append(getUrlNotifica());
-					inviaNotifica=true;
+//					inviaNotifica=true;
 					Main.inviaNotifica(des.toString());
 					Calendar c4 = Calendar.getInstance();
 					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));

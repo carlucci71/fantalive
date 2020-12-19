@@ -1,8 +1,10 @@
 package fantalive.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Notifica implements Comparable<Notifica> {
+	private Map<String,String> orario=new HashMap<String,String>();
 	private String campionato;
 	private String giocatore;
 	private String squadra;
@@ -82,6 +84,12 @@ public class Notifica implements Comparable<Notifica> {
 		if (thisId.startsWith("T") && oId.startsWith("R")) return -1;
 		if (thisId.startsWith("R") && oId.startsWith("T")) return 1;
 		return thisId.compareTo(oId);
+	}
+	public Map<String,String> getOrario() {
+		return orario;
+	}
+	public void setOrario(Map<String,String> orario) {
+		this.orario = orario;
 	}
 
 }

@@ -26,19 +26,19 @@ body {
 }
 #floatingRectangle {
     z-index: 1;
-    position: absolute;
-    left: 800;
+    position: fixed;
+    left: 800px;
+    width: 400px;
+    height: 550px;
     top: 20px;
     overflow-y: auto;
     overflow-x: auto;
-    height: 800;
-    width: 400px;
 }
 </style>
 <script>
 </script>
 <body data-ng-init="init()" x-ng-app="app" ng-style="{'margin-left':'20px','background-color':backLoading()}">
-<div id="floatingRectangle"><input type=button value=clear ng-click="testoLog=''"></input><pre ng-bind-html="testoLog"></pre></div>
+	<pre id="floatingRectangle" ng-bind-html="testoLog"></pre>
 
 <label ng-show="disabilitaNotificaTelegram">TELEGRAM DISABILITATO</label><br>
 <label ng-show="liveFromFile">LIVE FROM FILE</label><br>
@@ -55,6 +55,7 @@ Last keep alive:{{lastKeepAlive}} End keep alive:{{keepAliveEnd}}
  	<br>
  	<div ng-show="!configura">
 		<button ng-show="!loading" ng-click="ricaricaIndex()">Ricarica</button>
+		<input type=button value="clear notifica" ng-click="testoLog=''"></input>
 		<br><br>
 		<span ng-show="!loading && result">
 			calciatore <input type=text ng-model=giocFilter></input>
