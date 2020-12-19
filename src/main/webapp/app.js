@@ -56,17 +56,17 @@ app.run(
 					var msg = JSON.parse(message);
 //					console.log(msg);
 					if (msg.res){
-						$rootScope.testoLog=$rootScope.testoLog + "REFRESH:" + "\n";
+//						$rootScope.testoLog=$rootScope.testoLog + "REFRESH" + "\n";
 						$rootScope.result=msg.res;
 					}
 					if (msg.timeRefresh){
 						$rootScope.timeRefresh=msg.timeRefresh;
 					}
 					if (msg.notifica){
-						$rootScope.testoLog=$rootScope.testoLog + base64DecodeUnicode(msg.notifica) + "\n";
+						$rootScope.testoLog=$rootScope.testoLog + "<b>Notifica:</b>\n" + base64DecodeUnicode(msg.notifica) + "\n";
 					}
 					if (msg.miniNotifica){
-						$rootScope.testoLog=$rootScope.testoLog + msg.miniNotifica + "\n";
+						$rootScope.testoLog=$rootScope.testoLog + "<b>Live:</b>\n" + msg.miniNotifica + "\n";
 					}
 					if (msg.liveFromFile){
 						$rootScope.liveFromFile=msg.liveFromFile;
@@ -166,6 +166,7 @@ app.run(
 				$rootScope.loading=true;
 				var name=$rootScope.nomiData[$rootScope.contaNomiDati];
 				$rootScope.contaNomiDati--;
+				$rootScope.fileCaricato=name;
 				$resource('./caricaFileFromDataByName',{}).save({'name':name}).$promise.then(function(data) {
 					$rootScope.fileLives=data.lives;
 					$rootScope.fileOrari=data.orari;
@@ -187,6 +188,7 @@ app.run(
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
+				$rootScope.fileCaricato=$rootScope.nomeFileGet;
 				$resource('./getTestiFromData',{}).save({'getTestiFromData':$rootScope.nomeFileGet}).$promise.then(function(data) {
 					$rootScope.fileLives=data.lives;
 					$rootScope.fileOrari=data.orari;

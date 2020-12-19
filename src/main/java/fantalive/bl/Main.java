@@ -197,7 +197,7 @@ public class Main {
 										desMiniNotifica.append("\n");
 									}
 									if (!snapMap.get("evento").toString().equals(oldMap.get("evento").toString())) {
-										desMiniNotifica.append("Sono cambiati gli eveti per: " + snapGioc + ". Ora sono: ");
+										desMiniNotifica.append("Sono cambiati gli eventi per: " + snapGioc + ". Ora sono: ");
 										String snapEvento = snapMap.get("evento").toString();
 										String[] splitSnapEvento = snapEvento.split(",");
 										for (String string : splitSnapEvento) {
@@ -239,7 +239,7 @@ public class Main {
 				Map<String, String> snapMap = snapOrari.get(key);
 				Map<String, String> oldMap = oldSnapOrari.get(key);
 				if (!snapMap.get("tag").equals(oldMap.get("tag"))) {
-					desMiniNotifica.append(" E' cambiato l'orario per: " + key);
+					desMiniNotifica.append(" E' cambiato il tag dell'orario per: " + key);
 				}
 			}
 		}
@@ -420,9 +420,7 @@ public class Main {
 			if (socketHandler != null) {
 				Map<String, Object> map=new LinkedHashMap<>();
 				map.put("res", go);
-				if (!inviaNotifica) {
-					map.put("miniNotifica", desMiniNotifica);
-				}
+				map.put("miniNotifica", desMiniNotifica);
 				socketHandler.invia(map);
 			}
 			Calendar c4 = Calendar.getInstance();
