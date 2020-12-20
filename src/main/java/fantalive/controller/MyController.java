@@ -86,6 +86,7 @@ public class MyController {
 				ret=Constant.KEEP_ALIVE + " Keep Alive!";
 				Main.inviaNotifica(ret);
 				System.out.println("REFRESH!!");
+				Constant.LAST_REFRESH=ZonedDateTime.now();
 			}
 			else {
 				System.out.println("non ancora refresh:" + between);
