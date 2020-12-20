@@ -1,8 +1,8 @@
 package fantalive.controller;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,18 +58,17 @@ public class MyController {
 			constant.APPKEY_FG = System.getenv("APPKEY_FG");
 			constant.AUTH_FS = System.getenv("AUTH_FS");
 			constant.GIORNATA = Integer.valueOf(System.getenv("GIORNATA"));
-*/
+		 */
 		Main.init(salvaRepository,socketHandler,constant);
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 		}
 	}
 
-	
-	@Scheduled(fixedRate = 1500000)
-	public String scheduleKeepAlive() throws Exception {
-		Constant.LAST_KEEP_ALIVE=ZonedDateTime.now();	
-		return keepAlive();
+
+	@Scheduled(fixedRate = 60000)
+	public void scheduleKeepAlive() throws Exception {
+		keepAlive();
 	}
 
 	@GetMapping("/getMyFile")
@@ -80,12 +79,21 @@ public class MyController {
 		String ret="";
 		ZonedDateTime now = ZonedDateTime.now();
 		if (constant.KEEP_ALIVE_END.isAfter(now)) {
-			String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
-			ret=Constant.KEEP_ALIVE + " Keep Alive!";
-			Main.inviaNotifica(ret);
+			long between = 0;
+			if (Constant.LAST_REFRESH != null) between = ChronoUnit.MINUTES.between(Constant.LAST_REFRESH,now);
+			if (between >25) {
+				String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
+				ret=Constant.KEEP_ALIVE + " Keep Alive!";
+				Main.inviaNotifica(ret);
+				System.out.println("REFRESH!!");
+			}
+			else {
+				System.out.println("non ancora refresh:" + between);
+				ret = "NON ANCORA REFRESH:" + between;
+			}
 		} else {
 			ret = Constant.dateTimeFormatterOut.format(now) + " --> " + Constant.dateTimeFormatterOut.format(constant.KEEP_ALIVE_END);
-			System.out.println(ret);
+			System.out.println("NON NECESSARIO REFRESH!!");
 		}
 		return ret;
 	}
@@ -100,6 +108,7 @@ public class MyController {
 		Main.toSocket.put("liveFromFile", constant.LIVE_FROM_FILE);
 		Main.toSocket.put("disabilitaNotificaTelegram", constant.DISABILITA_NOTIFICA_TELEGRAM);
 		if (Constant.LAST_KEEP_ALIVE != null) Main.toSocket.put("lastKeepAlive", Constant.dateTimeFormatterOut.format(Constant.LAST_KEEP_ALIVE));
+		if (Constant.LAST_REFRESH != null) Main.toSocket.put("lastRefresh", Constant.dateTimeFormatterOut.format(Constant.LAST_REFRESH));
 		Main.toSocket.put("keepAliveEnd", Constant.dateTimeFormatterOut.format(Constant.KEEP_ALIVE_END));
 		String runningBot="STOPPED";
 		if (Main.fantaLiveBot != null && Main.fantaLiveBot.isRunning()) {

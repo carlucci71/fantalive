@@ -106,6 +106,9 @@ app.run(
 					if (msg.lastKeepAlive){
 						$rootScope.lastKeepAlive=msg.lastKeepAlive;
 					}
+					if (msg.lastRefresh){
+						$rootScope.lastRefresh=msg.lastRefresh;
+					}
 					if (msg.keepAliveEnd){
 						$rootScope.keepAliveEnd=msg.keepAliveEnd;
 					}
