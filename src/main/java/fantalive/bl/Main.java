@@ -233,7 +233,7 @@ public class Main {
 							}
 						}
 						if (snapLive.getGiocatori().size() > oldLive.getGiocatori().size() && snapLive.getGiocatori().size()==12) {
-							desMiniNotifica.append("Squadra gioca: " + snapSq );
+							desMiniNotifica.append("Formazioni iniziali: " + snapSq );
 							desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 						}
 					}
