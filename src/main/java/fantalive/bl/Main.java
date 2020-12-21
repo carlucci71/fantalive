@@ -232,7 +232,7 @@ public class Main {
 								desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 							}
 						}
-						if (snapLive.getGiocatori().size() > oldLive.getGiocatori().size() ) {
+						if (snapLive.getGiocatori().size() > oldLive.getGiocatori().size() && snapLive.getGiocatori().size()==12) {
 							desMiniNotifica.append("Squadra gioca: " + snapSq );
 							desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 						}
