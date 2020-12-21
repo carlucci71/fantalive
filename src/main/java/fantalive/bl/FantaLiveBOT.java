@@ -188,9 +188,14 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 			
 			for(int i=0;i<msg.length();i++) {
 				rep = rep + "\\u" + Integer.toHexString(msg.charAt(i)).toUpperCase();
-//				rep = rep + " " + Integer.toString(msg.charAt(i));
 			}
 			rep=rep+" ";
+
+			rep = rep + " --> ";
+			byte[] bytes = msg.getBytes();
+			for (int i = 0; i < bytes.length; i++) {
+				rep = rep + bytes[i] + ",";
+			}
 			
 			messaggio="<b>sono il bot reply</b> per  " + chatId;
 		}
