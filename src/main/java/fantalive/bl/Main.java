@@ -45,6 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fantalive.configurazione.SocketHandler;
 import fantalive.entity.Salva;
+import fantalive.model.CambiaTag;
 import fantalive.model.ConfigCampionato;
 import fantalive.model.Giocatore;
 import fantalive.model.Live;
@@ -178,8 +179,12 @@ public class Main {
 	}
 	
 	
-	private static StringBuilder livesUguali(List<Live> snapLives, Map<String, Map<String, String>> snapOrari) {
+	private static String livesUguali(List<Live> snapLives, Map<String, Map<String, String>> snapOrari) {
 		StringBuilder desMiniNotifica=new StringBuilder();
+		List<CambiaTag> cambiaTag = orariUguali(snapOrari);
+		for (CambiaTag sq : cambiaTag) {
+			desMiniNotifica.append("Cambio orario: " + sq + "\n");
+		}
 		try {
 			boolean liveGiocPresente=false;
 			boolean liveSqPresente=false;
@@ -222,12 +227,12 @@ public class Main {
 								}
 							}
 							if (!liveGiocPresente) {
-								desMiniNotifica.append(" Nel vecchio live il giocatore non era presente: " + snapGioc);
+								desMiniNotifica.append("Nel vecchio live il giocatore non era presente: " + snapGioc);
 								desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 							}
 						}
 						if (snapLive.getGiocatori().size() > oldLive.getGiocatori().size() ) {
-							desMiniNotifica.append(" Squadra gioca: " + snapSq );
+							desMiniNotifica.append("Squadra gioca: " + snapSq );
 							desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 						}
 					}
@@ -240,25 +245,28 @@ public class Main {
 		catch (Exception e) {
 			e.printStackTrace(System.out);
 		}
-		return desMiniNotifica;
+		return desMiniNotifica.toString();
 	}
 
-	private static StringBuilder orariUguali(Map<String, Map<String, String>> snapOrari) {
-		StringBuilder desMiniNotifica=new StringBuilder();
+	private static List<CambiaTag> orariUguali(Map<String, Map<String, String>> snapOrari) {
+		List<CambiaTag> ret = new ArrayList<>();
 		try {
-			Set<String> keySet = snapOrari.keySet();
-			for (String key : keySet) {
-				Map<String, String> snapMap = snapOrari.get(key);
-				Map<String, String> oldMap = oldSnapOrari.get(key);
+			Set<String> squadre = snapOrari.keySet();
+			for (String squadra : squadre) {
+				Map<String, String> snapMap = snapOrari.get(squadra);
+				Map<String, String> oldMap = oldSnapOrari.get(squadra);
 				if (!snapMap.get("tag").equals(oldMap.get("tag"))) {
-					desMiniNotifica.append(" E' cambiato il tag dell'orario per: " + key);
+					CambiaTag cambiaTag=new CambiaTag();
+					cambiaTag.setSquadra(squadra);
+					cambiaTag.setTag(snapMap.get("tag"));
+					ret.add(cambiaTag);
 				}
 			}
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.out);
 		}
-		return desMiniNotifica;
+		return ret;
 	}
 
 	public static void snapshot(boolean salva) throws Exception {
@@ -270,14 +278,9 @@ public class Main {
 		Map<String, Map<String, String>> snapOrari = (Map<String, Map<String, String>>) getLives.get("orari");
 		String desMiniNotifica="";
 		if (oldSnapLives != null) {
-			StringBuilder desMiniNotificaLive= livesUguali(snapLives, snapOrari);
-			StringBuilder desMiniNotificaOrari = orariUguali(snapOrari);
-			desMiniNotifica=desMiniNotificaLive.toString() + desMiniNotificaOrari.toString();
+			desMiniNotifica= livesUguali(snapLives, snapOrari);
 			if (!desMiniNotifica.equals("")) {
 				snap=true;
-//				if (!desMiniNotificaLive.toString().equals("")) {
-//					postGo(true, null, null, snapLives, snapOrari);
-//				}
 			}
 		}
 		oldSnapLives=snapLives;
@@ -285,8 +288,6 @@ public class Main {
 		Calendar c2 = Calendar.getInstance();
 		System.out.println("GET LIVES:" + (c2.getTimeInMillis()-c.getTimeInMillis()));
 
-
-//		boolean inviaNotifica=false;
 		Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari);
 		Iterator<String> campionati = go.keySet().iterator();
 		Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
@@ -327,22 +328,36 @@ public class Main {
 					Map<String,RigaNotifica> mapEventi=new HashMap<>();
 					String oldTag = oldGioc.getOrario().get("tag");
 					String newTag = newGioc.getOrario().get("tag");
+					boolean bSchieratoNonSchierato=false;
 					if (newTag.equalsIgnoreCase("PreMatch") && newGioc.isNotificaLive()==false && !oldGioc.isSquadraGioca() && newGioc.isSquadraGioca()) {
 						mapEventi.put("NON SCHIERATO",new RigaNotifica(0, "NON SCHIERATO", Constant.NON_SCHIERATO));
+						bSchieratoNonSchierato=true;
 					}
 					if (newTag.equalsIgnoreCase("PreMatch") && newGioc.isNotificaLive()==true && !oldGioc.isSquadraGioca() && newGioc.isSquadraGioca()) {
 						mapEventi.put("SCHIERATO",new RigaNotifica(0, "SCHIERATO", Constant.SCHIERATO));
+						bSchieratoNonSchierato=true;
 					}
-					if (!oldTag.equalsIgnoreCase(newTag)) {
-						/* PreMatch Postponed Cancelled Walkover FirstHalf HalfTime SecondHalf FullTime*/
-						mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.SEMAFORO));
-					}
-					if (findNuoviEventi.size()>0 || !oldTag.equalsIgnoreCase(newTag)) {
-						for (Map<Integer,Integer> nuovoEvento : findNuoviEventi) {
-							Integer ev = nuovoEvento.keySet().iterator().next();
-							mapEventi.put(Main.eventi.get(ev)[0],new RigaNotifica(nuovoEvento.get(ev), Main.eventi.get(ev)[0], Main.eventi.get(ev)[5]));
+					if (!bSchieratoNonSchierato) {
+						if (!oldTag.equalsIgnoreCase(newTag)) {
+							/* PreMatch Postponed Cancelled Walkover FirstHalf HalfTime SecondHalf FullTime*/
+							mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.SEMAFORO));
+						}
+						if (findNuoviEventi.size()>0) {
+							for (Map<Integer,Integer> nuovoEvento : findNuoviEventi) {
+								Integer ev = nuovoEvento.keySet().iterator().next();
+								mapEventi.put(Main.eventi.get(ev)[0],new RigaNotifica(nuovoEvento.get(ev), Main.eventi.get(ev)[0], Main.eventi.get(ev)[5]));
+							}
+						}
+
+						if (!oldTag.equalsIgnoreCase(newTag)) {
+							List<Map<Integer,Integer>> findTuttiEventi = findNuoviEventi(null, newGioc);
+							for (Map<Integer,Integer> nuovoEvento : findTuttiEventi) {
+								Integer ev = nuovoEvento.keySet().iterator().next();
+								mapEventi.put(Main.eventi.get(ev)[0],new RigaNotifica(nuovoEvento.get(ev), Main.eventi.get(ev)[0], Main.eventi.get(ev)[5]));
+							}
 						}
 					}
+					
 					if (mapEventi.size()>0) {
 						String[] splitKey = key.split("#");
 						Notifica notifica = new Notifica();
@@ -424,7 +439,6 @@ public class Main {
 						}
 					}
 					des.append("\n").append(getUrlNotifica());
-//					inviaNotifica=true;
 					Main.inviaNotifica(des.toString());
 					Calendar c4 = Calendar.getInstance();
 					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));
@@ -835,15 +849,24 @@ public class Main {
 	}
 
 	private static void ciclaEventi(Giocatore og, Giocatore ng, List<Map<Integer, Integer>> ret, Integer verso) {
-		for (Integer codEvento : ng.getCodEventi()) {
-			if (eventi.get(codEvento)[4].equalsIgnoreCase("S")) {
-				int contaNuoviEventiOld = contaNuoviEventi(codEvento,og);
-				int contaNuoviEventiNew = contaNuoviEventi(codEvento,ng);
-				if (contaNuoviEventiOld != contaNuoviEventiNew) {
-					if (!ret.contains(codEvento)) {
-						Map<Integer, Integer> m = new HashMap<>();
-						m.put(codEvento,verso*(contaNuoviEventiNew-contaNuoviEventiOld));
-						ret.add(m);
+		if (ng != null) {
+			for (Integer codEvento : ng.getCodEventi()) {
+				if (og==null) {
+					System.out.println();
+				}
+
+				if (eventi.get(codEvento)[4].equalsIgnoreCase("S")) {
+					int contaNuoviEventiOld = 0;
+					if (og != null) {
+						contaNuoviEventiOld = contaNuoviEventi(codEvento,og);
+					}
+					int contaNuoviEventiNew = contaNuoviEventi(codEvento,ng);
+					if (contaNuoviEventiOld != contaNuoviEventiNew) {
+						if (!ret.contains(codEvento)) {
+							Map<Integer, Integer> m = new HashMap<>();
+							m.put(codEvento,verso*(contaNuoviEventiNew-contaNuoviEventiOld));
+							ret.add(m);
+						}
 					}
 				}
 			}
@@ -937,6 +960,7 @@ public class Main {
 			}
 			if (ret.get(Campionati.BE.name()).getSquadre().size()>0) {
 				//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get(Campionati.BE.name()).getSquadre()).getBytes());
+				if (ret.get(Campionati.BE.name()).getSquadre().size() <8) throw new RuntimeException("Squadre mangiate");
 				upsertSalva("fomrazioneFG" + "be" + ".json", toJson(ret.get(Campionati.BE.name()).getSquadre()));
 			}
 		}
@@ -1370,9 +1394,17 @@ public class Main {
 		testo.append(partitaFinita(giocatore)).append(conVoto(giocatore)).
 //		append(squadraGioca(giocatore)).
 		append("  ");
+		if (campionato.toUpperCase().startsWith("FANT")) {
+			testo.append(giocatore.getRuolo()).append("\t");
+		}
+		else {
+			if(giocatore.getRuolo().equalsIgnoreCase("P")) testo.append(Constant.P).append("\t");
+			if(giocatore.getRuolo().equalsIgnoreCase("D")) testo.append(Constant.D).append("\t");
+			if(giocatore.getRuolo().equalsIgnoreCase("C")) testo.append(Constant.C).append("\t");
+			if(giocatore.getRuolo().equalsIgnoreCase("A")) testo.append(Constant.A).append("\t");
+		}
 		testo.append("<b>").append(giocatore.getNome()).append("</b>").append("\t");
 		testo.append(giocatore.getSquadra()).append("\t");
-		testo.append(giocatore.getRuolo()).append("\t");
 		testo.append(getVoto(giocatore)).append("\t");
 		for (Integer evento : giocatore.getCodEventi()) {
 			testo.append(desEvento(evento,campionato)).append("  ");
@@ -1382,10 +1414,6 @@ public class Main {
 		testo.append("\t");
 		testo.append(getOrario(giocatore.getOrario()));
 		testo.append("\n");
-	}
-	private static String squadraGioca(Giocatore giocatore){
-		if (giocatore.isSquadraGioca()) return Constant.PALLONE;
-		return Constant.SVEGLIA;
 	}
 	private static String getVoto(Giocatore g) {
 		if (!g.isSquadraGioca()) return " ";
@@ -1418,26 +1446,27 @@ public class Main {
 		
 	}
 	private static String partitaFinita(Giocatore giocatore){
-		if (chkPartitaFinita(giocatore))  return Constant.BUSTA;
-		return Constant.CLESSIDRA;
+		if (chkPartitaFinita(giocatore))  return Constant.PARTITA_FINITA;
+		return Constant.PARTITA_NON_FINITA;
 	}
 	private static String conVoto(Giocatore giocatore){
 		if (giocatore.getVoto()==0) {
 			if (giocatore.isSquadraGioca() && chkPartitaFinita(giocatore) ) {
-				return Constant.X_VERDE;
+				return Constant.NO_VOTO_FINITO;
 			}
 			else if (!giocatore.isSquadraGioca()) {
-				return Constant.INTERROGATIVO;
+				return Constant.NO_VOTO_IN_CORSO;
 			}
 			else {
-				return Constant.DIVANO;
+				return Constant.NO_VOTO_DA_INIZIARE;
 			}
 		}
-		return Constant.SPUNTA;
+		return Constant.OK_VOTO;
 	}
 	private static String desEvento(Integer ev,String r){
 		String[] evento = Main.eventi.get(ev);
-		String ret = evento[5] + " " + evento[0];
+		String iconaEvento = evento[5];
+		String ret = " " + iconaEvento + " " + evento[0];
 		String valEvento = valEvento(evento,r);
 		if (!"0".equals(valEvento)) {
 			ret = ret + " (" + valEvento + ") "; 

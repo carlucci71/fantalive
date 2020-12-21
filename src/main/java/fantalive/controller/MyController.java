@@ -1,11 +1,14 @@
 package fantalive.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -18,10 +21,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fantalive.bl.FantaLiveBOT;
 import fantalive.bl.Main;
+import fantalive.bl.Main.Campionati;
 import fantalive.configurazione.SocketHandler;
 import fantalive.entity.Salva;
 import fantalive.model.Giocatore;
@@ -42,23 +47,6 @@ public class MyController {
 
 	@PostConstruct
 	private void post() throws Exception {
-		/*
-			if(System.getenv("KEEP_ALIVE_END") != null) {
-				constant.KEEP_ALIVE_END = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_END"), dateTimeFormatter);
-			}
-			else {
-				constant.KEEP_ALIVE_END = ZonedDateTime.now();
-			}
-			constant.DISABILITA_NOTIFICA_TELEGRAM = Boolean.valueOf(System.getenv("DISABILITA_NOTIFICA_TELEGRAM"));
-			constant.LIVE_FROM_FILE = Boolean.valueOf(System.getenv("LIVE_FROM_FILE"));
-			constant.CHAT_ID_FANTALIVE = Long.valueOf(System.getenv("CHAT_ID_FANTALIVE"));
-			constant.SPONTIT_KEY = System.getenv("SPONTIT_KEY");
-			constant.TOKEN_BOT_FANTALIVE = System.getenv("TOKEN_BOT_FANTALIVE");
-			constant.SPONTIT_USERID = System.getenv("SPONTIT_USERID");
-			constant.APPKEY_FG = System.getenv("APPKEY_FG");
-			constant.AUTH_FS = System.getenv("AUTH_FS");
-			constant.GIORNATA = Integer.valueOf(System.getenv("GIORNATA"));
-		 */
 		Main.init(salvaRepository,socketHandler,constant);
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
@@ -70,7 +58,6 @@ public class MyController {
 	public void scheduleKeepAlive() throws Exception {
 		keepAlive();
 	}
-
 	@GetMapping("/getMyFile")
 	public String getFile() throws Exception {
 		return keepAlive();
@@ -247,6 +234,7 @@ public class MyController {
 	public Map<String, Return> salva(@RequestBody Map<String,Return> body) throws Exception  {
 		Return r = body.get("r");
 		//		Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + r.getNome().toLowerCase() + ".json"), Main.toJson(r.getSquadre()).getBytes());
+		if (r.getNome().equalsIgnoreCase("BE") && r.getSquadre().size() <8) throw new RuntimeException("Squadre mangiate");
 		Main.upsertSalva("fomrazioneFG" + r.getNome().toLowerCase() + ".json", Main.toJson(r.getSquadre()));
 		return test(true);
 	}
@@ -307,6 +295,133 @@ public class MyController {
 	public Map<String, Object> setGiornata(@RequestBody Map<String,Object> body)  {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		constant.GIORNATA=(Integer)body.get("giornata");
+		return ret;
+	}
+	@GetMapping("/testIcone")
+	public Map<String, Object>  testIcone() throws Exception {
+
+		List<String[]> lista=new ArrayList<>();
+		lista.add(new String [] {Constant.PARTITA_FINITA,"PARTITA_FINITA"});
+		lista.add(new String [] {Constant.PARTITA_NON_FINITA,"PARTITA_NON_FINITA"});
+		lista.add(new String [] {Constant.OK_VOTO,"OK_VOTO"});
+		lista.add(new String [] {Constant.NO_VOTO_IN_CORSO,"NO_VOTO_IN_CORSO"});
+		lista.add(new String [] {Constant.PALLONE,"PALLONE"});
+		lista.add(new String [] {Constant.NO_VOTO_FINITO,"NO_VOTO_FINITO"});
+		lista.add(new String [] {Constant.RIGORE_PARATO,"RIGORE PARATO"});
+		lista.add(new String [] {Constant.NO_VOTO_DA_INIZIARE,"NO_VOTO_DA_INIZIARE"});
+		lista.add(new String [] {Constant.SCHIERATO,"SCHIERATO"});
+		lista.add(new String [] {Constant.NON_SCHIERATO,"NON SCHIERATO"});
+		lista.add(new String [] {Constant.SEMAFORO,"SEMAFORO"});
+		lista.add(new String [] {Constant.IMBATTUTO,"IMBATTUTO"});
+		lista.add(new String [] {Constant.ASSIST,"ASSIST"});	
+		lista.add(new String [] {Constant.GOL,"GOL"});
+		lista.add(new String [] {Constant.USCITO,"USCITO"});
+		lista.add(new String [] {Constant.ENTRATO,"ENTRATO"});
+		lista.add(new String [] {Constant.GOL_ANNULLATO,"ANNULLATO"});
+		lista.add(new String [] {Constant.INFORTUNIO,"INFORTUNIO"});
+		lista.add(new String [] {Constant.AMMONITO,"AMMONITO"});
+		lista.add(new String [] {Constant.ESPULSO,"ESPULSO"});
+		lista.add(new String [] {Constant.GOL_SUBITO,"SUBITO"});
+		lista.add(new String [] {Constant.RIGORE_SBAGLIATO,"RIGORE SBAGLIATO"});  
+		lista.add(new String [] {Constant.RIGORE_SEGNATO,"RIGORE SEGNATO"});
+		lista.add(new String [] {Constant.AUTOGOL,"AUTOGOL"});	
+		lista.add(new String [] {Constant.CIAO,"CIAO"});
+		lista.add(new String [] {Constant.KEEP_ALIVE,"KEEP ALIVE"});
+		lista.add(new String [] {Constant.P,"P"});
+		lista.add(new String [] {Constant.D,"D"});
+		lista.add(new String [] {Constant.C,"C"});
+		lista.add(new String [] {Constant.A,"A"});
+		
+		Map<String, Object> ret = new LinkedHashMap();
+		for (String[] msg : lista) {
+			String rep="";
+			for(int i=0;i<msg[0].length();i++) {
+				rep = rep + "\\u" + Integer.toHexString(msg[0].charAt(i)).toUpperCase();
+			}
+			rep = rep + " --> ";
+			byte[] bytes = msg[0].getBytes();
+			for (int i = 0; i < bytes.length; i++) {
+				rep = rep + bytes[i] + ",";
+			}
+			
+			ret.put(rep, msg[0] + " --> " + msg[1]);
+		}
+		return ret;
+	}
+	@GetMapping("/fromHex")
+	public static String fromHex(@RequestParam String i0) throws UnsupportedEncodingException {
+		String ret;
+		String valueOf;
+		int parseInt = Integer.parseInt(i0,16);
+		if (parseInt>65536) {
+			int c1 = parseInt-65536;  
+			int d1=c1/1024;
+			String high=Integer.toHexString(d1 + 55296).toUpperCase();
+			String low=Integer.toHexString(c1-(d1*1024)+56320).toUpperCase();
+			ret = "\\u" + high + "\\u" + low;
+			valueOf = String.valueOf(new char[] {(char)Integer.parseInt(high, 16),(char)Integer.parseInt(low, 16)});
+		}
+		else {
+			ret = "\\u" + i0 ;
+			valueOf = String.valueOf(new char[] {(char)Integer.parseInt(i0, 16)});
+		}
+		return i0 + " --> " + ret + "-->" + valueOf;
+	}
+	public static void main(String[] args) throws Exception {
+		System.out.println(fromHex("1F153"));
+		System.out.println(fromHex("1F152"));
+		System.out.println(fromHex("1F150"));
+//		System.out.println(fromHex("2620"));
+//		diz(new Byte[] {-30});
+//		diz(new Byte[] {-16,-97});
+		/*
+		http://localhost:8080/dizIcone?i0=-16,-97
+		http://localhost:8080/dizIcone?i0=-30
+		http://localhost:8080/testIcone
+		
+		http://localhost:8080/fromHex?i0=1F0A2
+		http://localhost:8080/fromHex?i0=2620
+		 */
+	}
+	@GetMapping("/dizIcone")
+	public static Map<String, Object>  diz(@RequestParam Byte[] i0) throws Exception {
+		Map<String, Object> ret = new LinkedHashMap<String, Object>();
+		{
+			for (int i2=-128;i2<128;i2++) {
+				for (int i3=-128;i3<128;i3++) {
+					byte[] b=new byte[2+i0.length];
+					int conta=0;
+					for (Byte byte1 : i0) {
+						b[conta]=byte1;
+						conta++;
+					}
+					b[conta]=(byte) i2;
+					conta++;
+					b[conta]=(byte) i3;
+					
+					String msg = new String(b);
+					String rep="";
+					boolean bSkip=false;
+					for(int ix=0;ix<msg.length();ix++) {
+						String hexString = Integer.toHexString(msg.charAt(ix)).toUpperCase();
+						if (hexString.equals("FFFD")) {
+							bSkip=true;
+						}
+						rep = rep + "\\u" + hexString;
+					}
+					rep = rep + " --> ";
+					for (Byte byte1 : i0) {
+						rep = rep + byte1 + ",";
+					}
+					rep = rep + i2 + ",";
+					rep = rep + i3 + ",";
+					if (!bSkip) {
+						ret.put(rep, msg);
+						System.out.println(msg + "                        " +  rep);
+					}
+				}
+			}
+		}
 		return ret;
 	}
 	@GetMapping("/getDati")

@@ -82,7 +82,6 @@ app.run(
 					var msg = JSON.parse(message);
 //					console.log(msg);
 					if (msg.res){
-//						$rootScope.testoLog=$rootScope.testoLog + "REFRESH" + "\n";
 						$rootScope.result=msg.res;
 					}
 					if (msg.timeRefresh){
