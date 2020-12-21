@@ -28,6 +28,7 @@ public class ConstantProtetto {
 		constant.APPKEY_FG = System.getenv("APPKEY_FG");
 		constant.AUTH_FS = System.getenv("AUTH_FS");
 		constant.GIORNATA = Integer.valueOf(System.getenv("GIORNATA"));
+		constant.NUM_SQUADRE_BE = Integer.valueOf(System.getenv("NUM_SQUADRE_BE"));
 		if (System.getenv("SCHEDULED_SNAP") != null) {
 			constant.SCHEDULED_SNAP=Integer.valueOf(System.getenv("SCHEDULED_SNAP"));
 		} else {

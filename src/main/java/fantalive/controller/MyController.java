@@ -234,7 +234,7 @@ public class MyController {
 	public Map<String, Return> salva(@RequestBody Map<String,Return> body) throws Exception  {
 		Return r = body.get("r");
 		//		Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + r.getNome().toLowerCase() + ".json"), Main.toJson(r.getSquadre()).getBytes());
-		if (r.getNome().equalsIgnoreCase("BE") && r.getSquadre().size() <8) throw new RuntimeException("Squadre mangiate");
+		if (r.getNome().equalsIgnoreCase("BE") && r.getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate");
 		Main.upsertSalva("fomrazioneFG" + r.getNome().toLowerCase() + ".json", Main.toJson(r.getSquadre()));
 		return test(true);
 	}

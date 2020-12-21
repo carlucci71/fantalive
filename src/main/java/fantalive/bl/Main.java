@@ -42,6 +42,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.jdbc.Constants;
 
 import fantalive.configurazione.SocketHandler;
 import fantalive.entity.Salva;
@@ -960,7 +961,7 @@ public class Main {
 			}
 			if (ret.get(Campionati.BE.name()).getSquadre().size()>0) {
 				//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get(Campionati.BE.name()).getSquadre()).getBytes());
-				if (ret.get(Campionati.BE.name()).getSquadre().size() <8) throw new RuntimeException("Squadre mangiate");
+				if (ret.get(Campionati.BE.name()).getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate");
 				upsertSalva("fomrazioneFG" + "be" + ".json", toJson(ret.get(Campionati.BE.name()).getSquadre()));
 			}
 		}

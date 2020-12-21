@@ -17,6 +17,7 @@ public class Constant {
 	public static ZonedDateTime KEEP_ALIVE_END;
 	public static ZonedDateTime LAST_KEEP_ALIVE;
 	public static int SCHEDULED_SNAP;
+	public static  int NUM_SQUADRE_BE = 0;	
 	/*-------------------------------------------------------------------------------------------*/
 	public static DateTimeFormatter dateTimeFormatterIn = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
 	public static DateTimeFormatter dateTimeFormatterOut = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Rome"));
@@ -50,7 +51,7 @@ public class Constant {
 	public static final String P = "\uD83C\uDD5F";	
 	public static final String D = "\uD83C\uDD53";	
 	public static final String C = "\uD83C\uDD52";	
-	public static final String A = "\uD83C\uDD50";	
+	public static final String A = "\uD83C\uDD50";
 	
 	
 	public static ZonedDateTime LAST_REFRESH;
