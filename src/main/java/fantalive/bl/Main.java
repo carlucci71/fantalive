@@ -256,8 +256,10 @@ public class Main {
 										String snapEvento = snapMap.get("evento").toString();
 										String[] splitSnapEvento = snapEvento.split(",");
 										for (String string : splitSnapEvento) {
-											Integer attSnapEvento = Integer.parseInt(string);
-											desMiniNotifica.append(desEvento(attSnapEvento, "BE") + " ");
+											if (!string.equals("")) {
+												Integer attSnapEvento = Integer.parseInt(string);
+												desMiniNotifica.append(desEvento(attSnapEvento, "BE") + " ");
+											}
 										}
 										desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 									}
@@ -415,6 +417,7 @@ public class Main {
 						notifica.setGiocatore(splitKey[2]);
 						notifica.setOrario(newGioc.getOrario());
 						notifica.setId(newGioc.getIdGioc());
+						notifica.setRuolo(newGioc.getRuolo());
 						notifica.setEventi(mapEventi);
 						notifica.setVoto(newGioc.getVoto() + newGioc.getModificatore()); 
 						if (newGioc.isCambio()) {
@@ -436,7 +439,9 @@ public class Main {
 							List<Notifica> listN = sq.get(sqN);
 							Collections.sort(listN);
 							for (Notifica notifica : listN) {
-								String ret = " <b>" + getIconaIDGioc.get(notifica.getId()) + "</b> " + notifica.getGiocatore() + notifica.getCambio() + notifica.getVoto();
+								
+
+								String ret = " <b>" + getIconaIDGioc.get(notifica.getId()) + "</b> " + getDesRuolo(notifica.getCampionato(), notifica.getRuolo()) + " " + notifica.getGiocatore() + notifica.getCambio() + notifica.getVoto();
 								Set<String> ks = notifica.getEventi().keySet();
 								for (String key : ks) {
 									RigaNotifica rigaNotifica = notifica.getEventi().get(key);
@@ -1427,25 +1432,36 @@ public class Main {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
+	private static String getDesRuolo(String campionato, String ruolo) {
+		String testo="";
+		if (campionato.toUpperCase().equalsIgnoreCase(Campionati.FANTAVIVA.name())) {
+			testo=ruolo;
+		}
+		else {
+			if(ruolo.equalsIgnoreCase("P")) testo=Constant.P;
+			if(ruolo.equalsIgnoreCase("D")) testo=Constant.D;
+			if(ruolo.equalsIgnoreCase("C")) testo=Constant.C;
+			if(ruolo.equalsIgnoreCase("A")) testo=Constant.A;
+		}
+		return testo;
+	}
 	private static void dettaglioTestoGiocatore(StringBuilder testo, Giocatore giocatore, String campionato) {
 		testo.append(getIconaIDGioc.get(giocatore.getIdGioc())).
 		append(" ").
 //		append(partitaFinita(giocatore)).
 		append(conVoto(giocatore)).
-		append("  ");
-		if (campionato.toUpperCase().equalsIgnoreCase(Campionati.FANTAVIVA.name())) {
-			testo.append(giocatore.getRuolo()).append("\t");
-		}
-		else {
-			if(giocatore.getRuolo().equalsIgnoreCase("P")) testo.append(Constant.P).append("\t");
-			if(giocatore.getRuolo().equalsIgnoreCase("D")) testo.append(Constant.D).append("\t");
-			if(giocatore.getRuolo().equalsIgnoreCase("C")) testo.append(Constant.C).append("\t");
-			if(giocatore.getRuolo().equalsIgnoreCase("A")) testo.append(Constant.A).append("\t");
-		}
-		testo.append("<b>").append(giocatore.getNome()).append("</b>").append("\t");
-		testo.append(giocatore.getSquadra()).append("\t");
-		testo.append(getVoto(giocatore)).append("\t");
+		append("  ").
+		append(getDesRuolo(campionato, giocatore.getRuolo())).
+		append("\t").
+		append("<b>").
+		append(giocatore.getNome()).
+		append("</b>").
+		append("\t").
+		append(giocatore.getSquadra()).
+		append("\t").
+		append(getVoto(giocatore)).
+		append("\t");
 		for (Integer evento : giocatore.getCodEventi()) {
 			testo.append(desEvento(evento,campionato)).append("  ");
 		}

@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class Notifica implements Comparable<Notifica> {
 	private Map<String,String> orario=new HashMap<String,String>();
+	private String ruolo;
 	private String campionato;
 	private String giocatore;
 	private String squadra;
@@ -90,6 +91,18 @@ public class Notifica implements Comparable<Notifica> {
 	}
 	public void setOrario(Map<String,String> orario) {
 		this.orario = orario;
+	}
+	public String getRuolo() {
+		return ruolo;
+	}
+	public void setRuolo(String ruolo) {
+		this.ruolo = ruolo;
+	}
+	@Override
+	public String toString() {
+		return "Notifica [orario=" + orario + ", ruolo=" + ruolo + ", campionato=" + campionato + ", giocatore="
+				+ giocatore + ", squadra=" + squadra + ", id=" + id + ", voto=" + voto + ", eventi=" + eventi
+				+ ", cambio=" + cambio + "]";
 	}
 
 }
