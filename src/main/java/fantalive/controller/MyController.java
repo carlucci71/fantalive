@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fantalive.bl.FantaCronacaLiveBOT;
 import fantalive.bl.FantaLiveBOT;
 import fantalive.bl.Main;
 import fantalive.bl.Main.Campionati;
@@ -50,6 +51,7 @@ public class MyController {
 		Main.init(salvaRepository,socketHandler,constant);
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
+			Main.fantaCronacaLiveBot = FantaCronacaLiveBOT.inizializza("WEBAPP");
 		}
 	}
 

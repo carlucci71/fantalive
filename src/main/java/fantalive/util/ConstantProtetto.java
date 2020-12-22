@@ -23,6 +23,7 @@ public class ConstantProtetto {
 		constant.LIVE_FROM_FILE = Boolean.valueOf(System.getenv("LIVE_FROM_FILE"));
 		constant.CHAT_ID_FANTALIVE = Long.valueOf(System.getenv("CHAT_ID_FANTALIVE"));
 		constant.TOKEN_BOT_FANTALIVE = System.getenv("TOKEN_BOT_FANTALIVE");
+		constant.TOKEN_BOT_FANTACRONACALIVE = System.getenv("TOKEN_BOT_FANTACRONACALIVE");
 		constant.APPKEY_FG = System.getenv("APPKEY_FG");
 		constant.AUTH_FS = System.getenv("AUTH_FS");
 		constant.GIORNATA = Integer.valueOf(System.getenv("GIORNATA"));

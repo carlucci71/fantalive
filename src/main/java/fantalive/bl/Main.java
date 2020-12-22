@@ -81,6 +81,8 @@ public class Main {
 	public static String MIO_IP;
 
 	public static FantaLiveBOT fantaLiveBot;
+	public static FantaCronacaLiveBOT fantaCronacaLiveBot;
+	
 
 	public static enum Campionati {BE, FANTAVIVA, LUCCICAR};
 
@@ -493,6 +495,7 @@ public class Main {
 						}
 					}
 					des.append("\n").append(getUrlNotifica());
+					Main.inviaCronacaNotifica(des.toString());
 					Main.inviaNotifica(des.toString());
 					Calendar c4 = Calendar.getInstance();
 					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));
@@ -505,6 +508,7 @@ public class Main {
 				map.put("res", go);
 				map.put("miniNotifica", Base64.getEncoder().encodeToString(desMiniNotifica.getBytes()));
 				socketHandler.invia(map);
+				Main.inviaCronacaNotifica(desMiniNotifica.toString());
 			}
 			Calendar c4 = Calendar.getInstance();
 			System.out.println("ONLY WEB SOCKET:" + (c4.getTimeInMillis()-c3.getTimeInMillis()));
@@ -575,11 +579,16 @@ public class Main {
     	snapshot(null);
 		 */
 	}
-
+	
+	public static void inviaCronacaNotifica(String msg) throws Exception {
+		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
+			fantaCronacaLiveBot.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg);
+		}
+		else {
+			System.out.println("Notifica:\n" + msg);
+		}
+	}
 	public static void inviaNotifica(String msg) throws Exception {
-		String urlNotifica;
-		Map<String, String> body;
-		Map<String, String> headers;
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			fantaLiveBot.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg,false);
 		}
@@ -590,7 +599,6 @@ public class Main {
 		map.put("notifica", Base64.getEncoder().encodeToString(msg.getBytes()));
 		socketHandler.invia(map);
 	}
-
 	private static Map<String, String> getNomiFG(String lega) throws Exception {
 		Map<String, String> ret = new HashMap<String, String>();
 		String url = "https://leghe.fantacalcio.it/" + lega + "/area-gioco/rose?";
@@ -1388,26 +1396,49 @@ public class Main {
 			for (Squadra sq : squadre) {
 				if (sq.getNome().equalsIgnoreCase(squadra)) {
 					StringBuilder testo = new StringBuilder();
-					testo.append("\n<b>").append(sq.getNome()).append("</b> --> <b><i>").append(sq.getProiezione()).append("</i></b>\n\n");
+					testo
+					.append("\n<b>")
+					.append(sq.getNome())
+					.append("</b>\n");
+
 					for (Giocatore giocatore : sq.getTitolari()) {
 						dettaglioTestoGiocatore(testo, giocatore,campionato);
 					}
-					testo.append("\n");
-					testo.append("Giocatori con voto: ").append(sq.getContaTitolari()).append("\n");
-					testo.append("Media votati: ").append(sq.getMediaTitolari()).append("\n");
-					testo.append("Ancora da giocare: ").append(sq.getContaSquadraTitolariNonGioca()).append("\n");
-					testo.append("Totale: ").append(sq.getTotaleTitolari()).append("\n");
-					testo.append("\n");
+					testo
+					.append("\n")
+					.append("Giocatori con voto: ")
+					.append(sq.getContaTitolari())
+					.append("\n")
+					.append("Media votati: ")
+					.append(sq.getMediaTitolari())
+					.append("\n")
+					.append("Ancora da giocare: ")
+					.append(sq.getContaSquadraTitolariNonGioca())
+					.append("\n")
+					.append("Totale: ")
+					.append(sq.getTotaleTitolari())
+					.append("\n")
+					.append("\n");
 
 					for (Giocatore giocatore : sq.getRiserve()) {
 						dettaglioTestoGiocatore(testo, giocatore,campionato);
 					}
-					testo.append("\n");
-					testo.append("Giocatori con voto: ").append(sq.getContaRiserve()).append("\n");
-					testo.append("Ancora da giocare: ").append(sq.getContaSquadraRiserveNonGioca()).append("\n");
+					testo
+					.append("\n")
+					.append("Giocatori con voto: ")
+					.append(sq.getContaRiserve())
+					.append("\n")
+					.append("Ancora da giocare: ")
+					.append(sq.getContaSquadraRiserveNonGioca())
+					.append("\n\n")
+					.append("Proiezione --> <b><i>")
+					.append(sq.getProiezione())
+					.append("</i></b>\n\n");
 					
 					if(chatId.intValue() == Constant.CHAT_ID_FANTALIVE.intValue()) {
-						testo.append("\n").append(Main.getUrlNotifica());
+						testo
+						.append("\n")
+						.append(Main.getUrlNotifica());
 					}
 					
 					
@@ -1436,29 +1467,41 @@ public class Main {
 		return testo;
 	}
 	private static void dettaglioTestoGiocatore(StringBuilder testo, Giocatore giocatore, String campionato) {
-		testo.append(getIconaIDGioc.get(giocatore.getIdGioc())).
-		append(" ").
-//		append(partitaFinita(giocatore)).
-		append(conVoto(giocatore)).
-		append("  ").
-		append(getDesRuolo(campionato, giocatore.getRuolo())).
-		append("\t").
-		append("<b>").
-		append(giocatore.getNome()).
-		append("</b>").
-		append("\t").
-		append(giocatore.getSquadra()).
-		append("\t").
-		append(getVoto(giocatore)).
-		append("\t");
-		for (Integer evento : giocatore.getCodEventi()) {
-			testo.append(desEvento(evento,campionato)).append("  ");
+		testo
+//		.append("\uD83C\uDC06")
+//		.append(" ")
+		.append(getIconaIDGioc.get(giocatore.getIdGioc()))
+		.append(" ")
+		.append(conVoto(giocatore))
+		.append("  ")
+		.append(getDesRuolo(campionato, giocatore.getRuolo()))
+		.append("  ")
+		.append("<b>")
+		.append(giocatore.getNome())
+		.append("</b>")
+		.append("  ")
+		.append(giocatore.getSquadra())
+		.append("  ")
+		.append(getVoto(giocatore))
+		.append("  ")
+		.append("<b>")
+		.append(getFantaVoto(giocatore))
+		.append("</b>");
+		if (giocatore.isCambiato()) {
+			testo.append("(*)");
 		}
-		testo.append("<b>").append(getFantaVoto(giocatore)).append("</b>");
-		if (giocatore.isCambiato()) testo.append("(*)");
-		testo.append("\t");
-		testo.append(getOrario(giocatore.getOrario()));
-		testo.append("\n");
+		testo
+//		.append("\n")
+		.append(getOrario(giocatore.getOrario()))
+		.append("\n");
+		
+		for (Integer evento : giocatore.getCodEventi()) {
+			testo
+			.append(desEvento(evento,campionato))
+			.append("  ");
+		}
+		testo
+		.append("\n");
 	}
 	private static String getVoto(Giocatore g) {
 		if (!g.isSquadraGioca()) return " ";
