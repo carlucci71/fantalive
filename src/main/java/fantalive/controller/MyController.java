@@ -301,17 +301,18 @@ public class MyController {
 	public Map<String, Object>  testIcone() throws Exception {
 
 		List<String[]> lista=new ArrayList<>();
-		lista.add(new String [] {Constant.PARTITA_FINITA,"PARTITA_FINITA"});
+//		lista.add(new String [] {Constant.PARTITA_FINITA,"PARTITA_FINITA"});
 		lista.add(new String [] {Constant.PARTITA_NON_FINITA,"PARTITA_NON_FINITA"});
 		lista.add(new String [] {Constant.OK_VOTO,"OK_VOTO"});
 		lista.add(new String [] {Constant.NO_VOTO_IN_CORSO,"NO_VOTO_IN_CORSO"});
 //		lista.add(new String [] {Constant.PALLONE,"PALLONE"});
-		lista.add(new String [] {Constant.NO_VOTO_FINITO,"NO_VOTO_FINITO"});
+//		lista.add(new String [] {Constant.NO_VOTO_FINITO,"NO_VOTO_FINITO"});
 		lista.add(new String [] {Constant.RIGORE_PARATO,"RIGORE PARATO"});
 		lista.add(new String [] {Constant.NO_VOTO_DA_INIZIARE,"NO_VOTO_DA_INIZIARE"});
 		lista.add(new String [] {Constant.SCHIERATO,"SCHIERATO"});
 		lista.add(new String [] {Constant.NON_SCHIERATO,"NON SCHIERATO"});
-		lista.add(new String [] {Constant.SEMAFORO,"SEMAFORO"});
+		lista.add(new String [] {Constant.SEMAFORO_1,"SEMAFORO1"});
+		lista.add(new String [] {Constant.SEMAFORO_2,"SEMAFORO2"});
 		lista.add(new String [] {Constant.IMBATTUTO,"IMBATTUTO"});
 		lista.add(new String [] {Constant.ASSIST,"ASSIST"});	
 		lista.add(new String [] {Constant.GOL,"GOL"});
@@ -333,6 +334,11 @@ public class MyController {
 		lista.add(new String [] {Constant.A,"A"});
 		lista.add(new String [] {Constant.T1,"T1"});
 		lista.add(new String [] {Constant.R19,"R19"});
+		lista.add(new String [] {Constant.PAUSA,"PAUSA"});
+		lista.add(new String [] {Constant.FINE_PARTITA,"FINE_PARTITA"});
+		lista.add(new String [] {Constant.OROLOGIO,"OROLOGIO"});
+		lista.add(new String [] {Constant.SCHEDULATA,"SCHEDULATA"});
+		lista.add(new String [] {Constant.DEFINITIVA,"DEFINITIVA"});
 		
 		Map<String, Object> ret = new LinkedHashMap();
 		for (String[] msg : lista) {

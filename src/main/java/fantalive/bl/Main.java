@@ -210,7 +210,7 @@ public class Main {
 		for (String key : keySet) {
 			if (squadra.equalsIgnoreCase(key) && snapOrari.get(key) != null && 
 					(snapOrari.get(key).get("tag").equalsIgnoreCase("FirstHalf")) || snapOrari.get(key).get("tag").equalsIgnoreCase("SecondHalf") ) {
-				return " al " + snapOrari.get(key).get("val");
+				return " " + snapOrari.get(key).get("val") + Constant.OROLOGIO + " ";
 			}
 		}
 		return "";
@@ -379,8 +379,19 @@ public class Main {
 					}
 					if (!bSchieratoNonSchierato) {
 						if (!oldTag.equalsIgnoreCase(newTag)) {
-							/* PreMatch Postponed Cancelled Walkover FirstHalf HalfTime SecondHalf FullTime*/
-							mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.SEMAFORO));
+							/* PreMatch Postponed Cancelled Walkover    */
+							if (newTag.equals("FirstHalf")) {
+								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.SEMAFORO_1));
+							}
+							if (newTag.equals("SecondHalf")) {
+								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.SEMAFORO_2));
+							}
+							if (newTag.equals("HalfTime")) {
+								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.PAUSA));
+							}
+							if (newTag.equals("FullTime")) {
+								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.FINE_PARTITA));
+							}
 						}
 						if (findNuoviEventi.size()>0) {
 							for (Map<Integer,Integer> nuovoEvento : findNuoviEventi) {
@@ -474,7 +485,7 @@ public class Main {
 								}
 								if ((notifica.getOrario() != null && notifica.getOrario().get("tag") != null) 
 										&& (notifica.getOrario().get("tag").equalsIgnoreCase("FirstHalf") || notifica.getOrario().get("tag").equalsIgnoreCase("SecondHalf")) ) {
-									des.append(" al " + notifica.getOrario().get("val") + " ");
+									des.append(" " + notifica.getOrario().get("val") + Constant.OROLOGIO + " ");
 								}
 								
 								des.append(ret).append("\n");
@@ -1483,7 +1494,7 @@ public class Main {
 	}
 	private static String getOrario(Map<String,String> orario){
 		String tag = orario.get("tag");
-		if (tag.equals("FullTime") || tag.equals("Postponed") || tag.equals("Cancelled") || tag.equals("Walkover")) return tag;
+		if (tag.equals("FullTime") || tag.equals("Postponed") || tag.equals("Cancelled") || tag.equals("Walkover")) return " " + tag + Constant.DEFINITIVA + " ";;
 		if (tag.equals("PreMatch")){
 			String ret="";
 			ret = ret + orario.get("val").substring(8,10);
@@ -1491,8 +1502,9 @@ public class Main {
 			ret = ret + " " + (1+Integer.parseInt(orario.get("val").substring(11,13)));
 			ret = ret + ":" + orario.get("val").substring(14,16);
 			return ret;
+//			return " " + ret + Constant.SCHEDULATA + " ";
 		}
-		return orario.get("val") + "Min";
+		return " " + orario.get("val") + Constant.OROLOGIO + " ";
 	}
 
 	private static boolean chkPartitaFinita(Giocatore giocatore){

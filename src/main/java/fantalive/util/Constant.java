@@ -24,21 +24,25 @@ public class Constant {
 	public final static String PARTITA_FINITA = "\u2B59";
 	public final static String PARTITA_NON_FINITA  = "\u23F3";
 	public final static String OK_VOTO = "\u2714";
-	public final static String NO_VOTO_IN_CORSO = "\u2753";
+	public final static String NO_VOTO_IN_CORSO = "\uFE16";
 	public final static String PALLONE = "\u26BD";
 	public final static String SVEGLIA  = "\u23F0";
-	public final static String NO_VOTO_FINITO  = "\u274E";
-	public static final String RIGORE_PARATO = "\u26BF";
-	public final static String NO_VOTO_DA_INIZIARE = "\uD83D\uDECB";
+	public final static String OROLOGIO = "\u23F0";
+	public final static String SCHEDULATA = "\uD83D\uDD5B";
+	public final static String DEFINITIVA = " \uD83D\uDEE0";
+	public final static String NO_VOTO_FINITO  = "\uD83C\uDCA2";
+	public static final String RIGORE_PARATO = "\uD83D\uDD95";
+	public final static String NO_VOTO_DA_INIZIARE = "\uD83D\uDECF";//"\uD83D\uDECB";
 	public final static String SCHIERATO = "\uD83D\uDCAA";
 	public final static String NON_SCHIERATO = "\uD83D\uDE4F";
-	public final static String SEMAFORO = "\uD83D\uDEA6";
+	public final static String SEMAFORO_1 = "\uD83D\uDEA6";
+	public final static String SEMAFORO_2 = "\uD83D\uDEA5";
 	public static final String IMBATTUTO = "\uD83E\uDD45";
-	public static final String ASSIST = "\uD83C\uDF6C";	
-	public static final String GOL = "\uD83E\uDD42";
+	public static final String ASSIST = "\uD83D\uDEB8";	
+	public static final String GOL = "\u26BD";//\u26F3";//"\uD83E\uDD42";
 	public static final String USCITO =  "\u2BA9";
 	public static final String ENTRATO =  "\u2BA8";
-	public static final String GOL_ANNULLATO = "\uD83D\uDC7D";
+	public static final String GOL_ANNULLATO = "\uD83D\uDEC2";
 	public static final String INFORTUNIO = "\uD83D\uDE91";
 	public static final String AMMONITO = "\uD83D\uDFE8";
 	public static final String ESPULSO = "\uD83D\uDFE5";
@@ -83,6 +87,8 @@ public class Constant {
 	public static final String R18 = "\u24FC";
 	public static final String R19 = "\u24FD";
 	public static final String R20 = "\u24FE";
+	public static final String PAUSA = "\uD83D\uDD14";
+	public static final String FINE_PARTITA = "\uD83C\uDFC1";
 	
 	
 	public static ZonedDateTime LAST_REFRESH;
