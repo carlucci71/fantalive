@@ -589,28 +589,6 @@ public class Main {
 		Map<String, Object> map=new HashMap<>();
 		map.put("notifica", Base64.getEncoder().encodeToString(msg.getBytes()));
 		socketHandler.invia(map);
-
-		if(false) {//FIXME false
-			urlNotifica = "https://api.spontit.com/v3/push";
-			body = new HashMap<String, String>();
-			body.put("pushTitle", "FantaLive");
-			//body.put("subtitle", "Aggiornamento");
-			body.put("content", msg);
-			body.put("link", getUrlNotifica());
-
-			//			body.put("channelName", "daniele");
-			//body.put("schedule", 1591982947);
-			//body.put("expirationStamp", 1592414947);
-			//body.put("openLinkInApp", "true");
-			//body.put("iOSDeepLink", "photos-redirect://");
-
-
-			headers = new HashMap<String, String>();
-			headers.put("X-Authorization", constant.SPONTIT_KEY);
-			headers.put("X-UserId", constant.SPONTIT_USERID);
-			postHTTP(urlNotifica,body, headers);
-
-		}
 	}
 
 	private static Map<String, String> getNomiFG(String lega) throws Exception {
