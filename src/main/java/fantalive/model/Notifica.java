@@ -8,6 +8,7 @@ public class Notifica implements Comparable<Notifica> {
 	private String ruolo;
 	private String campionato;
 	private String giocatore;
+	private String allenatore;
 	private String squadra;
 	private String id;
 	private double voto=0;
@@ -30,12 +31,6 @@ public class Notifica implements Comparable<Notifica> {
 	}
 	public void setGiocatore(String giocatore) {
 		this.giocatore = giocatore;
-	}
-	public String getSquadra() {
-		return squadra;
-	}
-	public void setSquadra(String squadra) {
-		this.squadra = squadra;
 	}
 	public String getId() {
 		return id;
@@ -98,11 +93,23 @@ public class Notifica implements Comparable<Notifica> {
 	public void setRuolo(String ruolo) {
 		this.ruolo = ruolo;
 	}
+	public String getAllenatore() {
+		return allenatore;
+	}
+	public void setAllenatore(String allenatore) {
+		this.allenatore = allenatore;
+	}
+	public String getSquadra() {
+		return squadra;
+	}
+	public void setSquadra(String squadra) {
+		this.squadra = squadra;
+	}
 	@Override
 	public String toString() {
 		return "Notifica [orario=" + orario + ", ruolo=" + ruolo + ", campionato=" + campionato + ", giocatore="
-				+ giocatore + ", squadra=" + squadra + ", id=" + id + ", voto=" + voto + ", eventi=" + eventi
-				+ ", cambio=" + cambio + "]";
+				+ giocatore + ", allenatore=" + allenatore + ", squadra=" + squadra + ", id=" + id + ", voto=" + voto
+				+ ", eventi=" + eventi + ", cambio=" + cambio + "]";
 	}
 
 }

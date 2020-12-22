@@ -273,7 +273,10 @@ public class Main {
 								desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 							}
 						}
-						if (snapLive.getGiocatori().size() > oldLive.getGiocatori().size() && snapLive.getGiocatori().size()==12) {
+						if (snapLive.getGiocatori().size()==12  && 
+								((Double)snapLive.getGiocatori().get(0).get("voto")>0) &&
+								((Double)oldLive.getGiocatori().get(0).get("voto")==0)
+								) {
 							desMiniNotifica.append("Formazioni iniziali: " + snapSq );
 							desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 						}
@@ -426,7 +429,8 @@ public class Main {
 						}
 						notificheSquadra.add(notifica);
 						notifica.setCampionato(splitKey[0]);
-						notifica.setSquadra(splitKey[1]);
+						notifica.setAllenatore(splitKey[1]);
+						notifica.setSquadra(newGioc.getSquadra());
 						notifica.setGiocatore(splitKey[2]);
 						notifica.setOrario(newGioc.getOrario());
 						notifica.setId(newGioc.getIdGioc());
@@ -454,7 +458,9 @@ public class Main {
 							for (Notifica notifica : listN) {
 								
 
-								String ret = " <b>" + getIconaIDGioc.get(notifica.getId()) + "</b> " + getDesRuolo(notifica.getCampionato(), notifica.getRuolo()) + " " + notifica.getGiocatore() + notifica.getCambio() + notifica.getVoto();
+								String ret = " <b>" + getIconaIDGioc.get(notifica.getId()) + "</b> " + 
+								getDesRuolo(notifica.getCampionato(), notifica.getRuolo()) + " " + 
+										notifica.getGiocatore() + notifica.getCambio()  + " " + notifica.getSquadra() + " " + notifica.getVoto();
 								Set<String> ks = notifica.getEventi().keySet();
 								for (String key : ks) {
 									RigaNotifica rigaNotifica = notifica.getEventi().get(key);
@@ -1263,7 +1269,12 @@ public class Main {
 				if (nomeG.equalsIgnoreCase("Balde K.")) nomeG="Keita B. ";
 				if (nomeG.equalsIgnoreCase("Donnarumma A.")) nomeG="Donnarumma An. ";
 				if (nomeG.equalsIgnoreCase("Alex Sandro .")) nomeG="Alex Sandro ";
-
+				if (nomeG.equalsIgnoreCase("Junior Messias ."))  nomeG="MESSIAS ";
+/*
+			if (nomeG.toUpperCase().contains("ESSI")) {
+				System.err.println("*" + nomeG + "*");
+			}
+*/
 
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
