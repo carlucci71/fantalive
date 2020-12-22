@@ -88,10 +88,10 @@ app.run(
 						$rootScope.timeRefresh=msg.timeRefresh;
 					}
 					if (msg.notifica){
-						$rootScope.testoLog=$rootScope.testoLog + "<b>Notifica " + formatDate(new Date()) + "</b>\n" + base64DecodeUnicode(msg.notifica) + "\n";
+						$rootScope.testoLog="<b>Notifica " + formatDate(new Date()) + "</b>\n" + base64DecodeUnicode(msg.notifica) + "\n" + $rootScope.testoLog ;
 					}
 					if (msg.miniNotifica){
-						$rootScope.testoLog=$rootScope.testoLog + "<b>Live " + formatDate(new Date()) + "</b>\n" + base64DecodeUnicode(msg.miniNotifica) + "\n";
+						$rootScope.testoLog="<b>Live " + formatDate(new Date()) + "</b>\n" + base64DecodeUnicode(msg.miniNotifica) + "\n" + $rootScope.testoLog ;
 					}
 					if (msg.liveFromFile){
 						$rootScope.liveFromFile=msg.liveFromFile;
