@@ -305,7 +305,7 @@ public class MyController {
 		lista.add(new String [] {Constant.PARTITA_NON_FINITA,"PARTITA_NON_FINITA"});
 		lista.add(new String [] {Constant.OK_VOTO,"OK_VOTO"});
 		lista.add(new String [] {Constant.NO_VOTO_IN_CORSO,"NO_VOTO_IN_CORSO"});
-		lista.add(new String [] {Constant.PALLONE,"PALLONE"});
+//		lista.add(new String [] {Constant.PALLONE,"PALLONE"});
 		lista.add(new String [] {Constant.NO_VOTO_FINITO,"NO_VOTO_FINITO"});
 		lista.add(new String [] {Constant.RIGORE_PARATO,"RIGORE PARATO"});
 		lista.add(new String [] {Constant.NO_VOTO_DA_INIZIARE,"NO_VOTO_DA_INIZIARE"});
@@ -315,22 +315,24 @@ public class MyController {
 		lista.add(new String [] {Constant.IMBATTUTO,"IMBATTUTO"});
 		lista.add(new String [] {Constant.ASSIST,"ASSIST"});	
 		lista.add(new String [] {Constant.GOL,"GOL"});
-		lista.add(new String [] {Constant.USCITO,"USCITO"});
-		lista.add(new String [] {Constant.ENTRATO,"ENTRATO"});
+//		lista.add(new String [] {Constant.USCITO,"USCITO"});
+//		lista.add(new String [] {Constant.ENTRATO,"ENTRATO"});
 		lista.add(new String [] {Constant.GOL_ANNULLATO,"ANNULLATO"});
-		lista.add(new String [] {Constant.INFORTUNIO,"INFORTUNIO"});
-		lista.add(new String [] {Constant.AMMONITO,"AMMONITO"});
-		lista.add(new String [] {Constant.ESPULSO,"ESPULSO"});
+//		lista.add(new String [] {Constant.INFORTUNIO,"INFORTUNIO"});
+//		lista.add(new String [] {Constant.AMMONITO,"AMMONITO"});
+//		lista.add(new String [] {Constant.ESPULSO,"ESPULSO"});
 		lista.add(new String [] {Constant.GOL_SUBITO,"SUBITO"});
 		lista.add(new String [] {Constant.RIGORE_SBAGLIATO,"RIGORE SBAGLIATO"});  
 		lista.add(new String [] {Constant.RIGORE_SEGNATO,"RIGORE SEGNATO"});
 		lista.add(new String [] {Constant.AUTOGOL,"AUTOGOL"});	
-		lista.add(new String [] {Constant.CIAO,"CIAO"});
+//		lista.add(new String [] {Constant.CIAO,"CIAO"});
 		lista.add(new String [] {Constant.KEEP_ALIVE,"KEEP ALIVE"});
 		lista.add(new String [] {Constant.P,"P"});
 		lista.add(new String [] {Constant.D,"D"});
 		lista.add(new String [] {Constant.C,"C"});
 		lista.add(new String [] {Constant.A,"A"});
+		lista.add(new String [] {Constant.T1,"T1"});
+		lista.add(new String [] {Constant.R19,"R19"});
 		
 		Map<String, Object> ret = new LinkedHashMap();
 		for (String[] msg : lista) {
@@ -345,6 +347,7 @@ public class MyController {
 			}
 			
 			ret.put(rep, msg[0] + " --> " + msg[1]);
+//			Main.inviaNotifica(msg[0]);
 		}
 		return ret;
 	}

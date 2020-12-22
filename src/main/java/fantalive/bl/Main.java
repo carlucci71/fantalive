@@ -96,6 +96,7 @@ public class Main {
 	private static Map<String, Map<String, String>> oldSnapOrari=null;
 	//	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 	static ObjectMapper mapper;
+	static Map<String , String> getIconaIDGioc;	
 	public static Map<String, String> keyFG=null;
 	public static int timeRefresh = 0;
 
@@ -115,6 +116,42 @@ public class Main {
 			mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		}
+		if (getIconaIDGioc==null) {
+			getIconaIDGioc = new HashMap() {{
+				put("T01",    Constant.T1);
+				put("T02",    Constant.T2);
+				put("T03",    Constant.T3);
+				put("T04",    Constant.T4);
+				put("T05",    Constant.T5);
+				put("T06",    Constant.T6);
+				put("T07",    Constant.T7);
+				put("T08",    Constant.T8);
+				put("T09",    Constant.T9);
+				put("T10",    Constant.T10);
+				put("T11",    Constant.T11);
+				put("R01",    Constant.R1);
+				put("R02",    Constant.R2);
+				put("R03",    Constant.R3);
+				put("R04",    Constant.R4);
+				put("R05",    Constant.R5);
+				put("R06",    Constant.R6);
+				put("R07",    Constant.R7);
+				put("R08",    Constant.R8);
+				put("R09",    Constant.R9);
+				put("R10",    Constant.R10);
+				put("R11",    Constant.R11);
+				put("R12",    Constant.R12);
+				put("R13",    Constant.R13);
+				put("R14",    Constant.R14);
+				put("R15",    Constant.R15);
+				put("R16",    Constant.R16);
+				put("R17",    Constant.R17);
+				put("R18",    Constant.R18);
+				put("R19",    Constant.R19);
+				put("R20",    Constant.R20);
+			}};
+		}
+		
 		if (eventi ==null) {
 			eventi = new HashMap<Integer, String[]>();
 			eventi.put(1000, new String[] {"portiere imbattuto","1","1","1","S",Constant.IMBATTUTO});
@@ -399,7 +436,7 @@ public class Main {
 							List<Notifica> listN = sq.get(sqN);
 							Collections.sort(listN);
 							for (Notifica notifica : listN) {
-								String ret = notifica.getGiocatore() + notifica.getCambio() + " <b>" + notifica.getId() + "</b> " + notifica.getVoto();
+								String ret = " <b>" + getIconaIDGioc.get(notifica.getId()) + "</b> " + notifica.getGiocatore() + notifica.getCambio() + notifica.getVoto();
 								Set<String> ks = notifica.getEventi().keySet();
 								for (String key : ks) {
 									RigaNotifica rigaNotifica = notifica.getEventi().get(key);
@@ -450,7 +487,7 @@ public class Main {
 			if (socketHandler != null) {
 				Map<String, Object> map=new LinkedHashMap<>();
 				map.put("res", go);
-				map.put("miniNotifica", desMiniNotifica);
+				map.put("miniNotifica", Base64.getEncoder().encodeToString(desMiniNotifica.getBytes()));
 				socketHandler.invia(map);
 			}
 			Calendar c4 = Calendar.getInstance();
@@ -1390,12 +1427,14 @@ public class Main {
 			throw new RuntimeException(e);
 		}
 	}
+	
 	private static void dettaglioTestoGiocatore(StringBuilder testo, Giocatore giocatore, String campionato) {
-		testo.append(giocatore.getIdGioc()).append("\t");
-		testo.append(partitaFinita(giocatore)).append(conVoto(giocatore)).
-//		append(squadraGioca(giocatore)).
+		testo.append(getIconaIDGioc.get(giocatore.getIdGioc())).
+		append(" ").
+//		append(partitaFinita(giocatore)).
+		append(conVoto(giocatore)).
 		append("  ");
-		if (campionato.toUpperCase().startsWith("FANT")) {
+		if (campionato.toUpperCase().equalsIgnoreCase(Campionati.FANTAVIVA.name())) {
 			testo.append(giocatore.getRuolo()).append("\t");
 		}
 		else {

@@ -91,7 +91,7 @@ app.run(
 						$rootScope.testoLog=$rootScope.testoLog + "<b>Notifica " + formatDate(new Date()) + "</b>\n" + base64DecodeUnicode(msg.notifica) + "\n";
 					}
 					if (msg.miniNotifica){
-						$rootScope.testoLog=$rootScope.testoLog + "<b>Live " + formatDate(new Date()) + "</b>\n" + msg.miniNotifica + "\n";
+						$rootScope.testoLog=$rootScope.testoLog + "<b>Live " + formatDate(new Date()) + "</b>\n" + base64DecodeUnicode(msg.miniNotifica) + "\n";
 					}
 					if (msg.liveFromFile){
 						$rootScope.liveFromFile=msg.liveFromFile;
@@ -207,6 +207,7 @@ app.run(
 				$rootScope.fine="";
 				$rootScope.loading=true;
 				$rootScope.contaNomiDati--;
+				$rootScope.testoLog='';
 				$resource('./verificaNotifica',{}).save({'campionato':$rootScope.notificaCampionato, 'squadra':$rootScope.notificaSquadra}).$promise.then(function(data) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();

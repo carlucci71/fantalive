@@ -21,7 +21,7 @@ public class Constant {
 	/*-------------------------------------------------------------------------------------------*/
 	public static DateTimeFormatter dateTimeFormatterIn = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
 	public static DateTimeFormatter dateTimeFormatterOut = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Rome"));
-	public final static String PARTITA_FINITA = "\u2696";
+	public final static String PARTITA_FINITA = "\u2B59";
 	public final static String PARTITA_NON_FINITA  = "\u23F3";
 	public final static String OK_VOTO = "\u2714";
 	public final static String NO_VOTO_IN_CORSO = "\u2753";
@@ -36,8 +36,8 @@ public class Constant {
 	public static final String IMBATTUTO = "\uD83E\uDD45";
 	public static final String ASSIST = "\uD83C\uDF6C";	
 	public static final String GOL = "\uD83E\uDD42";
-	public static final String USCITO =  "\u21E8";
-	public static final String ENTRATO =  "\u21E6";
+	public static final String USCITO =  "\u2BA9";
+	public static final String ENTRATO =  "\u2BA8";
 	public static final String GOL_ANNULLATO = "\uD83D\uDC7D";
 	public static final String INFORTUNIO = "\uD83D\uDE91";
 	public static final String AMMONITO = "\uD83D\uDFE8";
@@ -48,10 +48,41 @@ public class Constant {
 	public static final String AUTOGOL = "\uD83D\uDCA9";	
 	public static final String CIAO = "\uD83D\uDC4B";
 	public static final String KEEP_ALIVE = "\uD83E\uDE7A";
-	public static final String P = "\uD83C\uDD5F";	
-	public static final String D = "\uD83C\uDD53";	
-	public static final String C = "\uD83C\uDD52";	
-	public static final String A = "\uD83C\uDD50";
+	public static final String P = "\u24C5";	
+	public static final String D = "\u24B9";	
+	public static final String C = "\u24B8";	
+	public static final String A = "\u24B6";
+	public static final String T1 = "\u2460";
+	public static final String T2 = "\u2461";
+	public static final String T3 = "\u2462";
+	public static final String T4 = "\u2463";
+	public static final String T5 = "\u2464";
+	public static final String T6 = "\u2465";
+	public static final String T7 = "\u2466";
+	public static final String T8 = "\u2467";
+	public static final String T9 = "\u2468";
+	public static final String T10 = "\u2469";
+	public static final String T11 = "\u246A";
+	public static final String R1 = "\u2776";
+	public static final String R2 = "\u2777";
+	public static final String R3 = "\u2778";
+	public static final String R4 = "\u2779";
+	public static final String R5 = "\u277A";
+	public static final String R6 = "\u277B";
+	public static final String R7 = "\u277C";
+	public static final String R8 = "\u277D";
+	public static final String R9 = "\u277E";
+	public static final String R10 = "\u277F";
+	public static final String R11 = "\u24EB";
+	public static final String R12 = "\u24EC";
+	public static final String R13 = "\u24ED";
+	public static final String R14 = "\u24EE";
+	public static final String R15 = "\u24EF";
+	public static final String R16 = "\u24FA";
+	public static final String R17 = "\u24FB";
+	public static final String R18 = "\u24FC";
+	public static final String R19 = "\u24FD";
+	public static final String R20 = "\u24FE";
 	
 	
 	public static ZonedDateTime LAST_REFRESH;
