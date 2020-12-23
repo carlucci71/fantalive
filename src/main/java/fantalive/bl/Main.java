@@ -43,7 +43,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysql.jdbc.Constants;
 
 import fantalive.configurazione.SocketHandler;
 import fantalive.entity.Salva;
@@ -202,9 +201,9 @@ public class Main {
 		}
 		if (configsCampionato==null) {
 			configsCampionato = new ArrayList<ConfigCampionato>();
-			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA","luccicar"));
-			configsCampionato.add(new ConfigCampionato(22,"FANTAGAZZETTA","fantaviva"));
-			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE","be"));
+			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Campionati.LUCCICAR.name()));
+			configsCampionato.add(new ConfigCampionato(22,"FANTAGAZZETTA",Campionati.FANTAVIVA.name()));
+			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE",Campionati.BE.name()));
 		}
 	}
 	
@@ -261,7 +260,7 @@ public class Main {
 										for (String string : splitSnapEvento) {
 											if (!string.equals("")) {
 												Integer attSnapEvento = Integer.parseInt(string);
-												desMiniNotifica.append(desEvento(attSnapEvento, "BE") + " ");
+												desMiniNotifica.append(desEvento(attSnapEvento, Campionati.BE.name()) + " ");
 											}
 										}
 										desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
@@ -362,8 +361,8 @@ public class Main {
 			ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
 			String time=zdt.format(formatter);
 			if (salva) {
-				upsertSalva(time + "-" + "orari.json", toJson(snapOrari));
-				upsertSalva(time + "-" + "lives.json", toJson(snapLives));
+				upsertSalva(time + "-" + "orari", toJson(snapOrari));
+				upsertSalva(time + "-" + "lives", toJson(snapLives));
 			}
 			if (oldSnapshot!=null) {
 				Iterator<String> iterator = snapshot.keySet().iterator();
@@ -652,8 +651,7 @@ public class Main {
 
 				};
 				String responseBody = httpclient.execute(httpget, responseHandler);
-				//				Files.write(Paths.get(ROOT + "be" + i + ".html"), responseBody.getBytes());
-				upsertSalva("be" + i + ".html", responseBody);
+				upsertSalva(Campionati.BE.name() + i + ".html", responseBody);
 			}
 		} finally {
 			httpclient.close();
@@ -779,13 +777,13 @@ public class Main {
 	public static void aggKeyFG() throws Exception {
 		int giornata=constant.GIORNATA;
 		Main.keyFG=new HashMap<String, String>();
-		Main.keyFG.put("fantaviva", "id_comp=" + Main.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Main.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Main.DELTA_VIVA_FG) + "_" + calcolaAggKey("fanta-viva") + ".json");
-		Main.keyFG.put("luccicar", "id_comp=" + Main.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey("luccicar") + ".json");
+		Main.keyFG.put(Campionati.FANTAVIVA.name(), "id_comp=" + Main.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Main.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Main.DELTA_VIVA_FG) + "_" + calcolaAggKey("fanta-viva"));
+		Main.keyFG.put(Campionati.LUCCICAR.name(), "id_comp=" + Main.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey(Campionati.LUCCICAR.name()));
 	}
 
 	private static String calcolaAggKey(String lega) throws Exception {
 		int giornata=constant.GIORNATA-Main.DELTA_VIVA_FG;
-		if (lega.equalsIgnoreCase("luccicar")) giornata=constant.GIORNATA-Main.DELTA_LUCCICAR_FG;
+		if (lega.equalsIgnoreCase(Campionati.LUCCICAR.name())) giornata=constant.GIORNATA-Main.DELTA_LUCCICAR_FG;
 		String url = "https://leghe.fantacalcio.it/" + lega + "/formazioni/" + giornata;
 		String string = Main.getHTTP(url);
 		string = string.substring(string.indexOf(".s('tmp', ")+11);
@@ -837,21 +835,12 @@ public class Main {
 				}
 			}
 		}
-		//		Files.write(Paths.get(ROOT + "fomrazioneFG" + lega + ".json"), toJson(squadre).getBytes());
-		upsertSalva("fomrazioneFG" + lega + ".json", toJson(squadre));
+		upsertSalva(Constant.FORMAZIONE + lega , toJson(squadre));
 		return squadre;
 	}
 
 	private static List<Squadra> deserializzaSquadraFG(String lega) throws Exception {
-		/*
-		String nome = ROOT + "fomrazioneFG" + lega + ".json";
-		if (Files.exists(Paths.get(nome))) {
-			return jsonToSquadre(new String(Files.readAllBytes(Paths.get(nome))));
-		} else {
-			return new ArrayList<Squadra>();
-		}
-		 */
-		String testo = getTesto("fomrazioneFG" + lega + ".json");
+		String testo = getTesto(Constant.FORMAZIONE + lega );
 		if (testo!=null) {
 			return jsonToSquadre(testo);
 		}else {
@@ -860,22 +849,11 @@ public class Main {
 	}
 
 	public static void cancellaSquadre() throws Exception {
-		/*
-		if (Files.exists(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json")))  Files.delete(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"));
-		if (Files.exists(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"))) Files.delete(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"));
-		if (Files.exists(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"))) Files.delete(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"));
+		cancellaSalva(Constant.FORMAZIONE + Campionati.LUCCICAR.name());
+		cancellaSalva(Constant.FORMAZIONE + Campionati.FANTAVIVA.name());
+		cancellaSalva(Constant.FORMAZIONE + Campionati.BE.name());
 		for (int i=0;i<Main.NUM_PARTITE_FS;i++) {
-			if (Files.exists(Paths.get(ROOT + "be" + i + ".html"))) {
-				if (Files.exists(Paths.get(ROOT + "be" + i + ".html")))
-					Files.delete(Paths.get(ROOT + "be" + i + ".html"));
-			}
-		}
-		 */
-		cancellaSalva("fomrazioneFG" + "luccicar" + ".json");
-		cancellaSalva("fomrazioneFG" + "fantaviva" + ".json");
-		cancellaSalva("fomrazioneFG" + "be" + ".json");
-		for (int i=0;i<Main.NUM_PARTITE_FS;i++) {
-			cancellaSalva("be" + i + ".html");
+			cancellaSalva(Campionati.BE.name() + i + ".html");
 		}
 		inizializzaSqDaEv();
 
@@ -1004,17 +982,14 @@ public class Main {
 
 		if(conLive) {
 			if (ret.get(Campionati.FANTAVIVA.name()).getSquadre().size()>0) {
-				//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "fantaviva" + ".json"), toJson(ret.get(Campionati.FANTAVIVA.name()).getSquadre()).getBytes());
-				upsertSalva("fomrazioneFG" + "fantaviva" + ".json", toJson(ret.get(Campionati.FANTAVIVA.name()).getSquadre()));
+				upsertSalva(Constant.FORMAZIONE + Campionati.FANTAVIVA.name(), toJson(ret.get(Campionati.FANTAVIVA.name()).getSquadre()));
 			}
 			if (ret.get(Campionati.LUCCICAR.name()).getSquadre().size()>0) {
-				//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "luccicar" + ".json"), toJson(ret.get(Campionati.LUCCICAR.name()).getSquadre()).getBytes());
-				upsertSalva("fomrazioneFG" + "luccicar" + ".json", toJson(ret.get(Campionati.LUCCICAR.name()).getSquadre()));
+				upsertSalva(Constant.FORMAZIONE + Campionati.LUCCICAR.name(), toJson(ret.get(Campionati.LUCCICAR.name()).getSquadre()));
 			}
 			if (ret.get(Campionati.BE.name()).getSquadre().size()>0) {
-				//				Files.write(Paths.get(ROOT + "fomrazioneFG" + "be" + ".json"), toJson(ret.get(Campionati.BE.name()).getSquadre()).getBytes());
 				if (ret.get(Campionati.BE.name()).getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate");
-				upsertSalva("fomrazioneFG" + "be" + ".json", toJson(ret.get(Campionati.BE.name()).getSquadre()));
+				upsertSalva(Constant.FORMAZIONE + Campionati.BE.name(), toJson(ret.get(Campionati.BE.name()).getSquadre()));
 			}
 		}
 
@@ -1026,10 +1001,8 @@ public class Main {
 		Map orari;
 		List<Live> lives = new ArrayList<Live>();
 		if (fromFile) {
-			//			orari =  jsonToMap(new String(Files.readAllBytes(Paths.get(ROOT + "orari.json"))));
-			//			lives =  jsonToLives(new String(Files.readAllBytes(Paths.get(ROOT + "lives.json"))));
-			orari =  jsonToMap(getTesto("orari.json"));
-			lives =  jsonToLives(getTesto("lives.json"));
+			orari =  jsonToMap(getTesto("orari"));
+			lives =  jsonToLives(getTesto("lives"));
 
 		} else {
 			orari=partiteLive();
@@ -1359,7 +1332,7 @@ public class Main {
 	public static void svecchiaFile() {
 		Iterable<Salva> findAll = salvaRepository.findAll();
 		for (Salva salva : findAll) {
-			if(!salva.getNome().equals("lives.json") && !salva.getNome().equals("orari.json") && !salva.getNome().startsWith("fomrazioneFG")) {
+			if(!salva.getNome().equals("lives") && !salva.getNome().equals("orari") && !salva.getNome().startsWith(Constant.FORMAZIONE)) {
 				salvaRepository.delete(salva);
 			}
 		}
@@ -1582,9 +1555,9 @@ public class Main {
 	}
 	private static String valEvento(String[] evento,String r){
 		int pos=0;
-		if (r.equals("FANTAVIVA")) pos=1;
-		if (r.equals("LUCCICAR")) pos=2;
-		if (r.equals("BE")) pos=3;
+		if (r.equals(Campionati.FANTAVIVA.name())) pos=1;
+		if (r.equals(Campionati.LUCCICAR.name())) pos=2;
+		if (r.equals(Campionati.BE.name())) pos=3;
 		return evento[pos];
 	}
 

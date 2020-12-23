@@ -110,13 +110,13 @@ public class MyController {
 	@RequestMapping("/getOrariFromDb")
 	public Map<String, String> getOrariFromDb() throws Exception {
 		Map<String, String> ret = new HashMap<>();
-		ret.put("file", Main.getTesto("orari.json"));
+		ret.put("file", Main.getTesto("orari"));
 		return ret;
 	}
 	@RequestMapping("/getLivesFromDb")
 	public Map<String, String> getLivesFromDb() throws Exception {
 		Map<String, String> ret = new HashMap<>();
-		ret.put("file", Main.getTesto("lives.json"));
+		ret.put("file", Main.getTesto("lives"));
 		return ret;
 	}
 	@PostMapping("/getFreeFromDb")
@@ -144,7 +144,7 @@ public class MyController {
 		Map<String, String>  ret=new HashMap<>();
 		List<Salva> valTesto = Main.getValTesto(body.get("getTestiFromData"));
 		for (Salva salva : valTesto) {
-			ret.put(salva.getNome().substring(24).replace(".json", ""), salva.getTesto());
+			ret.put(salva.getNome().substring(24), salva.getTesto());
 		}
 		return ret;
 	}
@@ -157,10 +157,10 @@ public class MyController {
 	@PostMapping("/caricaFileFromDataByName")
 	public Map<String, String>  caricaFileFromDataByName(@RequestBody Map<String,String> body) throws Exception {
 		Map<String, String>  ret=new HashMap<>();
-		String orari = Main.getTesto(body.get("name")+"-orari.json");
-		String lives = Main.getTesto(body.get("name")+"-lives.json");
-		Main.upsertSalva("orari.json", orari);
-		Main.upsertSalva("lives.json", lives);
+		String orari = Main.getTesto(body.get("name")+"-orari");
+		String lives = Main.getTesto(body.get("name")+"-lives");
+		Main.upsertSalva("orari", orari);
+		Main.upsertSalva("lives", lives);
 		Main.snapshot(false);
 		ret.put("orari", orari );
 		ret.put("lives", lives );
@@ -168,18 +168,18 @@ public class MyController {
 	}
 	@PostMapping("/caricaFileFromData")
 	public void caricaFileFromData(@RequestBody Map<String,Object> body) throws Exception {
-		Main.upsertSalva("orari.json", (String) body.get("orari"));
-		Main.upsertSalva("lives.json", (String) body.get("lives"));
+		Main.upsertSalva("orari", (String) body.get("orari"));
+		Main.upsertSalva("lives", (String) body.get("lives"));
 	}
 	@PostMapping("/caricaFile")
 	public void caricaFile(@RequestBody Map<String,Object> body) throws Exception {
 		String content = (String) body.get("file");
 		String tipoFile = (String) body.get("tipoFile");
 		if (tipoFile.equalsIgnoreCase("O")) {
-			Main.upsertSalva("orari.json", content);
+			Main.upsertSalva("orari", content);
 		}
 		if (tipoFile.equalsIgnoreCase("L")) {
-			Main.upsertSalva("lives.json", content);
+			Main.upsertSalva("lives", content);
 		}
 		if (tipoFile.equalsIgnoreCase("Free")) {
 			Main.upsertSalva((String) body.get("nomeFileGet"), content);
@@ -235,9 +235,8 @@ public class MyController {
 	@PostMapping("/salva")
 	public Map<String, Return> salva(@RequestBody Map<String,Return> body) throws Exception  {
 		Return r = body.get("r");
-		//		Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + r.getNome().toLowerCase() + ".json"), Main.toJson(r.getSquadre()).getBytes());
-		if (r.getNome().equalsIgnoreCase("BE") && r.getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate");
-		Main.upsertSalva("fomrazioneFG" + r.getNome().toLowerCase() + ".json", Main.toJson(r.getSquadre()));
+		if (r.getNome().equalsIgnoreCase(Campionati.BE.name()) && r.getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate");
+		Main.upsertSalva(Constant.FORMAZIONE + r.getNome().toLowerCase(), Main.toJson(r.getSquadre()));
 		return test(true);
 	}
 	@PostMapping("/simulaCambi")
@@ -453,30 +452,19 @@ public class MyController {
 		{
 			Main.aggKeyFG();
 			Main.cancellaSquadre();
-			Main.getSquadre("luccicar");
+			Main.getSquadre(Campionati.LUCCICAR.name());
 			Main.getSquadre("fanta-viva");
 			Main.scaricaBe();
 			List<Squadra> squadre = new ArrayList<Squadra>();
 			for (int i=0;i<Main.NUM_PARTITE_FS;i++) {
-				String nome = "be"+i + ".html";
+				String nome = Campionati.BE.name()+i + ".html";
 				String testo=Main.getTesto(nome);
 				Document doc = Jsoup.parse(testo);
 				squadre.add(Main.getFromFS(doc, "Casa"));
 				squadre.add(Main.getFromFS(doc, "Trasferta"));
 				Main.cancellaSalva(nome);
-				/*
-				String nomeFile = Main.ROOT + "be"+i + ".html";
-				if (Files.exists(Paths.get(nomeFile))) {
-					byte[] inputS = Files.readAllBytes(Paths.get(nomeFile));
-					Document doc = Jsoup.parse(new String(inputS));
-					squadre.add(Main.getFromFS(doc, "Casa"));
-					squadre.add(Main.getFromFS(doc, "Trasferta"));
-					Files.delete(Paths.get(nomeFile));
-				}
-				 */
 			}
-			//			Files.write(Paths.get(Main.ROOT + "fomrazioneFG" + "be" + ".json"), Main.toJson(squadre).getBytes());
-			Main.upsertSalva("fomrazioneFG" + "be" + ".json", Main.toJson(squadre));
+			Main.upsertSalva(Constant.FORMAZIONE + Campionati.BE.name(), Main.toJson(squadre));
 		}
 		catch (Exception e)
 		{

@@ -38,7 +38,7 @@ public class RiallineaDB {
 			String nome = executeQuery.getString("nome");
 			Clob testo = executeQuery.getClob("testo");
 			System.out.println(nome);
-			if (nome.startsWith("fomrazione")) {
+			if (nome.startsWith(Constant.FORMAZIONE)) {
 				String contenuto = testo.getSubString(1, (int) testo.length());
 				List<Squadra> squadre = Main.jsonToSquadre(contenuto);
 				for (Squadra squadra : squadre) {

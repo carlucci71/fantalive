@@ -17,6 +17,8 @@ public class Constant {
 	public static ZonedDateTime LAST_KEEP_ALIVE;
 	public static int SCHEDULED_SNAP;
 	public static  int NUM_SQUADRE_BE = 0;	
+	public static final String FORMAZIONE = "formazione";
+	public static ZonedDateTime LAST_REFRESH;
 	/*-------------------------------------------------------------------------------------------*/
 	public static DateTimeFormatter dateTimeFormatterIn = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
 	public static DateTimeFormatter dateTimeFormatterOut = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Rome"));
@@ -88,7 +90,4 @@ public class Constant {
 	public static final String R20 = "\u24FE";
 	public static final String PAUSA = "\uD83D\uDD14";
 	public static final String FINE_PARTITA = "\uD83C\uDFC1";
-	
-	
-	public static ZonedDateTime LAST_REFRESH;
 }
