@@ -27,17 +27,18 @@ public class RiallineaDB {
 		Class.forName("com.mysql.jdbc.Driver");
 		String getenv = System.getenv("PG_DB_URL");
 		Connection conPG = DriverManager.getConnection(getenv);
-		PreparedStatement prepareStatement = conPG.prepareStatement("select * from salva");
+		PreparedStatement prepareStatement = conPG.prepareStatement("select * from salva");// where nome not like ('2020%')
 		conPG.setAutoCommit(false);
 		ResultSet executeQuery = prepareStatement.executeQuery();
 		Connection conMysql = DriverManager.getConnection("jdbc:mysql://localhost:3306/asta?user=asta&password=asta");
-		PreparedStatement prepareStatementDEL = conMysql.prepareStatement("delete from salva");
+		PreparedStatement prepareStatementDEL = conMysql.prepareStatement("delete from salva");// where nome not like ('2020%')
 		prepareStatementDEL.execute();
 		PreparedStatement prepareStatementINS = conMysql.prepareStatement("insert into salva (nome, testo) values (?,?)");
 		while(executeQuery.next()) {
 			String nome = executeQuery.getString("nome");
 			Clob testo = executeQuery.getClob("testo");
 			System.out.println(nome);
+			/* */
 			if (nome.startsWith(Constant.FORMAZIONE)) {
 				String contenuto = testo.getSubString(1, (int) testo.length());
 				List<Squadra> squadre = Main.jsonToSquadre(contenuto);
@@ -75,6 +76,7 @@ public class RiallineaDB {
 				}
 				contenuto=Main.toJson(squadre);
 			}
+			/* */
 			prepareStatementINS.setString(1, nome);
 			prepareStatementINS.setClob(2, testo);
 			prepareStatementINS.execute();
