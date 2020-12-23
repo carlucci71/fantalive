@@ -777,8 +777,8 @@ public class Main {
 	public static void aggKeyFG() throws Exception {
 		int giornata=constant.GIORNATA;
 		Main.keyFG=new HashMap<String, String>();
-		Main.keyFG.put(Campionati.FANTAVIVA.name(), "id_comp=" + Main.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Main.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Main.DELTA_VIVA_FG) + "_" + calcolaAggKey("fanta-viva"));
-		Main.keyFG.put(Campionati.LUCCICAR.name(), "id_comp=" + Main.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey(Campionati.LUCCICAR.name()));
+		Main.keyFG.put(Campionati.FANTAVIVA.name(), "id_comp=" + Main.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Main.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Main.DELTA_VIVA_FG) + "_" + calcolaAggKey("fanta-viva") + ".json");
+		Main.keyFG.put(Campionati.LUCCICAR.name(), "id_comp=" + Main.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey(Campionati.LUCCICAR.name()) + ".json");
 	}
 
 	private static String calcolaAggKey(String lega) throws Exception {
@@ -795,12 +795,13 @@ public class Main {
 
 	public static List<Squadra> getSquadre(String lega) throws Exception {
 		Map<String, String> nomiFG = getNomiFG(lega);
-		lega=lega.replace("-", "");
+		lega=lega.replace("-", "").toUpperCase();
 		List<Squadra> squadre=new ArrayList<Squadra>();
 		Map<String,String> headers = new HashMap<String, String>();
 		headers.put("app_key", constant.APPKEY_FG);
 		String url = "https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?" + keyFG.get(lega);
 		String string = getHTTP(url, headers );
+		System.out.println(url + " <--> " +  headers + " <--> " + string);
 		Map<String, Object> jsonToMap = jsonToMap(string);
 		if (jsonToMap.get("data") == null) throw new RuntimeException("aggiornare KeyFG per " + lega);
 		List<Map> l = (List<Map>) ((Map<String, Object>)jsonToMap.get("data")).get("formazioni");
