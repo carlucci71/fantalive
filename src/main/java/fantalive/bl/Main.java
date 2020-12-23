@@ -15,6 +15,7 @@ import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -211,7 +212,7 @@ public class Main {
 		Set<String> keySet = snapOrari.keySet();
 		for (String key : keySet) {
 			if (squadra.equalsIgnoreCase(key) && snapOrari.get(key) != null && 
-					(snapOrari.get(key).get("tag").equalsIgnoreCase("FirstHalf")) || snapOrari.get(key).get("tag").equalsIgnoreCase("SecondHalf") ) {
+					(snapOrari.get(key).get("tag").equalsIgnoreCase("FirstHalf") || snapOrari.get(key).get("tag").equalsIgnoreCase("SecondHalf")) ) {
 				return " " + snapOrari.get(key).get("val") + Constant.OROLOGIO + " ";
 			}
 		}
@@ -273,10 +274,7 @@ public class Main {
 								desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 							}
 						}
-						if (snapLive.getGiocatori().size()==12  && 
-								((Double)snapLive.getGiocatori().get(0).get("voto")>0) &&
-								((Double)oldLive.getGiocatori().get(0).get("voto")==0)
-								) {
+						if (isFormazioneIniziale(snapLive,oldLive)) {
 							desMiniNotifica.append("Formazioni iniziali: " + snapSq );
 							desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 						}
@@ -292,7 +290,12 @@ public class Main {
 		}
 		return desMiniNotifica.toString();
 	}
-
+	private static boolean isFormazioneIniziale(Live snapLive, Live oldLive) {
+		return snapLive.getGiocatori().size()==12  && 
+				((Double)snapLive.getGiocatori().get(0).get("voto")>0) &&
+				((Double)oldLive.getGiocatori().get(0).get("voto")==0);
+				
+	}
 	private static List<CambiaTag> orariUguali(Map<String, Map<String, String>> snapOrari) {
 		List<CambiaTag> ret = new ArrayList<>();
 		try {
@@ -365,6 +368,7 @@ public class Main {
 			if (oldSnapshot!=null) {
 				Iterator<String> iterator = snapshot.keySet().iterator();
 				Map<String, Map<String,List<Notifica>>> notifiche = new HashMap();
+				Set<String> squadreSchieratoNonSchierato=new HashSet<>();
 				while (iterator.hasNext()) {
 					String key = (String) iterator.next();
 					Giocatore oldGioc = oldSnapshot.get(key);
@@ -373,16 +377,15 @@ public class Main {
 					Map<String,RigaNotifica> mapEventi=new HashMap<>();
 					String oldTag = oldGioc.getOrario().get("tag");
 					String newTag = newGioc.getOrario().get("tag");
-					boolean bSchieratoNonSchierato=false;
 					if (newTag.equalsIgnoreCase("PreMatch") && newGioc.isNotificaLive()==false && !oldGioc.isSquadraGioca() && newGioc.isSquadraGioca()) {
 						mapEventi.put("NON SCHIERATO",new RigaNotifica(0, "NON SCHIERATO", Constant.NON_SCHIERATO));
-						bSchieratoNonSchierato=true;
+						squadreSchieratoNonSchierato.add(newGioc.getSquadra());
 					}
 					if (newTag.equalsIgnoreCase("PreMatch") && newGioc.isNotificaLive()==true && !oldGioc.isSquadraGioca() && newGioc.isSquadraGioca()) {
 						mapEventi.put("SCHIERATO",new RigaNotifica(0, "SCHIERATO", Constant.SCHIERATO));
-						bSchieratoNonSchierato=true;
+						squadreSchieratoNonSchierato.add(newGioc.getSquadra());
 					}
-					if (!bSchieratoNonSchierato) {
+					if (!squadreSchieratoNonSchierato.contains(newGioc.getSquadra())) {
 						if (!oldTag.equalsIgnoreCase(newTag)) {
 							/* PreMatch Postponed Cancelled Walkover    */
 							if (newTag.equals("FirstHalf")) {
@@ -440,6 +443,7 @@ public class Main {
 						if (newGioc.isCambio()) {
 							notifica.setCambio("(X)");
 						}
+						System.out.println(notifica);
 					}
 				}
 				Calendar cc=Calendar.getInstance();
@@ -456,8 +460,6 @@ public class Main {
 							List<Notifica> listN = sq.get(sqN);
 							Collections.sort(listN);
 							for (Notifica notifica : listN) {
-								
-
 								String ret = " <b>" + getIconaIDGioc.get(notifica.getId()) + "</b> " + 
 								getDesRuolo(notifica.getCampionato(), notifica.getRuolo()) + " " + 
 										notifica.getGiocatore() + notifica.getCambio()  + " " + notifica.getSquadra() + " " + notifica.getVoto();
@@ -909,9 +911,14 @@ public class Main {
 					int contaNuoviEventiNew = contaNuoviEventi(codEvento,ng);
 					if (contaNuoviEventiOld != contaNuoviEventiNew) {
 						if (!ret.contains(codEvento)) {
-							Map<Integer, Integer> m = new HashMap<>();
-							m.put(codEvento,verso*(contaNuoviEventiNew-contaNuoviEventiOld));
-							ret.add(m);
+							if (codEvento==1000 && ng.getVoto()==6 && og.getVoto()==0) {
+								System.out.println("primo imbattuto per: " + ng.getNome());
+							}
+							else {
+								Map<Integer, Integer> m = new HashMap<>();
+								m.put(codEvento,verso*(contaNuoviEventiNew-contaNuoviEventiOld));
+								ret.add(m);
+							}
 						}
 					}
 				}
