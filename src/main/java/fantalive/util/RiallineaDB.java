@@ -27,7 +27,7 @@ public class RiallineaDB {
 		Class.forName("com.mysql.jdbc.Driver");
 		String getenv = System.getenv("PG_DB_URL");
 		Connection conPG = DriverManager.getConnection(getenv);
-		PreparedStatement prepareStatement = conPG.prepareStatement("select * from salva");// where nome not like ('2020%')
+		PreparedStatement prepareStatement = conPG.prepareStatement("select * from salva order by nome");// where nome not like ('2020%')
 		conPG.setAutoCommit(false);
 		ResultSet executeQuery = prepareStatement.executeQuery();
 		Connection conMysql = DriverManager.getConnection("jdbc:mysql://localhost:3306/asta?user=asta&password=asta");

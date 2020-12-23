@@ -75,12 +75,45 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 		}
 	}
 	private void messaggioBenvenuto() throws Exception {
-		inviaMessaggio(Constant.CHAT_ID_FANTALIVE, Constant.CIAO + " Benvenuto!");
+		inviaMessaggio(Constant.CHAT_ID_FANTALIVE, Constant.CIAO + " Benvenuto!" +
+		Constant.PARTITA_FINITA +
+		Constant.PARTITA_NON_FINITA  +
+		Constant.OK_VOTO +
+		Constant.NO_VOTO_IN_CORSO +
+		Constant.PALLONE +
+		Constant.SVEGLIA  +
+		Constant.OROLOGIO +
+		Constant.SCHEDULATA +
+		Constant.DEFINITIVA +
+		Constant.NO_VOTO_FINITO  +
+		Constant.RIGORE_PARATO +
+		Constant.NO_VOTO_DA_INIZIARE +
+		Constant.SCHIERATO +
+		Constant.NON_SCHIERATO +
+		Constant.SEMAFORO_1 +
+		Constant.SEMAFORO_2 +
+		Constant.IMBATTUTO +
+		Constant.ASSIST +	
+		Constant.GOL +
+		Constant.USCITO +
+		Constant.ENTRATO +
+		Constant.GOL_ANNULLATO +
+		Constant.INFORTUNIO +
+		Constant.AMMONITO +
+		Constant.ESPULSO +
+		Constant.GOL_SUBITO +
+		Constant.RIGORE_SBAGLIATO +  
+		Constant.RIGORE_SEGNATO +
+		Constant.AUTOGOL +	
+		Constant.CIAO +
+		Constant.KEEP_ALIVE );
+
+		
 	}
 	private SendMessage creaSendMessage(long chatId,String msg) {
 		SendMessage sendMessage = new SendMessage();
-		sendMessage.enableHtml(true);
-		sendMessage.setParseMode("html");
+//		sendMessage.enableHtml(true);
+//		sendMessage.setParseMode("html");
 		sendMessage.setChatId(chatId);
 		String messaggio="";
 		messaggio = messaggio + "\n" + msg;

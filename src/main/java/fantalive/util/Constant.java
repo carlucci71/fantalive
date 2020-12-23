@@ -22,7 +22,7 @@ public class Constant {
 	/*-------------------------------------------------------------------------------------------*/
 	public static DateTimeFormatter dateTimeFormatterIn = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
 	public static DateTimeFormatter dateTimeFormatterOut = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Rome"));
-	public final static String PARTITA_FINITA = "\u2B59";
+	public final static String PARTITA_FINITA = "\u2B2C";
 	public final static String PARTITA_NON_FINITA  = "\u23F3";
 	public final static String OK_VOTO = "\u2714";
 	public final static String NO_VOTO_IN_CORSO = "\uFE16";
@@ -41,8 +41,8 @@ public class Constant {
 	public static final String IMBATTUTO = "\uD83E\uDD45";
 	public static final String ASSIST = "\uD83D\uDEB8";	
 	public static final String GOL = "\u26BD";//\u26F3";//"\uD83E\uDD42";
-	public static final String USCITO =  "\u2BA9";
-	public static final String ENTRATO =  "\u2BA8";
+	public static final String USCITO =  "\u2B62";
+	public static final String ENTRATO =  "\u2B60";
 	public static final String GOL_ANNULLATO = "\uD83D\uDEC2";
 	public static final String INFORTUNIO = "\uD83D\uDE91";
 	public static final String AMMONITO = "\uD83D\uDFE8";
