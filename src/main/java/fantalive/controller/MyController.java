@@ -73,7 +73,7 @@ public class MyController {
 			if (between >25) {
 				String http = Main.getHTTP("https://fantalive71.herokuapp.com/");
 				ret=Constant.KEEP_ALIVE + " Keep Alive!";
-				Main.inviaNotifica(ret);
+				Main.inviaCronacaNotifica(ret);
 				System.out.println("REFRESH!!");
 				Constant.LAST_REFRESH=ZonedDateTime.now();
 			}
