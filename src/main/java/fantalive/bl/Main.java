@@ -890,7 +890,7 @@ public class Main {
 					int contaNuoviEventiNew = contaNuoviEventi(codEvento,ng);
 					if (contaNuoviEventiOld != contaNuoviEventiNew) {
 						if (!ret.contains(codEvento)) {
-							if (codEvento==1000 && ng.getVoto()==6 && og.getVoto()==0) {
+							if (codEvento==1000 && ng != null && og != null && ng.getVoto()==6 && og.getVoto()==0) {
 								System.out.println("primo imbattuto per: " + ng.getNome());
 							}
 							else {

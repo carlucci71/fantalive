@@ -76,7 +76,11 @@ app.run(
 			    ret=ret + " " + [hour,min,sec].join(':');
 			    return ret;
 			}
-
+			$rootScope.leftFloating=670;
+			$rootScope.shiftFloating = function(sh){
+				$rootScope.leftFloating+=sh;
+				document.getElementById("floatingRectangle").style.left = $rootScope.leftFloating;
+			}
 			$rootScope.getMessaggio = function(message){
 				if (message){
 					var msg = JSON.parse(message);
