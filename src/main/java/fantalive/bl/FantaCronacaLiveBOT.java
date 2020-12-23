@@ -64,9 +64,9 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 		} catch (TelegramApiRequestException e) {
 			throw new RuntimeException(e);
 		}
+		f.messaggioBenvenuto();
 		return f;
 	}
-
 	public void inviaMessaggio(long chatId,String msg) throws TelegramApiException {
 		try {
 			execute(creaSendMessage(chatId, msg ));
@@ -74,7 +74,9 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 			throw e;
 		}
 	}
-	
+	private void messaggioBenvenuto() throws Exception {
+		inviaMessaggio(Constant.CHAT_ID_FANTALIVE, Constant.CIAO + " Benvenuto!");
+	}
 	private SendMessage creaSendMessage(long chatId,String msg) {
 		SendMessage sendMessage = new SendMessage();
 		sendMessage.enableHtml(true);

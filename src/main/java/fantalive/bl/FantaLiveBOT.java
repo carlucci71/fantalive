@@ -107,7 +107,6 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 		}
 		CHI=chi;
 		Main.MIO_IP = InetAddress.getLocalHost().getHostAddress();
-		f.messaggioBenvenuto();
 		return f;
 	}
 
@@ -119,9 +118,6 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 		}
 	}
 	
-	private void messaggioBenvenuto() throws Exception {
-		inviaMessaggio(Constant.CHAT_ID_FANTALIVE, Constant.CIAO + " Benvenuto!" , false);
-	}
 
 	private SendMessage sendInlineKeyBoardCampionati(long chatId, String msg){
 		InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
