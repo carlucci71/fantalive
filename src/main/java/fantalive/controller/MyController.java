@@ -5,10 +5,11 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -237,6 +238,12 @@ public class MyController {
 	@PostMapping("/salva")
 	public Map<String, Return> salva(@RequestBody Map<String,Return> body) throws Exception  {
 		Return r = body.get("r");
+		List<Squadra> squadre = r.getSquadre();
+		Set set = new HashSet<>();
+		for (Squadra squadra : squadre) {
+			set.add(squadra.getNome());
+		}
+		if (set.size() != squadre.size()) throw new RuntimeException("Nomi doppi!!");
 		if (r.getNome().equalsIgnoreCase(Campionati.BE.name()) && r.getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate. Salva!");
 		Main.upsertSalva(Constant.FORMAZIONE + r.getNome(), Main.toJson(r.getSquadre()));
 		return test(true);
