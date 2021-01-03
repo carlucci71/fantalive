@@ -989,7 +989,7 @@ public class Main {
 				upsertSalva(Constant.FORMAZIONE + Campionati.LUCCICAR.name(), toJson(ret.get(Campionati.LUCCICAR.name()).getSquadre()));
 			}
 			if (ret.get(Campionati.BE.name()).getSquadre().size()>0) {
-				if (ret.get(Campionati.BE.name()).getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate");
+				if (ret.get(Campionati.BE.name()).getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate. PostGos");
 				upsertSalva(Constant.FORMAZIONE + Campionati.BE.name(), toJson(ret.get(Campionati.BE.name()).getSquadre()));
 			}
 		}

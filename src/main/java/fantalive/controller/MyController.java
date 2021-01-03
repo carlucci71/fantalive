@@ -235,7 +235,7 @@ public class MyController {
 	@PostMapping("/salva")
 	public Map<String, Return> salva(@RequestBody Map<String,Return> body) throws Exception  {
 		Return r = body.get("r");
-		if (r.getNome().equalsIgnoreCase(Campionati.BE.name()) && r.getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate");
+		if (r.getNome().equalsIgnoreCase(Campionati.BE.name()) && r.getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate. Salva!");
 		Main.upsertSalva(Constant.FORMAZIONE + r.getNome(), Main.toJson(r.getSquadre()));
 		return test(true);
 	}
