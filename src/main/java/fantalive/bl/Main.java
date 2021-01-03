@@ -978,6 +978,9 @@ public class Main {
 				}
 			}
 			Collections.sort(squadre);
+			for (int i=0;i<squadre.size();i++) {
+				squadre.get(i).setProg(i);
+			}
 			returns.setSquadre(squadre);
 		}
 

@@ -86,7 +86,7 @@ body {
  				 </label>
 				 <label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} --> {{squadra.proiezione}}</label>
 				 <input style="width:45" ng-show="r.conLive" type=number ng-model="squadra.deltaModificatore"></input>
-				 <img ng-click="simulaCambi(r,squadra, $index)" ng-show="visSimulaCambi(squadra,r)" style="width:20px;cursor: pointer;" title="applica cambi"  src="./ico/switch.png"></img>
+				 <img ng-click="simulaCambi(r,squadra)" ng-show="visSimulaCambi(squadra,r)" style="width:20px;cursor: pointer;" title="applica cambi"  src="./ico/switch.png"></img>
 				 <div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1" >
 						 	<table style="widthX:600px">
 						 		<tr ng-repeat="giocatore in squadra.titolari | filtraGiocatore " ng-style="{'font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">

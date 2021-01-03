@@ -6,6 +6,7 @@ import java.util.List;
 public class Squadra implements Comparable<Squadra> {
 String nome;
 private int deltaModificatore=0;
+private int prog=0;
 private boolean evidenza=false;
 List<Giocatore> titolari=new ArrayList<Giocatore>();
 private List<Giocatore> riserve=new ArrayList<Giocatore>();
@@ -122,6 +123,12 @@ public int getDeltaModificatore() {
 }
 public void setDeltaModificatore(int deltaModificatore) {
 	this.deltaModificatore = deltaModificatore;
+}
+public int getProg() {
+	return prog;
+}
+public void setProg(int prog) {
+	this.prog = prog;
 }
 
 }

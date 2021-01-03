@@ -363,12 +363,12 @@ app.run(
 						alert("Errore-3-3: " + angular.toJson(error));
 				});
 			}
-			$rootScope.simulaCambi=function(r,sq, ind){
+			$rootScope.simulaCambi=function(r,sq){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
 				$resource('./simulaCambi',{}).save({'sq':sq}).$promise.then(function(data) {
-					r.squadre.splice(ind, 1,data);
+					r.squadre.splice(sq.prog, 1,data);
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 				}).catch(function(error) {
