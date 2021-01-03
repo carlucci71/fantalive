@@ -228,8 +228,10 @@ public class MyController {
 	public void  startStopBot() throws Exception  {
 		if (Main.fantaLiveBot.isRunning()) {
 			Main.fantaLiveBot.stopBot();
+			Main.fantaCronacaLiveBot.stopBot();
 		} else {
 			Main.fantaLiveBot.startBot();
+			Main.fantaCronacaLiveBot.startBot();
 		}
 	}
 	@PostMapping("/salva")

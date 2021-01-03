@@ -22,7 +22,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 
 import fantalive.bl.Main.Campionati;
-import fantalive.model.Giocatore;
 import fantalive.model.Return;
 import fantalive.model.Squadra;
 import fantalive.util.Constant;
@@ -32,6 +31,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	private static BotSession registerBot;
 	private static String CHI;
 	
+
 
 	@Override
 	public void onUpdateReceived(Update update) {
