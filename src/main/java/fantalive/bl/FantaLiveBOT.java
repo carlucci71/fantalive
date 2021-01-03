@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -21,6 +22,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 
 import fantalive.bl.Main.Campionati;
+import fantalive.model.Giocatore;
 import fantalive.model.Return;
 import fantalive.model.Squadra;
 import fantalive.util.Constant;
@@ -44,6 +46,61 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 						throw new RuntimeException(e);
 					}
 				}
+				else if(update.getMessage().getText().equals("/proiezioni")){
+					try {
+						StringBuilder sb = new StringBuilder();
+						Map<String, Return> go = Main.go(true, null, null);
+						Set<String> keySet = go.keySet();
+						for (String key : keySet) {
+							sb
+							.append("\n<b>")
+							.append(key)
+							.append("</b>\n");
+							Return return1 = go.get(key);
+							List<Squadra> squadre = return1.getSquadre();
+							for (Squadra squadra : squadre) {
+								if (squadra.isEvidenza()) {
+									sb
+									.append("\n<b>")
+									.append(squadra.getNome())
+									.append("</b>\n")
+									.append("Titolari")
+									.append("\n")
+									.append("Giocatori con voto: ")
+									.append(squadra.getContaTitolari())
+									.append("\n")
+									.append("Media votati: ")
+									.append(squadra.getMediaTitolari())
+									.append("\n")
+									.append("Ancora da giocare: ")
+									.append(squadra.getContaSquadraTitolariNonGioca())
+									.append("\n")
+									.append("Totale: ")
+									.append(squadra.getTotaleTitolari())
+									.append("\n")
+									.append("\n")
+									.append("Riserve")
+									.append("\n")
+									.append("Giocatori con voto: ")
+									.append(squadra.getContaRiserve())
+									.append("\n")
+									.append("Ancora da giocare: ")
+									.append(squadra.getContaSquadraRiserveNonGioca())
+									.append("\n\n")
+									.append("Proiezione --> <b><i>")
+									.append(squadra.getProiezione())
+									.append("</i></b>\n\n");
+
+									
+									
+								}
+							}
+						}
+						inviaMessaggio(chatId,sb.toString(), false);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				}
 				else {
 					try {
 						inviaMessaggio(chatId,text, true);//REPLY
@@ -63,11 +120,18 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 					throw new RuntimeException(e);
 				}
 			}
-			else {
+			else if (testoCallback.startsWith("dettaglio")) {
 				try {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					String[] split = testoCallback.split("#");
 					inviaMessaggio(chatId,Main.getDettaglio(chatId,split[0],split[1]), false);//SQUADRA
+				} catch (TelegramApiException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			else {
+				try {
+					inviaMessaggio(chatId, "cosa hai mandato? " + testoCallback , false);
 				} catch (TelegramApiException e) {
 					throw new RuntimeException(e);
 				}
