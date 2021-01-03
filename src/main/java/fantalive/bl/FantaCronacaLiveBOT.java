@@ -112,8 +112,8 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 	}
 	private SendMessage creaSendMessage(long chatId,String msg) {
 		SendMessage sendMessage = new SendMessage();
-//		sendMessage.enableHtml(true);
-//		sendMessage.setParseMode("html");
+		sendMessage.enableHtml(true);
+		sendMessage.setParseMode("html");
 		sendMessage.setChatId(chatId);
 		String messaggio="";
 		messaggio = messaggio + "\n" + msg;
