@@ -1565,5 +1565,58 @@ public class Main {
 		return evento[pos];
 	}
 
+	public static String proiezioni(String campionato) throws Exception {
+		StringBuilder sb = new StringBuilder();
+		Map<String, Return> go = go(true, null, null);
+		Set<String> keySet = go.keySet();
+		for (String key : keySet) {
+			if (campionato.equals("ALL") || campionato.equals(key)) {
+				sb
+				.append("\n<b>")
+				.append(key)
+				.append("</b>\n");
+				Return return1 = go.get(key);
+				List<Squadra> squadre = return1.getSquadre();
+				for (Squadra squadra : squadre) {
+					if (squadra.isEvidenza()) {
+						sb
+						.append("\n<b>")
+						.append(squadra.getNome())
+						.append("</b>\n")
+						.append("Titolari")
+						.append("\n")
+						.append("Giocatori con voto: ")
+						.append(squadra.getContaTitolari())
+						.append("\n")
+						.append("Media votati: ")
+						.append(squadra.getMediaTitolari())
+						.append("\n")
+						.append("Ancora da giocare: ")
+						.append(squadra.getContaSquadraTitolariNonGioca())
+						.append("\n")
+						.append("Totale: ")
+						.append(squadra.getTotaleTitolari())
+						.append("\n")
+						.append("\n")
+						.append("Riserve")
+						.append("\n")
+						.append("Giocatori con voto: ")
+						.append(squadra.getContaRiserve())
+						.append("\n")
+						.append("Ancora da giocare: ")
+						.append(squadra.getContaSquadraRiserveNonGioca())
+						.append("\n\n")
+						.append("Proiezione --> <b><i>")
+						.append(squadra.getProiezione())
+						.append("</i></b>\n\n");
+
+					}
+
+				}
+			}
+		}
+		return sb.toString();
+	}
+
 
 }

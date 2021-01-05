@@ -41,62 +41,15 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 			if(update.getMessage().hasText()){
 				if(update.getMessage().getText().equals("/campionati")){
 					try {
-						execute(sendInlineKeyBoardCampionati(chatId,text));//COMANDO CAMPIONATO
+						execute(sendInlineKeyBoardCampionati(chatId,text, "analizza ",false));//COMANDO CAMPIONATO
 					} catch (TelegramApiException e) {
 						throw new RuntimeException(e);
 					}
 				}
 				else if(update.getMessage().getText().equals("/proiezioni")){
 					try {
-						StringBuilder sb = new StringBuilder();
-						Map<String, Return> go = Main.go(true, null, null);
-						Set<String> keySet = go.keySet();
-						for (String key : keySet) {
-							sb
-							.append("\n<b>")
-							.append(key)
-							.append("</b>\n");
-							Return return1 = go.get(key);
-							List<Squadra> squadre = return1.getSquadre();
-							for (Squadra squadra : squadre) {
-								if (squadra.isEvidenza()) {
-									sb
-									.append("\n<b>")
-									.append(squadra.getNome())
-									.append("</b>\n")
-									.append("Titolari")
-									.append("\n")
-									.append("Giocatori con voto: ")
-									.append(squadra.getContaTitolari())
-									.append("\n")
-									.append("Media votati: ")
-									.append(squadra.getMediaTitolari())
-									.append("\n")
-									.append("Ancora da giocare: ")
-									.append(squadra.getContaSquadraTitolariNonGioca())
-									.append("\n")
-									.append("Totale: ")
-									.append(squadra.getTotaleTitolari())
-									.append("\n")
-									.append("\n")
-									.append("Riserve")
-									.append("\n")
-									.append("Giocatori con voto: ")
-									.append(squadra.getContaRiserve())
-									.append("\n")
-									.append("Ancora da giocare: ")
-									.append(squadra.getContaSquadraRiserveNonGioca())
-									.append("\n\n")
-									.append("Proiezione --> <b><i>")
-									.append(squadra.getProiezione())
-									.append("</i></b>\n\n");
-
-									
-									
-								}
-							}
-						}
-						inviaMessaggio(chatId,sb.toString(), false);
+						execute(sendInlineKeyBoardCampionati(chatId,text, "proietta ",true));//COMANDO PROIEZIONI
+//						inviaMessaggio(chatId,Main.proiezioni(), false);
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
@@ -120,6 +73,14 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 					throw new RuntimeException(e);
 				}
 			}
+			else if (testoCallback.startsWith("proietta")) {
+				try {
+					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
+					inviaMessaggio(chatId,Main.proiezioni(testoCallback), false);//PROIETTA SQUADRA
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
 			else if (testoCallback.startsWith("dettaglio")) {
 				try {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
@@ -138,6 +99,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 			}
 		}
 	}
+
 
 	@Override
 	public String getBotUsername() {
@@ -183,9 +145,9 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	}
 	
 
-	private SendMessage sendInlineKeyBoardCampionati(long chatId, String msg){
+	private SendMessage sendInlineKeyBoardCampionati(long chatId, String msg, String cb, boolean all){
 		InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-		inlineKeyboardMarkup.setKeyboard(generaElencoCampionati());
+		inlineKeyboardMarkup.setKeyboard(generaElencoCampionati(cb,all));
 		return new SendMessage().setChatId(chatId).setText(msg).setReplyMarkup(inlineKeyboardMarkup);
 	}
 
@@ -214,21 +176,25 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 		}
 	}
 
-	private List<List<InlineKeyboardButton>> generaElencoCampionati() {
+	private List<List<InlineKeyboardButton>> generaElencoCampionati(String cb, boolean all) {
 		try {
 			List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
 			Campionati[] campionati = Main.Campionati.values();
-			for (Campionati campionato : campionati) {
-				List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-				keyboardButtonsRow1.add(new InlineKeyboardButton().setText(campionato.name()).setCallbackData("analizza " + campionato.name()));
-				rowList.add(keyboardButtonsRow1);
+			List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
+			if (all) {
+				keyboardButtonsRow1.add(new InlineKeyboardButton().setText("ALL").setCallbackData(cb + "ALL"));
 			}
+			for (Campionati campionato : campionati) {
+				keyboardButtonsRow1.add(new InlineKeyboardButton().setText(campionato.name()).setCallbackData(cb + campionato.name()));
+			}
+			rowList.add(keyboardButtonsRow1);
 			return rowList;
 		}
 		catch (Exception e ) {
 			throw new RuntimeException(e);
 		}
 	}
+	
 
 	private SendMessage creaSendMessage(long chatId,String msg, boolean bReply) {
 		SendMessage sendMessage = new SendMessage();
