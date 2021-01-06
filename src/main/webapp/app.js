@@ -523,16 +523,6 @@ app.run(
 				if ($rootScope.loading) return "lightyellow";
 				return "white";
 			}
-			$rootScope.weight=function(giocatore){
-				if (giocatore.orario.tag=='FullTime') return "bold";
-				if (giocatore.codEventi.indexOf(14)>-1) return "bold";
-			}
-			$rootScope.txtColor=function(giocatore){
-				if (giocatore.voto==0) return "red";
-			}
-			$rootScope.backColor=function(giocatore){
-				if (giocatore.squadraGioca) return "lightgray";
-			}
 			$rootScope.changeSqEv=function(squadra){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
@@ -585,42 +575,6 @@ app.run(
 			$rootScope.inEv=function(squadra){
 				if (squadra.evidenza) return "red";
 				return "orange";
-			}
-			$rootScope.getOrario=function(orario){
-				if (orario.tag=='FullTime' || orario.tag=='Postponed' || orario.tag=='Cancelled' || orario.tag=='Walkover') return orario.tag;
-				if (orario.tag=='PreMatch'){
-					var ret="";
-					ret = ret + orario.val.substring(8,10);
-					ret = ret + "/" + orario.val.substring(5,7);
-					ret = ret + " " + (1+Number(orario.val.substring(11,13)));
-					ret = ret + ":" + orario.val.substring(14,16);
-					return ret;
-				}
-				return orario.val + "Min";
-			}
-			$rootScope.getVoto=function(g){
-				if (!g.squadraGioca) return " ";
-				if (g.voto==0) return "NV";
-				return g.voto;
-			}
-			$rootScope.getFantaVoto=function(g){
-				if (!g.squadraGioca) return " ";
-				if (g.voto==0) return "NV";
-				return g.modificatore+g.voto;
-			}
-			$rootScope.desEvento=function(ev,r){
-				if (!$rootScope.eventi) return "";
-				var evento = $rootScope.eventi[ev];
-				var ret = evento[0];
-				ret = ret + " <-> " + $rootScope.valEvento(evento,r); 
-				return ret;
-			}
-			$rootScope.valEvento=function(evento,r){
-				var pos=0;
-				if (r=="FANTAVIVA") pos=1;
-				if (r=="LUCCICAR") pos=2;
-				if (r=="BE") pos=3;
-				return evento[pos];
 			}
 			$rootScope.hiddenVis=[];
 			$rootScope.hiddenVisSq=[];
@@ -711,7 +665,72 @@ app.factory('httpRequestInterceptor', function () {
 	    }
 	  };
 	});
+app.config(function ($httpProvider) {
+  $httpProvider.interceptors.push('httpRequestInterceptor');
+});
+app.directive("visualizzasquadra", function() {
+	return {
+		restrict: "E",
+		templateUrl: "/squadraTemplate.html",
+		scope: {
+			scopeeventi: "=",
+			squadra: "="
+		},
+		link: function($scope, element, attrs) {
+			$scope.getFantaVoto=function(g){
+				if (!g.squadraGioca) return " ";
+				if (g.voto==0) return "NV";
+				return g.modificatore+g.voto;
+			}
+			$scope.getOrario=function(orario){
+				if (orario.tag=='FullTime' || orario.tag=='Postponed' || orario.tag=='Cancelled' || orario.tag=='Walkover') return orario.tag;
+				if (orario.tag=='PreMatch'){
+					var ret="";
+					ret = ret + orario.val.substring(8,10);
+					ret = ret + "/" + orario.val.substring(5,7);
+					ret = ret + " " + (1+Number(orario.val.substring(11,13)));
+					ret = ret + ":" + orario.val.substring(14,16);
+					return ret;
+				}
+				return orario.val + "Min";
+			}
+			$scope.desEvento=function(ev,r){
+				if (!$scope.scopeeventi) return "";
+				var evento = $scope.scopeeventi[ev];
+				var ret = evento[0];
+				ret = ret + " <-> " + $scope.valEvento(evento,r); 
+				return ret;
+			}
+			$scope.getVoto=function(g){
+				if (!g.squadraGioca) return " ";
+				if (g.voto==0) return "NV";
+				return g.voto;
+			}
+			$scope.valEvento=function(evento,r){
+				var pos=0;
+				if (r=="FANTAVIVA") pos=1;
+				if (r=="LUCCICAR") pos=2;
+				if (r=="BE") pos=3;
+				return evento[pos];
+			}
+			$scope.weight=function(giocatore){
+				if (giocatore.orario.tag=='FullTime') return "bold";
+				if (giocatore.codEventi.indexOf(14)>-1) return "bold";
+			}
+			$scope.txtColor=function(giocatore){
+				if (giocatore.voto==0) return "red";
+			}
+			$scope.backColor=function(giocatore){
+				if (giocatore.squadraGioca) return "lightgray";
+			}
+		}
+	};
+})
 
-	app.config(function ($httpProvider) {
-	  $httpProvider.interceptors.push('httpRequestInterceptor');
-	});
+/*
+$rootScope.getFantaVoto=function(g){
+	if (!g.squadraGioca) return " ";
+	if (g.voto==0) return "NV";
+	return g.modificatore+g.voto;
+}
+*/
