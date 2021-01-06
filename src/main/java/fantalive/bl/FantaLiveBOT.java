@@ -100,7 +100,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 			}
 			final AnswerCallbackQuery answer = new AnswerCallbackQuery();
             answer.setCallbackQueryId(update.getCallbackQuery().getId());
-            answer.setText("You've clicked at the button: " + update.getCallbackQuery().getData());
+            answer.setText("OK: " + update.getCallbackQuery().getData());
             answer.setShowAlert(false);
             try
             {
