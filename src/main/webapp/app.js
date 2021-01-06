@@ -673,7 +673,8 @@ app.directive("visualizzasquadra", function() {
 		restrict: "E",
 		templateUrl: "/squadraTemplate.html",
 		scope: {
-			scopeeventi: "=",
+			r: "=",
+			eventi: "=",
 			squadra: "="
 		},
 		link: function($scope, element, attrs) {
@@ -695,8 +696,8 @@ app.directive("visualizzasquadra", function() {
 				return orario.val + "Min";
 			}
 			$scope.desEvento=function(ev,r){
-				if (!$scope.scopeeventi) return "";
-				var evento = $scope.scopeeventi[ev];
+				if (!$scope.eventi) return "";
+				var evento = $scope.eventi[ev];
 				var ret = evento[0];
 				ret = ret + " <-> " + $scope.valEvento(evento,r); 
 				return ret;

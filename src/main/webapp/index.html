@@ -49,11 +49,11 @@
 			<tr>
 				<td>
 					<label>{{squadra0.nome}} --> {{squadra0.proiezione}} </label><br>
-					<visualizzasquadra scopeeventi="eventi"  squadra="squadra0"></visualizzasquadra>
+					<visualizzasquadra r="r" eventi="eventi"  squadra="squadra0"></visualizzasquadra>
 				</td>
 				<td>
 					<label>{{squadra1.nome}} --> {{squadra1.proiezione}} </label><br>
-					<visualizzasquadra scopeeventi="eventi"  squadra="squadra1"></visualizzasquadra>
+					<visualizzasquadra r="r" eventi="eventi"   squadra="squadra1"></visualizzasquadra>
 				</td>
 
 				</tr>
@@ -98,7 +98,7 @@
 					<input type=checkbox ng-click="toggleCheckbox(r.nome,squadra)"></input> 
 					<img ng-click="simulaCambi(r,squadra)" ng-show="visSimulaCambi(squadra,r)" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
 					<div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1">
-							<visualizzasquadra scopeeventi="eventi" squadra="squadra"></visualizzasquadra>
+							<visualizzasquadra r="r" eventi="eventi"  squadra="squadra"></visualizzasquadra>
 					</div>
 				</div>
 			</div>
