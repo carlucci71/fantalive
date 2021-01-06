@@ -6,6 +6,7 @@
 <meta http-equiv="Expires" content="0" />
 <title>Fantalive</title>
 </head>
+<link href="./stile.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
@@ -17,28 +18,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     
 <script type="text/javascript" src="./app.js"></script>
-<style>
-table, th, td {
-  border: 1px solid black;
-}
-body {
-    position: relative
-}
-#floatingRectangle {
-    z-index: 1;
-    position: fixed;
-    left: 670px;
-    width: 580px;
-    height: 550px;
-    top: 10px;
-    resize: both;
-    overflow: auto;
-}
-</style>
-<script>
-</script>
 <body data-ng-init="init()" x-ng-app="app" ng-style="{'margin-left':'20px','background-color':backLoading()}">
-<div id="floatingRectangle">	
+<div id="floatingRectangle" ng-hide="visPartitaLive">	
 	<input type=button value="&#11104;" ng-click="shiftFloating(-10)"></input>
 	<input type=button value="&#11106;" ng-click="shiftFloating(10)"></input>
 	<input type=button value="&#128465;" ng-click="testoLog=''"></input>
@@ -58,105 +39,279 @@ body {
 <label>End keep alive: </label>{{keepAliveEnd}}
 <span ng-show="!loading && !disabilitaNotificaTelegram"><br>{{runningBot}} <button ng-click="startStopBot()">START/STOP BOT</button></span>
 <br>
- 		<label ng-show="loading">CARICAMENTO IN CORSO</label>
+ 	<label ng-show="loading">CARICAMENTO IN CORSO</label>
  	<br>
- 	<div ng-show="!configura">
-		<button ng-show="!loading" ng-click="ricaricaIndex()">Ricarica</button>
-		<br><br>
-		<span ng-show="!loading && result">
-			calciatore <input type=text ng-model=giocFilter></input>
-			<span style="cursor: pointer;"><i class="fa fa-trash" ng-click="giocFilter=''" ng-show="giocFilter"></i></span>
-			squadra <input type=text ng-model=sqFilter></input>
-			<span style="cursor: pointer;"><i class="fa fa-trash" ng-click="sqFilter=''" ng-show="sqFilter"></i></span>
-			live <input type=checkBox ng-model=liveFilter></input>
-			preferiti <input type=checkBox ng-model=favFilter></input>
-		</span>
-		<br><br>
- 		<div  ng-repeat="r in result">
- 			<span ng-click="changeVis(r.nome)" style="color:red;background-color:yellow;cursor: pointer;">
-	     		<label >CAMPIONATO: {{r.nome}}</label>
-				<i class="fa fa-chevron-down" ng-show="hiddenVis.indexOf(r.nome)<0"></i>
-				<i class="fa fa-chevron-up" ng-show="hiddenVis.indexOf(r.nome)>=0"></i>
-			</span>&nbsp;
-            <img ng-click="salva(r)" ng-show="r.conLive" style="width:20px;cursor: pointer;" title="salva"  src="./ico/salva.jpeg"></img>
- 			<div ng-show="hiddenVis.indexOf(r.nome)<0" ng-repeat="squadra in r.squadre | filtraSquadra track by $index">
- 				 <label ng-show="!loading" ng-click="changeSqEv(squadra)">
- 				 	<img ng-show=!squadra.evidenza style="width:10px;cursor: pointer;" title="add"  src="./ico/fav1.png"></img>
- 				 	<img ng-show=squadra.evidenza style="width:10px;cursor: pointer;" title="add"  src="./ico/fav2.png"></img>
- 				 </label>
-				 <label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} --> {{squadra.proiezione}}</label>
-				 <input style="width:45" ng-show="r.conLive" type=number ng-model="squadra.deltaModificatore"></input>
-				 <img ng-click="simulaCambi(r,squadra)" ng-show="visSimulaCambi(squadra,r)" style="width:20px;cursor: pointer;" title="applica cambi"  src="./ico/switch.png"></img>
-				 <div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1" >
-						 	<table style="widthX:600px">
-						 		<tr ng-repeat="giocatore in squadra.titolari | filtraGiocatore " ng-style="{'font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">
-						 			<td style="padding:2px;widthX:200px">{{giocatore.idGioc}}</td>
-						 			<td style="padding:2px;widthX:200px">{{giocatore.nome}}</td>
-						 			<td style="padding:2px;widthX:50px;text-align:center">{{giocatore.squadra}}</td>
-						 			<td style="padding:2px;widthX:50px;text-align:center">{{giocatore.ruolo}}</td>
-						 			<td style="padding:2px;widthX:50px;text-align:center">{{getVoto(giocatore)}}</td>
-						 			<td style="padding:2px;widthX:200px;text-align:center">
-						 				<span ng-repeat="codE in giocatore.codEventi track by $index">
-						 					<img style="width:20px;" title="{{desEvento(codE,r.campionato)}}" ng-src="./ico/{{codE}}.png"/>
-										</span> 
-						 			</td>
-						 			<td style="padding:2px;widthX:50px;text-align:center">{{getFantaVoto(giocatore)}}<label ng-show=giocatore.cambiato>(*)</label></td>
-						 			<td style="padding:2px;widthX:150px;text-align:center">{{getOrario(giocatore.orario)}}</td>
-						 			<td><input ng-show="r.conLive" type=checkbox ng-model="giocatore.cambio"></input></td>
-						 		</tr>
-						 	</table>
-						 	<br>
-						 	<table style="widthX:600px">
-						 		<tr>
-						 			<!-- <td style="width:200px;border-top: 1px solid white;border-bottom: 1px solid white;border-left: 1px solid white"></td> -->
-						 			<td style="padding:2px;width:50px;text-align:center">giocatori con voto</td>
-						 			<td style="padding:2px;width:50px;text-align:center">media votati</td>
-						 			<td style="padding:2px;width:50px;text-align:center">ancora da giocare</td>
-						 			<td style="padding:2px;width:50px;text-align:center">totale</td>
-								</tr>
-						 		<tr>
-						 			<!-- <td style="width:200px;border-top: 1px solid white;border-bottom: 1px solid white;border-left: 1px solid white"></td> -->
-						 			<td style="padding:2px;width:50px;text-align:center">{{squadra.contaTitolari}}</td>
-						 			<td style="padding:2px;width:50px;text-align:center">{{squadra.mediaTitolari | number:2}}</td>
-						 			<td style="padding:2px;width:50px;text-align:center">{{squadra.contaSquadraTitolariNonGioca}}</td>
-						 			<td style="padding:2px;width:50px;text-align:center">{{squadra.totaleTitolari}}</td>
+	<div ng-show="!configura">
+		<div ng-show="visPartitaLive">
+			<input type=button value="&#11192;" ng-click="visualizzaLive('')"></input>
+			<br>
+			<table border>
+			<tr>
+				<td>
+					<label>{{squadra0.nome}} --> {{squadra0.proiezione}} </label><br>
+							<table>
+								<tr ng-repeat="giocatore in squadra0.titolari | filtraGiocatore " ng-style="{'height':'30px','font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">
+									<td style="padding: 2px; widthX: 200px">{{giocatore.idGioc}}</td>
+									<td style="padding: 2px; widthX: 200px">{{giocatore.nome}}</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.squadra}}</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.ruolo}}</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{getVoto(giocatore)}}</td>
+									<td style="padding: 2px; widthX: 200px; text-align: center">
+										<span ng-repeat="codE in giocatore.codEventi track by $index">
+											<img style="width: 20px;" title="{{desEvento(codE,r.campionato)}}" ng-src="./ico/{{codE}}.png" />
+										</span>
+									</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{getFantaVoto(giocatore)}}
+										<label ng-show=giocatore.cambiato>(*)</label>
+									</td>
+									<td style="padding: 2px; widthX: 150px; text-align: center">{{getOrario(giocatore.orario)}}</td>
+									<td>
+										<input ng-show="r.conLive" type=checkbox ng-model="giocatore.cambio"></input>
+									</td>
 								</tr>
 							</table>
 							<br>
-						 	<table style="widthX:600px">
-						 		<tr ng-repeat="giocatore in squadra.riserve | filtraGiocatore" ng-style="{'font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">
-						 			<td style="padding:2px;widthX:200px">{{giocatore.idGioc}}</td>
-						 			<td style="padding:2px;widthX:200px;">{{giocatore.nome}}</td>
-						 			<td style="padding:2px;widthX:50px;text-align:center">{{giocatore.squadra}}</td>
-						 			<td style="padding:2px;widthX:50px;text-align:center">{{giocatore.ruolo}}</td>
-						 			<td style="padding:2px;widthX:50px;text-align:center">{{getVoto(giocatore)}}</td>
-						 			<td style="padding:2px;widthX:200px;text-align:center">
-						 				<span ng-repeat="codE in giocatore.codEventi track by $index">
-						 					<img style="width:20px;" title="{{desEvento(codE,r.campionato)}}" ng-src="./ico/{{codE}}.png"/>
-										</span> 
-						 			</td>
-						 			<td style="padding:2px;widthX:50px;text-align:center">{{getFantaVoto(giocatore)}}<label ng-show=giocatore.cambiato>(*)</label></td>
-						 			<td style="padding:2px;widthX:150px;text-align:center">{{getOrario(giocatore.orario)}}</td>
-						 			<td><input ng-show="r.conLive" type=checkbox ng-model="giocatore.cambio"></input></td>
-						 		</tr>
-						 	</table>
-						 	<br>
-						 	<table style="widthX:600px">
-						 		<tr>
-						 			<td style="padding:2px;width:50px;text-align:center">giocatori con voto</td>
-						 			<td style="padding:2px;width:50px;text-align:center">ancora da giocare</td>
+							<table>
+								<tr>
+									<td style="padding: 2px; width: 50px; text-align: center">giocatori con voto</td>
+									<td style="padding: 2px; width: 50px; text-align: center">media votati</td>
+									<td style="padding: 2px; width: 50px; text-align: center">ancora da giocare</td>
+									<td style="padding: 2px; width: 50px; text-align: center">totale</td>
 								</tr>
-						 		<tr>
-						 			<td style="padding:2px;width:50px;text-align:center">{{squadra.contaRiserve}}</td>
-						 			<td style="padding:2px;width:50px;text-align:center">{{squadra.contaSquadraRiserveNonGioca}}</td>
+								<tr>
+									<td style="padding: 2px; width: 50px; text-align: center">{{squadra0.contaTitolari}}</td>
+									<td style="padding: 2px; width: 50px; text-align: center">{{squadra0.mediaTitolari | number:2}}</td>
+									<td style="padding: 2px; width: 50px; text-align: center">{{squadra0.contaSquadraTitolariNonGioca}}</td>
+									<td style="padding: 2px; width: 50px; text-align: center">{{squadra0.totaleTitolari}}</td>
 								</tr>
 							</table>
-						 	
+							<br>
+							<table>
+								<tr ng-repeat="giocatore in squadra0.riserve | filtraGiocatore"
+									ng-style="{'height':'30px','font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">
+									<td style="padding: 2px; widthX: 200px">{{giocatore.idGioc}}</td>
+									<td style="padding: 2px; widthX: 200px;">{{giocatore.nome}}</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.squadra}}</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.ruolo}}</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{getVoto(giocatore)}}</td>
+									<td style="padding: 2px; widthX: 200px; text-align: center">
+										<span ng-repeat="codE in giocatore.codEventi track by $index">
+											<img style="width: 20px;" title="{{desEvento(codE,r.campionato)}}" ng-src="./ico/{{codE}}.png" />
+										</span>
+									</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{getFantaVoto(giocatore)}}
+										<label ng-show=giocatore.cambiato>(*)</label>
+									</td>
+									<td style="padding: 2px; widthX: 150px; text-align: center">{{getOrario(giocatore.orario)}}</td>
+									<td><input ng-show="r.conLive" type=checkbox ng-model="giocatore.cambio"></input></td>
+								</tr>
+							</table>
+							<br>
+							<table>
+								<tr>
+									<td style="padding: 2px; width: 50px; text-align: center">giocatori con voto</td>
+									<td style="padding: 2px; width: 50px; text-align: center">ancora da giocare</td>
+								</tr>
+								<tr>
+									<td style="padding: 2px; width: 50px; text-align: center">{{squadra0.contaRiserve}}</td>
+									<td style="padding: 2px; width: 50px; text-align: center">{{squadra0.contaSquadraRiserveNonGioca}}</td>
+								</tr>
+							</table>
+					</td>
+
+				<td>
+					<label>{{squadra1.nome}}  --> {{squadra1.proiezione}} </label><br>
+							<table>
+								<tr ng-repeat="giocatore in squadra1.titolari | filtraGiocatore " ng-style="{'height':'30px','font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">
+									<td style="padding: 2px; widthX: 200px">{{giocatore.idGioc}}</td>
+									<td style="padding: 2px; widthX: 200px">{{giocatore.nome}}</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.squadra}}</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.ruolo}}</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{getVoto(giocatore)}}</td>
+									<td style="padding: 2px; widthX: 200px; text-align: center">
+										<span ng-repeat="codE in giocatore.codEventi track by $index">
+											<img style="width: 20px;" title="{{desEvento(codE,r.campionato)}}" ng-src="./ico/{{codE}}.png" />
+										</span>
+									</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{getFantaVoto(giocatore)}}
+										<label ng-show=giocatore.cambiato>(*)</label>
+									</td>
+									<td style="padding: 2px; widthX: 150px; text-align: center">{{getOrario(giocatore.orario)}}</td>
+									<td>
+										<input ng-show="r.conLive" type=checkbox ng-model="giocatore.cambio"></input>
+									</td>
+								</tr>
+							</table>
+							<br>
+							<table>
+								<tr>
+									<td style="padding: 2px; width: 50px; text-align: center">giocatori con voto</td>
+									<td style="padding: 2px; width: 50px; text-align: center">media votati</td>
+									<td style="padding: 2px; width: 50px; text-align: center">ancora da giocare</td>
+									<td style="padding: 2px; width: 50px; text-align: center">totale</td>
+								</tr>
+								<tr>
+									<td style="padding: 2px; width: 50px; text-align: center">{{squadra1.contaTitolari}}</td>
+									<td style="padding: 2px; width: 50px; text-align: center">{{squadra1.mediaTitolari | number:2}}</td>
+									<td style="padding: 2px; width: 50px; text-align: center">{{squadra1.contaSquadraTitolariNonGioca}}</td>
+									<td style="padding: 2px; width: 50px; text-align: center">{{squadra1.totaleTitolari}}</td>
+								</tr>
+							</table>
+							<br>
+							<table>
+								<tr ng-repeat="giocatore in squadra1.riserve | filtraGiocatore"
+									ng-style="{'height':'30px','font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">
+									<td style="padding: 2px; widthX: 200px">{{giocatore.idGioc}}</td>
+									<td style="padding: 2px; widthX: 200px;">{{giocatore.nome}}</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.squadra}}</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.ruolo}}</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{getVoto(giocatore)}}</td>
+									<td style="padding: 2px; widthX: 200px; text-align: center">
+										<span ng-repeat="codE in giocatore.codEventi track by $index">
+											<img style="width: 20px;" title="{{desEvento(codE,r.campionato)}}" ng-src="./ico/{{codE}}.png" />
+										</span>
+									</td>
+									<td style="padding: 2px; widthX: 50px; text-align: center">{{getFantaVoto(giocatore)}}
+										<label ng-show=giocatore.cambiato>(*)</label>
+									</td>
+									<td style="padding: 2px; widthX: 150px; text-align: center">{{getOrario(giocatore.orario)}}</td>
+									<td><input ng-show="r.conLive" type=checkbox ng-model="giocatore.cambio"></input></td>
+								</tr>
+							</table>
+							<br>
+							<table>
+								<tr>
+									<td style="padding: 2px; width: 50px; text-align: center">giocatori con voto</td>
+									<td style="padding: 2px; width: 50px; text-align: center">ancora da giocare</td>
+								</tr>
+								<tr>
+									<td style="padding: 2px; width: 50px; text-align: center">{{squadra1.contaRiserve}}</td>
+									<td style="padding: 2px; width: 50px; text-align: center">{{squadra1.contaSquadraRiserveNonGioca}}</td>
+								</tr>
+							</table>
+					</td>
+
+				</tr>
+			</table>
+
+
+
+
+
+		</div>
+		<div ng-show="!visPartitaLive">
+			<button ng-show="!loading" ng-click="ricaricaIndex()">Ricarica</button>
+			<br>
+			<br> 
+			<span ng-show="!loading && result">
+				calciatore 
+				<input type=text ng-model=giocFilter></input> 
+				<span style="cursor: pointer;">
+					<i class="fa fa-trash" ng-click="giocFilter=''" ng-show="giocFilter"></i>
+				</span>
+				 squadra 
+				 <input type=text ng-model=sqFilter></input> 
+				 <span style="cursor: pointer;">
+				 	<i class="fa fa-trash" ng-click="sqFilter=''" ng-show="sqFilter"></i>
+				 </span>
+				 live 
+				 <input type=checkBox ng-model=liveFilter></input>
+				 preferiti 
+				 <input type=checkBox ng-model=favFilter></input>
+			</span> 
+			<br>
+			<br>
+			<div ng-repeat="r in result">
+				<span ng-click="changeVis(r.nome)" style="color: red; background-color: yellow; cursor: pointer;">
+					<label>CAMPIONATO: {{r.nome}}</label> 
+					<i class="fa fa-chevron-down" ng-show="hiddenVis.indexOf(r.nome)<0"></i>
+					<i class="fa fa-chevron-up" ng-show="hiddenVis.indexOf(r.nome)>=0"></i>
+				</span>&nbsp; 
+				<input type=button value="&#11192;" ng-show="partitaLive[r.nome].length==2" ng-click="visualizzaLive(r.nome)"></input>
+				<img ng-click="salva(r)" ng-show="r.conLive" style="width: 20px; cursor: pointer;" title="salva" src="./ico/salva.jpeg"></img>
+				<div ng-show="hiddenVis.indexOf(r.nome)<0" ng-repeat="squadra in r.squadre | filtraSquadra track by $index">
+					<label ng-show="!loading" ng-click="changeSqEv(squadra)"> 
+						<img ng-show=!squadra.evidenza style="width: 10px; cursor: pointer;" title="add" src="./ico/fav1.png"></img> <img ng-show=squadra.evidenza style="width: 10px; cursor: pointer;" title="add" src="./ico/fav2.png"></img>
+					</label> 
+					<label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} --> {{squadra.proiezione}}</label> 
+					<input style="width: 45" ng-show="r.conLive" type=number ng-model="squadra.deltaModificatore"></input> 
+					<input type=checkbox ng-click="toggleCheckbox(r.nome,squadra)"></input> 
+					<img ng-click="simulaCambi(r,squadra)" ng-show="visSimulaCambi(squadra,r)" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
+					<div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1">
+						<table>
+							<tr ng-repeat="giocatore in squadra.titolari | filtraGiocatore " ng-style="{'height':'30px','font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">
+								<td style="padding: 2px; widthX: 200px">{{giocatore.idGioc}}</td>
+								<td style="padding: 2px; widthX: 200px">{{giocatore.nome}}</td>
+								<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.squadra}}</td>
+								<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.ruolo}}</td>
+								<td style="padding: 2px; widthX: 50px; text-align: center">{{getVoto(giocatore)}}</td>
+								<td style="padding: 2px; widthX: 200px; text-align: center">
+									<span ng-repeat="codE in giocatore.codEventi track by $index">
+										<img style="width: 20px;" title="{{desEvento(codE,r.campionato)}}" ng-src="./ico/{{codE}}.png" />
+									</span>
+								</td>
+								<td style="padding: 2px; widthX: 50px; text-align: center">{{getFantaVoto(giocatore)}}
+									<label ng-show=giocatore.cambiato>(*)</label>
+								</td>
+								<td style="padding: 2px; widthX: 150px; text-align: center">{{getOrario(giocatore.orario)}}</td>
+								<td>
+									<input ng-show="r.conLive" type=checkbox ng-model="giocatore.cambio"></input>
+								</td>
+							</tr>
+						</table>
+						<br>
+						<table>
+							<tr>
+								<td style="padding: 2px; width: 50px; text-align: center">giocatori con voto</td>
+								<td style="padding: 2px; width: 50px; text-align: center">media votati</td>
+								<td style="padding: 2px; width: 50px; text-align: center">ancora da giocare</td>
+								<td style="padding: 2px; width: 50px; text-align: center">totale</td>
+							</tr>
+							<tr>
+								<td style="padding: 2px; width: 50px; text-align: center">{{squadra.contaTitolari}}</td>
+								<td style="padding: 2px; width: 50px; text-align: center">{{squadra.mediaTitolari | number:2}}</td>
+								<td style="padding: 2px; width: 50px; text-align: center">{{squadra.contaSquadraTitolariNonGioca}}</td>
+								<td style="padding: 2px; width: 50px; text-align: center">{{squadra.totaleTitolari}}</td>
+							</tr>
+						</table>
+						<br>
+						<table>
+							<tr ng-repeat="giocatore in squadra.riserve | filtraGiocatore"
+								ng-style="{'height':'30px','font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">
+								<td style="padding: 2px; widthX: 200px">{{giocatore.idGioc}}</td>
+								<td style="padding: 2px; widthX: 200px;">{{giocatore.nome}}</td>
+								<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.squadra}}</td>
+								<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.ruolo}}</td>
+								<td style="padding: 2px; widthX: 50px; text-align: center">{{getVoto(giocatore)}}</td>
+								<td style="padding: 2px; widthX: 200px; text-align: center">
+									<span ng-repeat="codE in giocatore.codEventi track by $index">
+										<img style="width: 20px;" title="{{desEvento(codE,r.campionato)}}" ng-src="./ico/{{codE}}.png" />
+									</span>
+								</td>
+								<td style="padding: 2px; widthX: 50px; text-align: center">{{getFantaVoto(giocatore)}}
+									<label ng-show=giocatore.cambiato>(*)</label>
+								</td>
+								<td style="padding: 2px; widthX: 150px; text-align: center">{{getOrario(giocatore.orario)}}</td>
+								<td><input ng-show="r.conLive" type=checkbox ng-model="giocatore.cambio"></input></td>
+							</tr>
+						</table>
+						<br>
+						<table>
+							<tr>
+								<td style="padding: 2px; width: 50px; text-align: center">giocatori con voto</td>
+								<td style="padding: 2px; width: 50px; text-align: center">ancora da giocare</td>
+							</tr>
+							<tr>
+								<td style="padding: 2px; width: 50px; text-align: center">{{squadra.contaRiserve}}</td>
+								<td style="padding: 2px; width: 50px; text-align: center">{{squadra.contaSquadraRiserveNonGioca}}</td>
+							</tr>
+						</table>
+					</div>
 				</div>
- 			</div>
- 		</div>
- 	</div>
-<div ng-show="configura">
+			</div>
+		</div>
+	</div>
+	<div ng-show="configura">
 <!-- 
 	<textarea style="width:1000px;" type=text ng-model="fantaSoccerAuth"></textarea>
 	<br>

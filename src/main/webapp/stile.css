@@ -1,0 +1,16 @@
+table, th, td {
+  border: 1px solid black;
+}
+body {
+    position: relative
+}
+#floatingRectangle {
+    z-index: 1;
+    position: fixed;
+    left: 670px;
+    width: 580px;
+    height: 550px;
+    top: 10px;
+    resize: both;
+    overflow: auto;
+}

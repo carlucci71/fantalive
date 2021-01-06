@@ -81,6 +81,32 @@ app.run(
 				$rootScope.leftFloating+=sh;
 				document.getElementById("floatingRectangle").style.left = $rootScope.leftFloating;
 			}
+			$rootScope.visPartitaLive="";
+			$rootScope.visualizzaLive=function(camp){
+				$rootScope.visPartitaLive=camp;
+				if (camp!=''){
+					$rootScope.squadra0=$rootScope.partitaLive[$rootScope.visPartitaLive][0];
+					$rootScope.squadra1=$rootScope.partitaLive[$rootScope.visPartitaLive][1];
+				}
+				else{
+					$rootScope.squadra0={};
+					$rootScope.squadra1={};
+				}
+			}
+			$rootScope.partitaLive={};
+			$rootScope.toggleCheckbox = function(camp,sq){
+				var pos=-1;
+				if ($rootScope.partitaLive[camp]){
+					pos=$rootScope.partitaLive[camp].indexOf(sq);
+				}else{
+					$rootScope.partitaLive[camp]=[];
+				}
+				if (pos==-1) {
+					$rootScope.partitaLive[camp].push(sq);
+				} else {
+					$rootScope.partitaLive[camp].splice(pos,1);
+				}
+			};
 			$rootScope.getMessaggio = function(message){
 				if (message){
 					var msg = JSON.parse(message);
