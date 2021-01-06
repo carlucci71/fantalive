@@ -10,6 +10,7 @@ import java.util.Set;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -31,7 +32,6 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	private static BotSession registerBot;
 	private static String CHI;
 	
-
 
 	@Override
 	public void onUpdateReceived(Update update) {
@@ -86,6 +86,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					String[] split = testoCallback.split("#");
 					inviaMessaggio(chatId,Main.getDettaglio(chatId,split[0],split[1]), false);//SQUADRA
+					
 				} catch (TelegramApiException e) {
 					throw new RuntimeException(e);
 				}
@@ -97,6 +98,18 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 					throw new RuntimeException(e);
 				}
 			}
+			final AnswerCallbackQuery answer = new AnswerCallbackQuery();
+            answer.setCallbackQueryId(update.getCallbackQuery().getId());
+            answer.setText("You've clicked at the button: " + update.getCallbackQuery().getData());
+            answer.setShowAlert(true);
+            try
+            {
+                execute(answer);
+            }
+            catch (Exception e)
+            {
+				throw new RuntimeException(e);
+            }
 		}
 	}
 
