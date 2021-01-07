@@ -419,8 +419,18 @@ app.run(
 					$rootScope.result=data;
 					conLive=true;
 					$resource('./test',{conLive}).get().$promise.then(function(data) {
-						$rootScope.loading=false;
 						$rootScope.result=data;
+//						squadra.evidenza
+						$rootScope.partitaLive={};
+		                angular.forEach(data, function(value,camp) {
+		                	$rootScope.partitaLive[camp]=[];
+			                angular.forEach(value.squadre, function(sq,chiave2) {
+			                	if (sq.evidenza){
+			    					$rootScope.partitaLive[camp].push(sq);
+			                	}
+			                });
+		                });
+						$rootScope.loading=false;
 						$rootScope.fine=new Date();
 						deferred.resolve("Hix");
 					}).catch(function(error) {

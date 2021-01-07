@@ -1069,22 +1069,25 @@ public class Main {
 				List<Integer> codEventi=new ArrayList<Integer>();
 				if (!evento.equals("")) {
 					String[] split = evento.split(",");
-					for (String string : split) {
-						String[] strings = eventi.get(Integer.parseInt(string));
-						if (strings[4].equals("N")) continue;
-						if (strings==null) {
+					for (String eventoAtt : split) {
+						String[] eventiAtt = eventi.get(Integer.parseInt(eventoAtt));
+						if (eventiAtt==null) {
+							throw new RuntimeException("Evento non censito: " + eventoAtt);
+						}
+						if (eventiAtt[4].equals("N")) continue;
+						if (eventiAtt==null) {
 							ev = ev + "?" + "   ";
 							modificatore=modificatore-1000;
 						}else {
-							ev = ev + strings[0] + "   ";
+							ev = ev + eventiAtt[0] + "   ";
 							int pos=1;
 							if (r.getCampionato().equalsIgnoreCase(Campionati.FANTAVIVA.name())) pos=1;
 							if (r.getCampionato().equalsIgnoreCase(Campionati.LUCCICAR.name())) pos=2;
 							if (r.getCampionato().equalsIgnoreCase(Campionati.BE.name())) pos=3;
 
-							modificatore=modificatore+Double.parseDouble(strings[pos]);
+							modificatore=modificatore+Double.parseDouble(eventiAtt[pos]);
 						}
-						codEventi.add(Integer.parseInt(string));
+						codEventi.add(Integer.parseInt(eventoAtt));
 					}
 					gg.put("eventodecodificato", ev);
 					gg.put("codEventi", codEventi);

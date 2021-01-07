@@ -44,7 +44,8 @@
 	<div ng-show="!configura">
 		<div ng-show="visPartitaLive">
 			<input type=button value="&#11192;" ng-click="visualizzaLive('')"></input>
-			<br>
+			<input ng-show="value.length==2" ng-repeat="(key, value)  in partitaLive" type=button value="&#11192; {{key}}" ng-click="visualizzaLive(key)"></input>
+			<br><br>
 			<table border>
 			<tr>
 				<td>
@@ -95,7 +96,7 @@
 					</label> 
 					<label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} --> {{squadra.proiezione}}</label> 
 					<input style="width: 45" ng-show="r.conLive" type=number ng-model="squadra.deltaModificatore"></input> 
-					<input type=checkbox ng-click="toggleCheckbox(r.nome,squadra)"></input> 
+					<input type=checkbox ng-checked="squadra.evidenza" ng-click="toggleCheckbox(r.nome,squadra)"></input> 
 					<img ng-click="simulaCambi(r,squadra)" ng-show="visSimulaCambi(squadra,r)" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
 					<div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1">
 							<visualizzasquadra r="r" eventi="eventi"  squadra="squadra"></visualizzasquadra>
