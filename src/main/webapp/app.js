@@ -84,25 +84,28 @@ app.run(
 			$rootScope.visPartitaLive="";
 			$rootScope.visualizzaLive=function(camp){
 				$rootScope.visPartitaLive=camp;
-				if (camp!=''){
-					$rootScope.squadra0=$rootScope.partitaLive[$rootScope.visPartitaLive][0];
-					$rootScope.squadra1=$rootScope.partitaLive[$rootScope.visPartitaLive][1];
-				}
-				else{
-					$rootScope.squadra0={};
-					$rootScope.squadra1={};
-				}
 			}
 			$rootScope.partitaLive={};
+			$rootScope.getSquadraByName= function(nomeSq){
+				var ret={};
+                angular.forEach($rootScope.result, function(value,camp) {
+	                angular.forEach(value.squadre, function(sq,chiave2) {
+	                	if (nomeSq==sq.nome){
+	                		ret=sq;
+	                	}
+	                });
+                });
+                return ret;
+			}
 			$rootScope.toggleCheckbox = function(camp,sq){
 				var pos=-1;
 				if ($rootScope.partitaLive[camp]){
-					pos=$rootScope.partitaLive[camp].indexOf(sq);
+					pos=$rootScope.partitaLive[camp].indexOf(sq.nome);
 				}else{
 					$rootScope.partitaLive[camp]=[];
 				}
 				if (pos==-1) {
-					$rootScope.partitaLive[camp].push(sq);
+					$rootScope.partitaLive[camp].push(sq.nome);
 				} else {
 					$rootScope.partitaLive[camp].splice(pos,1);
 				}
@@ -113,6 +116,15 @@ app.run(
 //					console.log(msg);
 					if (msg.res){
 						$rootScope.result=msg.res;
+		                angular.forEach($rootScope.result, function(value,camp) {
+			                angular.forEach(value.squadre, function(sq,chiave2) {
+			                	if ($rootScope.partitaLive[camp].indexOf(sq.nome)>-1){
+//			    					$rootScope.partitaLive[camp].push(sq.nome);
+			                	}
+			                });
+		                });
+
+						
 					}
 					if (msg.timeRefresh){
 						$rootScope.timeRefresh=msg.timeRefresh;
@@ -426,7 +438,7 @@ app.run(
 		                	$rootScope.partitaLive[camp]=[];
 			                angular.forEach(value.squadre, function(sq,chiave2) {
 			                	if (sq.evidenza){
-			    					$rootScope.partitaLive[camp].push(sq);
+			    					$rootScope.partitaLive[camp].push(sq.nome);
 			                	}
 			                });
 		                });
