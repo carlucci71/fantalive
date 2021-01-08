@@ -86,6 +86,15 @@ app.run(
 				$rootScope.visPartitaLive=camp;
 			}
 			$rootScope.partitaLive={};
+			$rootScope.getResultMyCampionato= function(campionato){
+				var ret={};
+                angular.forEach($rootScope.result, function(value,camp) {
+                	if (campionato==camp){
+                		ret=value;
+                	}
+                });
+                return ret;
+			}
 			$rootScope.getSquadraByName= function(nomeSq){
 				var ret={};
                 angular.forEach($rootScope.result, function(value,camp) {
@@ -366,22 +375,6 @@ app.run(
 				}
 				return deferred.promise;			
 			}
-			$rootScope.visSimulaCambi=function(sq,r){
-				if (!r.conLive) return false;
-				var iContaT=0;
-                angular.forEach(sq.titolari, function(value,chiave) {
-                	if (value.cambio) iContaT++;
-                });
-				if (iContaT==0) return false;
-				var iContaR=0;
-                angular.forEach(sq.riserve, function(value,chiave) {
-                	if (value.cambio) iContaR++;
-                });
-				if (iContaT==iContaR) 
-					return true;
-				else
-					return false;
-			}
 			$rootScope.salva=function(r){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
@@ -400,6 +393,22 @@ app.run(
 					else 
 						alert("Errore-3-3: " + angular.toJson(error));
 				});
+			}
+			$rootScope.visSimulaCambi=function(r,sq){
+				if (!r.conLive) return false;
+				var iContaT=0;
+                angular.forEach(sq.titolari, function(value,chiave) {
+                	if (value.cambio) iContaT++;
+                });
+				if (iContaT==0) return false;
+				var iContaR=0;
+                angular.forEach(sq.riserve, function(value,chiave) {
+                	if (value.cambio) iContaR++;
+                });
+				if (iContaT==iContaR) 
+					return true;
+				else
+					return false;
 			}
 			$rootScope.simulaCambi=function(r,sq){
 				$rootScope.inizio=new Date();
@@ -594,6 +603,10 @@ app.run(
 				});
 				return deferred.promise;	
 			}
+			$rootScope.campLive=function(campionato){
+				if (campionato==$rootScope.visPartitaLive) return "red";
+				return "orange";
+			}
 			$rootScope.inEv=function(squadra){
 				if (squadra.evidenza) return "red";
 				return "orange";
@@ -695,7 +708,8 @@ app.directive("visualizzasquadra", function() {
 		restrict: "E",
 		templateUrl: "/squadraTemplate.html",
 		scope: {
-			r: "=",
+			rcampionato: "=",
+			rlive: "=",
 			eventi: "=",
 			squadra: "="
 		},
