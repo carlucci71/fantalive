@@ -3,6 +3,7 @@ package fantalive.bl;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,81 +36,56 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 
 	@Override
 	public void onUpdateReceived(Update update) {
-		if(update.hasMessage()){
-			Long chatId = update.getMessage().getChatId();
-			String text = update.getMessage().getText();
-			if(update.getMessage().hasText()){
-				if(update.getMessage().getText().equals("/campionati")){
-					try {
-						execute(sendInlineKeyBoardCampionati(chatId,text, "analizza ",false));//COMANDO CAMPIONATO
-					} catch (TelegramApiException e) {
-						throw new RuntimeException(e);
+		try {
+			if(update.hasMessage()){
+				Long chatId = update.getMessage().getChatId();
+				String text = update.getMessage().getText();
+				if(update.getMessage().hasText()){
+					if(text.equals("/campionati")){
+						execute(sendInlineKeyBoardCampionati(chatId,text, "analizza ",false,text));
 					}
-				}
-				else if(update.getMessage().getText().equals("/proiezioni")){
-					try {
-						execute(sendInlineKeyBoardCampionati(chatId,text, "proietta ",true));//COMANDO PROIEZIONI
-//						inviaMessaggio(chatId,Main.proiezioni(), false);
-					} catch (Exception e) {
-						throw new RuntimeException(e);
+					else if(text.equals("/proiezioni")){
+						execute(sendInlineKeyBoardCampionati(chatId,text, "proietta ",true,text));
 					}
-				}
-				else {
-					try {
-						inviaMessaggio(chatId,text, true);//REPLY
-					} catch (TelegramApiException e) {
-						throw new RuntimeException(e);
+					else {
+						execute(creaSendMessage(chatId,text, true));//REPLY
 					}
 				}
 			}
-		}else if(update.hasCallbackQuery()){
-			Long chatId = update.getCallbackQuery().getMessage().getChatId();
-			String testoCallback = update.getCallbackQuery().getData();
-			if (testoCallback.startsWith("analizza")) {
-				try {
+			else if(update.hasCallbackQuery()){
+				final AnswerCallbackQuery answer = new AnswerCallbackQuery();
+				answer.setShowAlert(false);
+				answer.setCallbackQueryId(update.getCallbackQuery().getId());
+				answer.setText("OK: " + update.getCallbackQuery().getData());
+				Long chatId = update.getCallbackQuery().getMessage().getChatId();
+				String testoCallback = update.getCallbackQuery().getData();
+				if (testoCallback.startsWith("analizza")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
-					execute(sendInlineKeyBoardSquadre(chatId,testoCallback));//COMANDO ANALIZZA CAMPIONATO
-				} catch (TelegramApiException e) {
-					throw new RuntimeException(e);
+					execute(sendInlineKeyBoardSquadre(chatId,testoCallback, null,testoCallback));
 				}
-			}
-			else if (testoCallback.startsWith("proietta")) {
-				try {
-					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
-					inviaMessaggio(chatId,Main.proiezioni(testoCallback), false);//PROIETTA SQUADRA
-				} catch (Exception e) {
-					throw new RuntimeException(e);
+				else if (testoCallback.startsWith("proietta")) {
+					String campionato =testoCallback.substring(testoCallback.indexOf(" ")+1);
+					Map<String, Object> proiezioni = Main.proiezioni(campionato);
+					List<String> squadre=new ArrayList<>();
+					execute(sendInlineKeyBoardSquadre(chatId,campionato, (List<String>) proiezioni.get("squadre"),(String) proiezioni.get("testo")));
 				}
-			}
-			else if (testoCallback.startsWith("dettaglio")) {
-				try {
+				else if (testoCallback.startsWith("dettaglio")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					String[] split = testoCallback.split("#");
-					inviaMessaggio(chatId,Main.getDettaglio(chatId,split[0],split[1]), false);//SQUADRA
-					
-				} catch (TelegramApiException e) {
-					throw new RuntimeException(e);
+					execute(creaSendMessage(chatId,Main.getDettaglio(chatId,split[0],split[1]), false));
+
 				}
-			}
-			else {
-				try {
-					inviaMessaggio(chatId, "cosa hai mandato? " + testoCallback , false);
-				} catch (TelegramApiException e) {
-					throw new RuntimeException(e);
+				else {
+					execute(creaSendMessage(chatId, "cosa hai mandato? " + testoCallback , false));
+					answer.setShowAlert(true);
 				}
+				execute(answer);
 			}
-			final AnswerCallbackQuery answer = new AnswerCallbackQuery();
-            answer.setCallbackQueryId(update.getCallbackQuery().getId());
-            answer.setText("OK: " + update.getCallbackQuery().getData());
-            answer.setShowAlert(false);
-            try
-            {
-                execute(answer);
-            }
-            catch (Exception e)
-            {
-				throw new RuntimeException(e);
-            }
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace(System.out);
+//			throw new RuntimeException(e);
 		}
 	}
 
@@ -151,35 +127,45 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 
 	public void inviaMessaggio(long chatId,String msg,boolean bReply) throws TelegramApiException {
 		try {
-			execute(creaSendMessage(chatId, msg , bReply));//INVIA
+			execute(creaSendMessage(chatId, msg , bReply));
 		} catch (TelegramApiException e) {
 			throw e;
 		}
 	}
 	
 
-	private SendMessage sendInlineKeyBoardCampionati(long chatId, String msg, String cb, boolean all){
+	private SendMessage sendInlineKeyBoardCampionati(long chatId, String msg, String cb, boolean all, String testo){
 		InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 		inlineKeyboardMarkup.setKeyboard(generaElencoCampionati(cb,all));
-		return new SendMessage().setChatId(chatId).setText(msg).setReplyMarkup(inlineKeyboardMarkup);
+		return new SendMessage().enableHtml(true).setParseMode("html").setChatId(chatId).setText(testo).setReplyMarkup(inlineKeyboardMarkup);
 	}
 
-	private SendMessage sendInlineKeyBoardSquadre(long chatId, String msg){
+	private SendMessage sendInlineKeyBoardSquadre(long chatId, String campionato, List<String> squadrePuntuali, String testo){
 		InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-		inlineKeyboardMarkup.setKeyboard(generaElencoSquadre(msg));
-		return new SendMessage().setChatId(chatId).setText(msg).setReplyMarkup(inlineKeyboardMarkup);
+		inlineKeyboardMarkup.setKeyboard(generaElencoSquadre(campionato,squadrePuntuali));
+		return new SendMessage().enableHtml(true).setParseMode("html").setChatId(chatId).setText(testo).setReplyMarkup(inlineKeyboardMarkup);//
 	}
 
 
-	private List<List<InlineKeyboardButton>> generaElencoSquadre(String campionato) {
+	private List<List<InlineKeyboardButton>> generaElencoSquadre(String campionato, List<String> squadrePuntuali) {
 		try {
 			List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
 			Map<String, Return> go = Main.go(false, null, null);
-			Return return1 = go.get(campionato);
-			List<Squadra> squadre = return1.getSquadre();
-			for (Squadra squadra : squadre) {
+			Set<String> campionati=new HashSet<>();
+			if (campionato.equalsIgnoreCase("ALL")) {
+				campionati=go.keySet();
+			} else {
+				campionati.add(campionato);
+			}
+			for (String attCamp : campionati) {
+				Return return1 = go.get(attCamp);
 				List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-				keyboardButtonsRow1.add(new InlineKeyboardButton().setText(squadra.getNome()).setCallbackData("dettaglio " + campionato + "#"+ squadra.getNome()));
+				List<Squadra> squadre = return1.getSquadre();
+				for (Squadra squadra : squadre) {
+					if (squadrePuntuali == null || squadrePuntuali.contains(attCamp + "-" + squadra.getNome())) {
+						keyboardButtonsRow1.add(new InlineKeyboardButton().setText(squadra.getNome()).setCallbackData("dettaglio " + campionato + "#"+ squadra.getNome()));
+					}
+				}
 				rowList.add(keyboardButtonsRow1);
 			}
 			return rowList;

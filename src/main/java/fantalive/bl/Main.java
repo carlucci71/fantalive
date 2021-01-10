@@ -1568,7 +1568,9 @@ public class Main {
 		return evento[pos];
 	}
 
-	public static String proiezioni(String campionato) throws Exception {
+	public static Map<String, Object> proiezioni(String campionato) throws Exception {
+		Map<String, Object> ret = new HashMap<>();
+		List<String> squadreRet=new ArrayList<>();
 		StringBuilder sb = new StringBuilder();
 		Map<String, Return> go = go(true, null, null);
 		Set<String> keySet = go.keySet();
@@ -1612,13 +1614,15 @@ public class Main {
 						.append("Proiezione --> <b><i>")
 						.append(squadra.getProiezione())
 						.append("</i></b>\n\n");
-
+						squadreRet.add(key + "-" + squadra.getNome());
 					}
 
 				}
 			}
 		}
-		return sb.toString();
+		ret.put("testo", sb.toString());
+		ret.put("squadre", squadreRet);
+		return ret;
 	}
 
 
