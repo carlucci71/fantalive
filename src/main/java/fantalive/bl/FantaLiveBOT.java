@@ -159,14 +159,18 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 			}
 			for (String attCamp : campionati) {
 				Return return1 = go.get(attCamp);
-				List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
+				List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
 				List<Squadra> squadre = return1.getSquadre();
 				for (Squadra squadra : squadre) {
 					if (squadrePuntuali == null || squadrePuntuali.contains(attCamp + "-" + squadra.getNome())) {
-						keyboardButtonsRow1.add(new InlineKeyboardButton().setText(squadra.getNome()).setCallbackData("dettaglio " + campionato + "#"+ squadra.getNome()));
+						keyboardButtonsRow.add(new InlineKeyboardButton().setText(squadra.getNome()).setCallbackData("dettaglio " + campionato + "#"+ squadra.getNome()));
+						if (rowList.size()>3) {
+							rowList.add(keyboardButtonsRow);
+							keyboardButtonsRow = new ArrayList<>();
+						}
 					}
 				}
-				rowList.add(keyboardButtonsRow1);
+				rowList.add(keyboardButtonsRow);
 			}
 			return rowList;
 		}
