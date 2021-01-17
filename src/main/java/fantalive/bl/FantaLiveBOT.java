@@ -167,7 +167,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 							rowList.add(keyboardButtonsRow1);
 							keyboardButtonsRow1 = new ArrayList<>();
 						}
-						keyboardButtonsRow1.add(new InlineKeyboardButton().setText(squadra.getNome()).setCallbackData("dettaglio " + campionato + "#"+ squadra.getNome()));
+						keyboardButtonsRow1.add(new InlineKeyboardButton().setText(squadra.getNome()).setCallbackData("dettaglio " + attCamp + "#"+ squadra.getNome()));
 					}
 				}
 				rowList.add(keyboardButtonsRow1);
