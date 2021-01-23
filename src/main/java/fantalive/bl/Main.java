@@ -1257,13 +1257,13 @@ public class Main {
 				if (nomeG.equalsIgnoreCase("Donnarumma A.")) nomeG="Donnarumma An. ";
 				if (nomeG.equalsIgnoreCase("Alex Sandro .")) nomeG="Alex Sandro ";
 				if (nomeG.equalsIgnoreCase("Junior Messias ."))  nomeG="MESSIAS ";
+				if (nomeG.equalsIgnoreCase("Borja Mayoral .")) nomeG="MAYORAL ";
 /*
 			if (nomeG.toUpperCase().contains("ESSI")) {
 				System.err.println("*" + nomeG + "*");
 			}
 */
 
-				if (nomeG.equalsIgnoreCase("")) nomeG="";
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
