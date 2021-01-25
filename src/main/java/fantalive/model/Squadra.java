@@ -9,6 +9,7 @@ private int deltaModificatore=0;
 private int prog=0;
 private boolean evidenza=false;
 List<Giocatore> titolari=new ArrayList<Giocatore>();
+private List<PartitaSimulata> partiteSimulate=new ArrayList<PartitaSimulata>();
 private List<Giocatore> riserve=new ArrayList<Giocatore>();
 public String getNome() {
 	return nome;
@@ -67,6 +68,13 @@ public int getContaTitolari() {
 	}
 	return conta;
 }
+public int getContaNonCambiabili() {
+	int conta=0;
+	for (Giocatore giocatore : titolari) {
+		if (giocatore != null && giocatore.isNonCambiabile()) conta++;
+	}
+	return conta;
+}
 public int getContaSquadraTitolariNonGioca() {
 	int conta=0;
 	for (Giocatore giocatore : titolari) {
@@ -104,7 +112,7 @@ public double getMediaRiserve() {
 	return Math.ceil(getTotaleRiserve()/getContaRiserve()*100)/100;
 }
 public double getProiezione() {
-	return getTotaleTitolari() + 6 * (11-getContaTitolari()) + getDeltaModificatore();
+	return getTotaleTitolari() + 6 * (11-getContaTitolari() - getContaNonCambiabili()) + getDeltaModificatore();
 }
 public boolean isEvidenza() {
 	return evidenza;
@@ -129,6 +137,12 @@ public int getProg() {
 }
 public void setProg(int prog) {
 	this.prog = prog;
+}
+public List<PartitaSimulata> getPartiteSimulate() {
+	return partiteSimulate;
+}
+public void setPartiteSimulate(List<PartitaSimulata> partiteSimulate) {
+	this.partiteSimulate = partiteSimulate;
 }
 
 }

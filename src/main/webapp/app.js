@@ -95,11 +95,11 @@ app.run(
                 });
                 return ret;
 			}
-			$rootScope.getSquadraByName= function(nomeSq){
+			$rootScope.getSquadraByCampionatoAndName= function(camp,nomeSq){
 				var ret={};
                 angular.forEach($rootScope.result, function(value,camp) {
 	                angular.forEach(value.squadre, function(sq,chiave2) {
-	                	if (nomeSq==sq.nome){
+	                	if (camp==camp && nomeSq==sq.nome){
 	                		ret=sq;
 	                	}
 	                });
@@ -410,6 +410,41 @@ app.run(
 				else
 					return false;
 			}
+			$rootScope.delPartitaSimulata=function(sq,nome){
+				var ps=[];
+                angular.forEach(sq.partiteSimulate, function(value,key) {
+                	if (value.nome!=nome){
+                		ps.push(value);
+                	}
+                		
+                });
+				sq.partiteSimulate=ps;
+			}
+			$rootScope.simulaPartiteLive=function(){
+				$rootScope.partiteLive={};
+				$rootScope.nomiPartiteLive=[];
+                angular.forEach($rootScope.result, function(value,camp) {
+	                angular.forEach(value.squadre, function(sq,chiave2) {
+	                    angular.forEach(sq.partiteSimulate, function(ps,key) {
+	                    	console.log(ps);
+	                    	if (!$rootScope.partiteLive[ps.nome]){
+	                    		$rootScope.nomiPartiteLive.push(ps.nome);
+	                    		$rootScope.partiteLive[ps.nome]={};
+	                    		$rootScope.partiteLive[ps.nome].squadre=[];
+	                    	}
+                    		$rootScope.partiteLive[ps.nome].squadre.push(ps);
+		                });
+	                    $rootScope.visPartitaLive=$rootScope.nomiPartiteLive[0];
+	                });
+                });
+			}
+			$rootScope.addPartitaSimulata=function(campionato,squadra,nome){
+				var ps={};
+				ps.campionato=campionato;
+				ps.nome=nome;
+				ps.squadra=squadra.nome;
+				squadra.partiteSimulate.push(ps);
+			}
 			$rootScope.simulaCambi=function(r,sq){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
@@ -602,6 +637,9 @@ app.run(
 						alert("Errore-11-3: " + angular.toJson(error));
 				});
 				return deferred.promise;	
+			}
+			$rootScope.simPresente=function(squadra){
+				if (squadra.partiteSimulate.length>0) return "red";
 			}
 			$rootScope.campLive=function(campionato){
 				if (campionato==$rootScope.visPartitaLive) return "red";

@@ -21,6 +21,7 @@ public class Giocatore {
 	private String squadra;
 	private boolean cambio;
 	private boolean cambiato;
+	private boolean nonCambiabile;
 	private String idGioc;
 	private boolean notificaLive;
 	public String getRuolo() {
@@ -131,6 +132,12 @@ public class Giocatore {
 	}
 	public void setNotificaLive(boolean notificaLive) {
 		this.notificaLive = notificaLive;
+	}
+	public boolean isNonCambiabile() {
+		return nonCambiabile;
+	}
+	public void setNonCambiabile(boolean nonCambiabile) {
+		this.nonCambiabile = nonCambiabile;
 	}
 
 }

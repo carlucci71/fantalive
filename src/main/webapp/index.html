@@ -44,15 +44,15 @@
 	<div ng-show="!configura">
 		<div ng-show="visPartitaLive">
 			<input type=button value="&#11192;" ng-click="visualizzaLive('')"></input>
-			<input ng-style="{'color':campLive(key)}" ng-repeat="(key, value)  in partitaLive" type=button value="&#11192; {{key}}" ng-click="visualizzaLive(key)"></input>
+			<input ng-style="{'color':campLive(key)}" ng-repeat="(key, value)  in partiteLive" type=button value="&#11192; {{key}}" ng-click="visualizzaLive(key)"></input>
 			<br><br>
 			<table border>
 			<tr>
-				<td ng-repeat="squadralive in partitaLive[visPartitaLive]">
-					<label>{{getSquadraByName(squadralive).nome}} --> {{getSquadraByName(squadralive).proiezione}} </label>
-					<img ng-click="simulaCambi(getResultMyCampionato(visPartitaLive),getSquadraByName(squadralive))" ng-show="visSimulaCambi(getResultMyCampionato(visPartitaLive),getSquadraByName(squadralive))" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
-					<br>
-					<visualizzasquadra rcampionato="visPartitaLive" rlive="getResultMyCampionato(visPartitaLive).conLive"  eventi="eventi"   squadra="getSquadraByName(squadralive)"></visualizzasquadra>
+				<td ng-repeat="squadralive in partiteLive[visPartitaLive].squadre">
+				<label>{{getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra).nome}} -->{{getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra).proiezione}} </label>
+				<img ng-click="simulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" ng-show="visSimulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
+				<br>
+				<visualizzasquadra rcampionato="squadralive.campionato" rlive="getResultMyCampionato(squadralive.campionato).conLive"  eventi="eventi"   squadra="getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra)"></visualizzasquadra>
 				</td>
 			</tr>
 			</table>
@@ -79,13 +79,13 @@
 			</span> 
 			<br>
 			<br>
+			<input type=button value="&#11192;" ng-click="simulaPartiteLive()"></input>
 			<div ng-repeat="r in result">
 				<span ng-click="changeVis(r.nome)" style="color: red; background-color: yellow; cursor: pointer;">
 					<label>CAMPIONATO: {{r.nome}}</label> 
 					<i class="fa fa-chevron-down" ng-show="hiddenVis.indexOf(r.nome)<0"></i>
 					<i class="fa fa-chevron-up" ng-show="hiddenVis.indexOf(r.nome)>=0"></i>
 				</span>&nbsp; 
-				<input type=button value="&#11192;" ng-click="visualizzaLive(r.nome)"></input>
 				<img ng-click="salva(r)" ng-show="r.conLive" style="width: 20px; cursor: pointer;" title="salva" src="./ico/salva.jpeg"></img>
 				<div ng-show="hiddenVis.indexOf(r.nome)<0" ng-repeat="squadra in r.squadre | filtraSquadra track by $index">
 					<label ng-show="!loading" ng-click="changeSqEv(squadra)"> 
@@ -93,8 +93,22 @@
 					</label> 
 					<label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} --> {{squadra.proiezione}}</label> 
 					<input style="width: 45" ng-show="r.conLive" type=number ng-model="squadra.deltaModificatore"></input> 
-					<input type=checkbox ng-checked="partitaLive[r.nome].indexOf(squadra.nome)>-1" ng-click="toggleCheckbox(r.nome,squadra)"></input> 
+					<!-- 
+					<input type=checkbox ng-checked="partitaLive[r.nome].indexOf(squadra.nome)>-1" ng-click="toggleCheckbox(r.nome,squadra)"></input>
+					 --> 
 					<img ng-click="simulaCambi(r,squadra)" ng-show="visSimulaCambi(r,squadra)" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
+					<input type=button value="&#11192;" ng-style="{'color':simPresente(squadra)}" ng-click="addSimulazione=!addSimulazione"></input>
+					
+					<div ng-show="addSimulazione">
+						<div ng-repeat="partitaSimulata in squadra.partiteSimulate">
+							{{partitaSimulata.nome}} 
+							<span style="cursor: pointer;">
+								<i class="fa fa-trash" ng-click="delPartitaSimulata(squadra,partitaSimulata.nome)"></i>
+							</span>
+						</div>
+						<input type=text ng-model="nomePartitaSimulata"></input>
+						<input ng-show="nomePartitaSimulata" type=button value="add" ng-click="addPartitaSimulata(r.nome,squadra,nomePartitaSimulata)"></input>
+					</div>
 					<div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1">
 							<visualizzasquadra rcampionato="r.campionato" rlive="r.conLive" eventi="eventi"  squadra="squadra"></visualizzasquadra>
 					</div>
@@ -103,20 +117,9 @@
 		</div>
 	</div>
 	<div ng-show="configura">
-<!-- 
-	<textarea style="width:1000px;" type=text ng-model="fantaSoccerAuth"></textarea>
 	<br>
-	<button ng-click="setFantaSoccerAuth()">setFantaSoccerAuth</button> 
-	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
-	giornata<input type=number ng-model="giornata"></input>
-	<button ng-click="setGiornata()">setGiornata</button>
-	<br><br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
- --><br>
  	<button ng-click="preparaSquadre()">Prepara squadre</button>
 	<br>
-	<!-- 
-	<br>------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>
-	 -->
 	<textarea style="width:800px;height:200px " type=text ng-model="file"></textarea>
 	<br>
 	<button style="width:180px;"  ng-click="getFile('OD')">Get orari (DB)</button>

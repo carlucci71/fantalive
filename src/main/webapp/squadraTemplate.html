@@ -16,6 +16,7 @@
 		<td style="padding: 2px; widthX: 150px; text-align: center">{{getOrario(giocatore.orario)}}</td>
 		<td>
 			<input ng-show="rlive" type=checkbox ng-model="giocatore.cambio"></input>
+			<input ng-show="rlive" type=checkbox ng-model="giocatore.nonCambiabile"></input>
 		</td>
 	</tr>
 </table>
@@ -52,7 +53,10 @@
 			<label ng-show=giocatore.cambiato>(*)</label>
 		</td>
 		<td style="padding: 2px; widthX: 150px; text-align: center">{{getOrario(giocatore.orario)}}</td>
-		<td><input ng-show="rlive" type=checkbox ng-model="giocatore.cambio"></input></td>
+		<td>
+			<input ng-show="rlive" type=checkbox ng-model="giocatore.cambio"></input>
+			<input ng-show="rlive" type=checkbox ng-model="giocatore.nonCambiabile"></input>
+		</td>
 	</tr>
 </table>
 <br>
