@@ -44,7 +44,7 @@
 	<div ng-show="!configura">
 		<div ng-show="visPartitaLive">
 			<input type=button value="&#11192;" ng-click="visualizzaLive('')"></input>
-			<input ng-style="{'color':campLive(key)}" ng-repeat="(key, value)  in partiteLive" type=button value="&#11192; {{key}}" ng-click="visualizzaLive(key)"></input>
+			<input ng-style="{'color':campLive(key)}" ng-repeat="key  in nomiPartiteLive" type=button value="&#11192; {{key}}" ng-click="visualizzaLive(key)"></input>
 			<br><br>
 			<table border>
 			<tr>

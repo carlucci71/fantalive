@@ -420,13 +420,12 @@ app.run(
                 });
 				sq.partiteSimulate=ps;
 			}
-			$rootScope.simulaPartiteLive=function(){
+			$rootScope.simulaPartiteLive =function(){
 				$rootScope.partiteLive={};
 				$rootScope.nomiPartiteLive=[];
                 angular.forEach($rootScope.result, function(value,camp) {
 	                angular.forEach(value.squadre, function(sq,chiave2) {
 	                    angular.forEach(sq.partiteSimulate, function(ps,key) {
-	                    	console.log(ps);
 	                    	if (!$rootScope.partiteLive[ps.nome]){
 	                    		$rootScope.nomiPartiteLive.push(ps.nome);
 	                    		$rootScope.partiteLive[ps.nome]={};
@@ -434,8 +433,9 @@ app.run(
 	                    	}
                     		$rootScope.partiteLive[ps.nome].squadre.push(ps);
 		                });
-	                    $rootScope.visPartitaLive=$rootScope.nomiPartiteLive[0];
 	                });
+	                $rootScope.nomiPartiteLive.sort();
+                    $rootScope.visPartitaLive=$rootScope.nomiPartiteLive[0];
                 });
 			}
 			$rootScope.addPartitaSimulata=function(campionato,squadra,nome){
