@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
@@ -51,6 +52,7 @@ import fantalive.model.ConfigCampionato;
 import fantalive.model.Giocatore;
 import fantalive.model.Live;
 import fantalive.model.Notifica;
+import fantalive.model.PartitaSimulata;
 import fantalive.model.Return;
 import fantalive.model.RigaNotifica;
 import fantalive.model.Squadra;
@@ -1386,6 +1388,29 @@ public class Main {
 			salvaRepository.delete(nome);
 		}
 	}
+	public static Map<String, Object>  getPartitaSimulata(Long chatId, String nomePartitaSimulata) throws Exception{
+		Map<String, Object> ret = new HashMap<>();
+		List<String> squadreRet=new ArrayList<>();
+		StringBuilder sb = new StringBuilder();
+		Map<String, Return> go = Main.go(true,null, null);
+		for (String campionato : go.keySet()) {
+			Return return1 = go.get(campionato);
+			List<Squadra> squadre = return1.getSquadre();
+			for (Squadra squadra : squadre) {
+				List<PartitaSimulata> partiteSimulate = squadra.getPartiteSimulate();
+				for (PartitaSimulata partitaSimulata : partiteSimulate) {
+					if (partitaSimulata.getNome().equalsIgnoreCase(nomePartitaSimulata)) {
+						sb.append(proiezioneSquadra(squadra));
+						squadreRet.add(campionato + "-" + squadra.getNome());
+						ret.put("campionato", campionato);
+					}
+				}
+			}
+		}
+		ret.put("testo", sb.toString());
+		ret.put("squadre", squadreRet);
+		return ret;
+	}
 	public static String getDettaglio(Long chatId, String campionato, String squadra){
 		try {
 			Map<String, Return> go = Main.go(true, null, null);
@@ -1567,7 +1592,19 @@ public class Main {
 		if (r.equals(Campionati.BE.name())) pos=3;
 		return evento[pos];
 	}
-
+	public static Set<String> getpartiteSimulate(String campionato) throws Exception {
+		Set<String> ret=new TreeSet<>();
+		Map<String, Return> go = Main.go(false,null, null);
+		Return return1 = go.get(campionato);
+		List<Squadra> squadre = return1.getSquadre();
+		for (Squadra squadra : squadre) {
+			List<PartitaSimulata> partiteSimulate = squadra.getPartiteSimulate();
+			for (PartitaSimulata partitaSimulata : partiteSimulate) {
+				ret.add(partitaSimulata.getNome());
+			}
+		}
+		return ret;
+	}
 	public static Map<String, Object> proiezioni(String campionato) throws Exception {
 		Map<String, Object> ret = new HashMap<>();
 		List<String> squadreRet=new ArrayList<>();
@@ -1584,36 +1621,7 @@ public class Main {
 				List<Squadra> squadre = return1.getSquadre();
 				for (Squadra squadra : squadre) {
 					if (squadra.isEvidenza()) {
-						sb
-						.append("\n<b>")
-						.append(squadra.getNome())
-						.append("</b>\n")
-						.append("Titolari")
-						.append("\n")
-						.append("Giocatori con voto: ")
-						.append(squadra.getContaTitolari())
-						.append("\n")
-						.append("Media votati: ")
-						.append(squadra.getMediaTitolari())
-						.append("\n")
-						.append("Ancora da giocare: ")
-						.append(squadra.getContaSquadraTitolariNonGioca())
-						.append("\n")
-						.append("Totale: ")
-						.append(squadra.getTotaleTitolari())
-						.append("\n")
-						.append("\n")
-						.append("Riserve")
-						.append("\n")
-						.append("Giocatori con voto: ")
-						.append(squadra.getContaRiserve())
-						.append("\n")
-						.append("Ancora da giocare: ")
-						.append(squadra.getContaSquadraRiserveNonGioca())
-						.append("\n\n")
-						.append("Proiezione --> <b><i>")
-						.append(squadra.getProiezione())
-						.append("</i></b>\n\n");
+						sb.append(proiezioneSquadra(squadra));
 						squadreRet.add(key + "-" + squadra.getNome());
 					}
 
@@ -1623,6 +1631,41 @@ public class Main {
 		ret.put("testo", sb.toString());
 		ret.put("squadre", squadreRet);
 		return ret;
+	}
+
+	private static StringBuilder proiezioneSquadra(Squadra squadra) {
+		StringBuilder sb=new StringBuilder();
+		sb
+		.append("\n<b>")
+		.append(squadra.getNome())
+		.append("</b>\n")
+		.append("Titolari")
+		.append("\n")
+		.append("Giocatori con voto: ")
+		.append(squadra.getContaTitolari())
+		.append("\n")
+		.append("Media votati: ")
+		.append(squadra.getMediaTitolari())
+		.append("\n")
+		.append("Ancora da giocare: ")
+		.append(squadra.getContaSquadraTitolariNonGioca())
+		.append("\n")
+		.append("Totale: ")
+		.append(squadra.getTotaleTitolari())
+		.append("\n")
+		.append("\n")
+		.append("Riserve")
+		.append("\n")
+		.append("Giocatori con voto: ")
+		.append(squadra.getContaRiserve())
+		.append("\n")
+		.append("Ancora da giocare: ")
+		.append(squadra.getContaSquadraRiserveNonGioca())
+		.append("\n\n")
+		.append("Proiezione --> <b><i>")
+		.append(squadra.getProiezione())
+		.append("</i></b>\n\n");
+		return sb;
 	}
 
 

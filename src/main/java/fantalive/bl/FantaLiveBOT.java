@@ -42,10 +42,13 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 				String text = update.getMessage().getText();
 				if(update.getMessage().hasText()){
 					if(text.equals("/campionati")){
-						execute(sendInlineKeyBoardCampionati(chatId,text, "analizza ",false,text));
+						execute(sendInlineKeyBoardCampionati(chatId,"campionati ",false,text));
 					}
 					else if(text.equals("/proiezioni")){
-						execute(sendInlineKeyBoardCampionati(chatId,text, "proietta ",true,text));
+						execute(sendInlineKeyBoardCampionati(chatId,"proiezioni ",true,text));
+					}
+					else if(text.equals("/simulazioni")){
+						execute(sendInlineKeyBoardPartiteSimulate(chatId,"simula ",text));
 					}
 					else {
 						execute(creaSendMessage(chatId,text, true));//REPLY
@@ -59,20 +62,25 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 				answer.setText("OK: " + update.getCallbackQuery().getData());
 				Long chatId = update.getCallbackQuery().getMessage().getChatId();
 				String testoCallback = update.getCallbackQuery().getData();
-				if (testoCallback.startsWith("analizza")) {
+				if (testoCallback.startsWith("campionati")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					execute(sendInlineKeyBoardSquadre(chatId,testoCallback, null,testoCallback));
 				}
-				else if (testoCallback.startsWith("proietta")) {
+				else if (testoCallback.startsWith("proiezioni")) {
 					String campionato =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					Map<String, Object> proiezioni = Main.proiezioni(campionato);
-					List<String> squadre=new ArrayList<>();
 					execute(sendInlineKeyBoardSquadre(chatId,campionato, (List<String>) proiezioni.get("squadre"),(String) proiezioni.get("testo")));
 				}
 				else if (testoCallback.startsWith("dettaglio")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					String[] split = testoCallback.split("#");
 					execute(creaSendMessage(chatId,Main.getDettaglio(chatId,split[0],split[1]), false));
+
+				}
+				else if (testoCallback.startsWith("simulata")) {
+					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
+					Map<String, Object> proiezioni = Main.getPartitaSimulata(chatId,testoCallback);
+					execute(sendInlineKeyBoardSquadre(chatId,(String) proiezioni.get("campionato"), (List<String>) proiezioni.get("squadre"),(String) proiezioni.get("testo")));
 
 				}
 				else {
@@ -132,21 +140,21 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 			throw e;
 		}
 	}
-	
-
-	private SendMessage sendInlineKeyBoardCampionati(long chatId, String msg, String cb, boolean all, String testo){
+	private SendMessage sendInlineKeyBoardPartiteSimulate(long chatId, String cb, String testo){
 		InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-		inlineKeyboardMarkup.setKeyboard(generaElencoCampionati(cb,all));
+		inlineKeyboardMarkup.setKeyboard(generaElencoPartiteSimulate());
 		return new SendMessage().enableHtml(true).setParseMode("html").setChatId(chatId).setText(testo).setReplyMarkup(inlineKeyboardMarkup);
 	}
-
+	private SendMessage sendInlineKeyBoardCampionati(long chatId, String testoCallBack, boolean all, String testo){
+		InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+		inlineKeyboardMarkup.setKeyboard(generaElencoCampionati(testoCallBack,all));
+		return new SendMessage().enableHtml(true).setParseMode("html").setChatId(chatId).setText(testo).setReplyMarkup(inlineKeyboardMarkup);
+	}
 	private SendMessage sendInlineKeyBoardSquadre(long chatId, String campionato, List<String> squadrePuntuali, String testo){
 		InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 		inlineKeyboardMarkup.setKeyboard(generaElencoSquadre(campionato,squadrePuntuali));
-		return new SendMessage().enableHtml(true).setParseMode("html").setChatId(chatId).setText(testo).setReplyMarkup(inlineKeyboardMarkup);//
+		return new SendMessage().enableHtml(true).setParseMode("html").setChatId(chatId).setText(testo).setReplyMarkup(inlineKeyboardMarkup);
 	}
-
-
 	private List<List<InlineKeyboardButton>> generaElencoSquadre(String campionato, List<String> squadrePuntuali) {
 		try {
 			List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
@@ -178,7 +186,24 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 			throw new RuntimeException(e);
 		}
 	}
-
+	private List<List<InlineKeyboardButton>> generaElencoPartiteSimulate() {
+		try {
+			List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+			Campionati[] campionati = Main.Campionati.values();
+			for (Campionati campionato : campionati) {
+				List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
+				Set<String> getpartiteSimulate = Main.getpartiteSimulate(campionato.name());
+				for (String partitaSimulata : getpartiteSimulate) {
+					keyboardButtonsRow1.add(new InlineKeyboardButton().setText(partitaSimulata).setCallbackData("simulata " + partitaSimulata));
+				}
+				rowList.add(keyboardButtonsRow1);
+			}
+			return rowList;
+		}
+		catch (Exception e ) {
+			throw new RuntimeException(e);
+		}
+	}
 	private List<List<InlineKeyboardButton>> generaElencoCampionati(String cb, boolean all) {
 		try {
 			List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
@@ -197,8 +222,6 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 			throw new RuntimeException(e);
 		}
 	}
-	
-
 	private SendMessage creaSendMessage(long chatId,String msg, boolean bReply) {
 		SendMessage sendMessage = new SendMessage();
 		sendMessage.enableHtml(true);
