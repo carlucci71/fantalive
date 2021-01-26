@@ -18,7 +18,7 @@ public class RiallineaDB {
 	public static void main(String[] args) throws Exception {
 		Constant c=null;
 		
-		Class<?> cl = Class.forName("fantalive.util.ConstantDev");
+		Class<?> cl = Class.forName("fantalive.util.ConstantDevelop");
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
 		
