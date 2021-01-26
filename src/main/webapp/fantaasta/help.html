@@ -1,0 +1,34 @@
+<h1 id="funzionalit-di-gioco">Funzionalità di gioco</h1>
+<p>La pagina è divisa in accordion, in modo da collassare le sezioni che non si vogliono vedere. Sono presenti dei suggerimenti, in rosso, contestualizzati per suggerire l&#39;operatività da effettuare. In modalità mantra, oltre ai ruoli, è previsto un macro ruolo per aiutare i filtri.</p>
+<h4 id="accordion-link">Accordion Link</h4>
+<p>E&#39; possibile accedere a:</p>
+<ul>
+<li><strong>pagina di amministrazione</strong> oltre alle funzionalità descritte in precedenza per l&#39;amministratore chiunque potrà personalizzare il proprio nome e la propria password.</li>
+<li><strong>elenco offerte</strong> oltre alla cronologia delle offerte l&#39;amministratore potrà cancellare una offerta salvata</li>
+<li><strong>log</strong> cronologia di tutte le operazioni dispositive effettuate con indicazione oraria e indirizzo IP</li>
+<li><strong>giocatori liberi</strong> elenco dei giocatori ancora disponibili, filtrabili per nome/ruolo/squadra/quotazione (&quot;maggiore di&quot; oppure mettendo il - &quot;minore di&quot;). E&#39; possibile persolizzare un proprio elenco di giocatori preferiti, per filtrarli nella pagina delle offerte.
+E&#39; inoltre possibile aprire una scheda di dettaglio del giocatore.</li>
+<li><strong>riepilogo</strong> situazione riassuntiva per allenatore dei giocatori presi. In questa pagina è possibile <strong>esportare</strong> i dati per il sito, se tipo lega mantra o in formato csv generico</li>
+</ul>
+<h4 id="accordion-allenatori">Accordion allenatori</h4>
+<p>Una volta caricato l&#39;url dell&#39;applicazione è possibile connettersi cliccando sull&#39;apposita icona, se si è settata una passowrd verrà richiesta altrimenti l&#39;accesso sarà diretto.
+Una volta connessi si potrà uscire scollegarsi tramite l&#39;icona vicino al proprio nome oppure dal cestino in alto a destra. L&#39;amministratore può escludere qualunque altro allenatore tramite l&#39;icona del cestino. Se un allenatore non contatta il backend per più di 20 secondi (conteggiato da latenza) potrà essere cacciato da chiunque.
+In ciascuna riga sarà presente una icona, per segnalare l&#39;effettivo collegamento degli altri allenatori. L&#39;indicazione del giocatore di turno (forzabile dall&#39;amministratore) e un riepilogo dei giocatori presi (dettagliato per ruolo).
+E&#39; presente anche la possibilità di configurare la frequenza di <strong>refresh</strong> del client verso il backend. Si <strong>sconsigliano</strong> valori sotto i 1000 ms.
+Solo l&#39;amministratore, avrà anche la possibilità di avviare un&#39;asta per un altro allenatore, tramite l&#39;icona che appare una volta selezionato un giocatore.</p>
+<h4 id="accordion-offerte">Accordion offerte</h4>
+<p>Se è il proprio turno (o se si è amministratori) la prima attività da fare sarà <strong>selezionare</strong> il calciatore da offrire ed <strong>avviare</strong> l&#39;asta (la durata è personalizzabile dall&#39;amministratore nella pagina di admin). Dopo che sarà avviata, tutti gli allenatori vedranno il <strong>progressivo del tempo rimanente</strong> per effettuare un rilancio, la <strong>situazione aggiornata</strong> ed avranno la possibilità di <strong>rilanciare</strong> quanto indicato nell&#39;apposito campo. Esiste la possibilità di <strong>allineare in automatico</strong> con i rilanci degli altri allenatori o <strong>manualmente</strong> con l&#39;apposita icona. Inoltre esistono le scorciatoie per puntare <strong>+1, +5 o +10</strong>. 
+E&#39; possibile filtrare i giocatori per ruolo, nome, squadra, quotazione (mettendo il numero negativo si filtra per &quot;minore di&quot; altrimenti per &quot;maggiore di&quot;) e per preferiti.
+Non è prevista la possibilità di aggiungere i preferiti in questa pagina, ma solo in quella dei giocatori liberi.
+E&#39; inoltre possibile aprire una scheda di dettaglio del giocatore.
+Chiunque potrà sospendere il conto alla rovescia con il bottone <strong>pausa</strong>.
+Sono presenti i controlli per <strong>bloccare</strong> l&#39;avvio ed il rilancio in caso di credito insufficiente o slot ruolo già completo.</p>
+<p>L&#39;<strong>amministratore</strong> avrà le seguenti possibilità aggiuntive:</p>
+<ul>
+<li>operare per qualunque altro allenatore.</li>
+<li>azzerare il tempo</li>
+<li>terminare l&#39;asta in anticipo</li>
+</ul>
+<p>Quando il tempo finisce, o l&#39;amministratore termina l&#39;asta, questo potrà <strong>confermare</strong> o <strong>annullare</strong> l&#39;asta appena conclusa.</p>
+<h4 id="accordion-log-sessione-corrente">Accordion log sessione corrente</h4>
+<p>Verranno elencate tutte le attività effettuate, fino all&#39;avvio di una nuova asta.</p>
