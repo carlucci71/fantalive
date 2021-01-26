@@ -3,6 +3,7 @@ package fantalive.model;
 public class PartitaSimulata {
 private String nome;
 private String squadra;
+private boolean casa;
 private String campionato;
 public String getNome() {
 	return nome;
@@ -21,5 +22,11 @@ public String getCampionato() {
 }
 public void setCampionato(String campionato) {
 	this.campionato = campionato;
+}
+public boolean isCasa() {
+	return casa;
+}
+public void setCasa(boolean casa) {
+	this.casa = casa;
 }
 }

@@ -49,7 +49,7 @@
 			<table border>
 			<tr>
 				<td ng-repeat="squadralive in partiteLive[visPartitaLive].squadre">
-				<label>{{getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra).nome}} -->{{getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra).proiezione}} </label>
+				<label>{{getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra).nome}} -->{{calcolaProiezione(squadralive)}} </label>
 				<img ng-click="simulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" ng-show="visSimulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
 				<br>
 				<visualizzasquadra rcampionato="squadralive.campionato" rlive="getResultMyCampionato(squadralive.campionato).conLive"  eventi="eventi"   squadra="getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra)"></visualizzasquadra>
@@ -101,13 +101,14 @@
 					
 					<div ng-show="addSimulazione">
 						<div ng-repeat="partitaSimulata in squadra.partiteSimulate">
-							{{partitaSimulata.nome}} 
+							{{partitaSimulata.nome}} - {{partitaSimulata.casa}} 
 							<span style="cursor: pointer;">
 								<i class="fa fa-trash" ng-click="delPartitaSimulata(squadra,partitaSimulata.nome)"></i>
 							</span>
 						</div>
 						<input type=text ng-model="nomePartitaSimulata"></input>
-						<input ng-show="nomePartitaSimulata" type=button value="add" ng-click="addPartitaSimulata(r.nome,squadra,nomePartitaSimulata)"></input>
+						<input type=checkbox ng-model="casaPartitaSimulata"></input>
+						<input ng-show="nomePartitaSimulata" type=button value="add" ng-click="addPartitaSimulata(r.nome,squadra,nomePartitaSimulata,casaPartitaSimulata)"></input>
 					</div>
 					<div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1">
 							<visualizzasquadra rcampionato="r.campionato" rlive="r.conLive" eventi="eventi"  squadra="squadra"></visualizzasquadra>

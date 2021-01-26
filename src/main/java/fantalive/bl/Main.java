@@ -1400,7 +1400,7 @@ public class Main {
 				List<PartitaSimulata> partiteSimulate = squadra.getPartiteSimulate();
 				for (PartitaSimulata partitaSimulata : partiteSimulate) {
 					if (partitaSimulata.getNome().equalsIgnoreCase(nomePartitaSimulata)) {
-						sb.append(proiezioneSquadra(squadra));
+						sb.append(proiezioneSquadra(squadra, partitaSimulata.isCasa()));
 						squadreRet.add(campionato + "-" + squadra.getNome());
 						ret.put("campionato", campionato);
 					}
@@ -1621,7 +1621,7 @@ public class Main {
 				List<Squadra> squadre = return1.getSquadre();
 				for (Squadra squadra : squadre) {
 					if (squadra.isEvidenza()) {
-						sb.append(proiezioneSquadra(squadra));
+						sb.append(proiezioneSquadra(squadra,false));
 						squadreRet.add(key + "-" + squadra.getNome());
 					}
 
@@ -1633,7 +1633,9 @@ public class Main {
 		return ret;
 	}
 
-	private static StringBuilder proiezioneSquadra(Squadra squadra) {
+	private static StringBuilder proiezioneSquadra(Squadra squadra, boolean casa) {
+		int iCasa=0;
+		if (casa) iCasa=2;
 		StringBuilder sb=new StringBuilder();
 		sb
 		.append("\n<b>")
@@ -1663,7 +1665,7 @@ public class Main {
 		.append(squadra.getContaSquadraRiserveNonGioca())
 		.append("\n\n")
 		.append("Proiezione --> <b><i>")
-		.append(squadra.getProiezione())
+		.append(squadra.getProiezione()+iCasa)
 		.append("</i></b>\n\n");
 		return sb;
 	}

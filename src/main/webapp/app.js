@@ -438,8 +438,13 @@ app.run(
                     $rootScope.visPartitaLive=$rootScope.nomiPartiteLive[0];
                 });
 			}
-			$rootScope.addPartitaSimulata=function(campionato,squadra,nome){
+			$rootScope.addPartitaSimulata=function(campionato,squadra,nome,casa){
 				var ps={};
+				if (casa){
+					ps.casa=true;
+				}else{
+					ps.casa=false;
+				}
 				ps.campionato=campionato;
 				ps.nome=nome;
 				ps.squadra=squadra.nome;
@@ -463,6 +468,13 @@ app.run(
 					else 
 						alert("Errore-4-3: " + angular.toJson(error));
 				});
+			}
+			$rootScope.calcolaProiezione=function(squadralive){
+				var casa=0;
+				if (squadralive.casa){
+					casa=2;
+				}
+				return $rootScope.getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra).proiezione + casa;
 			}
 			$rootScope.ricaricaIndex=function(){
 				var deferred = $q.defer();
