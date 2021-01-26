@@ -61,7 +61,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Main {
 	
 	public static final String URL_NOTIFICA_NAS = "http://192.168.1.83:7080/fantalive-0.0.1-SNAPSHOT/";
-	public static final String URL_NOTIFICA_HEROKU = "https://fantalive71.herokuapp.com/";
+	public static final String URL_NOTIFICA_HEROKU = "https://fantalive71.herokuapp.com/fantalive/index.html";
 
 	public static final int DELTA_VIVA_FG=2;
 	public static final int DELTA_LUCCICAR_FG=3;
