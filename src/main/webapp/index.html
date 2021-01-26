@@ -43,8 +43,8 @@
  	<br>
 	<div ng-show="!configura">
 		<div ng-show="visPartitaLive">
-			<input type=button value="&#11192;" ng-click="visualizzaLive('')"></input>
-			<input ng-style="{'color':campLive(key)}" ng-repeat="key  in nomiPartiteLive" type=button value="&#11192; {{key}}" ng-click="visualizzaLive(key)"></input>
+			<input type=button value="&#9851;" ng-click="visualizzaLive('')"></input>
+			<input ng-style="{'color':campLive(key)}" ng-repeat="key  in nomiPartiteLive" type=button value="&#9851; {{key}}" ng-click="visualizzaLive(key)"></input>
 			<br><br>
 			<table border>
 			<tr>
@@ -79,7 +79,7 @@
 			</span> 
 			<br>
 			<br>
-			<input type=button value="&#11192;" ng-click="simulaPartiteLive()"></input>
+			<input type=button value="&#9851;" ng-click="simulaPartiteLive()"></input>
 			<div ng-repeat="r in result">
 				<span ng-click="changeVis(r.nome)" style="color: red; background-color: yellow; cursor: pointer;">
 					<label>CAMPIONATO: {{r.nome}}</label> 
@@ -97,7 +97,7 @@
 					<input type=checkbox ng-checked="partitaLive[r.nome].indexOf(squadra.nome)>-1" ng-click="toggleCheckbox(r.nome,squadra)"></input>
 					 --> 
 					<img ng-click="simulaCambi(r,squadra)" ng-show="visSimulaCambi(r,squadra)" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
-					<input type=button value="&#11192;" ng-style="{'color':simPresente(squadra)}" ng-click="addSimulazione=!addSimulazione"></input>
+					<input type=button value="&#9851;" ng-style="{'color':simPresente(squadra)}" ng-click="addSimulazione=!addSimulazione"></input>
 					
 					<div ng-show="addSimulazione">
 						<div ng-repeat="partitaSimulata in squadra.partiteSimulate">
