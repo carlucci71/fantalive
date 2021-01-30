@@ -832,7 +832,7 @@ public class Main {
 							else {
 								partitaSimulata.setCasa(false);
 							}
-							partitaSimulata.setNome(lega + "-" + progPartita);
+							partitaSimulata.setNome(lega.substring(0,2) + progPartita);
 							partitaSimulata.setSquadra(squadra.getNome());
 							partiteSimulate.add(partitaSimulata);
 							squadra.setPartiteSimulate(partiteSimulate);
@@ -1232,7 +1232,7 @@ public class Main {
 		else {
 			partitaSimulata.setCasa(false);
 		}
-		partitaSimulata.setNome(Campionati.BE.name() + "-" + progPartita);
+		partitaSimulata.setNome(Campionati.BE.name() + progPartita);
 		partitaSimulata.setSquadra(squadra.getNome());
 		partiteSimulate.add(partitaSimulata);
 		squadra.setPartiteSimulate(partiteSimulate);
