@@ -111,7 +111,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	public static void main(String[] args) throws Exception {
 		Constant c=null;
 		
-		Class<?> cl = Class.forName("fantalive.util.ConstantDevelop");
+		Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
 		

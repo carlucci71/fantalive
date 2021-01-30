@@ -46,8 +46,8 @@
 			<input type=button value="&#9851;" ng-click="visualizzaLive('')"></input>
 			<input ng-style="{'color':campLive(key)}" ng-repeat="key  in nomiPartiteLive" type=button value="&#9851; {{key}}" ng-click="visualizzaLive(key)"></input>
 			<br><br>
-			<table border>
-			<tr>
+			<table>
+			<tr style="vertical-align:top">
 				<td ng-repeat="squadralive in partiteLive[visPartitaLive].squadre">
 				<label>{{getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra).nome}} -->{{calcolaProiezione(squadralive)}} </label>
 				<img ng-click="simulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" ng-show="visSimulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
@@ -56,6 +56,7 @@
 				</td>
 			</tr>
 			</table>
+
 		</div>
 		<div ng-show="!visPartitaLive">
 			<button ng-show="!loading" ng-click="ricaricaIndex()">Ricarica</button>
@@ -76,10 +77,9 @@
 				 <input type=checkBox ng-model=liveFilter></input>
 				 preferiti 
 				 <input type=checkBox ng-model=favFilter></input>
-			</span> 
 			<br>  
-			<br>
 			<input type=button value="&#9851;" ng-click="simulaPartiteLive()"></input>
+			</span> 
 			<div ng-repeat="r in result">
 				<span ng-click="changeVis(r.nome)" style="color: red; background-color: yellow; cursor: pointer;">
 					<label>CAMPIONATO: {{r.nome}}</label> 
