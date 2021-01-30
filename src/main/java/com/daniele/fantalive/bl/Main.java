@@ -65,7 +65,7 @@ public class Main {
 
 	public static final int DELTA_VIVA_FG=2;
 	public static final int DELTA_LUCCICAR_FG=3;
-	public static final String COMP_VIVA_FG = "250964";
+	public static final String COMP_VIVA_FG = "250798";//champions 250964 coppa 250991 250798
 	public static final String COMP_LUCCICAR_FG = "306919";
 
 	public static final int DELTA_FS=3;
@@ -636,7 +636,7 @@ public class Main {
 		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
 		try {
 			for (int i=0;i<4;i++) {
-				HttpGet httpget = new HttpGet("https://www.fanta.soccer/it/lega/privata/" + COMP_FS + "/dettaglipartita/" + String.valueOf(constant.GIORNATA-DELTA_FS) + "/" + String.valueOf(i + PRIMA_GIORNATA_FS + (NUM_PARTITE_FS*(constant.GIORNATA-DELTA_FS))) + "/");
+				HttpGet httpget = new HttpGet("https://www.fanta.soccer/it/lega/privata/" + COMP_FS + "/dettaglipartita/" + String.valueOf(constant.GIORNATA-DELTA_FS) + "/" + String.valueOf(i + PRIMA_GIORNATA_FS + (NUM_PARTITE_FS*(constant.GIORNATA-DELTA_FS-1))) + "/");
 				ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 					@Override
 					public String handleResponse(
@@ -807,31 +807,49 @@ public class Main {
 		if (jsonToMap.get("data") == null) throw new RuntimeException("aggiornare KeyFG per " + lega);
 		List<Map> l = (List<Map>) ((Map<String, Object>)jsonToMap.get("data")).get("formazioni");
 		int contaSq=0;
-		for (int k=0;k<2;k++) {
-			for (Map<String, List<Map>> map : l) {
-				if (map.get("sq").size()>k) {
-					List<Map> giocatori = (List<Map>) map.get("sq").get(k).get("pl");
-					if (giocatori != null) {
-						for (int i=0;i<giocatori.size();i++) {
-							if (i==0) {
-								Squadra squadra = new Squadra();
-								squadre.add(squadra);
-								squadra.setNome(nomiFG.get(map.get("sq").get(0).get("id").toString()));
-								contaSq++;
+		int progPartita=0;
+		for (Map<String, List<Map>> map : l) {
+			if (!lega.equalsIgnoreCase(Campionati.LUCCICAR.name())) {
+				progPartita++;
+			}
+			List<Map> list = map.get("sq");
+			int contaSquadre=0;
+			for (Map map2 : list) {
+				contaSquadre++;
+				List<Map> giocatori = (List<Map>) map2.get("pl");
+				if (giocatori != null) {
+					for (int i=0;i<giocatori.size();i++) {
+						if (i==0) {
+							Squadra squadra = new Squadra();
+							squadre.add(squadra);
+							squadra.setNome(nomiFG.get(map2.get("id").toString()));
+							List<PartitaSimulata> partiteSimulate=new ArrayList<>();
+							PartitaSimulata partitaSimulata=new PartitaSimulata();
+							partitaSimulata.setCampionato(lega);
+							if (!lega.equalsIgnoreCase(Campionati.LUCCICAR.name()) && (contaSquadre == 1)) {
+								partitaSimulata.setCasa(true);
 							}
-							Giocatore g = new Giocatore();
-							g.setId(giocatori.get(i).get("id").toString());
-							g.setNome(giocatori.get(i).get("n").toString());
-							g.setNomeTrim(giocatori.get(i).get("n").toString().replaceAll(" ", ""));
-							g.setRuolo(giocatori.get(i).get("r").toString());
-							g.setSquadra(giocatori.get(i).get("t").toString());
-
-							if (i<11) {
-								squadre.get(contaSq-1).getTitolari().add(g);
-							} 
 							else {
-								squadre.get(contaSq-1).getRiserve().add(g);
+								partitaSimulata.setCasa(false);
 							}
+							partitaSimulata.setNome(lega + "-" + progPartita);
+							partitaSimulata.setSquadra(squadra.getNome());
+							partiteSimulate.add(partitaSimulata);
+							squadra.setPartiteSimulate(partiteSimulate);
+							contaSq++;
+						}
+						Giocatore g = new Giocatore();
+						g.setId(giocatori.get(i).get("id").toString());
+						g.setNome(giocatori.get(i).get("n").toString());
+						g.setNomeTrim(giocatori.get(i).get("n").toString().replaceAll(" ", ""));
+						g.setRuolo(giocatori.get(i).get("r").toString());
+						g.setSquadra(giocatori.get(i).get("t").toString());
+
+						if (i<11) {
+							squadre.get(contaSq-1).getTitolari().add(g);
+						} 
+						else {
+							squadre.get(contaSq-1).getRiserve().add(g);
 						}
 					}
 				}
@@ -1195,7 +1213,7 @@ public class Main {
 		return squadre;
 	}
 
-	public static Squadra getFromFS(Document doc, String dove ) {
+	public static Squadra getFromFS(Document doc, String dove, int progPartita ) {
 		Element first = doc.select(".table-formazione" + dove.toLowerCase() + "-fantapartita").first();
 		Elements select = first.select("th");
 		Squadra squadra = new Squadra();
@@ -1204,6 +1222,22 @@ public class Main {
 			nomeSq=nomeSq.substring(0,nomeSq.lastIndexOf(" "));
 		}
 		squadra.setNome(nomeSq);
+
+		List<PartitaSimulata> partiteSimulate=new ArrayList<>();
+		PartitaSimulata partitaSimulata=new PartitaSimulata();
+		partitaSimulata.setCampionato(Campionati.BE.name());
+		if (dove.equalsIgnoreCase("Casa")) {
+			partitaSimulata.setCasa(true);
+		}
+		else {
+			partitaSimulata.setCasa(false);
+		}
+		partitaSimulata.setNome(Campionati.BE.name() + "-" + progPartita);
+		partitaSimulata.setSquadra(squadra.getNome());
+		partiteSimulate.add(partitaSimulata);
+		squadra.setPartiteSimulate(partiteSimulate);
+
+		
 		for (int i=0;i<11;i++) {
 			Giocatore giocatore = estraiGiocatoreFromFS(doc,i,dove,"Titolari");
 			if (giocatore != null) {

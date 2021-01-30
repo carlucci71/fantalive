@@ -469,8 +469,9 @@ public class MyController {
 				String nome = Campionati.BE.name()+i + ".html";
 				String testo=Main.getTesto(nome);
 				Document doc = Jsoup.parse(testo);
-				squadre.add(Main.getFromFS(doc, "Casa"));
-				squadre.add(Main.getFromFS(doc, "Trasferta"));
+				System.out.println(testo);
+				squadre.add(Main.getFromFS(doc, "Casa",i));
+				squadre.add(Main.getFromFS(doc, "Trasferta",i));
 				Main.cancellaSalva(nome);
 			}
 			Main.upsertSalva(Constant.FORMAZIONE + Campionati.BE.name(), Main.toJson(squadre));

@@ -430,6 +430,9 @@ app.run(
 	                    		$rootScope.partiteLive[ps.nome].squadre=[];
 	                    	}
                     		$rootScope.partiteLive[ps.nome].squadre.push(ps);
+	                    	if (ps.casa){
+	                    		$rootScope.partiteLive[ps.nome].squadre.reverse();
+	                    	}
 		                });
 	                });
 	                $rootScope.nomiPartiteLive.sort();
