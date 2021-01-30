@@ -1,0 +1,25 @@
+#CONFIGURAZIONE h2
+#spring.datasource.url=jdbc:p6spy:h2:mem:testdb
+#spring.datasource.username=sa
+#spring.datasource.password=password
+
+
+#CONFIGURAZIONE MYSQL
+#spring.datasource.url=jdbc:p6spy:mysql://localhost:3306/asta
+#spring.datasource.username=asta
+#spring.datasource.password=asta
+
+#CONFIGURAZIONE POSTGRES
+spring.datasource.url=jdbc:p6spy:postgresql://localhost:5432/postgres
+spring.datasource.username=postgres
+spring.datasource.password=postgresNPL123
+
+
+#CONFIGURAZIONI GENERALI
+#in spy.properties metti APPEND=FALSE se la chiave spring.jpa.hibernate.ddl-auto=create, APPEND=TRUE se la chiave spring.jpa.hibernate.ddl-auto=update
+spring.jpa.hibernate.ddl-auto=update
+spring.datasource.driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+server.port=8080
+server.session.timeout=-1 
+spring.profiles.active=protetto
+security.user.name=mialega

@@ -1,0 +1,13 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="modal-title">Accesso all'appicazione</h3>
+</div>
+<div class="modal-body" id="modal-body">
+    <label>Inserire la password</label>
+    <input  style='width: 300px;'  type="password"  ng-model="modalePwd"></input>
+    
+</div>
+<div class="modal-footer">
+<label>{{pc.data}}</label>
+    <button class="btn btn-primary btnModale" ng-click="pc.ok(modalePwd)">OK</button>
+    <button class="btn btn-warning btnModale" ng-click="pc.cancel()">Cancel</button>
+</div>

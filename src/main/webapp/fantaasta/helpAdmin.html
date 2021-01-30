@@ -1,0 +1,102 @@
+<h1 id="descrizione">Descrizione</h1>
+<p>Fantaasta è una applicazione per gestire, in modalità online, le asta del fantacalcio. Funziona sia in modalità singolo utente (&quot;amministratore&quot;) che con accessi multipli. Sono previsti due stile di presentazioni una per schermi fino a 980px ed una per schermi maggiori.</p>
+<h1 id="configurazione-iniziale">Configurazione iniziale</h1>
+<p>Funziona sia con database MySql/Postgres che H2 in memory (in questo caso tutte le informazioni si perdono al riavvio del programma, anche se esiste una modalità di recupero da file che verrà spiegata in seguito). </p>
+<p>Per creare un database ed un utente su mysql si può usare lo script seguente:</p>
+<pre><code><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">USER</span> <span class="hljs-string">'asta'</span>@<span class="hljs-string">'%'</span> <span class="hljs-keyword">IDENTIFIED</span> <span class="hljs-keyword">by</span> <span class="hljs-string">'asta'</span>;
+<span class="hljs-keyword">GRANT</span> ALL <span class="hljs-keyword">PRIVILEGES</span> <span class="hljs-keyword">ON</span> *.* <span class="hljs-keyword">TO</span> <span class="hljs-string">'asta'</span>@<span class="hljs-string">'%'</span> REQUIRE <span class="hljs-keyword">NONE</span> <span class="hljs-keyword">WITH</span> <span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">OPTION</span> MAX_QUERIES_PER_HOUR <span class="hljs-number">0</span> MAX_CONNECTIONS_PER_HOUR <span class="hljs-number">0</span> MAX_UPDATES_PER_HOUR <span class="hljs-number">0</span> MAX_USER_CONNECTIONS <span class="hljs-number">0</span>;<span class="hljs-keyword">GRANT</span> ALL <span class="hljs-keyword">PRIVILEGES</span> <span class="hljs-keyword">ON</span> asta.* <span class="hljs-keyword">TO</span> <span class="hljs-string">'asta'</span>@<span class="hljs-string">'%'</span>;
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">DATABASE</span> asta;
+</code></pre><p>Nel file <code>application.properties</code> configurare opportunamente le seguenti chiavi (ci sono già dei valori di esempio da scommentare):</p>
+<pre><code>spring<span class="hljs-selector-class">.datasource</span><span class="hljs-selector-class">.url</span>=
+spring<span class="hljs-selector-class">.datasource</span><span class="hljs-selector-class">.username</span>=
+spring<span class="hljs-selector-class">.datasource</span><span class="hljs-selector-class">.password</span>=
+</code></pre><p>Se il database è h2 o la prima esecuzione di mysql/postgres configurare le chiavi:
+<code>application.properties</code></p>
+<pre><code>spring<span class="hljs-selector-class">.jpa</span><span class="hljs-selector-class">.hibernate</span><span class="hljs-selector-class">.ddl-auto</span>=create
+</code></pre><p><code>spy.properties</code></p>
+<pre><code><span class="hljs-attr">append</span> = <span class="hljs-literal">false</span>
+</code></pre><p>Se il database è mysql/postgres, dalla seconda esecuzione cambiare i valori in (se si vuole partire dai dati salvati in precedenza senza perdere tutto ad ogni esecuzione):</p>
+<pre><code>spring<span class="hljs-selector-class">.jpa</span><span class="hljs-selector-class">.hibernate</span><span class="hljs-selector-class">.ddl-auto</span>=update
+</code></pre><p><code>spy.properties</code></p>
+<pre><code><span class="hljs-attr">append</span> = <span class="hljs-literal">true</span>
+</code></pre><p>E&#39; possibile configurare la porta modificando la chiave:
+<code>application.properties</code></p>
+<pre><code><span class="hljs-keyword">server</span>.port=<span class="hljs-number">8081</span>
+</code></pre><p>E&#39; possibile <strong>proteggere</strong> l&#39;accesso alla pagina principale abilitando la chiave:
+<code>application.properties</code></p>
+<pre><code>spring<span class="hljs-selector-class">.profiles</span><span class="hljs-selector-class">.active</span>=protetto
+</code></pre><p>In tal caso, verrà richiesto di digitare il nome della lega e si accederà alle pagine successive solo se corrisponde alla chiave:
+<code>application.properties</code></p>
+<pre><code>security<span class="hljs-selector-class">.user</span><span class="hljs-selector-class">.name</span>
+</code></pre><p> il cui valore di default è <code>mialega</code></p>
+<h1 id="esecuzione-dell-applicazione">Esecuzione dell&#39;applicazione</h1>
+<p>L&#39;applicazione si può avviare con il seguente comando, dalla root del progetto:
+<code>mvn spring-boot:run</code></p>
+<h1 id="attivit-iniziali-dopo-il-primo-accesso">Attività iniziali dopo il primo accesso</h1>
+<p>Al primo accesso verrà chiesto di inserire i seguenti valori:</p>
+<ul>
+<li>Modalità Mantra o classica</li>
+<li>Numero utenti</li>
+<li>Budget</li>
+<li>Secondi durata asta</li>
+<li>Se le chiamate verranno fatte a turno o chiunque può chiamare senza ordine</li>
+<li>La composizione delle rose, indicando il numero minimo/massimo di Portieri, Difensori, Centrocampisti e Attaccanti per la modalità classica oppure il numero minimo di portieri ed il totale minimo/massimo di giocatori totali acquistabili</li>
+</ul>
+<p>Confermando questi dati verrà caricata la pagina di admin in cui sarà possibile:</p>
+<ul>
+<li>Cambiare i nomi degli allenatori</li>
+<li>Impostare le password</li>
+<li>Attribuire il ruolo di admin agli allenatori</li>
+<li>Cambiare l&#39;ordine degli allenatori (per le chiamate a turni)</li>
+<li>Modificare altre informazioni già presentate in precedenza</li>
+</ul>
+<p>Se si modifica qualche informazione, andrà confermata con il bottone <code>aggiorna configurazione</code>.</p>
+<p>In questa pagina è presente anche il bottone <code>AZZERA TUTTO</code> per cancellare il db e ricominciare.</p>
+<p>L&#39;ultima attività di configurazione da effettuare consiste nel caricare la lista dei calciatori. Produrre il file da caricare nelle seguenti modalità:</p>
+<ul>
+<li>fantaservice (se deselezionata la scelta Mantra):
+recuperando l&#39;elenco da <a href="https://www.fanta.soccer/it/archivioquotazioni/A/2020-2021/">https://www.fanta.soccer/it/archivioquotazioni/A/2020-2021/</a></li>
+<li>leghefantacalcio  (se selezionata la scelta Mantra)
+scarica lista svincolati da <a href="https://leghe.fantacalcio.it/fanta-viva/lista-svincolati">https://leghe.fantacalcio.it/fanta-viva/lista-svincolati</a>, aprilo con excel, rimuovi le prime 4 righe, -esporta - cambia tipo file - testo delimitato da tabulazione e salva con nome</li>
+</ul>
+<p>Sono presenti due file di esempio.</p>
+<h1 id="funzionalit-di-gioco">Funzionalità di gioco</h1>
+<p>La pagina è divisa in accordion, in modo da collassare le sezioni che non si vogliono vedere. Sono presenti dei suggerimenti, in rosso, contestualizzati per suggerire l&#39;operatività da effettuare. In modalità mantra, oltre ai ruoli, è previsto un macro ruolo per aiutare i filtri.</p>
+<h4 id="accordion-link">Accordion Link</h4>
+<p>E&#39; possibile accedere a:</p>
+<ul>
+<li><strong>pagina di amministrazione</strong> oltre alle funzionalità descritte in precedenza per l&#39;amministratore chiunque potrà personalizzare il proprio nome e la propria password.</li>
+<li><strong>elenco offerte</strong> oltre alla cronologia delle offerte l&#39;amministratore potrà cancellare una offerta salvata</li>
+<li><strong>log</strong> cronologia di tutte le operazioni dispositive effettuate con indicazione oraria e indirizzo IP</li>
+<li><strong>giocatori liberi</strong> elenco dei giocatori ancora disponibili, filtrabili per nome/ruolo/squadra/quotazione (&quot;maggiore di&quot; oppure mettendo il - &quot;minore di&quot;). E&#39; possibile persolizzare un proprio elenco di giocatori preferiti, per filtrarli nella pagina delle offerte.
+E&#39; inoltre possibile aprire una scheda di dettaglio del giocatore.</li>
+<li><strong>riepilogo</strong> situazione riassuntiva per allenatore dei giocatori presi. In questa pagina è possibile <strong>esportare</strong> i dati per il sito, se tipo lega mantra o in formato csv generico</li>
+</ul>
+<h4 id="accordion-allenatori">Accordion allenatori</h4>
+<p>Una volta caricato l&#39;url dell&#39;applicazione è possibile connettersi cliccando sull&#39;apposita icona, se si è settata una passowrd verrà richiesta altrimenti l&#39;accesso sarà diretto.
+Una volta connessi si potrà uscire scollegarsi tramite l&#39;icona vicino al proprio nome oppure dal cestino in alto a destra. L&#39;amministratore può escludere qualunque altro allenatore tramite l&#39;icona del cestino. Se un allenatore non contatta il backend per più di 20 secondi (conteggiato da latenza) potrà essere cacciato da chiunque.
+In ciascuna riga sarà presente una icona, per segnalare l&#39;effettivo collegamento degli altri allenatori. L&#39;indicazione del giocatore di turno (forzabile dall&#39;amministratore) e un riepilogo dei giocatori presi (dettagliato per ruolo).
+E&#39; presente anche la possibilità di configurare la frequenza di <strong>refresh</strong> del client verso il backend. Si <strong>sconsigliano</strong> valori sotto i 1000 ms.
+Solo l&#39;amministratore, avrà anche la possibilità di avviare un&#39;asta per un altro allenatore, tramite l&#39;icona che appare una volta selezionato un giocatore.</p>
+<h4 id="accordion-offerte">Accordion offerte</h4>
+<p>Se è il proprio turno (o se si è amministratori) la prima attività da fare sarà <strong>selezionare</strong> il calciatore da offrire ed <strong>avviare</strong> l&#39;asta (la durata è personalizzabile dall&#39;amministratore nella pagina di admin). Dopo che sarà avviata, tutti gli allenatori vedranno il <strong>progressivo del tempo rimanente</strong> per effettuare un rilancio, la <strong>situazione aggiornata</strong> ed avranno la possibilità di <strong>rilanciare</strong> quanto indicato nell&#39;apposito campo. Esiste la possibilità di <strong>allineare in automatico</strong> con i rilanci degli altri allenatori o <strong>manualmente</strong> con l&#39;apposita icona. Inoltre esistono le scorciatoie per puntare <strong>+1, +5 o +10</strong>. 
+E&#39; possibile filtrare i giocatori per ruolo, nome, squadra, quotazione (mettendo il numero negativo si filtra per &quot;minore di&quot; altrimenti per &quot;maggiore di&quot;) e per preferiti.
+Non è prevista la possibilità di aggiungere i preferiti in questa pagina, ma solo in quella dei giocatori liberi.
+E&#39; inoltre possibile aprire una scheda di dettaglio del giocatore.
+Chiunque potrà sospendere il conto alla rovescia con il bottone <strong>pausa</strong>.
+Sono presenti i controlli per <strong>bloccare</strong> l&#39;avvio ed il rilancio in caso di credito insufficiente o slot ruolo già completo.</p>
+<p>L&#39;<strong>amministratore</strong> avrà le seguenti possibilità aggiuntive:</p>
+<ul>
+<li>operare per qualunque altro allenatore.</li>
+<li>azzerare il tempo</li>
+<li>terminare l&#39;asta in anticipo</li>
+</ul>
+<p>Quando il tempo finisce, o l&#39;amministratore termina l&#39;asta, questo potrà <strong>confermare</strong> o <strong>annullare</strong> l&#39;asta appena conclusa.</p>
+<h4 id="accordion-log-sessione-corrente">Accordion log sessione corrente</h4>
+<p>Verranno elencate tutte le attività effettuate, fino all&#39;avvio di una nuova asta.</p>
+<h1 id="ripristino-database">Ripristino database</h1>
+<p>Sia con il database H2 che con MySql (avendo l&#39;accortezza di settare il parametro APPEND come indicato in precedenza sul file <code>spy.properties</code>) è possibile ripristinare un database ad un salvataggio precedente.</p>
+<p>Tutte le operazioni sul db sono tracciate nel file indicato dalla chiave logfile del <code>spy.properties</code> (il valore di default è spyAsta.log che verrà generato nella cartella di avvio dell&#39;applicazione).
+Se la chiave APPEND sarà indicata a true, verranno accodate le istruzioni per ogni riavvio dell&#39;applicazione.</p>
+<p>In caso di crash dell&#39;applicazione è possibile recuperare questo file, salvarlo in un altro path, ad es. c:\restoreAs.txt e, una volta riavviata l&#39;applicazione, ripristinare questa fotografia di database con il comando:
+<code>curl -X POST &quot;http://localhost:8081/restore&quot; -H &quot;accept: application/json&quot; -H &quot;Content-Type: application/json&quot; -d &quot;{ \&quot;PATH\&quot;: \&quot;C:\\restoreAs.txt\&quot;}&quot;</code></p>

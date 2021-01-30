@@ -1,0 +1,33 @@
+<html>
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>Riepilogo</title>
+</head>
+<link href="./stile.css" rel="stylesheet" type="text/css">
+<link href="./bootstrap.css" rel="stylesheet" type="text/css">
+<link href="./bootstrap-theme.css" rel="stylesheet" type="text/css">
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-resource.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
+<script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<script type="text/javascript" src="./app.js"></script>
+
+<body  x-ng-app="app" style="margin-left:20px">
+<div  ng-repeat="(allenatore, value)  in giocatoriPerSquadra"><label>{{allenatore}} </label>
+	Speso: {{value.spese.speso}} Presi:{{value.spese.conta}} Max rilancio:{{value.spese.maxRilancio}}
+	<div  style="margin-left:100px" ng-repeat="(ruolo, listaGiocatoriPresi)  in value.ruoli"><label>{{ruolo}} -></label> 
+		<span ng-repeat="g in listaGiocatoriPresi">
+			{{g.giocatore}} ({{g.squadra}}) <span style="color:blue">{{g.ruolo}}</span>{{g.under23}} ({{g.costo}})&nbsp;
+		</span> 	
+		<br>
+	</div>
+	<br>
+</div>
+<a ng-show="isMantra" href="./esportaMantra">export per sito</a>
+<a ng-show="!isMantra" href="./esporta">export</a>
+</body>
+</html>

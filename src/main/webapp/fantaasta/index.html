@@ -1,0 +1,506 @@
+<html>
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>FantaAsta</title>
+</head>
+<link href="./stile.css" rel="stylesheet" type="text/css">
+
+<link href="./bootstrap.css" rel="stylesheet" type="text/css">
+<link href="./bootstrap-theme.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-resource.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
+<script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
+<script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.6.1/angular-locale_it-it.min.js"></script>
+    
+<script type="text/javascript" src="./app.js"></script>
+
+<script>
+</script>
+<body x-ng-app="app" style="margin-left:20px">
+ <div ng-controller="ModalDemoCtrl as pc" class="modal-demo">
+	<!-- 
+	     <button type="button" class="btn btn-default" ng-click="open()">Open me!</button>
+	 -->
+ </div>
+ 	<div ng-show="connessioneKO">
+ 		<label class="nextOperation">{{connessioneKO}}</label>
+ 	</div>
+ 
+	<div class="utenteLoggato" ng-show="nomegiocatore && !connessioneKO">
+		Buona fortuna {{nomegiocatore}}
+		<img ng-click="forzaLogout()" class="imgForzaLogout" style="margin-bottom:2px;cursor:pointer" title="disconntetti" src='./cestino.png'/>
+	</div>
+	<span ng-show=false style="background-color:red;width: 10%;border-style: dotted;border-22px;border-color:yellow;position:absolute;">xxx</span>
+	
+<div ng-show="config && !connessioneKO">
+	<label>CONFIGURAZIONE</label>
+	<br><br>
+	<label style="width:190">Mantra</label>
+		<i title="mantra" ng-click="scegliMantra()" ng-show="isMantra" class="fa fa-check-square"></i>
+		<i title="mantra" ng-click="scegliMantra()" ng-show="!isMantra" class="fa fa-square"></i>
+	<br>
+	<label style="width:190">Numero utenti:</label><input  class="inputDato" type="number"  ng-model="numeroUtenti"></input>
+	<br>
+	<label style="width:190">Budget:</label><input  class="inputDato" type="number"  ng-model="budget"></input>
+	<br>
+	<label style="width:190">Secondi durata asta:</label><input  class="inputDato" type="number"  ng-model="durataAstaDefault"></input>
+	<br>
+	<label style="width:190">Gestione a turni</label>
+		<i title="gestione a turni" ng-click="isATurni=!isATurni" ng-show="isATurni" class="fa fa-check-square"></i>
+		<i title="gestione a turni" ng-click="isATurni=!isATurni" ng-show="!isATurni" class="fa fa-square"></i>
+	<br>
+	<label style="width:190">Gestione singolo admin</label>
+		<i title="gestione a turni" ng-click="isSingle=!isSingle" ng-show="isSingle" class="fa fa-check-square"></i>
+		<i title="gestione a turni" ng-click="isSingle=!isSingle" ng-show="!isSingle" class="fa fa-square"></i>
+	<br>
+	<label style="width:190;color:red">Composizione rose</label>
+	<table>
+		<tr>
+			<td></td>
+			<td style="text-align:center">Min</td>
+			<td style="text-align:center">Max</td>
+		</tr>
+		<tr>
+			<td style="padding-right:10px">Portieri</td>
+			<td><input style="width:40;text-align:center" ng-model="minP" type=number></input></td>
+			<td><input ng-show="!isMantra" style="width:40;text-align:center" ng-model="maxP" type=number></input></td>
+		</tr>
+		<tr ng-show="!isMantra">
+			<td style="padding-right:10px">Difensori</td>
+			<td><input style="width:40;text-align:center" ng-model="minD" type=number></input></td>
+			<td><input style="width:40;text-align:center" ng-model="maxD" type=number></input></td>
+		</tr>
+		<tr ng-show="!isMantra">
+			<td style="padding-right:10px">Centrocampisti</td>
+			<td><input style="width:40;text-align:center" ng-model="minC" type=number></input></td>
+			<td><input style="width:40;text-align:center" ng-model="maxC" type=number></input></td>
+		</tr>
+		<tr>
+			<td style="padding-right:10px"ng-show="!isMantra">Attaccanti</td>
+			<td style="padding-right:10px"ng-show="isMantra">Totali</td>
+			<td><input style="width:40;text-align:center" ng-model="minA" type=number></input></td>
+			<td><input style="width:40;text-align:center" ng-model="maxA" type=number></input></td>
+		</tr>
+	</table>
+	<button ng-show="numeroUtenti>1 && durataAstaDefault>1" ng-click="confermaConfigIniziale()">conferma</button>
+</div>
+
+<div ng-show="!config && !connessioneKO">
+	<div class="sezione" ng-click="sezLinkVisible=!sezLinkVisible">
+		<i class="fa fa-chevron-down" ng-show="!sezLinkVisible"></i>
+		<i class="fa fa-chevron-up" ng-show="sezLinkVisible"></i>
+		Link
+	</div>
+	<div ng-show="sezLinkVisible" > <!-- LINK -->
+		<a ng-show="nomegiocatore && bSemaforoAttivo" href="#" ng-click="caricaAdmin()">Admin</a>
+		<a href="./cronologiaOfferte.html" ng-click="aggiornaCronologiaOfferte()" target="_blank">Offerte</a>
+		<a href="./logger.html" target="_blank">Log</a>
+		<a href="./liberi.html" target="_blank">Liberi</a>
+		<a href="./riepilogo.html" target="_blank">Riepilogo</a>
+		<a ng-show="isAdmin" href="./helpAdmin.html" target="_blank">Help</a>
+		<a ng-show="!isAdmin" href="./help.html" target="_blank">Help</a>
+	</div> <!-- LINK -->
+	
+	<div class="sezione" ng-click="sezUtentiVisible=!sezUtentiVisible">
+		<i class="fa fa-chevron-down" ng-show="!sezUtentiVisible"></i>
+		<i class="fa fa-chevron-up" ng-show="sezUtentiVisible"></i>
+	Allenatori</div>
+	<div ng-show="sezUtentiVisible"> <!-- UTENTI -->
+		<br>
+		<table border>
+		  <tr>
+		  	<td class="tabellaUtenti"></td>
+		  	<td ng-show="isATurni" class="tabellaUtenti" >Turno</td>
+		  	<td class="tabellaUtenti">Presi</td>
+		  	<td ng-show="isMantra" class="tabellaUtenti">Por</td>
+		  	<td ng-show="isMantra" class="tabellaUtenti">Tot</td>
+		  	<td ng-show="!isMantra" class="tabellaUtenti">P</td>
+		  	<td ng-show="!isMantra" class="tabellaUtenti">D</td>
+		  	<td ng-show="!isMantra" class="tabellaUtenti">C</td>
+		  	<td ng-show="!isMantra" class="tabellaUtenti">A</td>
+		  	<td class="tabellaUtenti">Max</td>
+		  </tr>
+		  <tr ng-repeat="utente in elencoAllenatori  | orderBy:'ordine'">
+		    	<td> <!-- nome -->
+		    		<label ng-class="{nonSonoIo: utente.nome!=nomegiocatore, sonoIo: utente.nome==nomegiocatore}">{{utente.nome}}</label>
+			    	<!-- <br> -->
+			    	<img ng-show="!nomegiocatore && utenti.indexOf(utente.nome)==-1" class="imgConnetti" style="margin-bottom:2px;cursor:pointer" title='connetti' src='./connect-icon.png' ng-click="callDoConnect(utente.nome, utente.id, utente.pwd)"/>
+					<img title="connesso" class="imgConnetti" ng-show="utenti.indexOf(utente.nome)>-1" style="margin-bottom:2px" src='./connesso.jpeg' />		    	
+		    		<img ng-show="utente.nome!=nomegiocatore && ((isAdmin && utenti.indexOf(utente.nome)>-1) || utentiScaduti.indexOf(utente.nome)>-1)" title="cancella utente" style="cursor:pointer"class="imgConnetti" src='./cestino.png' ng-click="cancellaUtente(utente)" />
+				    <img ng-show="utente.nome==nomegiocatore" class="imgConnetti" style="margin-bottom:2px;cursor:pointer" src='./disconnect-icon.png' title='disconnetti' ng-click="doDisconnect()" />
+					<img ng-show="isAdmin && selCalciatore && durataAsta>0 && avviabili.indexOf(utente.nome)>=0" title="avvia asta"  class="imgConnetti" style="margin-bottom:2px;cursor:pointer" src='./startGiocatore.png' ng-click="inizia(utente.nome, utente.id)" />
+					<label class="lblLatenza" ng-show="utenti.indexOf(utente.nome)>-1">({{latenza(utente)}})</label>
+				</td>
+		    	<td ng-show="isATurni" style="padding-left:10px;padding-right:10px;text-align:center">  <!-- turno -->
+					<label ng-show="utente.ordine==turno"><i class="fa fa-thumbs-up"></i></label>
+					<img title="forza turno" ng-show="isAdmin && utente.ordine!=turno" class="imgConnetti" style="margin-bottom:2px;cursor:pointer" src='./vai.png' ng-click="forzaTurno(utente.ordine)" />
+				</td>
+		    	<td ng-class="calcolaClassePresi('',utente.nome,numMinAcquisti,numAcquisti)">  <!-- presi -->
+		    		{{getFromMapSpesoTotale('CONTA',utente.nome)}} ({{getFromMapSpesoTotale('SPESO',utente.nome)}})
+		    	</td>
+		    	<td ng-class="calcolaClassePresiPerRuolo('P',utente.nome,minP,maxP)">  <!-- presiP -->
+		    		{{getFromMapSpesoTotale('CONTAP',utente.nome)}} ({{getFromMapSpesoTotale('SPESOP',utente.nome)}})
+		    	</td>
+		    	<td ng-show="!isMantra" ng-class="calcolaClassePresiPerRuolo('D',utente.nome)">  <!-- presiD -->
+		    		{{getFromMapSpesoTotale('CONTAD',utente.nome)}} ({{getFromMapSpesoTotale('SPESOD',utente.nome)}})
+		    	</td>
+		    	<td ng-show="!isMantra" ng-class="calcolaClassePresiPerRuolo('C',utente.nome)">  <!-- presiC -->
+		    		{{getFromMapSpesoTotale('CONTAC',utente.nome)}} ({{getFromMapSpesoTotale('SPESOC',utente.nome)}})
+		    	</td>
+		    	<td ng-show="!isMantra" ng-class="calcolaClassePresiPerRuolo('A',utente.nome)">  <!-- presiA -->
+		    		{{getFromMapSpesoTotale('CONTAA',utente.nome)}} ({{getFromMapSpesoTotale('SPESOA',utente.nome)}})
+		    	</td>
+		    	<td ng-show="isMantra" ng-class="calcolaClassePresiPerRuolo('ALL',utente.nome)">  <!-- presiA -->
+		    		{{getFromMapSpesoTotale('CONTAALL',utente.nome)}} ({{getFromMapSpesoTotale('SPESOALL',utente.nome)}})
+		    	</td>
+		    	<td class="nonTuttiPresi">  <!-- max -->
+		    		{{getFromMapSpesoTotale('MAXRILANCIO',utente.nome)}}
+		    	</td>
+		  </tr>
+		</table>
+		<br>
+		<label class="nextOperation" ng-show="!nomegiocatore && elencoAllenatori.length==0">Lega in fase di inizializzazione</label>
+		<label class="nextOperation" ng-show="!nomegiocatore && elencoAllenatori.length>0">Connettiti</label>
+		<div ng-show="nomegiocatore && false">		
+			<label>Frequenza refresh (ms). </label>
+			<input class="inputLarge" type="number" ng-model="timePing" ng-change="aggiornaTimePing(timePing)"></input>
+			<label ng-show="timePing<1000" class="nextOperation" >Sconsigliato refresh minore di 1000ms</label>
+		</div>
+	</div> <!-- UTENTI -->
+	<div ng-show="nomegiocatore"> 
+		<div class="sezione" ng-click="sezOfferte=!sezOfferte">
+		<i class="fa fa-chevron-down" ng-show="!sezOfferte"></i>
+		<i class="fa fa-chevron-up" ng-show="sezOfferte"></i>
+	Offerte</div>
+		<div ng-show="sezOfferte"> <!-- OFFERTA -->
+			<br>
+			<div ng-show="bSemaforoAttivo && calciatori.length>0" style="padding-left:0px;padding-right:20px;"> <!-- SELCALCIATORE -->
+					<div ng-show="isAdmin || nomeGiocatoreTurno==nomegiocatore || !isATurni"  style="padding-top:10px;border-style:double;width:98%;text-align:center;margin: auto">
+						<div>
+			 				 <div style="text-align:center;overflow-y:scroll;padding-bottom:0px;padding-top:0px">
+								 <input ng-show="isMantra" class="divInputCalciatore calcSize1" style="text-align:center" type=text ng-model=filterMacroRuolo></input>
+								 <input class="divInputCalciatore calcSize1" style="text-align:center" type=text ng-model=filterRuolo></input>
+								 <input class="divInputCalciatore calcSize2" style="text-align:center" type=text ng-model=filterNome></input>
+								 <input class="divInputCalciatore calcSize3" style="text-align:center" type=text ng-model=filterSquadra></input>
+								 <input class="divInputCalciatore calcSize3" style="text-align:center" type=text ng-model=filterQuotazione></input>
+								 <i style="width:50px;text-align:center" title="preferito" ng-click="filterPreferito=!filterPreferito" ng-show="filterPreferito" class="fa fa-check-square"></i>
+								 <i style="width:50px;text-align:center" title="preferito" ng-click="filterPreferito=!filterPreferito" ng-show="!filterPreferito" class="fa fa-square"></i>
+						   		 <span style="width:100px;text-align:center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span ng-show="isMantra">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
+							</div>
+						 </div>
+						 <div class="selCalciatore" style="text-align:center;overflow-y:scroll;">
+							 <div ng-class="{calciatoreNonSelezionato: selCalciatoreId!=calciatore.id, calciatoreSelezionato: selCalciatoreId==calciatore.id}" 
+							 ng-repeat="calciatore in calciatori | orderBy:'nome' | myTableFilter" ng-click="selezionaCalciatore(calciatore)" >
+								 <label ng-show="isMantra" class="divCalciatore calcSize1" style="text-align:center;cursor:pointer">{{calciatore.macroRuolo}}</label>
+								 <label class="divCalciatore calcSize1" style="text-align:center;cursor:pointer">{{calciatore.ruolo}}</label>
+								 <label class="divCalciatore calcSize2" style="text-align:center;cursor:pointer">{{calciatore.nome}}</label>
+								 <label class="divCalciatore calcSize3" style="text-align:center;cursor:pointer">{{calciatore.squadra.substr(0,3)}}</label>
+								 <label class="divCalciatore calcSize3" style="text-align:center;cursor:pointer">{{calciatore.quotazione}}</label>
+								 <i style="width:50px;text-align:center" ng-show="!calciatore.preferito" class="fa fa-star-o" aria-hidden="true"></i>			
+								 <i style="width:50px;text-align:center" ng-show="calciatore.preferito" class="fa fa-star" aria-hidden="true"></i>			
+						   		 <span style="width:100px;text-align:center">
+							   		 <i title="dettaglio" class="fa fa-info-circle" style="cursor:pointer" ng-click="urlDettaglio(calciatore.nome,calciatore.id, false)"></i>
+							   		 <span ng-show="isMantra">&nbsp;&nbsp;<i title="dettaglio old" class="fa fa-info-circle" style="cursor:pointer;color:red" ng-click="urlDettaglio(calciatore.nome,calciatore.id, true)"></i></span>
+							         <span ng-show="isMantra && calciatore.under23=='SI'">*</span>
+							         <span ng-show="!isMantra || calciatore.under23!='SI'">&nbsp;</span>
+						         </span>
+							</div>
+						</div>
+				    </div>
+					<span ng-show="calciatori.length>0">
+						<label class="nextOperation" ng-show="!selCalciatore && (nomeGiocatoreTurno==nomegiocatore||!isATurni) && bSemaforoAttivo" >Seleziona il calciatore</label>
+						<span ng-show="selCalciatore && (nomeGiocatoreTurno==nomegiocatore || !isATurni) && durataAsta>0">
+							<label ng-show="avviabili.indexOf(nomegiocatore)>=0" class="nextOperation" >Avvia asta per {{selCalciatoreNome}} ({{selCalciatoreRuolo}}) {{selCalciatoreSquadra}}</label>
+							<label ng-show="avviabili.indexOf(nomegiocatore)<0" class="nextOperation" >Non puoi avviare asta per {{selCalciatoreNome}} ({{selCalciatoreRuolo}}) {{selCalciatoreSquadra}}</label>
+							<img style="cursor:pointer" ng-show="selCalciatore && durataAsta>0 && (nomeGiocatoreTurno==nomegiocatore || !isATurni) && avviabili.indexOf(nomegiocatore)>=0" title="avvia asta" src='./startGiocatore.png' ng-click="inizia(nomegiocatore,idgiocatore)"/>
+						</span>
+						<span ng-show="isATurni && bSemaforoAttivo">
+							<label class="nextOperation" ng-show="nomeGiocatoreTurno!=nomegiocatore" >E' il turno di {{nomeGiocatoreTurno}}</label>
+							<label class="nextOperation" ng-show="isAdmin && nomeGiocatoreTurno!=nomegiocatore && !selCalciatore" > puoi selezionare il calciatore al suo posto</label>
+							<span ng-show="isAdmin && selCalciatore && nomeGiocatoreTurno!=nomegiocatore && durataAsta>0">
+								<label ng-show="avviabili.indexOf(nomeGiocatoreTurno)>=0" class="nextOperation"> puoi avviare l'asta al suo posto per {{selCalciatoreNome}} ({{selCalciatoreRuolo}}) {{selCalciatoreSquadra}}</label>
+								<label ng-show="avviabili.indexOf(nomeGiocatoreTurno)<0" class="nextOperation">non puoi avviare l'asta al suo posto per {{selCalciatoreNome}} ({{selCalciatoreRuolo}}) {{selCalciatoreSquadra}}</label>
+								<img ng-show="avviabili.indexOf(nomeGiocatoreTurno)>=0" title="avvia asta" style="margin-bottom:2px;cursor:pointer" src='./startGiocatore.png' ng-click="iniziaTurno(nomeGiocatoreTurno, turno)" />
+							</span>
+						</span>
+						<span ng-show="selCalciatore">
+							<label>Secondi durata Asta: </label>
+							<label style='width: 60px;' type="number">{{durataAsta}}</label>
+							<!-- <label ng-show="giocatoreDurataAsta">(Modificata da: {{giocatoreDurataAsta}})</label>  -->
+						</span>
+					</span>
+				</div> <!-- SELCALCIATORE -->
+				<span ng-show="calciatori.length==0">
+					<label class="nextOperation">Bisogna caricare i giocatori<span ng-show="isAdmin">. Collegati alla pagina di Admin </span></label>
+				</span>
+			<div style="width:98%;text-align:center" ng-show="offertaVincente.nomegiocatore && timeStart<3"> <!-- RILANCIA -->
+
+			<div ng-show="!isSingle">
+				<div style="border-style:double;text-align:center">
+					<span ng-show=" avviabili.indexOf(nomegiocatore)>=0 && offertaVincente.offerta<getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore) ">
+						<span class="spanAutoAllinea">
+							<i title="auto allinea" ng-click="autoAllinea=!autoAllinea" ng-show="autoAllinea" class="fa fa-check-square"></i>
+							<i title="auto allinea" ng-click="autoAllinea=!autoAllinea" ng-show="!autoAllinea" class="fa fa-square"></i>
+							<span class="spanTestoAutoAllinea">Auto</span>
+						</span>
+						<span class="spanIconePunta" ng-show="!autoAllinea">
+							<i title="allinea" style="cursor:pointer;" class="fa fa-retweet" ng-click="offertaPriv=offertaVincente.offerta"></i>
+						</span>
+						<span class="spanInputDatoOfferta">
+							<input  class="inputDatoOfferta" type="number"  ng-model="offertaPriv"></input>
+						</span>
+						<span class="spanIconePunta">
+							<i title="offri" style="cursor:pointer;" class="fa fa-money" ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)" ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv)"></i>
+						</span>
+						
+						<span class="spanBtnIncrementa">
+							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-1" class="btnIncrementa" type="button" value="{{offertaPriv+1}}" ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+1)"></input>
+						</span>
+						<span class="spanBtnIncrementa">
+							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-5" class="btnIncrementa" type="button" value="{{offertaPriv++5}}" ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+5)"></input>
+						</span>
+						<span class="spanBtnIncrementa">
+							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-10" class="btnIncrementa" type="button" value="{{offertaPriv++10}}" ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+10)"></input>
+						</span>
+						<br>
+						<label class="nextOperation" ng-show="offertaVincente.nomegiocatore!=nomegiocatore">Puoi rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)}})</label>
+						<label class="nextOperation" ng-show="offertaVincente.nomegiocatore==nomegiocatore">Stai vincendo. Max rilancio {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)}}</label>
+					</span>
+					<label class="nextOperation" ng-show="offertaVincente.offerta>=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)">Non hai crediti sufficienti per rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)}})</label>
+					<label class="nextOperation" ng-show="avviabili.indexOf(nomegiocatore)<0 && offertaVincente.nomegiocatore!=nomegiocatore">Non puoi acquistare altri giocatori in quel ruolo</label>
+				</div>
+				
+				
+				<div ng-show="isAdmin" style="border-style:double;text-align:center">
+					<div style="color: green;text-align:center;cursor:pointer" ng-click="sezOperaComeVisible=!sezOperaComeVisible">
+						<i class="fa fa-chevron-down" ng-show="!sezOperaComeVisible"></i>
+						<i class="fa fa-chevron-up" ng-show="sezOperaComeVisible"></i>
+					<label style="cursor:pointer">Rilanci opera come</label></div>
+					
+					<div ng-show="sezOperaComeVisible"> <!-- OPERACOME -->
+						<table style="margin:auto">
+							<tr ng-class="{calciatoreNonSelezionato: idgiocatoreOperaCome!=allenatore.id, calciatoreSelezionato: idgiocatoreOperaCome==allenatore.id}" ng-repeat="allenatore in elencoAllenatori" ng-click="selezionaAllenatoreOperaCome(allenatore)" >
+								<td ng-show="allenatore.id!=idgiocatore">{{allenatore.nome}}</td>
+							</tr>
+						</table>
+						<label class="nextOperation" ng-show="idgiocatoreOperaCome<0">Puoi selezionare altro allenatore</label>
+						<span ng-show="idgiocatoreOperaCome>=0">
+							<span ng-show=" avviabili.indexOf(nomegiocatoreOperaCome)>=0 && offertaVincente.offerta<getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome) ">
+								<span class="spanAutoAllinea">
+									<i title="auto allinea" ng-click="autoAllineaOC=!autoAllineaOC" ng-show="autoAllineaOC" class="fa fa-check-square"></i>
+									<i title="auto allinea" ng-click="autoAllineaOC=!autoAllineaOC" ng-show="!autoAllineaOC" class="fa fa-square"></i>
+								<span class="spanTestoAutoAllinea">Auto</span>
+								</span>
+								<span class="spanIconePunta" ng-show="!autoAllineaOC">
+									<i  title="allinea" style="cursor:pointer;"class="fa fa-retweet" ng-click="offertaPrivOC=offertaVincente.offerta"></i>
+								</span>
+								<span class="spanInputDatoOfferta">
+									<input class="inputDatoOfferta"  type="number"  ng-model="offertaPrivOC"></input>
+								</span>
+								<span class="spanIconePunta">
+									<i title="offri" style="cursor:pointer;" class="fa fa-money" ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)" ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC)"></i>
+								</span>
+								
+								<span class="spanBtnIncrementa">
+									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-1" class="btnIncrementa" type="button" value="{{offertaPrivOC+1}}" ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+1)"></input>
+								</span>
+								<span class="spanBtnIncrementa">
+									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-5" class="btnIncrementa" type="button" value="{{offertaPrivOC+5}}" ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+5)"></input>
+								</span>
+								<span class="spanBtnIncrementa">
+									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-10" class="btnIncrementa" type="button" value="{{offertaPrivOC+10}}" ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+10)"></input>
+								</span>
+								<br>
+								<label class="nextOperation" ng-show="offertaVincente.nomegiocatore!=nomegiocatoreOperaCome">Puoi rilanciare per {{nomegiocatoreOperaCome}} (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)}})</label>
+							</span>
+							<label class="nextOperation" ng-show="offertaVincente.offerta>=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)">{{nomegiocatoreOperaCome}} non ha crediti sufficienti per rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)}})</label>
+							<label class="nextOperation" ng-show="avviabili.indexOf(nomegiocatoreOperaCome)<0">{{nomegiocatoreOperaCome}} non può acquistare altri giocatore in quel ruolo </label>
+						</span>
+					</div> <!-- OPERACOME -->
+				</div>
+				
+				
+				
+			</div>
+
+			<div ng-show="isSingle" ng-repeat="allenatore in elencoAllenatori">
+				<div ng-show="allenatore.id==idgiocatore || isAdmin" style="text-align:center">
+					<label style="width:200px;text-align:right" class="nextOperation">{{allenatore.nome}}</label>
+					<span ng-show=" avviabili.indexOf(allenatore.nome)>=0 && offertaVincente.offerta<getFromMapSpesoTotale('MAXRILANCIO',allenatore.nome) ">
+						<span class="spanBtnIncrementa">
+							<input ng-show="offerta<=getFromMapSpesoTotale('MAXRILANCIO',allenatore.nome)-1" class="btnIncrementa" type="button" value="{{offerta+1}}" ng-click="incrementaOfferta(allenatore.nome,allenatore.id,1)"></input>
+						</span>
+						<span class="spanBtnIncrementa">
+							<input ng-show="offerta<=getFromMapSpesoTotale('MAXRILANCIO',allenatore.nome)-5" class="btnIncrementa" type="button" value="{{offerta++5}}" ng-click="incrementaOfferta(allenatore.nome,allenatore.id,5)"></input>
+						</span>
+						<span class="spanBtnIncrementa">
+							<input ng-show="offerta<=getFromMapSpesoTotale('MAXRILANCIO',allenatore.nome)-10" class="btnIncrementa" type="button" value="{{offerta++10}}" ng-click="incrementaOfferta(allenatore.nome,allenatore.id,10)"></input>
+						</span>
+						<span class="spanInputDatoOfferta">
+							<input  class="inputDatoOfferta" type="number"  ng-model="offertaPriv"></input>
+						</span>
+						<span class="spanIconePunta">
+							<i title="offri" style="cursor:pointer;" class="fa fa-money" ng-click="inviaOffertaLibera(allenatore.nome,allenatore.id,offertaPriv)"></i>
+						</span>
+						<label class="nextOperation">rilancio (max {{getFromMapSpesoTotale('MAXRILANCIO',allenatore.nome)}})</label>
+					</span>
+					<label class="nextOperation" ng-show="offertaVincente.offerta>=getFromMapSpesoTotale('MAXRILANCIO',allenatore.nome)">crediti insufficienti per rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',allenatore.nome)}})</label>
+					<label class="nextOperation" ng-show="avviabili.indexOf(allenatore.nome)<0 && offertaVincente.nomegiocatore!=allenatore.nome">ruolo completato</label>
+				</div>
+			</div>
+				
+				
+				<!-- 
+				
+				<div ng-show="isAdmin" style="border-style:double;text-align:center">
+					<div style="color: green;text-align:center;cursor:pointer" ng-click="sezOperaComeVisible=!sezOperaComeVisible">
+						<i class="fa fa-chevron-down" ng-show="!sezOperaComeVisible"></i>
+						<i class="fa fa-chevron-up" ng-show="sezOperaComeVisible"></i>
+					<label style="cursor:pointer">Rilanci opera come</label></div>
+					
+					<div ng-show="sezOperaComeVisible"> 
+						<table style="margin:auto">
+							<tr ng-class="{calciatoreNonSelezionato: idgiocatoreOperaCome!=allenatore.id, calciatoreSelezionato: idgiocatoreOperaCome==allenatore.id}" ng-repeat="allenatore in elencoAllenatori" ng-click="selezionaAllenatoreOperaCome(allenatore)" >
+								<td ng-show="allenatore.id!=idgiocatore">{{allenatore.nome}}</td>
+							</tr>
+						</table>
+						<label class="nextOperation" ng-show="idgiocatoreOperaCome<0">Puoi selezionare altro allenatore</label>
+						<span ng-show="idgiocatoreOperaCome>=0">
+							<span ng-show=" avviabili.indexOf(nomegiocatoreOperaCome)>=0 && offertaVincente.offerta<getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome) ">
+								<span class="spanAutoAllinea">
+									<i title="auto allinea" ng-click="autoAllineaOC=!autoAllineaOC" ng-show="autoAllineaOC" class="fa fa-check-square"></i>
+									<i title="auto allinea" ng-click="autoAllineaOC=!autoAllineaOC" ng-show="!autoAllineaOC" class="fa fa-square"></i>
+								<span class="spanTestoAutoAllinea">Auto</span>
+								</span>
+								<span class="spanIconePunta" ng-show="!autoAllineaOC">
+									<i  title="allinea" style="cursor:pointer;"class="fa fa-retweet" ng-click="offertaOC=offertaVincente.offerta"></i>
+								</span>
+								<span class="spanInputDatoOfferta">
+									<input class="inputDatoOfferta"  type="number"  ng-model="offertaOC"></input>
+								</span>
+								<span class="spanIconePunta">
+									<i title="offri" style="cursor:pointer;" class="fa fa-money" ng-show="offerta<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)" ng-click="inviaOfferta('OC',offertaOC)"></i>
+								</span>
+								
+								<span class="spanBtnIncrementa">
+									<input ng-show="offertaOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-1" class="btnIncrementa" type="button" value="{{offertaOC+1}}" ng-click="offertaOC=offertaOC+1;inviaOfferta('OC',offertaOC)"></input>
+								</span>
+								<span class="spanBtnIncrementa">
+									<input ng-show="offertaOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-5" class="btnIncrementa" type="button" value="{{offertaOC+5}}" ng-click="offertaOC=offertaOC+5;inviaOfferta('OC',offertaOC)"></input>
+								</span>
+								<span class="spanBtnIncrementa">
+									<input ng-show="offertaOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-10" class="btnIncrementa" type="button" value="{{offertaOC+10}}" ng-click="offertaOC=offertaOC+10;inviaOfferta('OC',offertaOC)"></input>
+								</span>
+								<br>
+								<label class="nextOperation" ng-show="offertaVincente.nomegiocatore!=nomegiocatoreOperaCome">Puoi rilanciare per {{nomegiocatoreOperaCome}} (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)}})</label>
+							</span>
+							<label class="nextOperation" ng-show="offertaVincente.offerta>=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)">{{nomegiocatoreOperaCome}} non ha crediti sufficienti per rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)}})</label>
+							<label class="nextOperation" ng-show="avviabili.indexOf(nomegiocatoreOperaCome)<0">{{nomegiocatoreOperaCome}} non può acquistare altri giocatore in quel ruolo </label>
+						</span>
+					</div> 
+				</div>
+					 -->
+			<input ng-show="isAdmin" type="button" value="azzera tempo" ng-click="azzeraTempo()"></input>
+			<input ng-show="isAdmin" type="button" value="azzera offerta" ng-click="azzeraOfferta()"></input>
+   		 	<i title="dettaglio" class="fa fa-info-circle" style="cursor:pointer" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id, false)"></i>
+   		 	<i title="dettaglio old" class="fa fa-info-circle" style="cursor:pointer;color:red" ng-show="isMantra" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id, true)"></i>
+            <span ng-show="isMantra && selCalciatoreUnder23=='SI'">*</span>
+            <span ng-show="!isMantra || selCalciatoreUnder23!='SI'">&nbsp;</span>
+			</div> <!-- RILANCIA -->  
+	
+			<div ng-show="timeout" align=center> <!-- TIMEOUT -->
+					<label  class="correnteVincente">Asta per {{offertaVincente.giocatore.nome}} ({{offertaVincente.giocatore.ruolo}}) {{offertaVincente.giocatore.squadra}} in timeout da {{giocatoreTimeout}} 
+					<br>Al momento vince l'offerta fatta da {{offertaVincente.nomegiocatore}} con {{offertaVincente.offerta}}
+					<br>Passati {{millisFromPausa/1000 | number:0}} secondi su {{durataAsta | number}} </label>
+					<br>
+					<label class="nextOperation">Rimuovi la pausa</label>
+					<br>
+					<img title="riprendi" src='./resume.jpeg' style="cursor:pointer"ng-click="resumeAsta()" height="50" width="50"/>
+					
+			</div> <!-- TIMEOUT -->
+			<div ng-show="offertaVincente.nomegiocatore && !timeout"> <!-- OFFERTAINCORSO -->
+				<div align=center>
+				<!-- 
+					<label ng-show="timeStart==3 && offertaVincente.nomegiocatore==nomegiocatore" class="finitoVincente">
+						Hai vinto {{offertaVincente.giocatore.nome}} ({{offertaVincente.giocatore.ruolo}}) {{offertaVincente.giocatore.squadra}} con {{offertaVincente.offerta}}    
+					</label>
+					 -->
+					<label ng-show="timeStart==3 " class="finitoPerdente"><!-- && offertaVincente.nomegiocatore!=nomegiocatore -->
+						{{offertaVincente.nomegiocatore}} ha vinto {{offertaVincente.giocatore.nome}} ({{offertaVincente.giocatore.ruolo}}) {{offertaVincente.giocatore.squadra}} con {{offertaVincente.offerta}}
+					</label>
+					<!-- 
+					<label ng-show="timeStart<3 && offertaVincente.nomegiocatore==nomegiocatore" class="correnteVincente">
+						Stai vincendo {{offertaVincente.giocatore.nome}} ({{offertaVincente.giocatore.ruolo}}) {{offertaVincente.giocatore.squadra}} con {{offertaVincente.offerta}}
+						(massimo rilancio: {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)}})
+					</label>
+					 -->
+					<label ng-show="timeStart<3 " class="correntePerdente"> <!-- && offertaVincente.nomegiocatore!=nomegiocatore -->
+						{{offertaVincente.nomegiocatore}} sta vincendo {{offertaVincente.giocatore.nome}} ({{offertaVincente.giocatore.ruolo}}) {{offertaVincente.giocatore.squadra}} con {{offertaVincente.offerta}}
+					</label>
+						<br>
+						<label ng-show="timeStart==3 && !isAdmin" class="nextOperation">Asta da confermare</label>
+						<span ng-show="timeStart==3 && isAdmin">
+						
+							<img ng-show="!abilitaForza"  style="cursor:pointer" title="abilita forzatura" src='./forza.png' ng-click="forzaOfferta=offertaVincente.offerta;forzaAllenatore=offertaVincente.idgiocatore;abilitaForza=true"/>
+							<span ng-show="abilitaForza">
+								<input class="inputDatoOfferta" type=number ng-model=forzaOfferta></input>
+								<select ng-model=forzaAllenatore>
+									<option ng-repeat="allenatore in elencoAllenatori" value="{{allenatore.id}}" >{{allenatore.nome}}</option>
+								</select>
+								<button ng-click="forza()">FORZA</button>
+								<br>
+								<label class="nextOperation">Devi confermare o annullare l'asta</label>
+								<br>
+							</span>
+							<img style="cursor:pointer" ng-show="!abilitaForza" title="conferma" src='./conferma.jpeg' ng-click="conferma()"/>
+							<img style="cursor:pointer" ng-show="!abilitaForza" title="annulla" src='./annulla.jpeg' ng-click="annulla()"/>
+							
+						</span> 
+				</div>
+				<div ng-show="timeStart<3" style="padding-top:0px;width:98%;text-align:center">
+			 		<div class="pb"> 
+			 				<track-progress-bar style="width:100%" col-val='{{timeStart}}' cur-val='{{contaTempo}}' max-val='{{durataAsta*1000}}'></track-progress-bar>
+			 				<label>{{contaTempo /1000 |number:0}}/{{durataAsta | number}}</label>
+			 		</div>
+			 	</div>
+				<br><br>
+				<div  ng-show="isAdmin && timeStart<3" align=center>
+					<img style="cursor:pointer" title="termina asta" src='./stop.jpg' ng-click="terminaAsta()" />
+				</div>
+				<div  ng-show="timeStart<3" align=center>
+					<img style="cursor:pointer" title="timeout" src='./pausa.jpeg' ng-click="pausaAsta()"/>
+				</div>
+			</div> <!-- OFFERTAINCORSO -->
+		
+			<div ng-show="false"> <!-- BUG BLOCCO -->
+				<div  ng-hide="bSemaforoAttivo || !isAdmin" align=center>
+					<img cursor:pointer title="sblocca semaforo" src='./verde.png' ng-click="liberaSemaforo()"/>
+				</div>
+			</div> <!-- BUG BLOCCO -->
+		</div> <!-- OFFERTA -->
+	</div> <!-- ISLOGGATO -->
+	<div class="sezione" ng-click="sezLog=!sezLog">
+		<i class="fa fa-chevron-down" ng-show="!sezLog"></i>
+		<i class="fa fa-chevron-up" ng-show="sezLog"></i>
+	Log sessione corrente</div>
+	<div ng-show="sezLog"> <!-- LOG -->
+		<br>
+		<table class="tblLog" style="border-style:double;width:98%;" border>
+		  <tr ng-repeat="messaggio in messaggi | orderBy: 'data': 'reverse'">
+		    <td style="widt=10%;padding-left:10px;padding-right:10px;text-align:left">{{messaggio.data | date :'dd/MM/yyyy, HH:mm:ss:sss'}}</td>
+		    <td style="widt=10%;padding-left:10px;padding-right:10px;text-align:left">{{messaggio.indirizzo}}</td>
+		    <td style="widt=10%;padding-left:10px;padding-right:10px;text-align:left">{{messaggio.categoria}}</td>
+		    <td style="widt=80%;padding-left:10px;padding-right:10px;text-align:left">{{messaggio.testo}}</td>
+		  </tr>
+		</table>
+	</div> <!-- LOG -->
+
+</div>
+</body>
+</html>

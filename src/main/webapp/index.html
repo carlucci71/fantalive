@@ -1,147 +1,17 @@
-<!-- filezilla C:\Users\d.carlucci\Documents\GitHub\fantalive\target\ /share/HDA_DATA/.qpkg/Tomcat/tomcat/webapps -->
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
-<title>Fantalive</title>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
 </head>
-<link href="./stile.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-resource.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
-<script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
-<script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.6.1/angular-locale_it-it.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    
-<script type="text/javascript" src="./app.js"></script>
-<body data-ng-init="init()" x-ng-app="app" ng-style="{'margin-left':'20px','background-color':backLoading()}">
-<div id="floatingRectangle" ng-hide="visPartitaLive">	
-	<input type=button value="&#11104;" ng-click="shiftFloating(-10)"></input>
-	<input type=button value="&#11106;" ng-click="shiftFloating(10)"></input>
-	<input type=button value="&#128465;" ng-click="testoLog=''"></input>
-	<pre style="height:93%;" ng-bind-html="testoLog"></pre> 
-</div>
-<label ng-show="disabilitaNotificaTelegram">TELEGRAM DISABILITATO</label><br>
-<label ng-show="liveFromFile">LIVE FROM FILE</label><br>
-<label>Inizio caricamento: </label>{{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} <label>Fine: </label>{{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}<br>  
-<button ng-show="!configura && !loading" ng-click="configura=true">Configura</button>
-<button ng-show="configura && !loading" ng-click="endConfigura()">Termina configurazione</button>
-<br>
-<label ng-show="aggiornamento" >Dati aggiornati alle: </label>{{aggiornamento}}
-<span ng-show="timeRefresh"><label>Refresh tra: </label>{{20-(timeRefresh/1000)}}s</span>
-<br>
-<label>Last refresh http: </label>{{lastRefresh}}
-<label>Last keep alive: </label>{{lastKeepAlive}}
-<label>End keep alive: </label>{{keepAliveEnd}}
-<span ng-show="!loading && !disabilitaNotificaTelegram"><br>{{runningBot}} <button ng-click="startStopBot()">START/STOP BOT</button></span>
-<br>
- 	<label ng-show="loading">CARICAMENTO IN CORSO</label>
- 	<br>
-	<div ng-show="!configura">
-		<div ng-show="visPartitaLive">
-			<input type=button value="&#9851;" ng-click="visualizzaLive('')"></input>
-			<input ng-style="{'color':campLive(key)}" ng-repeat="key  in nomiPartiteLive" type=button value="&#9851; {{key}}" ng-click="visualizzaLive(key)"></input>
-			<br><br>
-			<table border>
-			<tr>
-				<td ng-repeat="squadralive in partiteLive[visPartitaLive].squadre">
-				<label>{{getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra).nome}} -->{{calcolaProiezione(squadralive)}} </label>
-				<img ng-click="simulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" ng-show="visSimulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
-				<br>
-				<visualizzasquadra rcampionato="squadralive.campionato" rlive="getResultMyCampionato(squadralive.campionato).conLive"  eventi="eventi"   squadra="getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra)"></visualizzasquadra>
-				</td>
-			</tr>
-			</table>
-		</div>
-		<div ng-show="!visPartitaLive">
-			<button ng-show="!loading" ng-click="ricaricaIndex()">Ricarica</button>
-			<br>
-			<br> 
-			<span ng-show="!loading && result">
-				calciatore 
-				<input type=text ng-model=giocFilter></input> 
-				<span style="cursor: pointer;">
-					<i class="fa fa-trash" ng-click="giocFilter=''" ng-show="giocFilter"></i>
-				</span>
-				 squadra 
-				 <input type=text ng-model=sqFilter></input> 
-				 <span style="cursor: pointer;">
-				 	<i class="fa fa-trash" ng-click="sqFilter=''" ng-show="sqFilter"></i>
-				 </span>
-				 live 
-				 <input type=checkBox ng-model=liveFilter></input>
-				 preferiti 
-				 <input type=checkBox ng-model=favFilter></input>
-			</span> 
-			<br>  
-			<br>
-			<input type=button value="&#9851;" ng-click="simulaPartiteLive()"></input>
-			<div ng-repeat="r in result">
-				<span ng-click="changeVis(r.nome)" style="color: red; background-color: yellow; cursor: pointer;">
-					<label>CAMPIONATO: {{r.nome}}</label> 
-					<i class="fa fa-chevron-down" ng-show="hiddenVis.indexOf(r.nome)<0"></i>
-					<i class="fa fa-chevron-up" ng-show="hiddenVis.indexOf(r.nome)>=0"></i>
-				</span>&nbsp; 
-				<img ng-click="salva(r)" ng-show="r.conLive" style="width: 20px; cursor: pointer;" title="salva" src="./ico/salva.jpeg"></img>
-				<div ng-show="hiddenVis.indexOf(r.nome)<0" ng-repeat="squadra in r.squadre | filtraSquadra track by $index">
-					<label ng-show="!loading" ng-click="changeSqEv(squadra)"> 
-						<img ng-show=!squadra.evidenza style="width: 10px; cursor: pointer;" title="add" src="./ico/fav1.png"></img> <img ng-show=squadra.evidenza style="width: 10px; cursor: pointer;" title="add" src="./ico/fav2.png"></img>
-					</label> 
-					<label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} --> {{squadra.proiezione}}</label> 
-					<input style="width: 45" ng-show="r.conLive" type=number ng-model="squadra.deltaModificatore"></input> 
-					<!-- 
-					<input type=checkbox ng-checked="partitaLive[r.nome].indexOf(squadra.nome)>-1" ng-click="toggleCheckbox(r.nome,squadra)"></input>
-					 --> 
-					<img ng-click="simulaCambi(r,squadra)" ng-show="visSimulaCambi(r,squadra)" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
-					<input type=button value="&#9851;" ng-style="{'color':simPresente(squadra)}" ng-click="addSimulazione=!addSimulazione"></input>
-					
-					<div ng-show="addSimulazione">
-						<div ng-repeat="partitaSimulata in squadra.partiteSimulate">
-							{{partitaSimulata.nome}} - {{partitaSimulata.casa}} 
-							<span style="cursor: pointer;">
-								<i class="fa fa-trash" ng-click="delPartitaSimulata(squadra,partitaSimulata.nome)"></i>
-							</span>
-						</div>
-						<input type=text ng-model="nomePartitaSimulata"></input>
-						<input type=checkbox ng-model="casaPartitaSimulata"></input>
-						<input ng-show="nomePartitaSimulata" type=button value="add" ng-click="addPartitaSimulata(r.nome,squadra,nomePartitaSimulata,casaPartitaSimulata)"></input>
-					</div>
-					<div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1">
-							<visualizzasquadra rcampionato="r.campionato" rlive="r.conLive" eventi="eventi"  squadra="squadra"></visualizzasquadra>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div ng-show="configura">
-	<br>
- 	<button ng-click="preparaSquadre()">Prepara squadre</button>
-	<br>
-	<textarea style="width:800px;height:200px " type=text ng-model="file"></textarea>
-	<br>
-	<button style="width:180px;"  ng-click="getFile('OD')">Get orari (DB)</button>
-	<button style="width:180px;" ng-click="getFile('LD')">Get lives (DB)</button>
-	<button style="width:180px;" ng-click="getNomiTesto()">Get nomiTesto (DB)</button>
-	<select ng-model=nomeFileGet>
-		<option ng-repeat="s in nomiTesto  track by $index" value="{{s}}" >{{s}}</option>
-	</select>
-	<br>
-	<button style="width:180px;" ng-click="getFile('OL')">Get orari (Live)</button>
-	<button style="width:180px;" ng-click="getFile('LL')">Get lives (Live)</button>
-	<button style="width:180px;" ng-disabled="!nomeFileGet"  ng-click="getFile('FREE')">Get free (DB)</button>
-	<br>
-	<button style="width:180px;" ng-disabled="!getOrari" ng-click="caricaFile('O')">Put orari (DB)</button>
-	<button style="width:180px;" ng-disabled="!getLives" ng-click="caricaFile('L')">Put lives (DB)</button>
-	<button style="width:180px;" ng-disabled="!getFree" ng-click="caricaFile('FREE')">Put Free (DB)</button>
-	<button style="width:180px;" ng-click="svecchiaFile()">Del ALL File (DB)</button>
-	
-	
-	
-</div>
+<body>
 
+<a href=./fantaasta/index.html>ASTA</a>
+<br>
+<a href=./fantalive/index.html>LIVE</a>
+
+<script>
+window.location.href = './fantalive/index.html';
+</script>
 </body>
 </html>

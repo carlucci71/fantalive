@@ -1,0 +1,9 @@
+driverlist=com.mysql.cj.jdbc.Driver,org.h2.Driver,org.postgresql.Driver
+dateformat=yyyy-MM-dd hh:mm:ss a
+appender=com.p6spy.engine.spy.appender.FileLogger
+logMessageFormat=com.p6spy.engine.spy.appender.CustomLineFormat
+customLogMessageFormat=%(sqlSingleLine)
+excludecategories=info,debug,batch,commit,rollback,resultset,result
+logfile = ./spyAsta.log
+append = false
+
