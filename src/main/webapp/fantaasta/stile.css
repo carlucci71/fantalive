@@ -1,0 +1,389 @@
+div {
+  Xbackground-color: yellow;
+  font-size:12;
+  }
+table {
+  font-size:12;
+  }
+input {
+	font-size:12;
+}
+ img {
+ 	width:40px;
+ 	height:40px;
+ }
+ .tabellaUtenti{
+	 padding-left:5px;
+	 padding-right:5px;
+	 text-align:center;
+	 font-size:12;
+ }
+ .tuttiPresi{
+	padding-left:5px;
+	padding-right:5px;
+	background-color: yellow;
+    font-weight: bold;
+	font-size:12;
+ }
+ .lblLatenza{
+	font-size: 10px;
+	width:45px;
+ }
+ .nonTuttiPresi{
+	padding-left:5px;
+	padding-right:5px;
+	background-color: white;
+	font-size:12;
+ }
+ .minPresi{
+	padding-left:5px;
+	padding-right:5px;
+	background-color: white;
+	color:red;
+	font-size:12;
+ }
+ .checkbox{
+ 	width: 13px;
+ 	height: 13px; 	
+ }
+ .imgConnetti{
+ 	width:20px;
+ 	height:20px;
+ }
+ .imgConnetti{
+ 	width:20px;
+ 	height:20px;
+ }
+ .imgForzaLogout{
+ 	width:15px;
+ 	height:15px;
+ }
+ .tblLog{
+	padding-right:300px;
+	font-size:15px;	 
+ }
+ .selCalciatore{
+ 	height:150px;
+ }
+ .inputDato{
+	width: 50px;'
+ }
+ .inputDatoOfferta{
+	width: 50px;'
+ }
+ .utenteLoggato{
+	 text-align:right;
+	 padding-right:10px;
+	 width: 98%;
+	 font-size: 16px;
+	 font-weight: bold;
+ }
+  .inputLarge{
+	width: 70px;'
+ }
+ .imgPunta {
+ 	width:30px;
+ 	height:30px;
+ }
+ .spanAutoAllinea{
+ 	font-size: 13px;
+	width: 45px;
+	text-align:right;
+	display: inline-block;
+ }
+ .spanTestoAutoAllinea{
+ 	font-size: 11px;
+ }
+ .spanIconePunta{
+	font-size: 18px;
+	width: 20px;
+	display: inline-block;
+ }
+ .spanInputDato{
+	width: 55px;
+	display: inline-block;
+ }
+ .spanInputDatoOfferta{
+	width: 55px;
+	display: inline-block;
+ }
+ .spanImgPunta{
+	width: 50px;
+	display: inline-block;
+ }
+ .spanBtnIncrementa{
+	width: 65px;
+	display: inline-block;
+ }
+ .btnIncrementa{
+	width: 55px;
+ }
+.sortorder:after {
+  content: '\25b2';   
+}
+.sortorder.reverse:after {
+  content: '\25bc';   
+}
+.sortorderNO {
+  content: '\25c6';   
+}
+.pb {
+  background-color: white;
+  height: 50px;
+  padding-top: 20px;
+  text-align: center;
+}
+.progress-bar-bkgd {
+  height: 40px;
+  border: none;
+  background-color: black;
+}
+
+.progress-bar-marker {
+  width: 0px;
+  height: 100%;
+  color: #fff;
+  font-weight: normal
+}
+.correntePerdente {
+	background-color: white;
+	color: #8F5C01;
+	font-size: 26px;
+	font-weight: bold;
+}
+.correnteVincente {
+	background-color: white;
+	color: green;
+	font-size: 26px;
+	font-weight: bold;
+}
+.finitoPerdente {
+	background-color: yellow;
+	color: #8F5C01;
+	font-size: 26px;
+	font-weight: bold;
+}
+.finitoVincente {
+	background-color: yellow;
+	color: green;
+	font-size: 26px;
+	font-weight: bold;
+}
+.sezione {
+	width: 98%;
+	background-color: lightgray;
+	color: black;
+	font-size: 16px;
+	font-weight: bold;
+	cursor: pointer; 
+}
+.nextOperation{
+	color: red;
+	font-size: 20px;
+	font-weight: bold;
+}
+.calciatoreSelezionato {
+	color: red;
+	background-color: lightgreen;
+	cursor: pointer; 
+	text-align:center;
+}
+
+.calciatoreNonSelezionato {
+	color: black;
+	background-color: white;
+	cursor: pointer; 
+	text-align:center;
+}
+
+.sonoIo {
+	color: red;
+	font-weight: bold;
+	text-align:left;
+}
+
+.nonSonoIo {
+	color: black;
+	text-align:left;
+}
+.calcSize1 {
+	width:130px;
+}
+.calcSize2 {
+	width:400px;
+}
+.calcSize3 {
+	width:170px;
+}
+ .divInputCalciatore{
+	 font-size:15px;
+	 height:20px;
+}
+.liberiPari {
+	background-color: lightgray;
+}	  
+.liberiDispari {
+	background-color: white;
+}	  
+.divCalciatore{
+	 font-size:15px;
+}
+
+@media  (max-width: 980px) {
+	  div {
+		  font-size:50;
+	      Xbackground-color: lightblue;
+	  }
+	  table {
+		  font-size:50;
+	  }
+      input {
+		font-size:50;
+	  }
+	 img {
+	 	width:160px;
+	 	height:160px;
+	 }
+	 .tabellaUtenti{
+		 padding-left:5px;
+		 padding-right:5px;
+		 text-align:center;
+		font-size:30;
+	 }
+	 .lblLatenza{
+    	font-size: 30px;
+		width:50px;
+	 }
+	 .tuttiPresi{
+		padding-left:5px;
+		padding-right:5px;
+		background-color: yellow;
+	    font-weight: normal;
+		font-size:40;
+	 }
+	 .nonTuttiPresi{
+		 padding-left:5px;
+		 padding-right:5px;
+		background-color: white;
+		font-size:40;
+	 }
+	 .minPresi{
+		padding-left:5px;
+		padding-right:5px;
+		background-color: white;
+		color: red;
+		font-size:40;
+	 }
+	 .checkbox{
+	 	width: 50px;
+	 	height: 50px; 	
+	 }
+	 .imgConnetti {
+	 	width:80px;
+	 	height:80px;
+	 }
+	 .imgForzaLogout{
+	 	width:50px;
+	 	height:50px;
+	 }
+	 .tblLog{
+		padding-right:300px;
+		font-size:30px;	 
+	 }
+	 .selCalciatore{
+	 	height:350px;
+	 }
+	 .inputLarge{
+		width: 180px;'
+	 }
+	 .inputDato{
+		width: 150px;'
+	 }
+	 .inputDatoOfferta{
+		font-size: 30px;
+		width: 90px;'
+	 }
+	 .utenteLoggato{
+		 text-align:right;
+		 padding-right:10px;
+		 width: 98%;
+		 font-size: 40px;
+		 font-weight: bold;
+	 }
+	 .imgPunta {
+	 	width:90px;
+	 	height:90px;
+	 }
+	 .spanAutoAllinea{
+		font-size: 65px;
+		width: 225px;
+		text-align:right;
+		display: inline-block;
+	 }
+	 .spanTestoAutoAllinea{
+	 	font-size: 40px;
+	 }
+	 .spanIconePunta{
+		font-size: 65px;
+		width: 95px;
+		display: inline-block;
+	 }
+	 .spanInputDato{
+		width: 150px;
+		display: inline-block;
+	 }
+	 .spanInputDatoOfferta{
+		width: 100px;
+		display: inline-block;
+	 }
+	 .spanImgPunta{
+		width: 100px;
+		display: inline-block;
+	 }
+	 .spanBtnIncrementa{
+		width: 110px;
+		display: inline-block;
+	 }
+	 .btnIncrementa{
+		width: 105px;
+		font-size:35;
+	 }
+	 .btnModale{
+		width: 235px;
+		font-size:100;
+	 }
+	  .correntePerdente {
+		font-size: 46px;
+	  }
+	  .correnteVincente {
+		font-size: 46px;
+	  }
+	  .finitoPerdente{
+		font-size: 46px;
+	  }
+	  .finitoVincente{
+		font-size: 46px;
+	  }
+	  .sezione{
+		font-size: 46px;
+	  }
+	  .nextOperation{
+		font-size: 36px;
+	  }
+	  .divCalciatore{
+		  font-size:35;
+	  }
+	.calcSize1 {
+		width:70px;
+	}
+	.calcSize2 {
+		width:300px;
+	}
+	.calcSize3 {
+		width:100px;
+	}
+	  .divInputCalciatore{
+		  font-size:35;
+		  height:50px;
+	  }
+}

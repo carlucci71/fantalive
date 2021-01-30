@@ -1,0 +1,26 @@
+<html>
+	<head>
+		<title>Login</title>
+	</head>
+		<style>
+			.login{
+				font-size: 16px;
+			}
+			@media  (max-width: 980px) {
+				.login{
+					font-size: 50px;
+				}
+			}
+			
+		
+		</style>
+	<body>
+       	<form name="f" action="/loginAPI" method="post">
+               <label class="login" for="nomeLega">Inserisci il nome della lega</label>
+               <input class="login" type="text" id="nomeLega" name="nomeLega"/>        
+               <input class="login" type="hidden" id="password" name="password" value="pwd"/>    
+               <br>
+               <button class="login" type="submit" class="btn">Prosegui</button>
+	       	</form>
+	</body>
+</html>
