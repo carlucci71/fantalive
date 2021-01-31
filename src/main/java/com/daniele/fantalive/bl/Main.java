@@ -1272,21 +1272,21 @@ public class Main {
 				m.put(partitaSimulata.getNome(), list);
 			}
 		}
-		System.out.println();
+
 		for (Squadra squadra : squadre) {
 			List<PartitaSimulata> partiteSimulate = squadra.getPartiteSimulate();
 			for (PartitaSimulata partitaSimulata : partiteSimulate) {
 				String nuovoNome=partitaSimulata.getNome().substring(0,partitaSimulata.getNome().length()-1);
 				List<String> listaSquadre = m.get(partitaSimulata.getNome());
 				for (String nomeSquadra : listaSquadre) {
-					nuovoNome= nuovoNome + " " + nomeSquadra.substring(0,3);
+					nuovoNome= nuovoNome + "" + nomeSquadra.substring(0,3);
 				}
 				partitaSimulata.setNome(nuovoNome);
 			}
 		}
 	}
 	private static String getNomePartitaSimulata(String lega,int progPartita) {
-		return lega.substring(0,2) + (1+progPartita);
+		return lega.substring(0,1) + (1+progPartita);
 	}
 
 	private static Giocatore estraiGiocatoreFromFS(Document doc, int i, String dove, String ruolo) {
