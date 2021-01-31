@@ -253,6 +253,7 @@ public class MyController {
 		Squadra sq = body.get("sq");
 		Squadra squadra = new Squadra();
 		squadra.setDeltaModificatore(sq.getDeltaModificatore());
+		squadra.setCasaProiezione(sq.isCasaProiezione());
 		squadra.setNome(sq.getNome());
 		squadra.setEvidenza(sq.isEvidenza());
 		List<Giocatore> nuovaListaGiocatori=new ArrayList<Giocatore>();

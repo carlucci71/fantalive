@@ -6,6 +6,7 @@ import java.util.List;
 public class Squadra implements Comparable<Squadra> {
 String nome;
 private int deltaModificatore=0;
+private boolean casaProiezione;
 private int prog=0;
 private boolean evidenza=false;
 List<Giocatore> titolari=new ArrayList<Giocatore>();
@@ -143,6 +144,12 @@ public List<PartitaSimulata> getPartiteSimulate() {
 }
 public void setPartiteSimulate(List<PartitaSimulata> partiteSimulate) {
 	this.partiteSimulate = partiteSimulate;
+}
+public boolean isCasaProiezione() {
+	return casaProiezione;
+}
+public void setCasaProiezione(boolean casaProiezione) {
+	this.casaProiezione = casaProiezione;
 }
 
 }

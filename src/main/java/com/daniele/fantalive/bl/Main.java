@@ -1524,7 +1524,7 @@ public class Main {
 					.append(sq.getContaSquadraRiserveNonGioca())
 					.append("\n\n")
 					.append("Proiezione --> <b><i>")
-					.append(sq.getProiezione())
+					.append(sq.isCasaProiezione()?sq.getProiezione()+2 + "(*)":sq.getProiezione())
 					.append("</i></b>\n\n");
 					
 					if(chatId.intValue() == Constant.CHAT_ID_FANTALIVE.intValue()) {
@@ -1690,7 +1690,7 @@ public class Main {
 				List<Squadra> squadre = return1.getSquadre();
 				for (Squadra squadra : squadre) {
 					if (squadra.isEvidenza()) {
-						sb.append(proiezioneSquadra(squadra,false));
+						sb.append(proiezioneSquadra(squadra,squadra.isCasaProiezione()));
 						squadreRet.add(key + "-" + squadra.getNome());
 					}
 
