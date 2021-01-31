@@ -474,6 +474,7 @@ public class MyController {
 				squadre.add(Main.getFromFS(doc, "Trasferta",i));
 				Main.cancellaSalva(nome);
 			}
+			Main.adattaNomePartitaSimulata(squadre);
 			Main.upsertSalva(Constant.FORMAZIONE + Campionati.BE.name(), Main.toJson(squadre));
 		}
 		catch (Exception e)

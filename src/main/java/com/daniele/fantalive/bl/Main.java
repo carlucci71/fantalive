@@ -832,7 +832,11 @@ public class Main {
 							else {
 								partitaSimulata.setCasa(false);
 							}
-							partitaSimulata.setNome(lega.substring(0,2) + progPartita);
+							if (lega.equalsIgnoreCase(Campionati.LUCCICAR.name())) {
+								partitaSimulata.setNome("LUC");
+							} else {
+								partitaSimulata.setNome(getNomePartitaSimulata(lega, progPartita));
+							}
 							partitaSimulata.setSquadra(squadra.getNome());
 							partiteSimulate.add(partitaSimulata);
 							squadra.setPartiteSimulate(partiteSimulate);
@@ -854,6 +858,9 @@ public class Main {
 					}
 				}
 			}
+		}
+		if (!lega.equalsIgnoreCase(Campionati.LUCCICAR.name())) {
+			adattaNomePartitaSimulata(squadre);
 		}
 		upsertSalva(Constant.FORMAZIONE + lega , toJson(squadre));
 		return squadre;
@@ -1232,7 +1239,7 @@ public class Main {
 		else {
 			partitaSimulata.setCasa(false);
 		}
-		partitaSimulata.setNome(Campionati.BE.name() + progPartita);
+		partitaSimulata.setNome(getNomePartitaSimulata(Campionati.BE.name(), progPartita));
 		partitaSimulata.setSquadra(squadra.getNome());
 		partiteSimulate.add(partitaSimulata);
 		squadra.setPartiteSimulate(partiteSimulate);
@@ -1251,6 +1258,35 @@ public class Main {
 			}
 		}
 		return squadra;
+	}
+	public static void adattaNomePartitaSimulata(List<Squadra> squadre) {
+		Map<String, List<String>> m = new HashMap<>();
+		for (Squadra squadra : squadre) {
+			List<PartitaSimulata> partiteSimulate = squadra.getPartiteSimulate();
+			for (PartitaSimulata partitaSimulata : partiteSimulate) {
+				List<String> list = m.get(partitaSimulata.getNome());
+				if (list == null) {
+					list=new ArrayList<>();
+				}
+				list.add(partitaSimulata.getSquadra());
+				m.put(partitaSimulata.getNome(), list);
+			}
+		}
+		System.out.println();
+		for (Squadra squadra : squadre) {
+			List<PartitaSimulata> partiteSimulate = squadra.getPartiteSimulate();
+			for (PartitaSimulata partitaSimulata : partiteSimulate) {
+				String nuovoNome=partitaSimulata.getNome().substring(0,partitaSimulata.getNome().length()-1);
+				List<String> listaSquadre = m.get(partitaSimulata.getNome());
+				for (String nomeSquadra : listaSquadre) {
+					nuovoNome= nuovoNome + " " + nomeSquadra.substring(0,3);
+				}
+				partitaSimulata.setNome(nuovoNome);
+			}
+		}
+	}
+	private static String getNomePartitaSimulata(String lega,int progPartita) {
+		return lega.substring(0,2) + (1+progPartita);
 	}
 
 	private static Giocatore estraiGiocatoreFromFS(Document doc, int i, String dove, String ruolo) {
