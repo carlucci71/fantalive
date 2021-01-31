@@ -64,24 +64,23 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 				String testoCallback = update.getCallbackQuery().getData();
 				if (testoCallback.startsWith("campionati")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
-					execute(sendInlineKeyBoardSquadre(chatId,testoCallback, null,testoCallback));
+					execute(sendInlineKeyBoardSquadre(chatId,testoCallback, null,testoCallback, null));
 				}
 				else if (testoCallback.startsWith("proiezioni")) {
 					String campionato =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					Map<String, Object> proiezioni = Main.proiezioni(campionato);
-					execute(sendInlineKeyBoardSquadre(chatId,campionato, (List<String>) proiezioni.get("squadre"),(String) proiezioni.get("testo")));
+					execute(sendInlineKeyBoardSquadre(chatId,campionato, (List<String>) proiezioni.get("squadre"),(String) proiezioni.get("testo"),null));
 				}
 				else if (testoCallback.startsWith("dettaglio")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					String[] split = testoCallback.split("#");
-					execute(creaSendMessage(chatId,Main.getDettaglio(chatId,split[0],split[1]), false));
+					execute(creaSendMessage(chatId,Main.getDettaglio(chatId,split[0],split[1],split[2]), false));
 
 				}
 				else if (testoCallback.startsWith("simulata")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					Map<String, Object> proiezioni = Main.getPartitaSimulata(chatId,testoCallback);
-					execute(sendInlineKeyBoardSquadre(chatId,(String) proiezioni.get("campionato"), (List<String>) proiezioni.get("squadre"),(String) proiezioni.get("testo")));
-
+					execute(sendInlineKeyBoardSquadre(chatId,(String) proiezioni.get("campionato"), (List<String>) proiezioni.get("squadre"),(String) proiezioni.get("testo"),(List<String>) proiezioni.get("squadreCasa")));
 				}
 				else {
 					execute(creaSendMessage(chatId, "cosa hai mandato? " + testoCallback , false));
@@ -150,12 +149,12 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 		inlineKeyboardMarkup.setKeyboard(generaElencoCampionati(testoCallBack,all));
 		return new SendMessage().enableHtml(true).setParseMode("html").setChatId(chatId).setText(testo).setReplyMarkup(inlineKeyboardMarkup);
 	}
-	private SendMessage sendInlineKeyBoardSquadre(long chatId, String campionato, List<String> squadrePuntuali, String testo){
+	private SendMessage sendInlineKeyBoardSquadre(long chatId, String campionato, List<String> squadrePuntuali, String testo, List<String> simulazioneListaCasa){
 		InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-		inlineKeyboardMarkup.setKeyboard(generaElencoSquadre(campionato,squadrePuntuali));
+		inlineKeyboardMarkup.setKeyboard(generaElencoSquadre(campionato,squadrePuntuali, simulazioneListaCasa));
 		return new SendMessage().enableHtml(true).setParseMode("html").setChatId(chatId).setText(testo).setReplyMarkup(inlineKeyboardMarkup);
 	}
-	private List<List<InlineKeyboardButton>> generaElencoSquadre(String campionato, List<String> squadrePuntuali) {
+	private List<List<InlineKeyboardButton>> generaElencoSquadre(String campionato, List<String> squadrePuntuali, List<String> simulazioneListaCasa) {
 		try {
 			List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
 			Map<String, Return> go = Main.go(false, null, null);
@@ -175,7 +174,21 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 							rowList.add(keyboardButtonsRow1);
 							keyboardButtonsRow1 = new ArrayList<>();
 						}
-						keyboardButtonsRow1.add(new InlineKeyboardButton().setText(squadra.getNome()).setCallbackData("dettaglio " + attCamp + "#"+ squadra.getNome()));
+						String casa;
+						if (simulazioneListaCasa==null) {
+							if (squadra.isCasaProiezione()) {
+								casa = "S";
+							} else {
+								casa="N";
+							}
+						} else {
+							if (simulazioneListaCasa.contains(squadra.getNome())){
+								casa = "S";
+							} else {
+								casa="N";
+							}
+						}
+						keyboardButtonsRow1.add(new InlineKeyboardButton().setText(squadra.getNome()).setCallbackData("dettaglio " + attCamp + "#"+ squadra.getNome()+ "#"+ casa));
 					}
 				}
 				rowList.add(keyboardButtonsRow1);

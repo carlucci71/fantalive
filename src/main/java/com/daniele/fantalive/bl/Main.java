@@ -1459,7 +1459,8 @@ public class Main {
 	}
 	public static Map<String, Object>  getPartitaSimulata(Long chatId, String nomePartitaSimulata) throws Exception{
 		Map<String, Object> ret = new HashMap<>();
-		List<String> squadreRet=new ArrayList<>();
+		List<String> squadreKey=new ArrayList<>();
+		List<String> squadreCasa=new ArrayList<>();
 		StringBuilder sb = new StringBuilder();
 		Map<String, Return> go = Main.go(true,null, null);
 		for (String campionato : go.keySet()) {
@@ -1470,17 +1471,21 @@ public class Main {
 				for (PartitaSimulata partitaSimulata : partiteSimulate) {
 					if (partitaSimulata.getNome().equalsIgnoreCase(nomePartitaSimulata)) {
 						sb.append(proiezioneSquadra(squadra, partitaSimulata.isCasa()));
-						squadreRet.add(campionato + "-" + squadra.getNome());
+						if (partitaSimulata.isCasa()) {
+							squadreCasa.add(squadra.getNome());
+						}
+						squadreKey.add(campionato + "-" + squadra.getNome());
 						ret.put("campionato", campionato);
 					}
 				}
 			}
 		}
 		ret.put("testo", sb.toString());
-		ret.put("squadre", squadreRet);
+		ret.put("squadre", squadreKey);
+		ret.put("squadreCasa", squadreCasa);
 		return ret;
 	}
-	public static String getDettaglio(Long chatId, String campionato, String squadra){
+	public static String getDettaglio(Long chatId, String campionato, String squadra, String casa){
 		try {
 			Map<String, Return> go = Main.go(true, null, null);
 			Return return1 = go.get(campionato);
@@ -1524,7 +1529,7 @@ public class Main {
 					.append(sq.getContaSquadraRiserveNonGioca())
 					.append("\n\n")
 					.append("Proiezione --> <b><i>")
-					.append(sq.isCasaProiezione()?sq.getProiezione()+2 + "(*)":sq.getProiezione())
+					.append(casa.equalsIgnoreCase("S")?sq.getProiezione()+2 + "(*)":sq.getProiezione())
 					.append("</i></b>\n\n");
 					
 					if(chatId.intValue() == Constant.CHAT_ID_FANTALIVE.intValue()) {
