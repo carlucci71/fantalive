@@ -833,7 +833,7 @@ public class Main {
 								partitaSimulata.setCasa(false);
 							}
 							if (lega.equalsIgnoreCase(Campionati.LUCCICAR.name())) {
-								partitaSimulata.setNome("LUC");
+								partitaSimulata.setNome("  LUCCICAR");
 							} else {
 								partitaSimulata.setNome(getNomePartitaSimulata(lega, progPartita));
 							}
@@ -1279,7 +1279,7 @@ public class Main {
 				String nuovoNome=partitaSimulata.getNome().substring(0,partitaSimulata.getNome().length()-1);
 				List<String> listaSquadre = m.get(partitaSimulata.getNome());
 				for (String nomeSquadra : listaSquadre) {
-					nuovoNome= nuovoNome + "" + nomeSquadra.substring(0,3);
+					nuovoNome= nuovoNome + " " + nomeSquadra.substring(0,3);
 				}
 				partitaSimulata.setNome(nuovoNome);
 			}

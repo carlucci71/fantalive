@@ -194,7 +194,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 				List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
 				Set<String> getpartiteSimulate = Main.getpartiteSimulate(campionato.name());
 				for (String partitaSimulata : getpartiteSimulate) {
-					keyboardButtonsRow1.add(new InlineKeyboardButton().setText(partitaSimulata).setCallbackData("simulata " + partitaSimulata));
+					keyboardButtonsRow1.add(new InlineKeyboardButton().setText(partitaSimulata.substring(2)).setCallbackData("simulata " + partitaSimulata));
 				}
 				rowList.add(keyboardButtonsRow1);
 			}
