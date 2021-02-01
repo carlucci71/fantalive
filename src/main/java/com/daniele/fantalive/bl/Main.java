@@ -785,8 +785,9 @@ public class Main {
 	private static String calcolaAggKey(String lega) throws Exception {
 		int giornata=constant.GIORNATA-Main.DELTA_VIVA_FG;
 		if (lega.equalsIgnoreCase(Campionati.LUCCICAR.name())) giornata=constant.GIORNATA-Main.DELTA_LUCCICAR_FG;
-		String url = "https://leghe.fantacalcio.it/" + lega + "/formazioni/" + giornata;
+		String url = "https://leghe.fantacalcio.it/" + lega + "/formazioni/" + giornata + "?id=" + COMP_VIVA_FG;
 		String string = Main.getHTTP(url);
+//		System.out.println(string);
 		string = string.substring(string.indexOf(".s('tmp', ")+11);
 		string=string.substring(0,string.indexOf(")"));
 		string = string.replace("|", "@");

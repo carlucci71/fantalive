@@ -654,9 +654,11 @@ app.run(
 			$rootScope.simPresente=function(squadra){
 				if (squadra.partiteSimulate.length>0) return "red";
 			}
-			$rootScope.campLive=function(campionato){
-				if (campionato==$rootScope.visPartitaLive) return "red";
-				return "orange";
+			$rootScope.campLive=function(partitaSimulata){
+				if (partitaSimulata==$rootScope.visPartitaLive) return "blue";
+				if (partitaSimulata.substring(0,1)=="B")  return "orange";
+				if (partitaSimulata.substring(0,1)=="F")  return "green";
+				return "red";
 			}
 			$rootScope.inEv=function(squadra){
 				if (squadra.evidenza) return "red";
