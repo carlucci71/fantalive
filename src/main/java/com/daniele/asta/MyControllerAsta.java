@@ -29,6 +29,8 @@ import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Component;
@@ -1065,6 +1067,10 @@ public class MyControllerAsta {
 
 	@GetMapping(path="/giocatoriLiberi")
 	public @ResponseBody List<Map<String, Object>> getGiocatoriLiberi() {
+		/*
+		Page<Object[]> resultListPaginata = giocatoriRepository.getGiocatoriLiberiPaginati(new PageRequest(2, 3));
+		System.out.println(resultListPaginata.getNumber());
+		*/
 		List<Object[]> resultList = giocatoriRepository.getGiocatoriLiberi();
 		List<Map<String, Object>> ret = new ArrayList<>();
 		for (Object[] row : resultList) {

@@ -8,3 +8,4 @@ src/main/java/fantalive/configurazione/ConfigSecurity.java
 src/main/java/fantalive/util/ConstantDev.java
 src/main/java/com/daniele/fantalive/util/ConstantDevelop.java
 src/main/resources/credentials.json
+spyAsta.log
