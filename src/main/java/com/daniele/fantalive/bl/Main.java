@@ -224,7 +224,7 @@ public class Main {
 		StringBuilder desMiniNotifica=new StringBuilder();
 		List<CambiaTag> cambiaTag = orariUguali(snapOrari);
 		for (CambiaTag sq : cambiaTag) {
-			desMiniNotifica.append("Cambio orario: " + sq + "\n");
+//////			desMiniNotifica.append("Cambio orario: " + sq + "\n");
 		}
 		try {
 			boolean liveGiocPresente=false;
