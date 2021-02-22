@@ -224,7 +224,7 @@ public class Main {
 		StringBuilder desMiniNotifica=new StringBuilder();
 		List<CambiaTag> cambiaTag = orariUguali(snapOrari);
 		for (CambiaTag sq : cambiaTag) {
-//////			desMiniNotifica.append("Cambio orario: " + sq + "\n");
+			desMiniNotifica.append("Cambio tag: " + sq + "\n");
 		}
 		try {
 			boolean liveGiocPresente=false;
@@ -386,19 +386,24 @@ public class Main {
 						squadreSchieratoNonSchierato.add(newGioc.getSquadra());
 					}
 					if (!squadreSchieratoNonSchierato.contains(newGioc.getSquadra())) {
+						boolean segnalaTag=false;
 						if (!oldTag.equalsIgnoreCase(newTag)) {
 							/* PreMatch Postponed Cancelled Walkover    */
 							if (newTag.equals("FirstHalf")) {
-								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.SEMAFORO_1));
-							}
-							if (newTag.equals("SecondHalf")) {
-								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.SEMAFORO_2));
+//								mapEventi.put("Inizia partita",new RigaNotifica(0, newTag, Constant.SEMAFORO_1));
+//								segnalaTag=true;
 							}
 							if (newTag.equals("HalfTime")) {
-								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.PAUSA));
+//								mapEventi.put("Intervallo",new RigaNotifica(0, newTag, Constant.PAUSA));
+//								segnalaTag=true;
+							}
+							if (newTag.equals("SecondHalf")) {
+//								mapEventi.put("Inizia secondo tempo",new RigaNotifica(0, newTag, Constant.SEMAFORO_2));
+//								segnalaTag=true;
 							}
 							if (newTag.equals("FullTime")) {
-								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.FINE_PARTITA));
+								mapEventi.put("Fine partita",new RigaNotifica(0, newTag, Constant.FINE_PARTITA));
+								segnalaTag=true;
 							}
 						}
 						if (findNuoviEventi.size()>0) {
@@ -408,7 +413,7 @@ public class Main {
 							}
 						}
 
-						if (!oldTag.equalsIgnoreCase(newTag)) {
+						if (segnalaTag) {
 							List<Map<Integer,Integer>> findTuttiEventi = findNuoviEventi(null, newGioc);
 							for (Map<Integer,Integer> nuovoEvento : findTuttiEventi) {
 								Integer ev = nuovoEvento.keySet().iterator().next();
@@ -1040,6 +1045,7 @@ public class Main {
 			Iterator<Integer> iterator = sq.keySet().iterator();
 			while (iterator.hasNext()) {
 				Integer integer = (Integer) iterator.next();
+				//https://www.fantacalcio.it/api/live/10?g=23&i=15
 				String sqFromLive = getHTTP("https://www.fantacalcio.it/api/live/" + integer + "?g=" + constant.GIORNATA + "&i=" + I_LIVE_FANTACALCIO);
 				List<Map<String, Object>> getLiveFromFG = jsonToList(sqFromLive);
 				Live live = new Live();
@@ -1048,6 +1054,17 @@ public class Main {
 				lives.add(live);
 			}
 		}
+		
+		for (Live live : lives) {
+			List<Map<String, Object>> giocatori = live.getGiocatori();
+			for (Map<String,Object> giocatore : giocatori) {
+				System.out.println(giocatore.get("nome") + "-" + giocatore.get("voto") + "-");
+				if (giocatore.get("voto")!=null && Double.parseDouble(giocatore.get("voto").toString())==55) {
+					giocatore.put("voto", 0d);
+				}
+			}
+		}
+		
 		Map<String, Object> ret = new HashMap<>();
 		ret.put("orari", orari);
 		ret.put("lives", lives);
