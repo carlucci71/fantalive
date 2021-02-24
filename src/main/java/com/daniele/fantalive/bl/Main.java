@@ -390,8 +390,8 @@ public class Main {
 						if (!oldTag.equalsIgnoreCase(newTag)) {
 							/* PreMatch Postponed Cancelled Walkover    */
 							if (newTag.equals("FirstHalf")) {
-//								mapEventi.put("Inizia partita",new RigaNotifica(0, newTag, Constant.SEMAFORO_1));
-//								segnalaTag=true;
+								mapEventi.put("Inizia partita",new RigaNotifica(0, newTag, Constant.SEMAFORO_1));
+								segnalaTag=true;
 							}
 							if (newTag.equals("HalfTime")) {
 //								mapEventi.put("Intervallo",new RigaNotifica(0, newTag, Constant.PAUSA));
