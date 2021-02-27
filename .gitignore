@@ -11,3 +11,4 @@ src/main/resources/credentials.json
 spyAsta.log
 spyAsta.log
 spyAsta.log
+*.log
