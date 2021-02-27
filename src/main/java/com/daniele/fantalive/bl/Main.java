@@ -389,20 +389,20 @@ public class Main {
 						boolean segnalaTag=false;
 						if (!oldTag.equalsIgnoreCase(newTag)) {
 							/* PreMatch Postponed Cancelled Walkover    */
-							if (newTag.equals("FirstHalf")) {
-								mapEventi.put("Inizia partita",new RigaNotifica(0, newTag, Constant.SEMAFORO_1));
+							if (newTag.equals("FirstHalf") && oldTag.equals("PreMatch")) {
+								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.SEMAFORO_1));
 								segnalaTag=true;
 							}
 							if (newTag.equals("HalfTime")) {
-//								mapEventi.put("Intervallo",new RigaNotifica(0, newTag, Constant.PAUSA));
+//								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.PAUSA));
 //								segnalaTag=true;
 							}
 							if (newTag.equals("SecondHalf")) {
-//								mapEventi.put("Inizia secondo tempo",new RigaNotifica(0, newTag, Constant.SEMAFORO_2));
+//								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.SEMAFORO_2));
 //								segnalaTag=true;
 							}
 							if (newTag.equals("FullTime")) {
-								mapEventi.put("Fine partita",new RigaNotifica(0, newTag, Constant.FINE_PARTITA));
+								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.FINE_PARTITA));
 								segnalaTag=true;
 							}
 						}
