@@ -1220,7 +1220,7 @@ public class Main {
 			}
 			if (giocatore != null && giocatore.getSquadra() != null && live.getSquadra().equals(giocatore.getSquadra().toUpperCase())) {
 				List<Map<String, Object>> giocatori = live.getGiocatori();
-				if (giocatori.size()>0) {
+				if (giocatori.size()>11) {
 					for (Map<String, Object> map : giocatori) {
 						if (map.get("voto")!=null && Double.parseDouble(map.get("voto").toString()) > 0) {
 							/*
