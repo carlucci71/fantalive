@@ -88,6 +88,7 @@ public class Main {
 	public static enum Campionati {BE, FANTAVIVA, LUCCICAR};
 
 	private static Map<Integer, String> sq=null;
+	private static Map<String, Integer> sqStatusMatch=new HashMap<>();
 	public static HashMap<Integer, String[]> eventi=null;
 	private static List<ConfigCampionato> configsCampionato=null;
 	public static List<String> sqDaEv= null;
@@ -100,6 +101,7 @@ public class Main {
 	//	static Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();
 	static ObjectMapper mapper;
 	static Map<String , String> getIconaIDGioc;	
+	static Map<String , Integer> statusMatch;	
 	public static Map<String, String> keyFG=null;
 	public static int timeRefresh = 0;
 
@@ -118,6 +120,18 @@ public class Main {
 		if (mapper==null) {
 			mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		}
+		if (statusMatch==null) {
+			statusMatch = new HashMap() {{
+				put("PreMatch",    0);
+				put("FirstHalf",    1);
+				put("HalfTime",    2);
+				put("SecondHalf",    3);
+				put("FullTime",    4);
+				put("Postponed",    5);
+				put("Cancelled",    6);
+				put("Walkover",    7);
+			}};
 		}
 		if (getIconaIDGioc==null) {
 			getIconaIDGioc = new HashMap() {{
@@ -664,8 +678,6 @@ public class Main {
 		}
 	}
 
-
-
 	private static Map<String, Map<String, String>> partiteLive() throws Exception {
 		Map<String, Map<String, String>> orari=null;
 		orari=new HashMap<String, Map<String,String>>();
@@ -1065,10 +1077,34 @@ public class Main {
 			}
 		}
 		
+		Set<String> keySetOrari = orari.keySet();
+		for (String squadra : keySetOrari) {
+			Map orario = (Map) orari.get(squadra);
+			System.out.println(squadra + "-" + orario.get("tag"));
+			String tag = getStatusMatch((String) orario.get("tag"), sqStatusMatch.get(squadra));
+			orario.put("tag", tag);
+			sqStatusMatch.put(squadra,statusMatch.get(tag));
+		}
+		
 		Map<String, Object> ret = new HashMap<>();
 		ret.put("orari", orari);
 		ret.put("lives", lives);
 		return ret;
+	}
+
+	private static String getStatusMatch(String tag, Integer oldStatusMatch) {
+		if (oldStatusMatch!=null) {
+			Integer attStatusMatch = statusMatch.get(tag);
+			if (oldStatusMatch>attStatusMatch) {
+				Set<String> keySetSM = statusMatch.keySet();
+				for (String keySM : keySetSM) {
+					if (statusMatch.get(keySM).equals(oldStatusMatch)) {
+						return keySM;
+					}
+				}
+			}
+		}
+		return tag;
 	}
 
 	private static Return getReturn(ConfigCampionato configCampionato, boolean conLive, List<Live> lives,Map<String, Map<String, String>> orari) throws Exception {
