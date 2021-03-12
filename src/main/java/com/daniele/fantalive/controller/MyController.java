@@ -32,6 +32,7 @@ import com.daniele.fantalive.bl.Main.Campionati;
 import com.daniele.fantalive.configurazione.SocketHandlerFantalive;
 import com.daniele.fantalive.entity.Salva;
 import com.daniele.fantalive.model.Giocatore;
+import com.daniele.fantalive.model.PartitaSimulata;
 import com.daniele.fantalive.model.Return;
 import com.daniele.fantalive.model.Squadra;
 import com.daniele.fantalive.repository.SalvaRepository;
@@ -476,7 +477,28 @@ public class MyController {
 				Main.cancellaSalva(nome);
 			}
 			Main.adattaNomePartitaSimulata(squadre);
+			String nomePartitaSimulata=null;
+			for (Squadra squadra : squadre) {//todo evidenze fantaviva
+				if (squadra.getNome().equalsIgnoreCase("tavolino")) {
+					squadra.setEvidenza(true);
+					PartitaSimulata partitaSimulata = squadra.getPartiteSimulate().get(0);
+					if (partitaSimulata.isCasa()) {
+						squadra.setCasaProiezione(true);
+					}
+					nomePartitaSimulata=partitaSimulata.getNome();
+				}
+			}
+			for (Squadra squadra : squadre) {
+				PartitaSimulata partitaSimulata = squadra.getPartiteSimulate().get(0);
+				if (!squadra.getNome().equalsIgnoreCase("tavolino") && partitaSimulata.getNome().equals(nomePartitaSimulata)) {
+					squadra.setEvidenza(true);
+					if (partitaSimulata.isCasa()) {
+						squadra.setCasaProiezione(true);
+					}
+				}
+			}
 			Main.upsertSalva(Constant.FORMAZIONE + Campionati.BE.name(), Main.toJson(squadre));
+			
 		}
 		catch (Exception e)
 		{

@@ -852,6 +852,7 @@ public class Main {
 							}
 							if (lega.equalsIgnoreCase(Campionati.LUCCICAR.name())) {
 								partitaSimulata.setNome("  LUCCICAR");
+								squadra.setEvidenza(true);
 							} else {
 								partitaSimulata.setNome(getNomePartitaSimulata(lega, progPartita));
 							}
@@ -879,6 +880,26 @@ public class Main {
 		}
 		if (!lega.equalsIgnoreCase(Campionati.LUCCICAR.name())) {
 			adattaNomePartitaSimulata(squadre);
+			String nomePartitaSimulata=null;
+			for (Squadra squadra : squadre) {//todo evidenze fantaviva
+				if (squadra.getNome().equalsIgnoreCase("tavolino")) {
+					squadra.setEvidenza(true);
+					PartitaSimulata partitaSimulata = squadra.getPartiteSimulate().get(0);
+					if (partitaSimulata.isCasa()) {
+						squadra.setCasaProiezione(true);
+					}
+					nomePartitaSimulata=partitaSimulata.getNome();
+				}
+			}
+			for (Squadra squadra : squadre) {
+				PartitaSimulata partitaSimulata = squadra.getPartiteSimulate().get(0);
+				if (!squadra.getNome().equalsIgnoreCase("tavolino") && partitaSimulata.getNome().equals(nomePartitaSimulata)) {
+					squadra.setEvidenza(true);
+					if (partitaSimulata.isCasa()) {
+						squadra.setCasaProiezione(true);
+					}
+				}
+			}
 		}
 		upsertSalva(Constant.FORMAZIONE + lega , toJson(squadre));
 		return squadre;
@@ -996,7 +1017,7 @@ public class Main {
 			List<String> sqBeCaricate=new ArrayList<String>();
 			for (Squadra sq : retAtt.getSquadre()) {
 
-				if (sq.getNome() != null && (sq.isEvidenza() || sq.getNome().equalsIgnoreCase(sqDaAddEvid)) && !sq.getNome().equalsIgnoreCase(sqDaDelEvid)) {
+				if (sq.getNome() != null && (sq.isEvidenza() || sq.getNome().equals(sqDaAddEvid)) && !sq.getNome().equals(sqDaDelEvid)) {
 					sqDaEv.add(sq.getNome());
 				}
 				for (int i=0;i<sq.getTitolari().size();i++) {
