@@ -1370,7 +1370,9 @@ public class Main {
 		if (first != null) {
 			giocatore = new Giocatore();
 			String text = first.text();
+			String squadra=text.substring(text.indexOf("(")+1,text.length()-1);
 			if(!text.equalsIgnoreCase("-")) {
+//				String squadra = first.childNodes().get(1).toString().substring(2,5);
 				String nomeG=text.substring(0,text.indexOf("(")-1);
 				if (nomeG.equalsIgnoreCase("Fabian Ruiz .")) nomeG="Ruiz .";
 				if (nomeG.equalsIgnoreCase("Leao R.")) nomeG="Rafael Leao ";
@@ -1405,6 +1407,7 @@ public class Main {
 				if (nomeG.equalsIgnoreCase("Junior Messias ."))  nomeG="MESSIAS ";
 				if (nomeG.equalsIgnoreCase("Borja Mayoral .")) nomeG="MAYORAL ";
 				if (nomeG.equalsIgnoreCase("N'Zola M.")) nomeG="Nzola ";
+				if (nomeG.equalsIgnoreCase("Molina N.") && squadra.equalsIgnoreCase("UDI")) nomeG="MOLINA N. ";
 /*
 			if (nomeG.toUpperCase().contains("ESSI")) {
 				System.err.println("*" + nomeG + "*");
@@ -1422,7 +1425,6 @@ public class Main {
 					System.out.println();
 				}
 				 */
-				String squadra=text.substring(text.indexOf("(")+1,text.length()-1);
 				giocatore.setNome(nomeG);
 				giocatore.setNomeTrim(nomeG.replaceAll(" ", ""));
 				giocatore.setSquadra(squadra);
