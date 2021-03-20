@@ -1408,12 +1408,13 @@ public class Main {
 				if (nomeG.equalsIgnoreCase("Borja Mayoral .")) nomeG="MAYORAL ";
 				if (nomeG.equalsIgnoreCase("N'Zola M.")) nomeG="Nzola ";
 				if (nomeG.equalsIgnoreCase("Molina N.") && squadra.equalsIgnoreCase("UDI")) nomeG="MOLINA N. ";
+				if (nomeG.equalsIgnoreCase("Danilo .") && squadra.equalsIgnoreCase("BOL")) nomeG="DANILO LAR. ";
 /*
 			if (nomeG.toUpperCase().contains("ESSI")) {
 				System.err.println("*" + nomeG + "*");
 			}
 */
-
+				
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
