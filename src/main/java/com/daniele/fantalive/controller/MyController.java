@@ -257,6 +257,8 @@ public class MyController {
 		squadra.setCasaProiezione(sq.isCasaProiezione());
 		squadra.setNome(sq.getNome());
 		squadra.setEvidenza(sq.isEvidenza());
+		squadra.setPartiteSimulate(sq.getPartiteSimulate());
+		squadra.setProg(sq.getProg());
 		List<Giocatore> nuovaListaGiocatori=new ArrayList<Giocatore>();
 		int iContaPosizione=0;
 		for (Giocatore giocatore : sq.getTitolari()) {
