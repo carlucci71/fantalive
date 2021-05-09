@@ -349,7 +349,7 @@ public class Main {
 		oldSnapLives=snapLives;
 		oldSnapOrari=snapOrari;
 		Calendar c2 = Calendar.getInstance();
-		System.out.println("GET LIVES:" + (c2.getTimeInMillis()-c.getTimeInMillis()));
+//		System.out.println("GET LIVES:" + (c2.getTimeInMillis()-c.getTimeInMillis()));
 
 		Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari);
 		Iterator<String> campionati = go.keySet().iterator();
@@ -463,7 +463,7 @@ public class Main {
 						if (newGioc.isCambio()) {
 							notifica.setCambio("(X)");
 						}
-						System.out.println(notifica);
+//						System.out.println(notifica);
 					}
 				}
 				Calendar cc=Calendar.getInstance();
@@ -526,11 +526,11 @@ public class Main {
 					Main.inviaCronacaNotifica(des.toString());
 					Main.inviaNotifica(des.toString());
 					Calendar c4 = Calendar.getInstance();
-					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));
+//					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));
 				}
 			}
 			Calendar c3 = Calendar.getInstance();
-			System.out.println("SNAPSHOT:" + (c3.getTimeInMillis()-c.getTimeInMillis()));
+//			System.out.println("SNAPSHOT:" + (c3.getTimeInMillis()-c.getTimeInMillis()));
 			if (socketHandlerFantalive != null) {
 				Map<String, Object> map=new LinkedHashMap<>();
 				map.put("res", go);
@@ -539,10 +539,10 @@ public class Main {
 				Main.inviaCronacaNotifica(desMiniNotifica.toString());
 			}
 			Calendar c4 = Calendar.getInstance();
-			System.out.println("ONLY WEB SOCKET:" + (c4.getTimeInMillis()-c3.getTimeInMillis()));
+//			System.out.println("ONLY WEB SOCKET:" + (c4.getTimeInMillis()-c3.getTimeInMillis()));
 		}
 		oldSnapshot=snapshot;
-		System.out.println("FINE SNAPSHOT");
+//		System.out.println("FINE SNAPSHOT");
 	}
 
 	public static String getUrlNotifica() {
@@ -821,7 +821,7 @@ public class Main {
 		headers.put("app_key", constant.APPKEY_FG);
 		String url = "https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?" + keyFG.get(lega);
 		String string = getHTTP(url, headers );
-		System.out.println(url + " <--> " +  headers + " <--> " + string);
+//		System.out.println(url + " <--> " +  headers + " <--> " + string);
 		Map<String, Object> jsonToMap = jsonToMap(string);
 		if (jsonToMap.get("data") == null) throw new RuntimeException("aggiornare KeyFG per " + lega);
 		List<Map> l = (List<Map>) ((Map<String, Object>)jsonToMap.get("data")).get("formazioni");
@@ -957,7 +957,7 @@ public class Main {
 					if (contaNuoviEventiOld != contaNuoviEventiNew) {
 						if (!ret.contains(codEvento)) {
 							if (codEvento==1000 && ng != null && og != null && ng.getVoto()==6 && og.getVoto()==0) {
-								System.out.println("primo imbattuto per: " + ng.getNome());
+//								System.out.println("primo imbattuto per: " + ng.getNome());
 							}
 							else {
 								Map<Integer, Integer> m = new HashMap<>();
@@ -1092,7 +1092,7 @@ public class Main {
 		for (Live live : lives) {
 			List<Map<String, Object>> giocatori = live.getGiocatori();
 			for (Map<String,Object> giocatore : giocatori) {
-				System.out.println(giocatore.get("nome") + "-" + giocatore.get("voto") + "-");
+//				System.out.println(giocatore.get("nome") + "-" + giocatore.get("voto") + "-");
 				if (giocatore.get("voto")!=null && Double.parseDouble(giocatore.get("voto").toString())==55) {
 					giocatore.put("voto", 0d);
 				}
@@ -1102,7 +1102,7 @@ public class Main {
 		Set<String> keySetOrari = orari.keySet();
 		for (String squadra : keySetOrari) {
 			Map orario = (Map) orari.get(squadra);
-			System.out.println(squadra + "-" + orario.get("tag"));
+//			System.out.println(squadra + "-" + orario.get("tag"));
 			String tag = getStatusMatch((String) orario.get("tag"), sqStatusMatch.get(squadra));
 			orario.put("tag", tag);
 			sqStatusMatch.put(squadra,statusMatch.get(tag));
@@ -1752,20 +1752,37 @@ public class Main {
 		for (String campionato : go.keySet()) {
 			Return return1 = go.get(campionato);
 			List<Squadra> squadre = return1.getSquadre();
+			String tipo="FANTAGAZZETTA";
+			if (return1.getCampionato().equalsIgnoreCase(Campionati.BE.toString())) {
+				tipo="FANTASERVICE";
+			}
 			for (Squadra squadra : squadre) {
 				for (Giocatore giocatore : squadra.getTitolari()) {
-					if (giocatore.getNome().toUpperCase().contains(filtro.toUpperCase())) {
-						ret.add(giocatore.getNome() + " - " + giocatore.getSquadra());
+					String filtroGiocatore = getFiltroGiocatore(tipo, giocatore);
+					if (filtroGiocatore.toUpperCase().contains(filtro.toUpperCase())) {
+						ret.add(filtroGiocatore);
 					}
 				}
 				for (Giocatore giocatore : squadra.getRiserve()) {
-					if (giocatore.getNome().toUpperCase().contains(filtro.toUpperCase())) {
-						ret.add(giocatore.getNome() + " - " + giocatore.getSquadra());
+					String filtroGiocatore = getFiltroGiocatore(tipo, giocatore);
+					if (filtroGiocatore.toUpperCase().contains(filtro.toUpperCase())) {
+						ret.add(filtroGiocatore);
 					}
 				}
 			}
 		}
 		return ret;
+	}
+
+	private static String getFiltroGiocatore(String tipo, Giocatore giocatore) {
+		String nomeRet="";
+		if (tipo.equals("FANTAGAZZETTA")) {
+			nomeRet=giocatore.getNomeTrim();
+		}
+		else {
+			nomeRet=giocatore.getNome().substring(0,giocatore.getNome().lastIndexOf(" ")).replaceAll(" ", "");
+		}
+		return nomeRet + " - " + giocatore.getSquadra();
 	}
 
 	public static Set<String> getDettaglioGiocatore(String filtro) throws Exception {
@@ -1774,16 +1791,20 @@ public class Main {
 		for (String campionato : go.keySet()) {
 			Return return1 = go.get(campionato);
 			List<Squadra> squadre = return1.getSquadre();
+			String tipo="FANTAGAZZETTA";
+			if (return1.getCampionato().equalsIgnoreCase(Campionati.BE.toString())) {
+				tipo="FANTASERVICE";
+			}
 			for (Squadra squadra : squadre) {
 				for (Giocatore giocatore : squadra.getTitolari()) {
-					String s = giocatore.getNome() + " - " + giocatore.getSquadra();
-					if (s.equalsIgnoreCase(filtro.toUpperCase())) {
+					String filtroGiocatore = getFiltroGiocatore(tipo, giocatore);
+					if (filtroGiocatore.equalsIgnoreCase(filtro.toUpperCase())) {
 						ret.add(campionato + "-->" + squadra.getNome() + ":" + giocatore.toString());
 					}
 				}
 				for (Giocatore giocatore : squadra.getRiserve()) {
-					String s = giocatore.getNome() + " - " + giocatore.getSquadra();
-					if (s.equalsIgnoreCase(filtro.toUpperCase())) {
+					String filtroGiocatore = getFiltroGiocatore(tipo, giocatore);
+					if (filtroGiocatore.equalsIgnoreCase(filtro.toUpperCase())) {
 						ret.add(campionato + "-->" + squadra.getNome() + ":" + giocatore.toString());
 					}
 				}
