@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -35,7 +36,30 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	private Set<Long> ricercheGiocatori=new HashSet<>();
 	
 	
-	private synchronized SendMessage setButtonsGiocatori(long chatId) {
+	private synchronized SendMessage setButtonsGiocatori(long chatId, String filtro) throws Exception {
+		SendMessage sendMessage = new SendMessage();
+		sendMessage.enableHtml(true);
+		sendMessage.setParseMode("html");
+		sendMessage.enableMarkdown(true);
+		sendMessage.setChatId(chatId);
+		// Create a keyboard
+		InlineKeyboardMarkup replyKeyboardMarkup = new InlineKeyboardMarkup();
+		sendMessage.setReplyMarkup(replyKeyboardMarkup);
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		Set<String> elencoGiocatori = Main.getElencoGiocatori(filtro);
+		for (String giocatore : elencoGiocatori) {
+	        List<InlineKeyboardButton> rowInline = new ArrayList<>();
+	        rowInline.add(new InlineKeyboardButton().setText(giocatore).setCallbackData("filtro " + giocatore));
+	        rowsInline.add(rowInline);
+		}
+		// and assign this list to our keyboard
+		replyKeyboardMarkup.setKeyboard(rowsInline);
+		sendMessage.setReplyMarkup(replyKeyboardMarkup);
+		sendMessage.setText("seleziona il giocatore");
+		return sendMessage;
+	}	
+	
+	private synchronized SendMessage setButtonsGiocatoriORIG(long chatId, String filtro) throws Exception {
 		SendMessage sendMessage = new SendMessage();
 		sendMessage.enableHtml(true);
 		sendMessage.setParseMode("html");
@@ -52,23 +76,19 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 		// Create a list of keyboard rows
 		List<KeyboardRow> keyboard = new ArrayList<>();
 
-		// First keyboard row
-		KeyboardRow keyboardFirstRow = new KeyboardRow();
-		// Add buttons to the first keyboard row
-		keyboardFirstRow.add(new KeyboardButton("Hi"));
-
-		// Second keyboard row
-		KeyboardRow keyboardSecondRow = new KeyboardRow();
-		// Add the buttons to the second keyboard row
-		keyboardSecondRow.add(new KeyboardButton("Help"));
-
-		// Add all of the keyboard rows to the list
-		keyboard.add(keyboardFirstRow);
-		keyboard.add(keyboardSecondRow);
+		Set<String> elencoGiocatori = Main.getElencoGiocatori(filtro);
+		for (String giocatore : elencoGiocatori) {
+			KeyboardRow kbRiga = new KeyboardRow();
+			KeyboardButton kbGiocatore = new KeyboardButton(giocatore);
+			kbRiga.add(kbGiocatore);
+			keyboard.add(kbRiga);
+		}
+		
+		
 		// and assign this list to our keyboard
 		replyKeyboardMarkup.setKeyboard(keyboard);
 		sendMessage.setReplyMarkup(replyKeyboardMarkup);
-		sendMessage.setText("ciao");
+		sendMessage.setText("seleziona il giocatore");
 		return sendMessage;
 	}	
 	
@@ -94,7 +114,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 					}
 					else {
 						if (ricercheGiocatori.contains(chatId)) {
-							execute(setButtonsGiocatori(chatId));
+							execute(setButtonsGiocatori(chatId,text));
 							ricercheGiocatori.remove(chatId);
 						}else {
 							execute(creaSendMessage(chatId,text, true));//REPLY
@@ -122,6 +142,16 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					String[] split = testoCallback.split("#");
 					execute(creaSendMessage(chatId,Main.getDettaglio(chatId,split[0],split[1],split[2]), false));
+
+				}
+				else if (testoCallback.startsWith("filtro")) {
+					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
+					Set<String> dettaglioGiocatore = Main.getDettaglioGiocatore(testoCallback);
+					String testo="";
+					for (String string : dettaglioGiocatore) {
+						testo = testo + string + "\n";
+					}
+					execute(creaSendMessage(chatId,testo, false));
 
 				}
 				else if (testoCallback.startsWith("simulata")) {

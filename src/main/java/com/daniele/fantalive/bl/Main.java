@@ -1745,6 +1745,53 @@ public class Main {
 		if (r.equals(Campionati.BE.name())) pos=3;
 		return evento[pos];
 	}
+
+	public static Set<String> getElencoGiocatori(String filtro) throws Exception {
+		Set<String> ret=new TreeSet<>();
+		Map<String, Return> go = Main.go(false,null, null);
+		for (String campionato : go.keySet()) {
+			Return return1 = go.get(campionato);
+			List<Squadra> squadre = return1.getSquadre();
+			for (Squadra squadra : squadre) {
+				for (Giocatore giocatore : squadra.getTitolari()) {
+					if (giocatore.getNome().toUpperCase().contains(filtro.toUpperCase())) {
+						ret.add(giocatore.getNome() + " - " + giocatore.getSquadra());
+					}
+				}
+				for (Giocatore giocatore : squadra.getRiserve()) {
+					if (giocatore.getNome().toUpperCase().contains(filtro.toUpperCase())) {
+						ret.add(giocatore.getNome() + " - " + giocatore.getSquadra());
+					}
+				}
+			}
+		}
+		return ret;
+	}
+
+	public static Set<String> getDettaglioGiocatore(String filtro) throws Exception {
+		Set<String> ret=new TreeSet<>();
+		Map<String, Return> go = Main.go(true,null, null);
+		for (String campionato : go.keySet()) {
+			Return return1 = go.get(campionato);
+			List<Squadra> squadre = return1.getSquadre();
+			for (Squadra squadra : squadre) {
+				for (Giocatore giocatore : squadra.getTitolari()) {
+					String s = giocatore.getNome() + " - " + giocatore.getSquadra();
+					if (s.equalsIgnoreCase(filtro.toUpperCase())) {
+						ret.add(campionato + "-->" + squadra.getNome() + ":" + giocatore.toString());
+					}
+				}
+				for (Giocatore giocatore : squadra.getRiserve()) {
+					String s = giocatore.getNome() + " - " + giocatore.getSquadra();
+					if (s.equalsIgnoreCase(filtro.toUpperCase())) {
+						ret.add(campionato + "-->" + squadra.getNome() + ":" + giocatore.toString());
+					}
+				}
+			}
+		}
+		return ret;
+	}
+	
 	public static Set<String> getpartiteSimulate(String campionato) throws Exception {
 		Set<String> ret=new TreeSet<>();
 		Map<String, Return> go = Main.go(false,null, null);
