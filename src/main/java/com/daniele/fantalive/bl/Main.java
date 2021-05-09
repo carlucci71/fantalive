@@ -190,6 +190,7 @@ public class Main {
 			eventi.put(21, new String[] {"assist medium2","1","1","1","S",Constant.ASSIST});
 			eventi.put(22, new String[] {"assist hight","1.5","1","1","S",Constant.ASSIST});
 			eventi.put(24, new String[] {"assist medium1","1","1","1","S",Constant.ASSIST});
+			eventi.put(25, new String[] {"assist hight","1.5","1","1","S",Constant.ASSIST});
 		}
 		if (sq==null) {
 			sq = new LinkedHashMap<Integer, String>();

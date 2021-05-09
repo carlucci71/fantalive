@@ -32,6 +32,45 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 
 	private static BotSession registerBot;
 	private static String CHI;
+	private Set<Long> ricercheGiocatori=new HashSet<>();
+	
+	
+	private synchronized SendMessage setButtonsGiocatori(long chatId) {
+		SendMessage sendMessage = new SendMessage();
+		sendMessage.enableHtml(true);
+		sendMessage.setParseMode("html");
+		sendMessage.enableMarkdown(true);
+
+		sendMessage.setChatId(chatId);
+		// Create a keyboard
+		ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+		sendMessage.setReplyMarkup(replyKeyboardMarkup);
+		replyKeyboardMarkup.setSelective(true);
+		replyKeyboardMarkup.setResizeKeyboard(true);
+		replyKeyboardMarkup.setOneTimeKeyboard(false);
+
+		// Create a list of keyboard rows
+		List<KeyboardRow> keyboard = new ArrayList<>();
+
+		// First keyboard row
+		KeyboardRow keyboardFirstRow = new KeyboardRow();
+		// Add buttons to the first keyboard row
+		keyboardFirstRow.add(new KeyboardButton("Hi"));
+
+		// Second keyboard row
+		KeyboardRow keyboardSecondRow = new KeyboardRow();
+		// Add the buttons to the second keyboard row
+		keyboardSecondRow.add(new KeyboardButton("Help"));
+
+		// Add all of the keyboard rows to the list
+		keyboard.add(keyboardFirstRow);
+		keyboard.add(keyboardSecondRow);
+		// and assign this list to our keyboard
+		replyKeyboardMarkup.setKeyboard(keyboard);
+		sendMessage.setReplyMarkup(replyKeyboardMarkup);
+		sendMessage.setText("ciao");
+		return sendMessage;
+	}	
 	
 
 	@Override
@@ -50,8 +89,16 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 					else if(text.equals("/simulazioni")){
 						execute(sendInlineKeyBoardPartiteSimulate(chatId,"simula ",text));
 					}
+					else if(text.equals("/giocatori")){
+						execute(sendInlineKeyBoardGiocatori(chatId,"giocatori ",text));
+					}
 					else {
-						execute(creaSendMessage(chatId,text, true));//REPLY
+						if (ricercheGiocatori.contains(chatId)) {
+							execute(setButtonsGiocatori(chatId));
+							ricercheGiocatori.remove(chatId);
+						}else {
+							execute(creaSendMessage(chatId,text, true));//REPLY
+						}
 					}
 				}
 			}
@@ -138,6 +185,10 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 		} catch (TelegramApiException e) {
 			throw e;
 		}
+	}
+	private SendMessage sendInlineKeyBoardGiocatori(long chatId, String cb, String testo){
+		ricercheGiocatori.add(chatId);
+		return new SendMessage().enableHtml(true).setParseMode("html").setChatId(chatId).setText("Digita il giocatore che vuoi ricercare");
 	}
 	private SendMessage sendInlineKeyBoardPartiteSimulate(long chatId, String cb, String testo){
 		InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
