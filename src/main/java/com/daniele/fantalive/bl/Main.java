@@ -1782,7 +1782,7 @@ public class Main {
 		else {
 			nomeRet=giocatore.getNome().substring(0,giocatore.getNome().lastIndexOf(" ")).replaceAll(" ", "");
 		}
-		return nomeRet + " - " + giocatore.getSquadra();
+		return nomeRet + " - " + giocatore.getSquadra().toUpperCase();
 	}
 
 	public static Set<String> getDettaglioGiocatore(String filtro) throws Exception {
