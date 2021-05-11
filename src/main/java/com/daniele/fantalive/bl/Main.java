@@ -1785,9 +1785,10 @@ public class Main {
 		return nomeRet + " - " + giocatore.getSquadra().toUpperCase();
 	}
 
-	public static Set<String> getDettaglioGiocatore(String filtro) throws Exception {
-		Set<String> ret=new TreeSet<>();
+	public static String getDettaglioGiocatore(String filtro) throws Exception {
 		Map<String, Return> go = Main.go(true,null, null);
+		Giocatore gioc=null;
+		List<Map<String,String>> dati=new ArrayList<>();
 		for (String campionato : go.keySet()) {
 			Return return1 = go.get(campionato);
 			List<Squadra> squadre = return1.getSquadre();
@@ -1799,19 +1800,36 @@ public class Main {
 				for (Giocatore giocatore : squadra.getTitolari()) {
 					String filtroGiocatore = getFiltroGiocatore(tipo, giocatore);
 					if (filtroGiocatore.equalsIgnoreCase(filtro.toUpperCase())) {
-						ret.add(campionato + "-->" + squadra.getNome() + ":" + giocatore.toString());
+						Map<String, String> dato=new HashMap<>();
+						dato.put("riga", campionato + " " + squadra.getNome() + " " + giocatore.getIdGioc());
+						dati.add(dato);
+						gioc=giocatore;
 					}
 				}
 				for (Giocatore giocatore : squadra.getRiserve()) {
 					String filtroGiocatore = getFiltroGiocatore(tipo, giocatore);
 					if (filtroGiocatore.equalsIgnoreCase(filtro.toUpperCase())) {
-						ret.add(campionato + "-->" + squadra.getNome() + ":" + giocatore.toString());
+						Map<String, String> dato=new HashMap<>();
+						dato.put("riga", campionato + " " + squadra.getNome() + " " + giocatore.getIdGioc());
+						dati.add(dato);
+						gioc=giocatore;
 					}
 				}
 			}
 		}
+		String ret=gioc.getNome() + "(" + gioc.getRuolo() + ") " + gioc.getSquadra() + "[";
+		for (Integer ev : gioc.getCodEventi()) {
+			ret =ret + " " + eventi.get(ev)[0];
+		}
+		ret=ret+ "] voto=" + gioc.getVoto()  
+		+ " modificatore=" + gioc.getModificatore() + ", FM=" + (gioc.getModificatore() + gioc.getVoto())
+		+ " orario=" + gioc.getOrario() + "\n"; 		
+		for (Map<String, String> dato : dati) {
+			ret = ret + "\n" + dato.get("riga");
+		}
 		return ret;
 	}
+	
 	
 	public static Set<String> getpartiteSimulate(String campionato) throws Exception {
 		Set<String> ret=new TreeSet<>();

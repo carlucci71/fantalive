@@ -146,12 +146,8 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 				}
 				else if (testoCallback.startsWith("filtro")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
-					Set<String> dettaglioGiocatore = Main.getDettaglioGiocatore(testoCallback);
-					String testo="";
-					for (String string : dettaglioGiocatore) {
-						testo = testo + string + "\n";
-					}
-					execute(creaSendMessage(chatId,testo, false));
+					String dettaglioGiocatore = Main.getDettaglioGiocatore(testoCallback);
+					execute(creaSendMessage(chatId,dettaglioGiocatore, false));
 
 				}
 				else if (testoCallback.startsWith("simulata")) {
