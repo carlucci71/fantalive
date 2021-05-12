@@ -1748,6 +1748,7 @@ public class Main {
 
 	public static Set<String> getElencoGiocatori(String filtro) throws Exception {
 		Set<String> ret=new TreeSet<>();
+		Set<String> retUC=new TreeSet<>();
 		Map<String, Return> go = Main.go(false,null, null);
 		for (String campionato : go.keySet()) {
 			Return return1 = go.get(campionato);
@@ -1759,13 +1760,16 @@ public class Main {
 			for (Squadra squadra : squadre) {
 				for (Giocatore giocatore : squadra.getTitolari()) {
 					String filtroGiocatore = getFiltroGiocatore(tipo, giocatore);
-					if (filtroGiocatore.toUpperCase().contains(filtro.toUpperCase())) {
+					if (filtroGiocatore.toUpperCase().contains(filtro.toUpperCase()) && !retUC.contains(filtroGiocatore.toUpperCase())) {
+						retUC.add(filtroGiocatore.toUpperCase());
 						ret.add(filtroGiocatore);
 					}
 				}
 				for (Giocatore giocatore : squadra.getRiserve()) {
 					String filtroGiocatore = getFiltroGiocatore(tipo, giocatore);
-					if (filtroGiocatore.toUpperCase().contains(filtro.toUpperCase())) {
+					if (filtroGiocatore.toUpperCase().contains(filtro.toUpperCase()) && !retUC.contains(filtroGiocatore.toUpperCase())) {
+						retUC.add(filtroGiocatore.toUpperCase());
+						retUC.add(filtroGiocatore);
 						ret.add(filtroGiocatore);
 					}
 				}
