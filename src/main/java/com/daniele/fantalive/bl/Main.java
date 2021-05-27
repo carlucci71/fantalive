@@ -186,11 +186,12 @@ public class Main {
 			eventi.put(15, new String[] {"entrato","0","0","0","S",Constant.ENTRATO});
 			eventi.put(16, new String[] {"gol annullato","0","0","0","N",Constant.GOL_ANNULLATO});
 			eventi.put(17, new String[] {"infortunio","0","0","0","N",Constant.INFORTUNIO});
-			eventi.put(20, new String[] {"assist low","0.5","1","1","S",Constant.ASSIST});
-			eventi.put(21, new String[] {"assist medium2","1","1","1","S",Constant.ASSIST});
-			eventi.put(22, new String[] {"assist hight","1.5","1","1","S",Constant.ASSIST});
-			eventi.put(24, new String[] {"assist medium1","1","1","1","S",Constant.ASSIST});
-			eventi.put(25, new String[] {"assist hight","1.5","1","1","S",Constant.ASSIST});
+			eventi.put(20, new String[] {"assist low1","0.5","1","1","S",Constant.ASSIST});
+			eventi.put(21, new String[] {"assist medium1","1","1","1","S",Constant.ASSIST});
+			eventi.put(22, new String[] {"assist hight1","1.5","1","1","S",Constant.ASSIST});
+			eventi.put(23, new String[] {"assist low2","0.5","1","1","S",Constant.ASSIST});
+			eventi.put(24, new String[] {"assist medium2","1","1","1","S",Constant.ASSIST});
+			eventi.put(25, new String[] {"assist hight2","1.5","1","1","S",Constant.ASSIST});
 		}
 		if (sq==null) {
 			sq = new LinkedHashMap<Integer, String>();
@@ -1174,7 +1175,7 @@ public class Main {
 					for (String eventoAtt : split) {
 						String[] eventiAtt = eventi.get(Integer.parseInt(eventoAtt));
 						if (eventiAtt==null) {
-							throw new RuntimeException("Evento non censito: " + eventoAtt);
+							throw new RuntimeException("Evento non censito: " + eventoAtt + " per " + gg.get("nome"));
 						}
 						if (eventiAtt[4].equals("N")) continue;
 						if (eventiAtt==null) {
