@@ -104,7 +104,7 @@ app.run(
                 r.onloadend = function(e) {
 			    var data = e.target.result;
 				$rootScope.tokenDispositiva=Math.floor(Math.random()*(10000)+1);
-				$resource('./caricaFile',{}).save({'file':data, 'tipo' : tipoFile,'idgiocatore':$rootScope.idgiocatore,'tokenDispositiva':$rootScope.tokenDispositiva}).$promise.then(function(data) {
+				$resource('./caricaFile',{}).save({'file':btoa(data), 'tipo' : tipoFile,'idgiocatore':$rootScope.idgiocatore,'tokenDispositiva':$rootScope.tokenDispositiva}).$promise.then(function(data) {
 					if(data.esitoDispositiva == 'OK'){
 						$rootScope.caricamentoInCorso=false;
 					}
@@ -722,10 +722,12 @@ app.run(
 				$rootScope.contaTempo=0;
 				$rootScope.sendMsg(JSON.stringify({'operazione':'start', 'selCalciatoreMacroRuolo':$rootScope.selCalciatoreMacroRuolo,'selCalciatore':$rootScope.selCalciatore, 'nomegiocatoreOperaCome':$rootScope.nomegiocatore, 'idgiocatoreOperaCome':$rootScope.idgiocatore,'nomegiocatore':ng,'idgiocatore':ig}));
 				$rootScope.selCalciatore="";
-				$resource('./leggi',{}).save({'nome':$rootScope.selCalciatoreNome}).$promise.then(function(data) {
-					var audio = new Audio('./riproduci.wav');
-					audio.play();
-				});
+				if (false){//PROVE LETTURA
+					$resource('./leggi',{}).save({'nome':$rootScope.selCalciatoreNome}).$promise.then(function(data) {
+						var audio = new Audio('./riproduci.wav');
+						audio.play();
+					});
+				}
 			}
 			$rootScope.azzeraTempo=function(){
 						$rootScope.sendMsg(JSON.stringify({'operazione':'azzeraTempo', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));

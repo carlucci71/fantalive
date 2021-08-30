@@ -1,11 +1,14 @@
 package com.daniele.asta;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,12 +28,14 @@ import javax.transaction.Transactional;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Component;
@@ -237,14 +242,17 @@ public class MyControllerAsta {
 //		m.leggi(body);
 		
 		
-		System.setProperty("freetts.voices",  "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");		
-		 VoiceManager voiceManager = VoiceManager.getInstance();
-			VoiceManager vm = VoiceManager.getInstance();
-		    Voice helloVoice = vm.getVoice("kevin16");
-
-		    helloVoice.allocate();
-		    helloVoice.speak("Adorante");
-		    helloVoice.deallocate();		
+//		System.setProperty("freetts.voices",  "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");		
+//		 VoiceManager voiceManager = VoiceManager.getInstance();
+//			VoiceManager vm = VoiceManager.getInstance();
+//		    Voice helloVoice = vm.getVoice("kevin16");
+//
+//		    helloVoice.allocate();
+//		    helloVoice.speak("Adorante");
+//		    helloVoice.deallocate();
+		
+		
+		
 	}
 	
 	
@@ -449,42 +457,70 @@ public class MyControllerAsta {
 			favoriti.put(Integer.parseInt(idgiocatore), list);
 		}
 	}
+
+	
 	
 	
 	@PostMapping("/caricaFile")
 	public Map<String, Object> caricaFile(@RequestBody Map<String,Object> body,HttpServletRequest request) throws Exception {
 		Map<String,Object> ret = new HashMap<>();
 		if(isOkDispositiva(body)) {
-			String content = (String) body.get("file");
+			byte[] byteContent = Base64.getDecoder().decode((String) body.get("file"));
 			String tipoFile = (String) body.get("tipo");
 			giocatoriRepository.deleteAll();
 			if("FS".equalsIgnoreCase(tipoFile)) {
-				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder builder = factory.newDocumentBuilder();
-				InputSource is = new InputSource(new StringReader(content));
-				Document parse = builder.parse(is);
-				NodeList childNodes = parse.getChildNodes().item(0).getChildNodes();
-				for (int i=0;i<childNodes.getLength();i++) {
-					if (i>0) {
-						Node tr = childNodes.item(i);
-						NodeList childNodesTr = tr.getChildNodes();
-						String id = childNodesTr.item(0).getTextContent(); 
-						String squadra = childNodesTr.item(3).getTextContent(); 
-						String nome = childNodesTr.item(1).getTextContent() + " " + childNodesTr.item(2).getTextContent(); 
-						String ruolo = childNodesTr.item(4).getTextContent(); 
-						String quotazione = childNodesTr.item(6).getTextContent(); 
-						Giocatori giocatori = new Giocatori();
-						giocatori.setId(Integer.parseInt(id));
-						giocatori.setNome(nome);
-						giocatori.setQuotazione(Integer.parseInt(quotazione));
-						giocatori.setRuolo(ruolo);
-						giocatori.setMacroRuolo(ruolo);
-						giocatori.setSquadra(squadra);
-						giocatoriRepository.save(giocatori);
+				if (false) { //vecchia versione il file fornito era in xml
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder builder = factory.newDocumentBuilder();
+					String content = new String(byteContent);
+					InputSource is = new InputSource(new StringReader(content));
+					Document parse = builder.parse(is);
+					NodeList childNodes = parse.getChildNodes().item(0).getChildNodes();
+					for (int i=0;i<childNodes.getLength();i++) {
+						if (i>0) {
+							Node tr = childNodes.item(i);
+							NodeList childNodesTr = tr.getChildNodes();
+							String id = childNodesTr.item(0).getTextContent(); 
+							String squadra = childNodesTr.item(3).getTextContent(); 
+							String nome = childNodesTr.item(1).getTextContent() + " " + childNodesTr.item(2).getTextContent(); 
+							String ruolo = childNodesTr.item(4).getTextContent(); 
+							String quotazione = childNodesTr.item(6).getTextContent(); 
+							Giocatori giocatori = new Giocatori();
+							giocatori.setId(Integer.parseInt(id));
+							giocatori.setNome(nome);
+							giocatori.setQuotazione(Integer.parseInt(quotazione));
+							giocatori.setRuolo(ruolo);
+							giocatori.setMacroRuolo(ruolo);
+							giocatori.setSquadra(squadra);
+							giocatoriRepository.save(giocatori);
+						}
 					}
+				}
+				else {
+					InputStream targetStream = new ByteArrayInputStream(byteContent);
+					Workbook workbook =  new HSSFWorkbook(targetStream);
+					Sheet sheet = workbook.getSheetAt(0);
+					Iterator<Row> rowIterator = sheet.iterator();
+					boolean bPrima=true;
+					while (rowIterator.hasNext()) {
+						Row currentRow = rowIterator.next();
+						if (!bPrima) {
+							Giocatori giocatori = new Giocatori();
+							giocatori.setId(new Double(currentRow.getCell(0).getNumericCellValue()).intValue());
+							giocatori.setNome(currentRow.getCell(1).getStringCellValue() + " " + currentRow.getCell(2).getStringCellValue());
+							giocatori.setSquadra(currentRow.getCell(3).getStringCellValue());
+							giocatori.setRuolo(currentRow.getCell(4).getStringCellValue());
+							giocatori.setMacroRuolo(currentRow.getCell(4).getStringCellValue());
+							giocatori.setQuotazione(new Double(currentRow.getCell(6).getNumericCellValue()).intValue());
+							giocatoriRepository.save(giocatori);
+						}
+						bPrima=false;
+					}
+					workbook.close();
 				}
 			}
 			else if("MANTRA".equalsIgnoreCase(tipoFile)) {
+				String content = new String(byteContent);
 				String[] split = content.split("\n");
 				for(int i=0;i<split.length;i++) {
 					String riga = split[i];

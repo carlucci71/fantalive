@@ -82,7 +82,7 @@ In questa pagina è presente anche il bottone `AZZERA TUTTO` per cancellare il d
 
 L'ultima attività di configurazione da effettuare consiste nel caricare la lista dei calciatori. Produrre il file da caricare nelle seguenti modalità:
 * fantaservice (se deselezionata la scelta Mantra):
-  recuperando l'elenco da https://www.fanta.soccer/it/archivioquotazioni/A/2020-2021/
+  recuperando l'elenco da https://www.fanta.soccer/it/archivioquotazioni/A/2021-2022/
 * leghefantacalcio  (se selezionata la scelta Mantra)
 scarica lista svincolati da https://leghe.fantacalcio.it/fanta-viva/lista-svincolati, aprilo con excel, rimuovi le prime 4 righe, -esporta - cambia tipo file - testo delimitato da tabulazione e salva con nome
 
