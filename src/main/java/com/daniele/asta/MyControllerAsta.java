@@ -51,6 +51,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXParseException;
 
 import com.daniele.fantalive.dto.ExportMantra;
 import com.daniele.fantalive.dto.GiocatoriPerSquadra;
@@ -469,7 +470,7 @@ public class MyControllerAsta {
 			String tipoFile = (String) body.get("tipo");
 			giocatoriRepository.deleteAll();
 			if("FS".equalsIgnoreCase(tipoFile)) {
-				if (false) { //vecchia versione il file fornito era in xml
+				try { //vecchia versione il file fornito era in xml
 					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 					DocumentBuilder builder = factory.newDocumentBuilder();
 					String content = new String(byteContent);
@@ -496,7 +497,7 @@ public class MyControllerAsta {
 						}
 					}
 				}
-				else {
+				catch (SAXParseException e){
 					InputStream targetStream = new ByteArrayInputStream(byteContent);
 					Workbook workbook =  new HSSFWorkbook(targetStream);
 					Sheet sheet = workbook.getSheetAt(0);

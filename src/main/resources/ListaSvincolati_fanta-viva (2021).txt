@@ -1,0 +1,572 @@
+3	Por	Radunovic	CAG	5,5	1	1
+4	Por	Sportiello	ATA	0	1	1
+42	Por	Sarr M. *	BOL	0	1	1
+133	Por	Skorupski	BOL	6,25	9	10
+158	Por	Lezzerini	VEN	6,5	5	5
+160	Por	Tatarusanu	MIL	0	1	1
+218	Por	Perin	JUV	0	1	1
+250	Por	Handanovic	INT	5,5	17	17
+316	Por	Berisha	TOR	0	1	1
+318	Por	Marchetti	GEN	0	1	1
+387	Por	Reina	LAZ	6,25	14	15
+453	Por	Szczesny	JUV	5	17	16
+481	Por	Brignoli	EMP	0	1	1
+509	Por	Consigli	SAS	6	12	12
+510	Por	Pegolo	SAS	0	1	1
+543	Por	Padelli	UDI	0	1	1
+572	Por	Meret	NAP	6,25	14	15
+574	Por	Scuffet	UDI	0	1	1
+720	Por	Belec	SAL	6	5	4
+761	Por	Audero	SAM	6	12	12
+799	Por	Bardi	BOL	0	1	1
+1843	Por	Radu I.	INT	0	1	1
+1889	Por	Cordaz	INT	0	1	1
+1917	Por	Dragowski	FIO	4	11	10
+1930	Por	Pinsoglio	JUV	0	1	1
+1934	Por	Strakosha	LAZ	0	1	1
+1946	Por	Aresti	CAG	0	1	1
+1947	Por	Fiorillo	SAL	0	1	1
+2091	Por	Plizzari	MIL	0	1	1
+2127	Por	Satalino	SAS	0	1	1
+2134	Por	Falcone	SAM	0	1	1
+2170	Por	Milinkovic-Savic V.	TOR	6	9	9
+2178	Por	Cragno	CAG	5,5	10	9
+2179	Por	Sirigu	GEN	6,25	8	7
+2211	Por	Silvestri	UDI	6,5	10	11
+2297	Por	Rossi F.	ATA	0	1	1
+2468	Por	Ospina	NAP	0	1	1
+2781	Por	Fuzato	ROM	0	1	1
+2790	Por	Rosati	FIO	0	1	1
+2792	Por	Musso	ATA	6	16	16
+2814	Por	Provedel	SPE	0	1	1
+2815	Por	Terracciano	FIO	6	1	2
+2845	Por	Contini *	NAP	0	1	1
+2861	Por	Semper	GEN	0	1	1
+4270	Por	Rui Patricio	ROM	6,5	14	15
+4312	Por	Maignan	MIL	6,25	15	15
+4441	Por	Andrenacci	GEN	0	1	1
+4491	Por	Berardi A.	VER	0	1	1
+4525	Por	Gemello	TOR	0	1	1
+4867	Por	Turati *	SAS	0	1	1
+4957	Por	Montipo'	VER	6	9	8
+4964	Por	Vicario	EMP	6	6	6
+4977	Por	Ravaglia	SAM	0	1	1
+4981	Por	Krapikas	SPE	0	1	1
+4996	Por	Pandur	VER	5,5	1	1
+5005	Por	Zoet	SPE	5,5	7	6
+5304	Por	Boer	ROM	0	1	1
+5306	Por	Alia *	LAZ	0	1	1
+5448	Por	Furlan	EMP	0	1	1
+5478	Por	Maenpaa	VEN	5,5	1	1
+5502	Por	Adamonis	LAZ	0	1	1
+5518	Por	Marfella	NAP	0	1	1
+5521	Por	Bertinato	VEN	0	1	1
+5528	Por	Zovko	SPE	0	1	1
+5682	Por	Molla	BOL	0	1	1
+11	"Dd;E"	Conti	MIL	0	2	2
+15	"Dd;Dc"	Masiello	GEN	5	4	4
+45	"Dd;Dc"	Ferrari A.	SAM	0	4	4
+50	"Dd;Ds;E"	Mbaye	BOL	0	5	4
+76	Dc	Romagnoli S.	EMP	4,5	5	4
+118	Dc	Radovanovic	GEN	0	4	4
+140	"Dd;Ds;E"	Hysaj	LAZ	6,5	7	9
+142	"Ds;E"	Mario Rui	NAP	6	5	6
+144	Dc	Tonelli	EMP	0	5	4
+224	Dc	De Maio	UDI	0	3	3
+226	"Dd;Dc"	Izzo	TOR	5,25	8	7
+244	"Dd;E"	Ghiglione	GEN	6,5	4	5
+252	"Ds;E"	Biraghi	FIO	6	9	9
+253	"Dd;Ds;Dc"	D'Ambrosio	INT	0	6	6
+254	"Ds;E"	Dimarco	INT	6	9	9
+256	"Ds;Dc"	Juan Jesus	NAP	0	3	3
+259	Dc	Murillo	SAM	0	3	3
+261	Dc	Ranocchia	INT	0	2	2
+286	Dc	Bonucci	JUV	6	12	12
+288	Dc	Chiellini	JUV	6	10	10
+294	Dc	Rugani	JUV	0	5	4
+322	Dc	De Vrij	INT	6	14	14
+327	"Dd;Dc;E"	Patric	LAZ	6	3	3
+329	"Ds;Dc"	Radu	LAZ	0	5	4
+357	"Dd;E"	Calabria	MIL	6,25	11	12
+358	"Dd;Ds;E"	De Sciglio	JUV	0	4	4
+390	"Ds;E"	Ghoulam	NAP	0	2	2
+392	Dc	Koulibaly	NAP	6,75	12	13
+393	"Ds;Dc"	Luperto	EMP	7	2	3
+418	Dc	Goldaniga	SAS	0	5	4
+454	Dc	Capradossi *	SPE	0	1	1
+459	Dc	Manolas	NAP	6	9	9
+460	Dc	Romagnoli	MIL	0	7	6
+464	"Dd;E"	Florenzi	MIL	6	9	9
+487	"Dd;E"	De Silvestri	BOL	7,25	7	10
+513	Dc	Acerbi	LAZ	6,75	12	13
+521	"Ds;Dc"	Peluso	SAS	0	3	3
+551	"Ds;E"	Molinaro	VEN	5,5	2	2
+554	E	Zappacosta	ATA	0	14	14
+581	"Dd;E"	Faraoni	VER	6	14	14
+630	"Dd;E"	Sala	SPE	5,5	2	2
+633	"Ds;E"	Fares	LAZ	0	4	4
+640	"Dd;Dc"	Chiriches	SAS	6,25	6	7
+660	Dc	Gyomber	SAL	5,25	4	4
+662	"Ds;E"	Alex Sandro	JUV	6,25	11	11
+695	Dc	Toloi	ATA	6	9	9
+697	"Dd;E"	Cuadrado	JUV	6,5	18	19
+706	E	Ansaldi	TOR	0	10	9
+758	Dc	Mantovani *	SAL	0	2	2
+770	E	Pezzella Giu.	ATA	6	7	7
+787	Dc	Djimsiti	ATA	6,25	10	11
+790	"Ds;Dc"	Samir	UDI	5,75	8	8
+791	"Dd;E"	Sabelli	GEN	6	6	6
+798	Dc	Skriniar	INT	6,5	15	16
+805	"Dd;E"	Fiamozzi	EMP	0	3	3
+1847	Dc	Caldara	VEN	4,75	3	2
+1852	"Ds;E"	Spinazzola	ROM	0	13	12
+1866	Dc	Ceppitelli	CAG	5,75	6	6
+1868	"Ds;E"	Murru	SAM	6	3	3
+1891	"Dd;Dc"	Ceccherini	VER	5,75	5	5
+1895	Dc	Ferrari G.	SAS	6,25	10	11
+2006	"Dd;E"	Lirola *	FIO	0	8	8
+2064	"Dd;Ds;Dc"	Veseli	SAL	0	5	4
+2083	"Dd;Dc;E"	Biraschi	GEN	5,5	6	6
+2104	"Dd;E"	Bereszynski	SAM	5,75	7	6
+2116	"Dd;E"	Farago'	CAG	0	3	3
+2120	Dc	Bastoni	INT	6,5	11	12
+2130	E	Hateboer	ATA	0	13	12
+2141	"Dd;E"	Depaoli	SAM	0	3	3
+2160	E	Gosens	ATA	5,75	25	24
+2164	"Dd;Dc"	Milenkovic	FIO	6,5	11	12
+2169	"Ds;E"	Rodriguez R.	TOR	5,25	5	5
+2171	Dc	Lyanco *	TOR	0	6	6
+2174	"Dd;Ds;E"	Venuti	FIO	5,25	3	3
+2180	"Dd;E"	Karsdorp	ROM	6,25	12	12
+2181	Dc	Palomino	ATA	6,5	8	9
+2188	"Dd;Ds;E"	Marusic	LAZ	6	7	7
+2192	Dc	Bonifazi	BOL	6	7	7
+2206	"Ds;E"	Felicioli	VEN	0	2	2
+2208	"Ds;E"	Jaroszynski	SAL	5,25	5	5
+2214	"Ds;Dc"	Kolarov	INT	0	3	3
+2252	"Ds;Dc"	Marchizza	EMP	5,5	6	6
+2263	"Dd;E"	Lazzari	LAZ	6,25	10	11
+2279	Dc	Romagna	SAS	0	1	1
+2280	Dc	Nuytinck	UDI	5,5	10	10
+2285	Dc	Bani	GEN	0	4	4
+2289	"Ds;E"	Dalbert	CAG	5,5	5	5
+2296	Dc	Mancini	ROM	6	14	14
+2309	Dc	Pezzella Ger. *	FIO	0	7	7
+2312	Dc	Hristov	SPE	5,5	1	2
+2315	"Dd;E"	Stryger Larsen	UDI	6,25	7	8
+2318	"Ds;E"	Rogerio	SAS	6	6	7
+2328	Dc	Vanheusden	GEN	5,5	6	6
+2335	Dc	Luiz Felipe	LAZ	6,5	7	7
+2453	Dc	Nastasic	FIO	0	7	6
+2525	E	Darmian	INT	6,25	9	10
+2572	Dc	Godin	CAG	5,25	8	7
+2614	"Dd;E"	Odriozola	FIO	0	7	7
+2633	Dc	Kjaer	MIL	6,5	12	12
+2653	"Ds;E"	Lykogiannis	CAG	6	8	8
+2724	"Ds;Dc"	Buongiorno	TOR	5,5	6	5
+2728	"Ds;E"	Pellegrini Lu.	JUV	0	4	4
+2739	"Ds;E"	Reca	SPE	0	5	4
+2745	"Dd;Dc"	Calabresi *	BOL	0	1	1
+2746	"Ds;E"	Dijks	BOL	0	6	6
+2758	Dc	Gunter	VER	5,5	6	6
+2759	"Ds;Dc;E"	Criscito	GEN	5,25	9	8
+2769	Dc	Magnani	VER	6,25	5	6
+2784	Dc	Colley	SAM	6,5	9	10
+2788	Dc	Bremer	TOR	6,5	12	12
+2793	Dc	Opoku *	UDI	0	1	1
+2816	"Dd;E"	Di Lorenzo	NAP	5,75	11	11
+2838	"Ds;E"	Imperiale *	EMP	0	1	1
+2860	"Dd;E"	Malcuit	NAP	0	3	3
+2865	E	Aina	TOR	5,5	5	5
+2869	"Ds;Dc"	Djidji	TOR	5,75	2	2
+4237	"Dd;Ds;E"	Danilo	JUV	5,5	15	14
+4245	Dc	Smalling	ROM	0	10	9
+4292	"Ds;E"	Hernandez T.	MIL	6	21	21
+4307	Dc	Romero *	ATA	0	15	15
+4323	"Ds;E"	Zeegelaar	UDI	0	7	6
+4329	Dc	Nikolaou	SPE	5,5	5	5
+4331	Dc	Ibanez	ROM	6,25	7	8
+4332	Dc	Demiral	ATA	5,5	5	5
+4366	"Dd;Ds;Dc"	Armini *	LAZ	0	1	1
+4374	Dc	Walukiewicz	CAG	5	6	5
+4375	"Ds;E"	Terzic	FIO	0	2	2
+4397	Dc	Vavro	LAZ	0	2	2
+4401	Dc	Gabbia	MIL	0	1	1
+4403	Dc	Chabot	SAM	0	4	4
+4406	"Ds;E"	Tripaldelli *	CAG	0	1	1
+4407	"Ds;Dc"	Igor	FIO	5	5	5
+4409	Dc	Rrahmani	NAP	0	5	4
+4412	Dc	Rodrigo Becao	UDI	6,25	5	6
+4414	"Ds;Dc"	Denswil *	BOL	0	2	2
+4421	"Ds;E"	Augello	SAM	5,5	9	9
+4422	"Dd;Dc"	Tomiyasu	BOL	0	11	10
+4426	"Dd;Ds;E"	Toljan	SAS	5,75	6	6
+4428	Dc	De Ligt	JUV	6	12	12
+4433	"Dd;Ds;E"	Zortea	SAL	5,5	5	5
+4461	"Dd;E"	Zappa	CAG	6	7	7
+4493	Dc	Dawidowicz	VER	5	6	5
+4494	"Ds;Dc"	Empereur *	VER	0	2	2
+4495	Dc	Kumbulla	ROM	0	6	6
+4519	Dc	Cetin	VER	0	2	2
+4521	"Dd;E"	Muldur	SAS	0	7	6
+4530	"Ds;E"	Kyriakopoulos	SAS	0	6	6
+4751	Dc	Tomori	MIL	6,25	12	12
+4881	"Ds;E"	Czyborra *	GEN	0	6	6
+4888	Dc	Sutalo	VER	6	2	2
+4891	Dc	Soumaoro	BOL	0	7	6
+4895	Dc	Yoshida	SAM	5,75	9	9
+4899	E	Singo	TOR	6,25	6	7
+4925	"Ds;Dc"	Carboni	CAG	5,25	5	5
+4932	"Dd;E;M"	Ballarini *	UDI	0	1	1
+4934	Dc	Lovato	ATA	0	4	4
+4945	"Ds;E"	Calafiori	ROM	0	2	2
+4946	"Ds;E"	Frabotta	VER	0	2	2
+4950	Dc	Dalle Mura *	FIO	0	1	1
+4976	"Dd;Dc"	Kalulu	MIL	0	2	2
+4979	"Dd;Dc"	Ayhan	SAS	0	3	3
+4982	Dc	Erlic	SPE	5,25	7	7
+4983	"Dd;E"	Ferrer	SPE	5,25	2	2
+4984	"Ds;E"	Ramos *	SPE	0	1	1
+4985	"Dd;E"	Vignali	SPE	4,5	3	2
+4994	E	Vojvoda	TOR	6	6	6
+4997	"Dd;E"	Ruegg	VER	0	2	2
+4998	"Dd;E"	Molina N.	UDI	6,75	12	14
+5010	Dc	Ismajli	EMP	6,25	6	6
+5017	"Ds;E"	Ballo-Toure'	MIL	0	5	4
+5300	"Ds;E"	Hickey	BOL	6,25	3	4
+5316	"Ds;Dc"	Amione	VER	0	1	1
+5323	Dc	Martinez Quarta	FIO	6,5	5	5
+5332	"Ds;E"	Bastoni S.	SPE	6	7	8
+5354	"Ds;E"	Ruggeri	SAL	5,75	1	2
+5355	"Ds;E;M"	Udogie	UDI	6	5	5
+5365	Dc	Dragusin	JUV	0	1	1
+5375	E	Maehle	ATA	6	9	9
+5398	"Dd;E"	Reynolds	ROM	0	3	3
+5445	Dc	Binks	BOL	0	1	1
+5447	Dc	Altare	CAG	0	2	2
+5449	"Ds;E"	Parisi	EMP	0	4	4
+5450	"Dd;E"	Stojanovic	EMP	6,5	5	6
+5456	"Dd;E"	Ferrarini *	FIO	0	2	2
+5461	"Ds;E"	Kamenovic	LAZ	0	1	1
+5463	Dc	Aya	SAL	5	2	2
+5464	Dc	Bogdan	SAL	6	4	4
+5465	"Ds;E"	Sy *	SAL	0	1	1
+5466	Dc	Strandberg	SAL	4,5	3	2
+5473	"Dd;Dc"	Kaique Rocha	SAM	0	1	1
+5475	"Dd;Dc"	Amian	SPE	5,25	7	7
+5479	"Ds;Dc"	Ceccaroni	VEN	5,25	5	5
+5480	"Dd;E"	Ebuehi	VEN	5,5	4	4
+5481	"Dd;E"	Mazzocchi	VEN	5,5	4	4
+5482	Dc	Modolo	VEN	0	4	4
+5483	"Ds;E"	Schnegg	VEN	0	6	6
+5484	Dc	Svoboda	VEN	5,5	1	2
+5498	"Dd;Dc"	Casale	VER	5,75	3	4
+5503	"Dd;E"	Kechrida	SAL	5,75	1	2
+5509	"Ds;E"	Vina	ROM	6,25	9	10
+5513	E	Dumfries	INT	0	12	11
+5514	Dc	Vasquez	GEN	0	7	6
+5520	"Dd;Ds;E"	Cambiaso	GEN	6,25	1	4
+5524	Dc	Serpe	GEN	5,5	1	2
+5526	Dc	Scalvini	ATA	0	1	1
+5527	"Dd;Ds;E"	Zanoli	NAP	0	1	1
+5675	Dc	Theate	BOL	0	7	7
+5677	Dc	Perez N.	UDI	0	7	7
+5678	"Dd;E"	Holm	SPE	0	2	2
+22	"M;C"	De Roon	ATA	0	11	10
+27	C	Grassi	CAG	0	3	3
+58	"M;C"	Diawara	ROM	0	5	4
+148	"C;T"	Krunic	MIL	6,25	5	6
+150	"W;T"	Saponara	FIO	0	8	7
+152	"C;T"	Zielinski	NAP	6	25	24
+170	"M;C"	Badelj	GEN	5,75	8	8
+173	"M;C"	Capezzi	SAL	5,75	4	4
+181	"M;C"	Vecino	INT	6	5	5
+184	"W;T"	Bernardeschi	JUV	5,25	5	5
+236	"E;W"	Lazovic	VER	6	15	15
+238	M	Rincon	TOR	6	6	6
+264	"C;T"	Bessa	VER	0	5	4
+265	"M;C"	Brozovic	INT	6	15	15
+272	M	Medel	BOL	6,5	2	3
+302	"W;T"	Pereyra	UDI	6,5	17	18
+305	"M;C"	Sturaro	GEN	5	5	4
+332	W	Candreva	SAM	6	18	18
+333	"M;C"	Cataldi	LAZ	6	3	3
+335	"W;A"	Felipe Anderson	LAZ	7	16	18
+367	"C;W;T"	Bonaventura	FIO	6,25	13	13
+376	"W;T"	Verdi	TOR	6,25	11	12
+400	"C;T"	Dezi	VEN	6	2	2
+406	W	Callejon	FIO	6	7	7
+434	"M;C"	Jajalo	UDI	0	3	3
+467	"C;T"	Nainggolan *	INT	0	15	15
+470	"M;C"	Strootman	CAG	5,5	12	11
+526	"M;C"	Duncan	FIO	6,5	4	4
+528	M	Magnanelli	SAS	0	2	2
+530	"C;T"	Pellegrini Lo.	ROM	7,25	23	25
+556	C	Baselli	TOR	0	5	4
+557	"C;T"	Benassi	FIO	6	4	4
+560	"M;C"	Obi	SAL	6	4	4
+600	"C;T"	Verre	SAM	6	8	8
+632	"T;A"	Zaccagni	VER	6,75	18	20
+644	"M;C"	Pulgar	FIO	6	8	9
+645	"C;T"	Milinkovic-Savic	LAZ	7	24	25
+704	"E;W"	Perisic	INT	6,25	14	14
+779	"M;C"	Cristante	ROM	5,75	7	7
+788	C	Freuler	ATA	6,5	15	15
+801	"M;C"	Gagliardini	INT	0	6	6
+827	"M;C"	Locatelli	JUV	6	17	17
+1850	"M;C"	Kessie'	MIL	0	28	27
+1870	C	Barella	INT	7	18	19
+1871	"M;C"	Deiola	CAG	6,25	3	5
+1933	"M;C"	Mandragora	TOR	5,75	10	10
+1972	"M;C"	Torreira	FIO	0	9	9
+1978	C	Sensi	INT	6	6	6
+1980	"W;T"	Aramu	VEN	0	10	9
+1987	"C;W"	Jankto *	SAM	0	14	14
+1995	T	Djuricic	SAS	7	14	16
+2002	"W;A"	Chiesa	JUV	6,25	29	28
+2008	C	Linetty	TOR	5,25	5	5
+2009	"C;T"	Lukic	TOR	6	8	9
+2011	"M;C"	Miguel Veloso	VER	4,5	8	7
+2076	"M;C"	Rog	CAG	0	7	6
+2077	"C;T"	Pasalic	ATA	5,75	19	19
+2085	T	Luis Alberto	LAZ	6,75	24	25
+2117	"C;T"	Kastanos	SAL	0	5	4
+2121	C	Melegoni	GEN	5,5	2	2
+2144	"M;C"	Coulibaly M.	SAL	6	4	6
+2154	"W;T"	Vignato	BOL	6	11	11
+2161	C	Haas	EMP	6,25	6	7
+2166	C	Bentancur	JUV	5,75	9	9
+2167	"W;A"	Orsolini	BOL	5,75	18	18
+2172	T	Barak	VER	5,75	16	16
+2194	T	Calhanoglu	INT	6,75	18	19
+2209	"M;C"	Lucas Leiva	LAZ	6	8	8
+2213	"M;C"	Cassata	GEN	0	2	2
+2215	C	Veretout	ROM	7,75	23	26
+2253	C	Bandinelli	EMP	6,5	2	5
+2286	"C;T"	Crociata	EMP	6	1	2
+2302	M	Behrami	GEN	0	4	4
+2334	"C;W"	Leris *	SAM	0	3	3
+2379	C	Rabiot	JUV	5	9	8
+2391	"M;C"	Ekdal	SAM	6,25	6	7
+2392	M	Walace	UDI	5,75	6	6
+2414	C	Vidal	INT	7	7	9
+2472	T	Ramsey	JUV	5,5	7	7
+2529	"T;A"	Mkhitaryan	ROM	6,75	31	31
+2625	T	Soriano	BOL	4,5	19	17
+2692	W	Castillejo	MIL	0	6	6
+2703	"M;C"	Adrien Silva	SAM	0	7	6
+2741	"C;T"	Pessina	ATA	6,25	15	15
+2744	C	Svanberg	BOL	5	12	11
+2766	"W;T"	Zaniolo	ROM	5	20	19
+2775	"C;T"	Ruiz	NAP	6	17	17
+2778	"M;C"	Stulac	EMP	6	5	5
+2818	"M;C"	Bennacer	MIL	6	8	8
+2825	"M;C"	Bourabia	SAS	0	4	4
+2833	"W;T"	Kulusevski	JUV	5,75	20	19
+2835	"M;C"	Kingsley	BOL	5	1	1
+2839	"W;A"	Sottil	FIO	6	8	8
+2848	C	Frattesi	SAS	6,25	7	8
+2855	"M;C"	Vieira	SAM	0	4	4
+2857	T	Traore' Hj.	SAS	7	13	14
+4285	"M;C"	Arthur	JUV	0	6	6
+4287	"M;C"	Lobotka	NAP	6	5	6
+4376	C	Zurkowski	EMP	5,5	3	3
+4377	"C;T"	Castrovilli	FIO	6	14	14
+4384	C	Jagiello *	GEN	0	5	5
+4385	"E;W"	Lazaro	INT	0	2	2
+4389	T	Anderson A.	LAZ	6,5	1	2
+4393	"M;C"	Schouten	BOL	5,5	8	7
+4404	"M;C"	Thorsby	SAM	6,25	10	10
+4411	"M;C"	Agoume	INT	0	3	3
+4415	"W;A"	Skov Olsen	BOL	6,5	9	9
+4423	"M;C"	Hernani	GEN	5,5	6	6
+4427	T	Malinovskyi	ATA	5,5	25	24
+4449	"M;C"	Tonali	MIL	6,5	5	7
+4459	"M;C"	Rovella	GEN	5,75	4	4
+4465	"C;T"	Fagioli	JUV	0	1	1
+4479	"C;T"	Elmas	NAP	6,25	7	8
+4498	C	Henderson L.	EMP	6	3	3
+4501	"M;C"	Obiang	SAS	0	4	4
+4514	"E;M"	Nandez	CAG	6,25	14	14
+4515	"T;A"	Agudelo	GEN	0	6	6
+4522	"M;C"	Amrabat	FIO	0	7	6
+4681	"C;T"	Lopez M.	SAS	6,5	8	9
+4725	M	Demme	NAP	0	10	9
+4825	"W;T"	Diaz B.	MIL	7,25	13	15
+4869	"M;C"	Dominguez	BOL	6,25	7	8
+4885	"M;C"	Villar	ROM	0	5	4
+4886	"W;T"	Pereiro	CAG	6	8	8
+4890	"M;C"	Tameze	VER	5,75	7	7
+4892	W	Saelemaekers	MIL	6,25	10	11
+4894	W	Haraslin	SAS	0	3	3
+4896	"T;A"	Maldini	MIL	0	1	1
+4919	"C;T"	Baldursson *	BOL	0	1	1
+4921	C	Askildsen	SAM	5,5	1	2
+4935	"M;C"	Ladinetti	CAG	0	1	1
+4953	C	Palumbo	JUV	0	1	1
+4965	C	Marin	CAG	5,75	11	11
+4973	C	Mckennie	JUV	6	14	14
+4975	"M;C"	Escalante	LAZ	0	3	3
+4978	"W;T;A"	Damsgaard	SAM	5,5	15	14
+4988	C	Maggiore	SPE	5,75	13	13
+4995	C	Segre	TOR	0	1	1
+5001	"T;A"	Miranchuk	ATA	6	15	15
+5007	"C;T"	Ilic	VER	6,5	8	10
+5119	T	Samardzic	UDI	0	3	3
+5286	"M;C"	Akpa Akpro	LAZ	5	3	3
+5287	"M;C"	Arslan	UDI	6	8	8
+5298	C	Pobega	TOR	0	6	6
+5312	"M;C"	Leo' Sena	SPE	0	6	6
+5329	"M;C"	Makengo	UDI	5,75	2	3
+5397	T	Kovalenko	SPE	0	4	4
+5420	"M;C"	Darboe	ROM	0	2	2
+5422	"W;T"	Zalewski	ROM	0	1	1
+5423	C	Bove	ROM	0	1	1
+5444	T	Cortinovis	ATA	0	1	1
+5451	T	Bajrami	EMP	6,75	9	10
+5452	"M;C"	Damiani	EMP	0	1	1
+5453	"M;C"	Ricci S.	EMP	6	5	6
+5457	C	Maleh	FIO	5,5	4	4
+5462	"W;A"	Ciervo	ROM	0	1	1
+5467	"C;T"	Boultam *	SAL	0	1	1
+5468	C	Cavion *	SAL	0	3	3
+5469	"M;C"	Di Tacchio	SAL	5,5	4	4
+5470	"M;C"	Schiavone	SAL	0	1	1
+5476	C	Kornvig *	SPE	0	1	1
+5485	"W;T;A"	Bjarkason	VEN	0	1	1
+5486	"C;W"	Crnigoj	VEN	6	3	3
+5487	"W;T"	Heymans	VEN	5,75	8	7
+5488	"M;C"	Fiordilino	VEN	6	6	6
+5489	M	Pecile	VEN	0	1	1
+5490	"M;C"	Peretz	VEN	6	5	6
+5491	M	Taugourdeau	VEN	0	4	4
+5492	"M;C"	Tessmann	VEN	5,5	5	5
+5499	"M;C"	Hongla	VER	5,5	4	4
+5501	"W;T"	Sigurdsson A.	VEN	5,75	9	9
+5504	"M;C"	Coulibaly L.	SAL	5,75	2	3
+5507	C	Busio	VEN	5	5	5
+5508	M	Vacca	VEN	6	1	2
+5510	"W;T"	Romero L.	LAZ	0	1	1
+5511	"M;C"	Matheus Henrique	SAS	0	8	7
+5516	"M;C"	Bianco	FIO	0	1	1
+5517	M	Yepes	SAM	0	1	1
+5519	"M;C"	Sher	SPE	0	1	1
+5674	"M;C"	Basic	LAZ	0	8	8
+90	Pc	Lasagna	VER	5,5	12	11
+177	A	Ilicic	ATA	6	21	20
+186	A	Rebic	MIL	6	23	23
+215	A	Verde	SPE	6,25	14	15
+245	A	Pandev	GEN	5,5	12	12
+247	Pc	Pavoletti	CAG	5,5	18	17
+306	Pc	Cerri *	CAG	0	4	4
+309	A	Dybala	JUV	6	25	25
+311	Pc	Llorente *	UDI	0	8	8
+313	Pc	Morata	JUV	5,25	23	22
+315	Pc	Zaza	TOR	0	10	9
+383	Pc	Petagna	NAP	7	11	12
+407	A	Gabbiadini	SAM	5,5	16	15
+409	A	Insigne	NAP	6,25	32	31
+410	A	Mertens	NAP	0	26	25
+441	Pc	Belotti	TOR	6,25	30	30
+447	Pc	La Gumina *	SAM	0	3	3
+472	Pc	Destro	GEN	0	21	20
+475	A	Iago Falque	TOR	0	8	7
+479	Pc	Sanabria	TOR	5,75	15	15
+495	A	Correa	INT	8	20	22
+505	Pc	Bonazzoli	SAL	6,25	8	9
+507	Pc	Muriel	ATA	6,25	39	39
+531	A	Berardi	SAS	0	31	30
+536	"W;A"	Politano	NAP	6,5	20	20
+537	A	Sansone	BOL	6,25	8	8
+568	Pc	Quagliarella	SAM	5,75	22	21
+608	Pc	Zapata D.	ATA	0	33	32
+643	A	Defrel	SAS	6	12	12
+647	Pc	Dzeko	INT	6,75	29	30
+652	Pc	Kalinic	VER	5	9	8
+785	Pc	Immobile	LAZ	7,5	38	40
+795	"W;A"	El Shaarawy	ROM	6	11	11
+819	Pc	Favilli	GEN	5,5	2	2
+1839	"W;A"	Edera	TOR	0	3	3
+1874	A	Joao Pedro	CAG	7	26	28
+1879	A	Farias	CAG	6	6	6
+1943	Pc	Nestorovski	UDI	0	8	7
+1958	A	Caprari	SAM	0	10	9
+1997	Pc	Simy	SAL	5,75	18	18
+1998	A	Pjaca	TOR	5,5	4	4
+2038	Pc	Pinamonti	EMP	6	7	7
+2061	Pc	Simeone	VER	0	12	11
+2103	Pc	Pellegri	MIL	0	4	4
+2119	A	Deulofeu	UDI	7	11	13
+2137	Pc	Scamacca	SAS	0	13	12
+2155	Pc	Cutrone	EMP	5,75	14	13
+2195	A	Ounas	NAP	6	7	7
+2284	Pc	Caicedo	LAZ	0	14	13
+2304	Pc	Salcedo E.	INT	0	4	4
+2475	A	Sanchez	INT	0	22	21
+2489	A	Pedro	LAZ	6,75	12	13
+2530	Pc	Ibrahimovic	MIL	0	33	32
+2531	Pc	Lukaku *	INT	0	44	44
+2544	Pc	Abraham	ROM	7,25	28	29
+2610	Pc	Ronaldo *	JUV	6	44	43
+2719	A	Barrow	BOL	5	19	18
+2743	Pc	Santander	BOL	0	4	4
+2750	Pc	Mraz	SPE	5,75	1	2
+2762	A	Kouame' *	FIO	0	7	7
+2764	Pc	Martinez L.	INT	7	32	32
+2819	Pc	Caputo	SAS	5,75	26	25
+2826	"W;A"	Pussetto	UDI	6,25	13	14
+2832	A	Boga	SAS	6,25	17	17
+2841	Pc	Vlahovic	FIO	6,25	34	34
+4179	A	Gonzalez N.	FIO	6,75	16	17
+4200	Pc	Giroud	MIL	7	20	22
+4268	Pc	Arnautovic	BOL	6,25	24	24
+4324	Pc	Okaka	UDI	6,5	12	12
+4346	A	Millico	TOR	0	3	3
+4359	Pc	Piccoli	ATA	6,25	12	13
+4371	Pc	Raspadori	SAS	6,5	16	17
+4430	Pc	Cristo *	UDI	0	3	3
+4435	A	Colley E.	SPE	5,5	4	4
+4453	Pc	Torregrossa	SAM	0	6	6
+4477	Pc	La Mantia	EMP	0	7	6
+4500	Pc	Di Carmine *	VER	5,5	3	3
+4507	A	Tutino *	NAP	0	8	8
+4510	A	Rafael Leao	MIL	6,25	14	15
+4517	A	Lozano	NAP	5,75	24	23
+4661	Pc	Osimhen	NAP	4,5	33	31
+4884	"W;A"	Carles Perez	ROM	6,5	8	8
+4936	A	Manzari *	SAS	0	1	1
+4938	A	Moro	LAZ	6,25	3	5
+4992	A	Gyasi	SPE	6,25	13	13
+5004	A	Forestieri	UDI	0	3	3
+5012	Pc	Muriqi	LAZ	0	3	3
+5233	Pc	Mayoral	ROM	0	20	19
+5292	Pc	Lammers	ATA	6	13	13
+5310	"W;A"	Hauge *	MIL	0	5	5
+5311	Pc	Shomurodov	ROM	6,5	16	16
+5336	Pc	Nzola	SPE	0	20	19
+5378	A	Oddei	SAS	0	1	1
+5391	Pc	Kokorin	FIO	0	5	4
+5439	A	Kallon	GEN	5,5	2	2
+5446	Pc	Van Hooijdonk	BOL	0	2	2
+5454	Pc	Mancuso	EMP	6,5	13	14
+5455	Pc	Moreo *	EMP	0	1	1
+5458	Pc	Munteanu	FIO	0	1	1
+5459	Pc	Buksa	GEN	5	1	1
+5460	Pc	Satriano	INT	6	5	5
+5471	Pc	Djuric	SAL	6	6	6
+5472	Pc	Kristoffersen	SAL	0	1	1
+5477	A	Warming	TOR	0	1	1
+5493	Pc	Bocalon	VEN	0	1	1
+5494	A	Di Mariano *	VEN	5,5	5	5
+5495	Pc	Forte	VEN	5,5	9	8
+5496	A	Johnsen	VEN	5,75	5	5
+5500	A	Cancellieri	VER	5,75	1	2
+5505	Pc	Kaio Jorge	JUV	0	5	4
+5506	A	Ekuban	GEN	5,5	9	8
+5512	Pc	De Luca *	SAM	0	1	1
+5515	A	Okereke	VEN	5,5	7	7
+5523	Pc	Bianchi F.	GEN	6	1	2
+5525	A	Galazzi *	VEN	6	1	2
+5529	Pc	Henry	VEN	5,5	12	12
+5673	A	Antiste	SPE	0	4	4
+5676	A	Success	UDI	0	7	7
