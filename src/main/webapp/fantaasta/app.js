@@ -1016,7 +1016,7 @@ app.run(
 					if (msg.avviaAsta){
 						$rootScope.forzaAllenatore="";
 						$rootScope.forzaOfferta=0;
-						$rootScope.abilitaForza=false;
+						$rootScope.abilitaForza=true;//FIXME TOGLIERE FORZA
 					}
 					if (msg.isMantra){
 						if (msg.isMantra=="S")
@@ -1103,6 +1103,9 @@ app.run(
 							if($rootScope.autoAllinea) {
 								$rootScope.offertaPriv=$rootScope.offertaVincente.offerta;
 							}
+						}
+						if (msg.confermaForza){//FIXME TOGLIERE FORZA
+							$rootScope.conferma();
 						}
 					}
 					if (msg.durataAsta){
