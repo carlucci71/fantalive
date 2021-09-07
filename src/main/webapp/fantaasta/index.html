@@ -205,7 +205,8 @@
 								 <i style="width:50px;text-align:center" ng-show="!calciatore.preferito" class="fa fa-star-o" aria-hidden="true"></i>			
 								 <i style="width:50px;text-align:center" ng-show="calciatore.preferito" class="fa fa-star" aria-hidden="true"></i>			
 						   		 <span style="width:100px;text-align:center">
-							   		 <i ng-attr-title="{{dettaglio(calciatore.id)}}" class="fa fa-info-circle" style="cursor:pointer" ng-click="urlDettaglio(calciatore.nome,calciatore.id, false)"></i>
+<!-- ng-attr-title="{{dettaglio(calciatore.id)}}"  -->
+									<i class="fa fa-info-circle" style="cursor:pointer" ng-click="urlDettaglio(calciatore.nome,calciatore.id, false)"></i>
 							   		 <span ng-show="isMantra">&nbsp;&nbsp;<i title="dettaglio old" class="fa fa-info-circle" style="cursor:pointer;color:red" ng-click="urlDettaglio(calciatore.nome,calciatore.id, true)"></i></span>
 							         <span ng-show="isMantra && calciatore.under23=='SI'">*</span>
 							         <span ng-show="!isMantra || calciatore.under23!='SI'">&nbsp;</span>
@@ -447,7 +448,7 @@
 						<label ng-show="timeStart==3 && !isAdmin" class="nextOperation">Asta da confermare</label>
 						<span ng-show="timeStart==3 && isAdmin">
 						
-							<img ng-show="!abilitaForza"  style="cursor:pointer" title="abilita forzatura" src='./forza.png' ng-click="forzaOfferta=offertaVincente.offerta;forzaAllenatore=offertaVincente.idgiocatore;abilitaForza=true"/>
+							<img ng-attr-title="{{dettaglio(offertaVincente.giocatore.id)}}" ng-show="!abilitaForza"  style="cursor:pointer" title="abilita forzatura" src='./forza.png' ng-click="forzaOfferta=offertaVincente.offerta;forzaAllenatore=offertaVincente.idgiocatore;abilitaForza=true"/>
 							<span ng-show="abilitaForza">
 								<input class="inputDatoOfferta" type=number ng-model=forzaOfferta></input>
 								<select ng-model=forzaAllenatore>
