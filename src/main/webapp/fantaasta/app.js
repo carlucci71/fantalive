@@ -1104,9 +1104,6 @@ app.run(
 								$rootScope.offertaPriv=$rootScope.offertaVincente.offerta;
 							}
 						}
-						if (msg.confermaForza){//FIXME TOGLIERE FORZA
-							$rootScope.conferma();
-						}
 					}
 					if (msg.durataAsta){
 						$rootScope.durataAsta=msg.durataAsta;

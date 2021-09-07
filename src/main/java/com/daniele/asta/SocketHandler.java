@@ -387,7 +387,6 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
 			offertaVincente.put("nomegiocatore", nomeForzaAllenatore);
 			offertaVincente.put("idgiocatore", forzaAllenatore);
 			m.put("offertaVincente", offertaVincente);
-			m.put("confermaForza", "S");//FIXME TOGLIERE FORZA
 			creaMessaggio(indirizzo, "Offerta forzata da " + nomegiocatore + " per "
 					+ offertaVincente.get("nomeCalciatore") + ": " + nomeForzaAllenatore + " per " + forzaOfferta,
 					EnumCategoria.Asta);
