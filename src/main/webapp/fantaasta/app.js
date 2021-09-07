@@ -88,7 +88,7 @@ app.run(
 				var url;
 				if ($rootScope.isMantra){
 					url= "https://www.fantacalcio.it/squadre/giocatore/" + cNome + "/" + cId;
-					if (old) url=url+"/3/2019-20";
+					if (old) url=url+"/3/2020-21";
 				}
 				else {
 					var id=(""+cId).substring(2,10);

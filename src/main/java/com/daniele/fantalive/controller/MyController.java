@@ -58,7 +58,7 @@ public class MyController {
 	}
 
 
-	@Scheduled(fixedRate = 60000)
+//	@Scheduled(fixedRate = 60000)
 	public void scheduleKeepAlive() throws Exception {
 		keepAlive();
 	}
@@ -89,7 +89,7 @@ public class MyController {
 		}
 		return ret;
 	}
-	@Scheduled(fixedRate = 5000)
+//	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
 		Main.timeRefresh = (int) Main.toSocket.get("timeRefresh");
 		if (Main.timeRefresh==Constant.SCHEDULED_SNAP) {
