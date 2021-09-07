@@ -448,7 +448,10 @@
 						<label ng-show="timeStart==3 && !isAdmin" class="nextOperation">Asta da confermare</label>
 						<span ng-show="timeStart==3 && isAdmin">
 						
-							<img ng-attr-title="{{dettaglio(offertaVincente.giocatore.id)}}" ng-show="!abilitaForza"  style="cursor:pointer" title="abilita forzatura" src='./forza.png' ng-click="forzaOfferta=offertaVincente.offerta;forzaAllenatore=offertaVincente.idgiocatore;abilitaForza=true"/>
+							<i ng-attr-title="{{dettaglio(offertaVincente.giocatore.id)}}"  style="cursor:pointer" class="fa fa-info-circle" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id,false)"></i>
+							<span ng-show="isMantra">&nbsp;&nbsp;<i title="dettaglio old" style="cursor:pointer;color:red" class="fa fa-info-circle" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id,true)"></i></span>
+
+							<img ng-show="!abilitaForza"  style="cursor:pointer" title="abilita forzatura" src='./forza.png' ng-click="forzaOfferta=offertaVincente.offerta;forzaAllenatore=offertaVincente.idgiocatore;abilitaForza=true"/>
 							<span ng-show="abilitaForza">
 								<input class="inputDatoOfferta" type=number ng-model=forzaOfferta></input>
 								<select ng-model=forzaAllenatore>
