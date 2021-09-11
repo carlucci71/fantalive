@@ -64,9 +64,9 @@ public class Main {
 	public static final String URL_NOTIFICA_HEROKU = "https://fantalive71.herokuapp.com/fantalive/index.html";
 
 	public static final int DELTA_VIVA_FG=2;
-	public static final int DELTA_LUCCICAR_FG=3;
-	public static final String COMP_VIVA_FG = "250798";//champions 250964 coppa 250991 250798
-	public static final String COMP_LUCCICAR_FG = "306919";
+	public static final int DELTA_LUCCICAR_FG=2;
+	public static final String COMP_VIVA_FG = "319871";
+	public static final String COMP_LUCCICAR_FG = "379529";
 
 	public static final int DELTA_FS=3;
 	public static final int NUM_PARTITE_FS = 4;
@@ -75,7 +75,7 @@ public class Main {
 
 	private static final String SPORT_ID_LIVE_GAZZETTA = "1";
 	private static final String COMP_ID_LIVE_GAZZETTA = "21";
-	private static final String I_LIVE_FANTACALCIO = "15";
+	private static final String I_LIVE_FANTACALCIO = "16";
 
 	public static final String ROOT="/tmp/";
 	public static Map<String,Object> toSocket;
@@ -215,6 +215,9 @@ public class Main {
 			sq.put(18, "TOR");
 			sq.put(19, "UDI");
 			sq.put(20, "VER");
+			sq.put(5, "EMP");
+			sq.put(138, "VEN");
+			sq.put(137, "SAL");
 		}
 		if (configsCampionato==null) {
 			configsCampionato = new ArrayList<ConfigCampionato>();
@@ -797,6 +800,12 @@ public class Main {
 	public static void aggKeyFG() throws Exception {
 		int giornata=constant.GIORNATA;
 		Main.keyFG=new HashMap<String, String>();
+		
+		
+		
+		//https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?id_comp=319871&r=1&f=1_1631365200000.json
+		
+		
 		Main.keyFG.put(Campionati.FANTAVIVA.name(), "id_comp=" + Main.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Main.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Main.DELTA_VIVA_FG) + "_" + calcolaAggKey("fanta-viva") + ".json");
 		Main.keyFG.put(Campionati.LUCCICAR.name(), "id_comp=" + Main.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Main.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey(Campionati.LUCCICAR.name()) + ".json");
 	}
