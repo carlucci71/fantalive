@@ -1016,7 +1016,7 @@ app.run(
 					if (msg.avviaAsta){
 						$rootScope.forzaAllenatore="";
 						$rootScope.forzaOfferta=0;
-						if (false){//FIXME TOGLIERE FORZA
+						if (false){//FIXME TOGLIERE SPEGNI LIVE
 							$rootScope.abilitaForza=true;
 						}
 					}
