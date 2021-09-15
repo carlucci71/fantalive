@@ -125,7 +125,15 @@ public void setEvidenza(boolean evidenza) {
 public int compareTo(Squadra o) {
 //	if (this.getProiezione()==null) return -1;
 //	if (o.getProiezione()==null) return 1;
-	return this.getProiezione().compareTo(o.getProiezione());
+	Double proiezioneThis = this.getProiezione();
+	Double proiezioneO = o.getProiezione();
+	if (this.isCasaProiezione()) {
+		proiezioneThis=proiezioneThis+2;
+	}
+	if (o.isCasaProiezione()){
+		proiezioneO=proiezioneO+2;
+	}
+	return proiezioneO.compareTo(proiezioneThis);
 	/*
 	if (this.getNome()==null) return -1;
 	if (o.getNome()==null) return 1;
