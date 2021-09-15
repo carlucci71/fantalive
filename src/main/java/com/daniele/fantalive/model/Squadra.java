@@ -112,7 +112,7 @@ public int getContaRiserve() {
 public double getMediaRiserve() {
 	return Math.ceil(getTotaleRiserve()/getContaRiserve()*100)/100;
 }
-public double getProiezione() {
+public Double getProiezione() {
 	return getTotaleTitolari() + 6 * (11-getContaTitolari() - getContaNonCambiabili()) + getDeltaModificatore();
 }
 public boolean isEvidenza() {
@@ -123,9 +123,14 @@ public void setEvidenza(boolean evidenza) {
 }
 @Override
 public int compareTo(Squadra o) {
+//	if (this.getProiezione()==null) return -1;
+//	if (o.getProiezione()==null) return 1;
+	return this.getProiezione().compareTo(o.getProiezione());
+	/*
 	if (this.getNome()==null) return -1;
 	if (o.getNome()==null) return 1;
 	return this.getNome().toUpperCase().compareTo(o.getNome().toUpperCase());
+	*/
 }
 public int getDeltaModificatore() {
 	return deltaModificatore;

@@ -466,6 +466,7 @@ public class MyController {
 			Main.aggKeyFG();
 			Main.cancellaSquadre();
 			Main.getSquadre(Campionati.LUCCICAR.name());
+			Main.getSquadre(Campionati.JB.name());
 			Main.getSquadre("fanta-viva");
 			Main.scaricaBe();
 			List<Squadra> squadre = new ArrayList<Squadra>();
