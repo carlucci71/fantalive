@@ -183,27 +183,27 @@ public class Main {
 		
 		if (eventi ==null) {
 			eventi = new HashMap<Integer, String[]>();
-			eventi.put(1000, new String[] {"portiere imbattuto","1","1","1","S",Constant.IMBATTUTO});
-			eventi.put(1, new String[] {"ammonito","-0.5","-0.5","-0.5","S",Constant.AMMONITO});
-			eventi.put(2, new String[] {"espulso","-1","-1","-1","S",Constant.ESPULSO});
-			eventi.put(3, new String[] {"gol","3","3","3","S",Constant.GOL});
-			eventi.put(4, new String[] {"gol subito","-1","-1","-1","S",Constant.GOL_SUBITO});
-			eventi.put(7, new String[] {"rigore parato","3","3","3","S",Constant.RIGORE_PARATO});
-			eventi.put(8, new String[] {"rigore sbagliato","-3","-3","-3","S",Constant.RIGORE_SBAGLIATO});
-			eventi.put(9, new String[] {"rigore segnato","3","3","2","S",Constant.RIGORE_SEGNATO});
-			eventi.put(10, new String[] {"autogol","-2","-3","-3","S",Constant.AUTOGOL});
-			eventi.put(11, new String[] {"gol vittoria","0","0","0","N",Constant.GOL});
-			eventi.put(12, new String[] {"gol pareggio","0","0","0","N",Constant.GOL});
-			eventi.put(14, new String[] {"uscito","0","0","0","S",Constant.USCITO});
-			eventi.put(15, new String[] {"entrato","0","0","0","S",Constant.ENTRATO});
-			eventi.put(16, new String[] {"gol annullato","0","0","0","N",Constant.GOL_ANNULLATO});
-			eventi.put(17, new String[] {"infortunio","0","0","0","N",Constant.INFORTUNIO});
-			eventi.put(20, new String[] {"assist low1","0.5","1","1","S",Constant.ASSIST});
-			eventi.put(21, new String[] {"assist medium1","1","1","1","S",Constant.ASSIST});
-			eventi.put(22, new String[] {"assist hight1","1.5","1","1","S",Constant.ASSIST});
-			eventi.put(23, new String[] {"assist low2","0.5","1","1","S",Constant.ASSIST});
-			eventi.put(24, new String[] {"assist medium2","1","1","1","S",Constant.ASSIST});
-			eventi.put(25, new String[] {"assist hight2","1.5","1","1","S",Constant.ASSIST});
+			eventi.put(1000, new String[] {"portiere imbattuto","1","1","1","1","S",Constant.IMBATTUTO});
+			eventi.put(1, new String[] {"ammonito","-0.5","-0.5","-0.5","-0.5","S",Constant.AMMONITO});
+			eventi.put(2, new String[] {"espulso","-1","-1","-1","-1","S",Constant.ESPULSO});
+			eventi.put(3, new String[] {"gol","3","3","3","3","S",Constant.GOL});
+			eventi.put(4, new String[] {"gol subito","-1","-1","-1","-1","S",Constant.GOL_SUBITO});
+			eventi.put(7, new String[] {"rigore parato","3","3","3","3","S",Constant.RIGORE_PARATO});
+			eventi.put(8, new String[] {"rigore sbagliato","-3","-3","-3","-3","S",Constant.RIGORE_SBAGLIATO});
+			eventi.put(9, new String[] {"rigore segnato","3","3","2","2","S",Constant.RIGORE_SEGNATO});
+			eventi.put(10, new String[] {"autogol","-2","-3","-3","-3","S",Constant.AUTOGOL});
+			eventi.put(11, new String[] {"gol vittoria","0","0","0","0","N",Constant.GOL});
+			eventi.put(12, new String[] {"gol pareggio","0","0","0","0","N",Constant.GOL});
+			eventi.put(14, new String[] {"uscito","0","0","0","0","S",Constant.USCITO});
+			eventi.put(15, new String[] {"entrato","0","0","0","0","S",Constant.ENTRATO});
+			eventi.put(16, new String[] {"gol annullato","0","0","0","0","N",Constant.GOL_ANNULLATO});
+			eventi.put(17, new String[] {"infortunio","0","0","0","0","N",Constant.INFORTUNIO});
+			eventi.put(20, new String[] {"assist low1","0.5","1","1","1","S",Constant.ASSIST});
+			eventi.put(21, new String[] {"assist medium1","1","1","1","1","S",Constant.ASSIST});
+			eventi.put(22, new String[] {"assist hight1","1.5","1","1","1","S",Constant.ASSIST});
+			eventi.put(23, new String[] {"assist low2","0.5","1","1","1","S",Constant.ASSIST});
+			eventi.put(24, new String[] {"assist medium2","1","1","1","1","S",Constant.ASSIST});
+			eventi.put(25, new String[] {"assist hight2","1.5","1","1","1","S",Constant.ASSIST});
 		}
 		if (sq==null) {
 			sq = new LinkedHashMap<Integer, String>();
@@ -441,7 +441,7 @@ public class Main {
 						if (findNuoviEventi.size()>0) {
 							for (Map<Integer,Integer> nuovoEvento : findNuoviEventi) {
 								Integer ev = nuovoEvento.keySet().iterator().next();
-								mapEventi.put(Main.eventi.get(ev)[0],new RigaNotifica(nuovoEvento.get(ev), Main.eventi.get(ev)[0], Main.eventi.get(ev)[5]));
+								mapEventi.put(Main.eventi.get(ev)[0],new RigaNotifica(nuovoEvento.get(ev), Main.eventi.get(ev)[0], Main.eventi.get(ev)[6]));
 							}
 						}
 
@@ -449,7 +449,7 @@ public class Main {
 							List<Map<Integer,Integer>> findTuttiEventi = findNuoviEventi(null, newGioc);
 							for (Map<Integer,Integer> nuovoEvento : findTuttiEventi) {
 								Integer ev = nuovoEvento.keySet().iterator().next();
-								mapEventi.put(Main.eventi.get(ev)[0],new RigaNotifica(nuovoEvento.get(ev), Main.eventi.get(ev)[0], Main.eventi.get(ev)[5]));
+								mapEventi.put(Main.eventi.get(ev)[0],new RigaNotifica(nuovoEvento.get(ev), Main.eventi.get(ev)[0], Main.eventi.get(ev)[6]));
 							}
 						}
 					}
@@ -993,7 +993,7 @@ public class Main {
 					System.out.println();
 				}
 
-				if (eventi.get(codEvento)[4].equalsIgnoreCase("S")) {
+				if (eventi.get(codEvento)[5].equalsIgnoreCase("S")) {
 					int contaNuoviEventiOld = 0;
 					if (og != null) {
 						contaNuoviEventiOld = contaNuoviEventi(codEvento,og);
@@ -1224,7 +1224,7 @@ public class Main {
 						if (eventiAtt==null) {
 							throw new RuntimeException("Evento non censito: " + eventoAtt + " per " + gg.get("nome"));
 						}
-						if (eventiAtt[4].equals("N")) continue;
+						if (eventiAtt[5].equals("N")) continue;
 						if (eventiAtt==null) {
 							ev = ev + "?" + "   ";
 							modificatore=modificatore-1000;
@@ -1235,7 +1235,6 @@ public class Main {
 							if (r.getCampionato().equalsIgnoreCase(Campionati.LUCCICAR.name())) pos=2;
 							if (r.getCampionato().equalsIgnoreCase(Campionati.BE.name())) pos=3;
 							if (r.getCampionato().equalsIgnoreCase(Campionati.JB.name())) pos=4;
-
 							modificatore=modificatore+Double.parseDouble(eventiAtt[pos]);
 						}
 						codEventi.add(Integer.parseInt(eventoAtt));
