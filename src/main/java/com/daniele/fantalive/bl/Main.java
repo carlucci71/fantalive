@@ -104,6 +104,7 @@ public class Main {
 	static ObjectMapper mapper;
 	static Map<String , String> getIconaIDGioc;	
 	static Map<String , Integer> statusMatch;	
+	static Set<String > sqJB;	
 	public static Map<String, String> keyFG=null;
 	public static int timeRefresh = 0;
 
@@ -122,6 +123,15 @@ public class Main {
 		if (mapper==null) {
 			mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		}
+		if (sqJB==null) {
+			sqJB = new HashSet() {{
+				add("bebocar");
+				add("Hooligas");
+				add("FCarlona");
+				add("Juventiboss"); 
+				
+			}};
 		}
 		if (statusMatch==null) {
 			statusMatch = new HashMap() {{
@@ -634,10 +644,12 @@ public class Main {
 		map.put("notifica", Base64.getEncoder().encodeToString(msg.getBytes()));
 		socketHandlerFantalive.invia(map);
 	}
+	
+	
 	private static Map<String, String> getNomiFG(String lega) throws Exception {
 		Map<String, String> ret = new HashMap<String, String>();
 		String url = "https://leghe.fantacalcio.it/" + lega + "/area-gioco/rose?";
-		String response = getHTTP(url);System.out.println(response);
+		String response = getHTTP(url);
 		Document doc = Jsoup.parse(response);
 		Elements select1 = doc.select(".list-rosters-item");
 		Elements select = doc.select(".left-heading-link");
@@ -648,7 +660,9 @@ public class Main {
 			Element element = select.get(i);
 			String link = element.select("A").attr("href");
 			link=link.substring(link.lastIndexOf("=")+1);
-			ret.put(link,squadra);
+			if (!lega.equalsIgnoreCase("jb-fanta") || (lega.equalsIgnoreCase("jb-fanta") && sqJB.contains(squadra))){
+				ret.put(link,squadra);
+			}
 		}
 		return ret;
 	}
@@ -853,6 +867,8 @@ public class Main {
 			List<Map> list = map.get("sq");
 			int contaSquadre=0;
 			for (Map map2 : list) {
+				String nome = nomiFG.get(map2.get("id").toString());
+				if (nome == null) continue;
 				contaSquadre++;
 				List<Map> giocatori = (List<Map>) map2.get("pl");
 				if (giocatori != null) {
@@ -860,7 +876,7 @@ public class Main {
 						if (i==0) {
 							Squadra squadra = new Squadra();
 							squadre.add(squadra);
-							squadra.setNome(nomiFG.get(map2.get("id").toString()));
+							squadra.setNome(nome);
 							List<PartitaSimulata> partiteSimulate=new ArrayList<>();
 							PartitaSimulata partitaSimulata=new PartitaSimulata();
 							partitaSimulata.setCampionato(lega);
