@@ -729,6 +729,7 @@ public class Main {
 	}
 
 	public static String postHTTP(String url, Map<String, String> body, Map<String, String>... headers) throws Exception {
+//		System.out.println("POST " + url + " " + printMap(headers));
 		URL obj = new URL(url);
 		HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
 		postConnection.setRequestMethod("POST");
@@ -775,8 +776,20 @@ public class Main {
 		return response.toString(); 
 	}
 
+	private static String printMap(Map<String, String>[] headers) {
+		StringBuilder sb = new StringBuilder();
+		if (headers!=null && headers.length>0) {
+			Iterator<String> iterator = headers[0].keySet().iterator();
+			while (iterator.hasNext()) {
+				String key = (String) iterator.next();
+				sb.append(key + " <-> " + headers[0].get(key)); 
+			}
+		}
+		return sb.toString();
+	}
 
 	public static String getHTTP(String url, Map<String, String>... headers) throws Exception {
+//		System.out.println("GET " + url + " " + printMap(headers));
 		URL obj = new URL(url);
 		HttpURLConnection getConnection = (HttpURLConnection) obj.openConnection();
 		getConnection.setRequestMethod("GET");
