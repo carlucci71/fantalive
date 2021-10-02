@@ -457,7 +457,8 @@
 								<select ng-model=forzaAllenatore>
 									<option ng-repeat="allenatore in elencoAllenatori" value="{{allenatore.id}}" >{{allenatore.nome}}</option>
 								</select>
-								<button ng-click="forza()">FORZA</button>
+								<button ng-click="forza(false)">FORZA</button>
+								<button ng-click="forza(true)">FORZA E CONFERMA</button>
 								<br>
 								<label class="nextOperation">Devi confermare o annullare l'asta</label>
 								<br>

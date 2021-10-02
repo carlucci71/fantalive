@@ -562,6 +562,7 @@ public class MyControllerAsta {
 	}
 	
 	private boolean isOkDispositiva(@RequestBody Map<String, Object> body) {
+		/*
 		try {
 			Integer tokenDispositiva = (Integer) body.get("tokenDispositiva");
 			String idgiocatore =  null;
@@ -580,6 +581,8 @@ public class MyControllerAsta {
 		} catch (Exception e) {
 			return false;
 		}
+		*/
+		return true;
 	}
 	
 	@PostMapping("/cancellaOfferta")

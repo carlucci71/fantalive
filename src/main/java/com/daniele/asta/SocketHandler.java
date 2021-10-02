@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -386,7 +387,15 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
 			offertaVincente.put("offerta", forzaOfferta);
 			offertaVincente.put("nomegiocatore", nomeForzaAllenatore);
 			offertaVincente.put("idgiocatore", forzaAllenatore);
-			m.put("offertaVincente", offertaVincente);
+			
+			Map<String, Object> offertaVincenteClone = new HashMap<>();
+			for (String key : offertaVincente.keySet()) {
+				offertaVincenteClone.put(key, offertaVincente.get(key));
+			}
+			offertaVincenteClone.put("confermaForza", jsonToMap.get("conferma"));
+			offertaVincenteClone.put("tokenCasuale", jsonToMap.get("tokenCasuale"));
+			
+			m.put("offertaVincente", offertaVincenteClone);
 			creaMessaggio(indirizzo, "Offerta forzata da " + nomegiocatore + " per "
 					+ offertaVincente.get("nomeCalciatore") + ": " + nomeForzaAllenatore + " per " + forzaOfferta,
 					EnumCategoria.Asta);
