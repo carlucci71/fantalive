@@ -33,6 +33,7 @@ app.run(
 			$rootScope.idgiocatoreOperaCome=-1;
 			$rootScope.nomegiocatoreOperaCome="";
 			$rootScope.abilitaForza=false;
+			$rootScope.firstAbilitaForza=false;
 			$rootScope.forzaLogout= function(){
 				$rootScope.sendMsg(JSON.stringify({'operazione':'cancellaUtente', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
 				$rootScope.nomegiocatore='';
@@ -1016,9 +1017,7 @@ app.run(
 					if (msg.avviaAsta){
 						$rootScope.forzaAllenatore="";
 						$rootScope.forzaOfferta=0;
-						if (false){//FIXME TOGLIERE SPEGNI LIVE
-							$rootScope.abilitaForza=true;
-						}
+						$rootScope.firstAbilitaForza=false;
 					}
 					if (msg.isMantra){
 						if (msg.isMantra=="S")
@@ -1106,6 +1105,9 @@ app.run(
 								$rootScope.offertaPriv=$rootScope.offertaVincente.offerta;
 							}
 						}
+						if (msg.offertaVincente.confermaForza){
+							if ($rootScope.tokenCasuale==msg.offertaVincente.tokenCasuale) $rootScope.conferma();
+						}
 					}
 					if (msg.durataAsta){
 						$rootScope.durataAsta=msg.durataAsta;
@@ -1124,6 +1126,12 @@ app.run(
 					}
 					if (msg.timeStart){
 						$rootScope.timeStart=msg.timeStart;
+						if (msg.timeStart==3 && !$rootScope.firstAbilitaForza) {
+							$rootScope.forzaOfferta=$rootScope.offertaVincente.offerta;
+							$rootScope.forzaAllenatore=$rootScope.offertaVincente.idgiocatore;
+							$rootScope.firstAbilitaForza=true;
+							$rootScope.abilitaForza=true;
+						}
 					}
 					if(msg.turno){
 						$rootScope.turno=msg.turno;
@@ -1230,8 +1238,9 @@ app.run(
 			$rootScope.allineaOfferta = function(){
 				$rootScope.offerta=$rootScope.offertaVincente.offerta;
 			}
-			$rootScope.forza= function(){
-				$rootScope.sendMsg(JSON.stringify({'operazione':'forza', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore,'forzaAllenatore':$rootScope.forzaAllenatore,'forzaOfferta':$rootScope.forzaOfferta}));
+			$rootScope.forza= function(conferma){
+				$rootScope.tokenCasuale=Math.floor(Math.random()*(100000)+1);
+				$rootScope.sendMsg(JSON.stringify({'operazione':'forza', 'conferma':conferma, 'tokenCasuale':$rootScope.tokenCasuale,'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore,'forzaAllenatore':$rootScope.forzaAllenatore,'forzaOfferta':$rootScope.forzaOfferta}));
 				$rootScope.abilitaForza=false;
 			}
 			$rootScope.incrementaOfferta = function(ng,ig,val){
