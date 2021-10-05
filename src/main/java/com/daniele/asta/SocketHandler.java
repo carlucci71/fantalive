@@ -186,6 +186,9 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
 								+ offertaVincente.get("nomegiocatore") + " per " + offertaVincente.get("offerta"),
 						EnumCategoria.Asta);
 			}
+			else {
+				System.out.println("BACO!!");
+			}
 			offertaVincente = new HashMap<>();
 			selCalciatoreMacroRuolo = "";
 			Map<String, Object> m = new HashMap<>();
