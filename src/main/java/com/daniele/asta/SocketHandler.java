@@ -178,12 +178,17 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
 		} else if (operazione != null && operazione.equals("confermaAsta")) {
 			sSemaforoAttivo = "S";
 			messaggi = new ArrayList<>();
-			creaMessaggio(indirizzo,
-					"Asta confermata per " + offertaVincente.get("nomeCalciatore") + "("
-							+ ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
-							+ ((Giocatori) offertaVincente.get("giocatore")).getSquadra() + ". Assegnato a "
-							+ offertaVincente.get("nomegiocatore") + " per " + offertaVincente.get("offerta"),
-					EnumCategoria.Asta);
+			if (offertaVincente.get("giocatore") != null) {
+				creaMessaggio(indirizzo,
+						"Asta confermata per " + offertaVincente.get("nomeCalciatore") + "("
+								+ ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
+								+ ((Giocatori) offertaVincente.get("giocatore")).getSquadra() + ". Assegnato a "
+								+ offertaVincente.get("nomegiocatore") + " per " + offertaVincente.get("offerta"),
+						EnumCategoria.Asta);
+			}
+			else {
+				System.out.println("BACO!!");
+			}
 			offertaVincente = new HashMap<>();
 			selCalciatoreMacroRuolo = "";
 			Map<String, Object> m = new HashMap<>();
