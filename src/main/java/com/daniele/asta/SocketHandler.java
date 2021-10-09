@@ -171,56 +171,52 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
 					"Tempo azzerato da " + nomegiocatore + " per " + offertaVincente.get("nomeCalciatore") + "("
 							+ ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
 							+ ((Giocatori) offertaVincente.get("giocatore")).getSquadra(),
-					EnumCategoria.Asta);
+							EnumCategoria.Asta);
 			m.put("millisFromPausa", Long.toString(millisFromPausa));
 			m.put("messaggi", messaggi);
 			invia(toJson(m));
 		} else if (operazione != null && operazione.equals("confermaAsta")) {
-			sSemaforoAttivo = "S";
-			messaggi = new ArrayList<>();
-			if (offertaVincente.get("giocatore") != null) {
+				sSemaforoAttivo = "S";
+				messaggi = new ArrayList<>();
 				creaMessaggio(indirizzo,
 						"Asta confermata per " + offertaVincente.get("nomeCalciatore") + "("
 								+ ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
 								+ ((Giocatori) offertaVincente.get("giocatore")).getSquadra() + ". Assegnato a "
 								+ offertaVincente.get("nomegiocatore") + " per " + offertaVincente.get("offerta"),
-						EnumCategoria.Asta);
-			}
-			else {
-				System.out.println("BACO!!");
-			}
-			offertaVincente = new HashMap<>();
-			selCalciatoreMacroRuolo = "";
-			Map<String, Object> m = new HashMap<>();
-			String idgiocatore = jsonToMap.get("idgiocatore").toString();
-			m.put("calciatori", myController.getGiocatoriLiberi());
-			m.put("cronologiaOfferte", myController.elencoCronologiaOfferte());
-			m.put("clearOfferta", "x");
-			m.put("messaggi", messaggi);
-			Integer iTurno = Integer.parseInt(myController.getTurno());
-			Iterable<Allenatori> allAllenatori = myController.getAllAllenatori();
-			Integer conta = 0;
-			iTurno++;
-			String nomeFirst = null;
-			for (Allenatori allenatori : allAllenatori) {
-				if (nomeFirst == null) {
-					nomeFirst = allenatori.getNome();
+								EnumCategoria.Asta);
+				offertaVincente = new HashMap<>();
+				selCalciatoreMacroRuolo = "";
+				Map<String, Object> m = new HashMap<>();
+				String idgiocatore = jsonToMap.get("idgiocatore").toString();
+				m.put("calciatori", myController.getGiocatoriLiberi());
+				m.put("cronologiaOfferte", myController.elencoCronologiaOfferte());
+				m.put("clearOfferta", "x");
+				m.put("messaggi", messaggi);
+				Integer iTurno = Integer.parseInt(myController.getTurno());
+				Iterable<Allenatori> allAllenatori = myController.getAllAllenatori();
+				Integer conta = 0;
+				iTurno++;
+				String nomeFirst = null;
+				for (Allenatori allenatori : allAllenatori) {
+					if (nomeFirst == null) {
+						nomeFirst = allenatori.getNome();
+					}
+					if (allenatori.getOrdine() == iTurno) {
+						myController.setNomeGiocatoreTurno(allenatori.getNome());
+					}
+					conta++;
 				}
-				if (allenatori.getOrdine() == iTurno) {
-					myController.setNomeGiocatoreTurno(allenatori.getNome());
+				if (iTurno > conta - 1) {
+					iTurno = 0;
+					myController.setNomeGiocatoreTurno(nomeFirst);
 				}
-				conta++;
-			}
-			if (iTurno > conta - 1) {
-				iTurno = 0;
-				myController.setNomeGiocatoreTurno(nomeFirst);
-			}
-			myController.setTurno(Integer.toString(iTurno));
-			m.put("turno", myController.getTurno());
-			m.put("giocatoriPerSquadra", myController.giocatoriPerSquadra());
-			m.put("mapSpesoTotale", myController.getMapSpesoTotale());
-			m.put("nomeGiocatoreTurno", myController.getNomeGiocatoreTurno());
-			invia(toJson(m));
+				myController.setTurno(Integer.toString(iTurno));
+				m.put("turno", myController.getTurno());
+				m.put("giocatoriPerSquadra", myController.giocatoriPerSquadra());
+				m.put("mapSpesoTotale", myController.getMapSpesoTotale());
+				m.put("nomeGiocatoreTurno", myController.getNomeGiocatoreTurno());
+				invia(toJson(m));
+
 		} else if (operazione != null && operazione.equals("annullaAsta")) {
 			sSemaforoAttivo = "S";
 			messaggi = new ArrayList<>();

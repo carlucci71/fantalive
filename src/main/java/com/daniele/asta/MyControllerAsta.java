@@ -807,21 +807,28 @@ public class MyControllerAsta {
 	}
 */	
 	@PostMapping("/confermaAsta")
-	public Map<String, Object> confermaAsta(@RequestBody Map<String, Object> body) throws Exception {
+	public synchronized Map<String, Object> confermaAsta(@RequestBody Map<String, Object> body) throws Exception {
 		Map<String,Object> ret = new HashMap<>();
 		if(isOkDispositiva(body)) {
 			String idgiocatore =  ((Map)body.get("offerta")).get("idgiocatore").toString();
-			Integer offerta = (Integer) ((Map)body.get("offerta")).get("offerta");
 			String idCalciatore = ((Map)body.get("offerta")).get("idCalciatore").toString();
-			Calendar c = Calendar.getInstance();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
-			String stm = sdf.format(c.getTime());
-			Fantarose fantarosa = new Fantarose();
-			fantarosa.setCosto(offerta);
-			fantarosa.setIdAllenatore(Integer.parseInt(idgiocatore));
-			fantarosa.setIdGiocatore(Integer.parseInt(idCalciatore));
-			fantarosa.setSqlTime(stm);
-			fantaroseRepository.save(fantarosa);
+			Fantarose findOne = fantaroseRepository.findOne(Integer.parseInt(idCalciatore));
+			if (findOne == null) {
+				Integer offerta = (Integer) ((Map)body.get("offerta")).get("offerta");
+				Calendar c = Calendar.getInstance();
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+				String stm = sdf.format(c.getTime());
+				Fantarose fantarosa = new Fantarose();
+				fantarosa.setCosto(offerta);
+				fantarosa.setIdAllenatore(Integer.parseInt(idgiocatore));
+				fantarosa.setIdGiocatore(Integer.parseInt(idCalciatore));
+				fantarosa.setSqlTime(stm);
+				fantaroseRepository.save(fantarosa);
+				ret.put("insert", "OK");
+			}
+			else {
+				ret.put("insert", "KO");
+			}
 			ret.put("esitoDispositiva", "OK");
 		}
 		else {

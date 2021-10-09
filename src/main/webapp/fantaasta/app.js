@@ -1106,7 +1106,8 @@ app.run(
 							}
 						}
 						if (msg.offertaVincente.confermaForza){
-							if ($rootScope.tokenCasuale==msg.offertaVincente.tokenCasuale) $rootScope.conferma();
+							if ($rootScope.tokenCasuale==msg.offertaVincente.tokenCasuale) 
+								$rootScope.conferma();
 						}
 					}
 					if (msg.durataAsta){
@@ -1203,7 +1204,7 @@ app.run(
 				$rootScope.tokenDispositiva=Math.floor(Math.random()*(10000)+1);
 				$resource('./confermaAsta',{}).save({'offerta':$rootScope.offertaVincente,'idgiocatore':$rootScope.idgiocatore,'tokenDispositiva':$rootScope.tokenDispositiva}).$promise.then(function(data) {
 					if(data.esitoDispositiva == 'OK'){
-						$rootScope.sendMsg(JSON.stringify({'operazione':'confermaAsta', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
+						if (data.insert == 'OK') $rootScope.sendMsg(JSON.stringify({'operazione':'confermaAsta', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
 					}
 					else {
 						alert('Conferma. Errore!')
