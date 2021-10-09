@@ -1376,7 +1376,6 @@ app.directive('trackProgressBar', [function () {
 
         // set the marker's width
         progressBarMarkerElement.css('width', progress + 'px');
-        //console.log(currentValue + "-" + maxValue + "-" + progress + "-" +  $scope.colVal);
         if ($scope.colVal<2) progressBarMarkerElement.css('background-color', 'green');
         if ($scope.colVal==2) progressBarMarkerElement.css('background-color', 'yellow');
         if ($scope.colVal==3) progressBarMarkerElement.css('background-color', 'red');
