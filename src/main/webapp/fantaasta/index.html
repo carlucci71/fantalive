@@ -273,8 +273,9 @@
 						<label class="nextOperation" ng-show="offertaVincente.nomegiocatore!=nomegiocatore">Puoi rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)}})</label>
 						<label class="nextOperation" ng-show="offertaVincente.nomegiocatore==nomegiocatore">Stai vincendo. Max rilancio {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)}}</label>
 					</span>
-					<label class="nextOperation" ng-show="offertaVincente.offerta>=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)">Non hai crediti sufficienti per rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)}})</label>
-					<label class="nextOperation" ng-show="avviabili.indexOf(nomegiocatore)<0 && offertaVincente.nomegiocatore!=nomegiocatore">Non puoi acquistare altri giocatori in quel ruolo</label>
+					<label class="nextOperation" ng-show="!(avviabili.indexOf(nomegiocatore)<0 && offertaVincente.nomegiocatore!=nomegiocatore) && (offertaVincente.offerta>=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore))">Non hai crediti sufficienti per rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)}})</label>
+					<label class="nextOperation" ng-show="(avviabili.indexOf(nomegiocatore)<0 && offertaVincente.nomegiocatore!=nomegiocatore) && !(offertaVincente.offerta>=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore))">Non puoi acquistare altri giocatori in quel ruolo</label>
+					<label class="nextOperation" ng-show="(avviabili.indexOf(nomegiocatore)<0 && offertaVincente.nomegiocatore!=nomegiocatore) && (offertaVincente.offerta>=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore))">Non hai crediti sufficienti ma tanto per questo ruolo non puoi acquistare altri giocatori, chiaro Giovanni?</label>
 				</div>
 				
 				
@@ -351,62 +352,10 @@
 						</span>
 						<label class="nextOperation">rilancio (max {{getFromMapSpesoTotale('MAXRILANCIO',allenatore.nome)}})</label>
 					</span>
-					<label class="nextOperation" ng-show="offertaVincente.offerta>=getFromMapSpesoTotale('MAXRILANCIO',allenatore.nome)">crediti insufficienti per rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',allenatore.nome)}})</label>
+					<label class="nextOperation" ng-show="offertaVincente.offerta>=getFromMapSpesoTotale('MAXRILANCIO',allenatore.nome)"> crediti insufficienti per rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',allenatore.nome)}})</label>
 					<label class="nextOperation" ng-show="avviabili.indexOf(allenatore.nome)<0 && offertaVincente.nomegiocatore!=allenatore.nome">ruolo completato</label>
 				</div>
 			</div>
-				
-				
-				<!-- 
-				
-				<div ng-show="isAdmin" style="border-style:double;text-align:center">
-					<div style="color: green;text-align:center;cursor:pointer" ng-click="sezOperaComeVisible=!sezOperaComeVisible">
-						<i class="fa fa-chevron-down" ng-show="!sezOperaComeVisible"></i>
-						<i class="fa fa-chevron-up" ng-show="sezOperaComeVisible"></i>
-					<label style="cursor:pointer">Rilanci opera come</label></div>
-					
-					<div ng-show="sezOperaComeVisible"> 
-						<table style="margin:auto">
-							<tr ng-class="{calciatoreNonSelezionato: idgiocatoreOperaCome!=allenatore.id, calciatoreSelezionato: idgiocatoreOperaCome==allenatore.id}" ng-repeat="allenatore in elencoAllenatori" ng-click="selezionaAllenatoreOperaCome(allenatore)" >
-								<td ng-show="allenatore.id!=idgiocatore">{{allenatore.nome}}</td>
-							</tr>
-						</table>
-						<label class="nextOperation" ng-show="idgiocatoreOperaCome<0">Puoi selezionare altro allenatore</label>
-						<span ng-show="idgiocatoreOperaCome>=0">
-							<span ng-show=" avviabili.indexOf(nomegiocatoreOperaCome)>=0 && offertaVincente.offerta<getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome) ">
-								<span class="spanAutoAllinea">
-									<i title="auto allinea" ng-click="autoAllineaOC=!autoAllineaOC" ng-show="autoAllineaOC" class="fa fa-check-square"></i>
-									<i title="auto allinea" ng-click="autoAllineaOC=!autoAllineaOC" ng-show="!autoAllineaOC" class="fa fa-square"></i>
-								<span class="spanTestoAutoAllinea">Auto</span>
-								</span>
-								<span class="spanIconePunta" ng-show="!autoAllineaOC">
-									<i  title="allinea" style="cursor:pointer;"class="fa fa-retweet" ng-click="offertaOC=offertaVincente.offerta"></i>
-								</span>
-								<span class="spanInputDatoOfferta">
-									<input class="inputDatoOfferta"  type="number"  ng-model="offertaOC"></input>
-								</span>
-								<span class="spanIconePunta">
-									<i title="offri" style="cursor:pointer;" class="fa fa-money" ng-show="offerta<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)" ng-click="inviaOfferta('OC',offertaOC)"></i>
-								</span>
-								
-								<span class="spanBtnIncrementa">
-									<input ng-show="offertaOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-1" class="btnIncrementa" type="button" value="{{offertaOC+1}}" ng-click="offertaOC=offertaOC+1;inviaOfferta('OC',offertaOC)"></input>
-								</span>
-								<span class="spanBtnIncrementa">
-									<input ng-show="offertaOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-5" class="btnIncrementa" type="button" value="{{offertaOC+5}}" ng-click="offertaOC=offertaOC+5;inviaOfferta('OC',offertaOC)"></input>
-								</span>
-								<span class="spanBtnIncrementa">
-									<input ng-show="offertaOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-10" class="btnIncrementa" type="button" value="{{offertaOC+10}}" ng-click="offertaOC=offertaOC+10;inviaOfferta('OC',offertaOC)"></input>
-								</span>
-								<br>
-								<label class="nextOperation" ng-show="offertaVincente.nomegiocatore!=nomegiocatoreOperaCome">Puoi rilanciare per {{nomegiocatoreOperaCome}} (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)}})</label>
-							</span>
-							<label class="nextOperation" ng-show="offertaVincente.offerta>=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)">{{nomegiocatoreOperaCome}} non ha crediti sufficienti per rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)}})</label>
-							<label class="nextOperation" ng-show="avviabili.indexOf(nomegiocatoreOperaCome)<0">{{nomegiocatoreOperaCome}} non può acquistare altri giocatore in quel ruolo </label>
-						</span>
-					</div> 
-				</div>
-					 -->
 			<input ng-show="isAdmin" type="button" value="azzera tempo" ng-click="azzeraTempo()"></input>
 			<input ng-show="isAdmin" type="button" value="azzera offerta" ng-click="azzeraOfferta()"></input>
    		 	<i title="dettaglio" class="fa fa-info-circle" style="cursor:pointer" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id, false)"></i>
