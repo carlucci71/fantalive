@@ -70,10 +70,10 @@ public class Main {
 	public static final String COMP_LUCCICAR_FG = "379529";
 	public static final String COMP_JB_FG = "387633";
 
-	public static final int DELTA_FS=3;
+	public static final int DELTA_FS=7;
 	public static final int NUM_PARTITE_FS = 4;
-	public static final String COMP_FS = "123506";
-	private static final int PRIMA_GIORNATA_FS = 10675622;
+	public static final String COMP_FS = "135324";
+	private static final int PRIMA_GIORNATA_FS = 10716452;
 
 	private static final String SPORT_ID_LIVE_GAZZETTA = "1";
 	private static final String COMP_ID_LIVE_GAZZETTA = "21";
