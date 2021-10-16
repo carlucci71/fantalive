@@ -127,8 +127,8 @@ public class Main {
 		if (sqJB==null) {
 			sqJB = new HashSet() {{
 				add("bebocar");
-				add("Hooligas");
-				add("FCarlona");
+				add("FC Cherwood");
+				add("FC EU ESTAVA AQUI");
 				add("Juventiboss"); 
 				
 			}};
