@@ -23,6 +23,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
@@ -53,6 +57,7 @@ import com.daniele.fantalive.model.RigaNotifica;
 import com.daniele.fantalive.model.Squadra;
 import com.daniele.fantalive.repository.SalvaRepository;
 import com.daniele.fantalive.util.Constant;
+import com.daniele.fantalive.util.ThreadSeparato;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -96,7 +101,9 @@ public class Main {
 	public static List<String> sqDaEv= null;
 	private static Map<String, Giocatore> oldSnapshot=null;
 	private static SalvaRepository salvaRepository=null;
+
 	private static SocketHandlerFantalive socketHandlerFantalive=null;
+	private static ScheduledExecutorService executor = null;	
 	private static Constant constant=null;
 	private static List<Live> oldSnapLives=null;
 	private static Map<String, Map<String, String>> oldSnapOrari=null;
@@ -109,6 +116,7 @@ public class Main {
 	public static int timeRefresh = 0;
 
 	public static void init(SalvaRepository salvaRepositorySpring, SocketHandlerFantalive socketHandlerSpring, Constant constantSpring) throws Exception {
+		executor = Executors.newSingleThreadScheduledExecutor();	
 		salvaRepository=salvaRepositorySpring;
 		socketHandlerFantalive=socketHandlerSpring;
 		constant=constantSpring;
@@ -575,12 +583,21 @@ public class Main {
 
 
 	public static void main(String[] args) throws Exception {
-		List<String> gg = new ArrayList<>();
+//		List<String> gg = new ArrayList<>();
 		
+		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();	
 
 
+		
+		
+		
+		ThreadSeparato threadSeparato = new ThreadSeparato(fantaLiveBot, 3l,"111111");
+		executor.schedule(threadSeparato, 30, TimeUnit.SECONDS);
+		
+		Thread.currentThread().sleep(2000);
+		threadSeparato = new ThreadSeparato(fantaLiveBot, 3l,"222222");
+		executor.schedule(threadSeparato, 30, TimeUnit.SECONDS);
 
-		//		init();
 		/*
 		Iterator<String> iterator;
     	snapshot(null);
@@ -635,7 +652,9 @@ public class Main {
 	}
 	public static void inviaNotifica(String msg) throws Exception {
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
-			fantaLiveBot.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg,false);
+			ThreadSeparato threadSeparato = new ThreadSeparato(fantaLiveBot, constant.CHAT_ID_FANTALIVE,msg);
+			executor.schedule(threadSeparato, 15, TimeUnit.SECONDS);
+//			fantaLiveBot.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg,false);
 		}
 		else {
 			System.out.println("Notifica:\n" + msg);
