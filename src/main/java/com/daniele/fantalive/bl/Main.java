@@ -42,6 +42,7 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.FormElement;
 import org.jsoup.select.Elements;
 
 import com.daniele.fantalive.configurazione.SocketHandlerFantalive;
@@ -583,63 +584,68 @@ public class Main {
 
 
 	public static void main(String[] args) throws Exception {
-//		List<String> gg = new ArrayList<>();
+		mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		
-		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();	
+		
+		
+		
+		
+		String urlLoginFS = "https://www.fanta.soccer/it/login/";
+		String http = getHTTP(urlLoginFS);
+		Document doc = Jsoup.parse(http);
+		List<FormElement> forms2 = doc.select("body").forms();
+		Elements elements = forms2.get(0).elements();
+		String viewStateGenerator="";//FIXME
+		String viewState="";//FIXME
+		for (int i=0;i<elements.size();i++) {
+			Element element = elements.get(i);
+			if ("__VIEWSTATE".equalsIgnoreCase(element.id())) {
+				viewState=element.val();
+			}
+			if ("__VIEWSTATEGENERATOR".equalsIgnoreCase(element.id())) {
+				viewStateGenerator=element.val();
+			}
+		}
+		
+		Map<String, String> body=new HashMap<>();
+		Map<String, String> headers=new HashMap<>();
+		headers.put("authority", "www.fanta.soccer");
+		headers.put("content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+		headers.put("cache-control", "no-cache");
+		headers.put("x-requested-with", "XMLHttpRequest");
+		headers.put("x-microsoftajax", "Delta=true");
+		headers.put("sec-ch-ua-platform", "Windows");
+		headers.put("accept", "*/*");
+		headers.put("origin", "https://www.fanta.soccer");
+		headers.put("sec-fetch-site", "same-origin");
+		headers.put("sec-fetch-mode", "cors");
+		headers.put("sec-fetch-dest", "empty");
+		headers.put("referer", "https://www.fanta.soccer/it/login/");
+		headers.put("accept-language", "it-IT,it;q=0.9");
+//		headers.put("", "");
 
-
+		body.put("ctl00$smFantaSoccer", "ctl00$MainContent$wuc_Login1$upLogin|ctl00$MainContent$wuc_Login1$btnLogin");
+		body.put("__EVENTTARGET", "");
+		body.put("__EVENTARGUMENT", "");
+		body.put("__VIEWSTATE", viewState);
+		body.put("__VIEWSTATEGENERATOR", viewStateGenerator);
+		body.put("ctl00$MainContent$wuc_Login1$username", "bebocar");
+		body.put("ctl00$MainContent$wuc_Login1$password", "Emmola");
+		body.put("ctl00$MainContent$wuc_Login1$cmbSesso", "M");
+		body.put("ctl00$MainContent$wuc_Login1$txtNome", "");
+		body.put("ctl00$MainContent$wuc_Login1$txtCognome", "");
+		body.put("ctl00$MainContent$wuc_Login1$txtEmail", "");
+		body.put("ctl00$MainContent$wuc_Login1$txtConfermaEmail", "");
+		body.put("ctl00$MainContent$wuc_Login1$txtUsername", "");
+		body.put("ctl00$MainContent$wuc_Login1$txtPassword", "");
+		body.put("ctl00$MainContent$wuc_Login1$txtConfermaPassword", "");
+		body.put("__ASYNCPOST", "true");
+		body.put("ctl00$MainContent$wuc_Login1$btnLogin", "accedi");
+//		body.put("", "");
 		
-		
-		
-		ThreadSeparato threadSeparato = new ThreadSeparato(fantaLiveBot, 3l,"111111");
-		executor.schedule(threadSeparato, 30, TimeUnit.SECONDS);
-		
-		Thread.currentThread().sleep(2000);
-		threadSeparato = new ThreadSeparato(fantaLiveBot, 3l,"222222");
-		executor.schedule(threadSeparato, 30, TimeUnit.SECONDS);
-
-		/*
-		Iterator<String> iterator;
-    	snapshot(null);
-		iterator = oldSnapshot.keySet().iterator();
-		while (iterator.hasNext()) {
-			String k = (String) iterator.next();
-			Giocatore giocatore = oldSnapshot.get(k);
-			if (giocatore.getNome().toUpperCase().startsWith("RIBER")){
-				giocatore.getOrario().put("tag","xx");
-				giocatore.getCodEventi().add(3);
-			}
-		}
-    	snapshot(null);
-		iterator = oldSnapshot.keySet().iterator();
-		while (iterator.hasNext()) {
-			String k = (String) iterator.next();
-			Giocatore giocatore = oldSnapshot.get(k);
-			if (giocatore.getNome().toUpperCase().startsWith("MILI")){
-				giocatore.getCodEventi().add(11);
-				giocatore.getCodEventi().add(3);
-			}
-		}
-    	snapshot(null);
-		iterator = oldSnapshot.keySet().iterator();
-		while (iterator.hasNext()) {
-			String k = (String) iterator.next();
-			Giocatore giocatore = oldSnapshot.get(k);
-			if (giocatore.getNome().toUpperCase().startsWith("MILI")){
-				giocatore.getCodEventi().add(16);
-			}
-		}
-    	snapshot(null);
-		iterator = oldSnapshot.keySet().iterator();
-		while (iterator.hasNext()) {
-			String k = (String) iterator.next();
-			Giocatore giocatore = oldSnapshot.get(k);
-			if (giocatore.getNome().toUpperCase().startsWith("MILI")){
-				giocatore.getCodEventi().add(14);
-			}
-		}
-    	snapshot(null);
-		 */
+		http = postHTTP(urlLoginFS, body, headers);
+		System.out.println(http);
 	}
 	
 	public static void inviaCronacaNotifica(String msg) throws Exception {
