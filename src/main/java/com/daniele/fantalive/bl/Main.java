@@ -901,115 +901,115 @@ public class Main {
 
 	public static void getSquadre(String lega) throws Exception {
 		try {
-		String ll = lega;
-		if (lega.equalsIgnoreCase(Campionati.JB.name())){
-			ll = "jb-fanta";
-		}
-		Map<String, String> nomiFG = getNomiFG(ll);
-		lega=lega.replace("-", "").toUpperCase();
-		List<Squadra> squadre=new ArrayList<Squadra>();
-		Map<String,String> headers = new HashMap<String, String>();
-		headers.put("app_key", constant.APPKEY_FG);
-		String url = "https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?" + keyFG.get(lega);
-		String string = getHTTP(url, headers );
-//		System.out.println(url + " <--> " +  headers + " <--> " + string);
-		Map<String, Object> jsonToMap = jsonToMap(string);
-		if (jsonToMap.get("data") == null) throw new RuntimeException("aggiornare KeyFG per " + lega);
-		List<Map> l = (List<Map>) ((Map<String, Object>)jsonToMap.get("data")).get("formazioni");
-		int contaSq=0;
-		int progPartita=0;
-		for (Map<String, List<Map>> map : l) {
-			if (!lega.equalsIgnoreCase(Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Campionati.JB.name())) {
-				progPartita++;
+			String ll = lega;
+			if (lega.equalsIgnoreCase(Campionati.JB.name())){
+				ll = "jb-fanta";
 			}
-			List<Map> list = map.get("sq");
-			int contaSquadre=0;
-			for (Map map2 : list) {
-				String nome = nomiFG.get(map2.get("id").toString());
-				if (nome == null) continue;
-				contaSquadre++;
-				List<Map> giocatori = (List<Map>) map2.get("pl");
-				if (giocatori != null) {
-					for (int i=0;i<giocatori.size();i++) {
-						if (i==0) {
-							Squadra squadra = new Squadra();
-							squadre.add(squadra);
-							squadra.setNome(nome);
-							List<PartitaSimulata> partiteSimulate=new ArrayList<>();
-							PartitaSimulata partitaSimulata=new PartitaSimulata();
-							partitaSimulata.setCampionato(lega);
-							if (!lega.equalsIgnoreCase(Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Campionati.JB.name()) && (contaSquadre == 1)) {
-								partitaSimulata.setCasa(true);
+			Map<String, String> nomiFG = getNomiFG(ll);
+			lega=lega.replace("-", "").toUpperCase();
+			List<Squadra> squadre=new ArrayList<Squadra>();
+			Map<String,String> headers = new HashMap<String, String>();
+			headers.put("app_key", constant.APPKEY_FG);
+			String url = "https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?" + keyFG.get(lega);
+			String string = getHTTP(url, headers );
+			//		System.out.println(url + " <--> " +  headers + " <--> " + string);
+			Map<String, Object> jsonToMap = jsonToMap(string);
+			if (jsonToMap.get("data") == null) throw new RuntimeException("aggiornare KeyFG per " + lega);
+			List<Map> l = (List<Map>) ((Map<String, Object>)jsonToMap.get("data")).get("formazioni");
+			int contaSq=0;
+			int progPartita=0;
+			for (Map<String, List<Map>> map : l) {
+				if (!lega.equalsIgnoreCase(Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Campionati.JB.name())) {
+					progPartita++;
+				}
+				List<Map> list = map.get("sq");
+				int contaSquadre=0;
+				for (Map map2 : list) {
+					String nome = nomiFG.get(map2.get("id").toString());
+					if (nome == null) continue;
+					contaSquadre++;
+					List<Map> giocatori = (List<Map>) map2.get("pl");
+					if (giocatori != null) {
+						for (int i=0;i<giocatori.size();i++) {
+							if (i==0) {
+								Squadra squadra = new Squadra();
+								squadre.add(squadra);
+								squadra.setNome(nome);
+								List<PartitaSimulata> partiteSimulate=new ArrayList<>();
+								PartitaSimulata partitaSimulata=new PartitaSimulata();
+								partitaSimulata.setCampionato(lega);
+								if (!lega.equalsIgnoreCase(Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Campionati.JB.name()) && (contaSquadre == 1)) {
+									partitaSimulata.setCasa(true);
+								}
+								else {
+									partitaSimulata.setCasa(false);
+								}
+								if (lega.equalsIgnoreCase(Campionati.LUCCICAR.name())) {
+									partitaSimulata.setNome("  LUCCICAR");
+									squadra.setEvidenza(true);
+								} 
+								else if (lega.equalsIgnoreCase(Campionati.JB.name()) && squadra.getNome().equalsIgnoreCase("bebocar")) {
+									partitaSimulata.setNome("  JB");
+									squadra.setEvidenza(true);
+								} 
+								else if (lega.equalsIgnoreCase(Campionati.JB.name()) && !squadra.getNome().equalsIgnoreCase("bebocar")) {
+									//								partitaSimulata.setNome("  JB");
+									//								squadra.setEvidenza(true);
+								} 
+								else {
+									partitaSimulata.setNome(getNomePartitaSimulata(lega, progPartita));
+								}
+								partitaSimulata.setSquadra(squadra.getNome());
+								partiteSimulate.add(partitaSimulata);
+								squadra.setPartiteSimulate(partiteSimulate);
+								contaSq++;
 							}
-							else {
-								partitaSimulata.setCasa(false);
-							}
-							if (lega.equalsIgnoreCase(Campionati.LUCCICAR.name())) {
-								partitaSimulata.setNome("  LUCCICAR");
-								squadra.setEvidenza(true);
-							} 
-							else if (lega.equalsIgnoreCase(Campionati.JB.name()) && squadra.getNome().equalsIgnoreCase("bebocar")) {
-								partitaSimulata.setNome("  JB");
-								squadra.setEvidenza(true);
-							} 
-							else if (lega.equalsIgnoreCase(Campionati.JB.name()) && !squadra.getNome().equalsIgnoreCase("bebocar")) {
-//								partitaSimulata.setNome("  JB");
-//								squadra.setEvidenza(true);
-							} 
-							else {
-								partitaSimulata.setNome(getNomePartitaSimulata(lega, progPartita));
-							}
-							partitaSimulata.setSquadra(squadra.getNome());
-							partiteSimulate.add(partitaSimulata);
-							squadra.setPartiteSimulate(partiteSimulate);
-							contaSq++;
-						}
-						Giocatore g = new Giocatore();
-						g.setId(giocatori.get(i).get("id").toString());
-						g.setNome(giocatori.get(i).get("n").toString());
-						g.setNomeTrim(giocatori.get(i).get("n").toString().replaceAll(" ", ""));
-						g.setRuolo(giocatori.get(i).get("r").toString());
-						g.setSquadra(giocatori.get(i).get("t").toString());
+							Giocatore g = new Giocatore();
+							g.setId(giocatori.get(i).get("id").toString());
+							g.setNome(giocatori.get(i).get("n").toString());
+							g.setNomeTrim(giocatori.get(i).get("n").toString().replaceAll(" ", ""));
+							g.setRuolo(giocatori.get(i).get("r").toString());
+							g.setSquadra(giocatori.get(i).get("t").toString());
 
-						if (i<11) {
-							squadre.get(contaSq-1).getTitolari().add(g);
-						} 
-						else {
-							squadre.get(contaSq-1).getRiserve().add(g);
+							if (i<11) {
+								squadre.get(contaSq-1).getTitolari().add(g);
+							} 
+							else {
+								squadre.get(contaSq-1).getRiserve().add(g);
+							}
 						}
 					}
 				}
 			}
-		}
-		if (!lega.equalsIgnoreCase(Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Campionati.JB.name())) {
-			adattaNomePartitaSimulata(squadre);
-			String nomePartitaSimulata=null;
-			for (Squadra squadra : squadre) {//todo evidenze fantaviva
-				if (squadra.getNome().equalsIgnoreCase("tavolino")) {
-					squadra.setEvidenza(true);
+			if (!lega.equalsIgnoreCase(Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Campionati.JB.name())) {
+				adattaNomePartitaSimulata(squadre);
+				String nomePartitaSimulata=null;
+				for (Squadra squadra : squadre) {//todo evidenze fantaviva
+					if (squadra.getNome().equalsIgnoreCase("tavolino")) {
+						squadra.setEvidenza(true);
+						PartitaSimulata partitaSimulata = squadra.getPartiteSimulate().get(0);
+						if (partitaSimulata.isCasa()) {
+							squadra.setCasaProiezione(true);
+						}
+						nomePartitaSimulata=partitaSimulata.getNome();
+					}
+				}
+				for (Squadra squadra : squadre) {
 					PartitaSimulata partitaSimulata = squadra.getPartiteSimulate().get(0);
-					if (partitaSimulata.isCasa()) {
-						squadra.setCasaProiezione(true);
-					}
-					nomePartitaSimulata=partitaSimulata.getNome();
-				}
-			}
-			for (Squadra squadra : squadre) {
-				PartitaSimulata partitaSimulata = squadra.getPartiteSimulate().get(0);
-				if (!squadra.getNome().equalsIgnoreCase("tavolino") && partitaSimulata.getNome().equals(nomePartitaSimulata)) {
-					squadra.setEvidenza(true);
-					if (partitaSimulata.isCasa()) {
-						squadra.setCasaProiezione(true);
+					if (!squadra.getNome().equalsIgnoreCase("tavolino") && partitaSimulata.getNome().equals(nomePartitaSimulata)) {
+						squadra.setEvidenza(true);
+						if (partitaSimulata.isCasa()) {
+							squadra.setCasaProiezione(true);
+						}
 					}
 				}
 			}
-		}
-		upsertSalva(Constant.FORMAZIONE + lega , toJson(squadre));
-//		return squadre;
+			upsertSalva(Constant.FORMAZIONE + lega , toJson(squadre));
+			//		return squadre;
 		}
 		catch (Exception e)
 		{
-			
+
 		}
 	}
 
