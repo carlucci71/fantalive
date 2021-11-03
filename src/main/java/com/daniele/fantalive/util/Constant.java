@@ -19,6 +19,8 @@ public class Constant {
 	public static  int NUM_SQUADRE_BE = 0;	
 	public static final String FORMAZIONE = "formazione";
 	public static ZonedDateTime LAST_REFRESH;
+	public static String PWD_FS;
+	public static String UTENTE_FS;
 	/*-------------------------------------------------------------------------------------------*/
 	public static DateTimeFormatter dateTimeFormatterIn = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
 	public static DateTimeFormatter dateTimeFormatterOut = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Rome"));
