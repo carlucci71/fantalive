@@ -4,8 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -23,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -39,9 +41,11 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
+import org.hibernate.validator.internal.util.privilegedactions.GetAnnotationParameter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.FormElement;
 import org.jsoup.select.Elements;
 
 import com.daniele.fantalive.configurazione.SocketHandlerFantalive;
@@ -120,6 +124,7 @@ public class Main {
 		salvaRepository=salvaRepositorySpring;
 		socketHandlerFantalive=socketHandlerSpring;
 		constant=constantSpring;
+		constant.AUTH_FS=getAuthFS();
 		Main.aggKeyFG();
 		if (sqDaEv==null) {
 			inizializzaSqDaEv();
@@ -583,63 +588,73 @@ public class Main {
 
 
 	public static void main(String[] args) throws Exception {
-//		List<String> gg = new ArrayList<>();
-		
-		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();	
+/*
+		init(salvaRepositorySpring, socketHandlerSpring, constantSpring);
+		String authFS = getAuthFS();
+		System.out.println(authFS);
+*/
+	}
 
+	private static String getAuthFS() throws Exception {
+		String ret=null;
+		String urlLoginFS = "https://www.fanta.soccer/it/login/";
+		String http = getHTTP(urlLoginFS);
+		Document doc = Jsoup.parse(http);
+		List<FormElement> forms2 = doc.select("body").forms();
+		Elements elements = forms2.get(0).elements();
+		String viewStateGenerator="";
+		String viewState="";
+		for (int i=0;i<elements.size();i++) {
+			Element element = elements.get(i);
+			if ("__VIEWSTATE".equalsIgnoreCase(element.id())) {
+				viewState = URLEncoder.encode(element.val(), StandardCharsets.UTF_8.toString());
+			}
+			if ("__VIEWSTATEGENERATOR".equalsIgnoreCase(element.id())) {
+				viewStateGenerator=element.val();
+			}
+		}
+		
+		Map<String, String> headers=new HashMap<>();
+		headers.put("User-Agent", "Mozilla");
+		String contentType = "application/x-www-form-urlencoded; charset=UTF-8";
+		headers.put("content-type", contentType);
+		headers.put("x-requested-with", "XMLHttpRequest");
+		StringBuilder body = new StringBuilder();
+		body.append("ctl00%24smFantaSoccer=ctl00%24MainContent%24wuc_Login1%24upLogin%7Cctl00%24MainContent%24wuc_Login1%24btnLogin");
+		body.append("&__EVENTTARGET=");
+		body.append("&__EVENTARGUMENT=");
+		body.append("&__VIEWSTATE=" + viewState);
+		body.append("&__VIEWSTATEGENERATOR=" + viewStateGenerator);
+		body.append("&ctl00%24MainContent%24wuc_Login1%24username=" + Constant.UTENTE_FS);
+		body.append("&ctl00%24MainContent%24wuc_Login1%24password=" + Constant.PWD_FS);
+		body.append("&ctl00%24MainContent%24wuc_Login1%24cmbSesso=M");
+		body.append("&ctl00%24MainContent%24wuc_Login1%24txtNome=");
+		body.append("&ctl00%24MainContent%24wuc_Login1%24txtCognome=");
+		body.append("&ctl00%24MainContent%24wuc_Login1%24txtEmail=");
+		body.append("&ctl00%24MainContent%24wuc_Login1%24txtConfermaEmail=");
+		body.append("&ctl00%24MainContent%24wuc_Login1%24txtUsername=");
+		body.append("&ctl00%24MainContent%24wuc_Login1%24txtPassword=");
+		body.append("&ctl00%24MainContent%24wuc_Login1%24txtConfermaPassword=");
+		body.append("&__ASYNCPOST=true");
+		body.append("&ctl00%24MainContent%24wuc_Login1%24btnLogin=accedi");
+		Map<String, Object> postHTTP = postHTTP(contentType,urlLoginFS,body.toString(), headers);
+//		System.out.println(postHTTP.get("response"));
+		Map<String, List<String>> headerFields = (Map<String, List<String>>) postHTTP.get("headerFields");
 
-		
-		
-		
-		ThreadSeparato threadSeparato = new ThreadSeparato(fantaLiveBot, 3l,"111111");
-		executor.schedule(threadSeparato, 30, TimeUnit.SECONDS);
-		
-		Thread.currentThread().sleep(2000);
-		threadSeparato = new ThreadSeparato(fantaLiveBot, 3l,"222222");
-		executor.schedule(threadSeparato, 30, TimeUnit.SECONDS);
-
-		/*
-		Iterator<String> iterator;
-    	snapshot(null);
-		iterator = oldSnapshot.keySet().iterator();
-		while (iterator.hasNext()) {
-			String k = (String) iterator.next();
-			Giocatore giocatore = oldSnapshot.get(k);
-			if (giocatore.getNome().toUpperCase().startsWith("RIBER")){
-				giocatore.getOrario().put("tag","xx");
-				giocatore.getCodEventi().add(3);
+		Set<String> keySet = headerFields.keySet();
+		for (String string : keySet) {
+			if ("Set-Cookie".equalsIgnoreCase(string)) {
+				List<String> list = headerFields.get(string);
+				for (String string2 : list) {
+					String[] split = string2.split("=");
+					if ("FantaSoccer_Auth".equalsIgnoreCase(split[0])) {
+						ret = split[1].substring(0,split[1].indexOf(";"));
+//						System.out.println(ret);
+					}
+				}
 			}
 		}
-    	snapshot(null);
-		iterator = oldSnapshot.keySet().iterator();
-		while (iterator.hasNext()) {
-			String k = (String) iterator.next();
-			Giocatore giocatore = oldSnapshot.get(k);
-			if (giocatore.getNome().toUpperCase().startsWith("MILI")){
-				giocatore.getCodEventi().add(11);
-				giocatore.getCodEventi().add(3);
-			}
-		}
-    	snapshot(null);
-		iterator = oldSnapshot.keySet().iterator();
-		while (iterator.hasNext()) {
-			String k = (String) iterator.next();
-			Giocatore giocatore = oldSnapshot.get(k);
-			if (giocatore.getNome().toUpperCase().startsWith("MILI")){
-				giocatore.getCodEventi().add(16);
-			}
-		}
-    	snapshot(null);
-		iterator = oldSnapshot.keySet().iterator();
-		while (iterator.hasNext()) {
-			String k = (String) iterator.next();
-			Giocatore giocatore = oldSnapshot.get(k);
-			if (giocatore.getNome().toUpperCase().startsWith("MILI")){
-				giocatore.getCodEventi().add(14);
-			}
-		}
-    	snapshot(null);
-		 */
+		return ret;
 	}
 	
 	public static void inviaCronacaNotifica(String msg) throws Exception {
@@ -747,8 +762,9 @@ public class Main {
 		return orari;
 	}
 
-	public static String postHTTP(String url, Map<String, String> body, Map<String, String>... headers) throws Exception {
+	public static Map<String,Object> postHTTP(String contentType, String url, String body,  Map<String, String>... headers) throws Exception {
 //		System.out.println("POST " + url + " " + printMap(headers));
+		Map <String, Object> ret = new HashMap<>();
 		URL obj = new URL(url);
 		HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
 		postConnection.setRequestMethod("POST");
@@ -759,18 +775,18 @@ public class Main {
 				postConnection.setRequestProperty(key, headers[0].get(key));
 			}
 		}
-		postConnection.setRequestProperty("Content-Type", "application/json");
+		postConnection.setRequestProperty("content-type", contentType);
 		postConnection.setDoOutput(true);
 		OutputStream os = postConnection.getOutputStream();
-		os.write(toJson(body).getBytes());
+		os.write(body.getBytes());
 		os.flush();
 		os.close();
-
-
 
 		int responseCode = postConnection.getResponseCode();
 		StringBuffer response = new StringBuffer();
 		if (responseCode == HttpURLConnection.HTTP_OK) {
+			Map<String, List<String>> headerFields = postConnection.getHeaderFields();
+			ret.put("headerFields", headerFields);
 			BufferedReader in = new BufferedReader(new InputStreamReader(postConnection.getInputStream()));
 			String inputLine;
 			while ((inputLine = in.readLine()) != null) {
@@ -789,12 +805,15 @@ public class Main {
 
 			// print result
 			String stringResponse = sfResponse.toString();
-			throw new RuntimeException("POST NOT WORKED ".concat(url).concat(" -> ").concat(toJson(body)).concat("STACK:")
+			throw new RuntimeException("POST NOT WORKED ".concat(url).concat(" -> ").concat(body).concat("STACK:")
 					.concat(stringResponse));
 		}
-		return response.toString(); 
+		ret.put("response", response.toString());
+		return ret; 
 	}
-
+	public static Map<String, Object> postHTTP(String url, Map<String, Object> body, Map<String, String>... headers) throws Exception {
+		return postHTTP("application/json", url, toJson(body),  headers);
+	}
 	private static String printMap(Map<String, String>[] headers) {
 		StringBuilder sb = new StringBuilder();
 		if (headers!=null && headers.length>0) {
@@ -812,6 +831,8 @@ public class Main {
 		URL obj = new URL(url);
 		HttpURLConnection getConnection = (HttpURLConnection) obj.openConnection();
 		getConnection.setRequestMethod("GET");
+//		getConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0");
+
 		if (headers!=null && headers.length>0) {
 			Iterator<String> iterator = headers[0].keySet().iterator();
 			while (iterator.hasNext()) {
@@ -820,6 +841,10 @@ public class Main {
 			}
 		}
 		int responseCode = getConnection.getResponseCode();
+		
+		Map<String, List<String>> headerFields = getConnection.getHeaderFields();
+//		System.out.println(headerFields);
+		
 		StringBuffer response = new StringBuffer();
 		if (responseCode == HttpURLConnection.HTTP_OK) {
 			BufferedReader in = new BufferedReader(new InputStreamReader(getConnection.getInputStream()));
@@ -874,7 +899,8 @@ public class Main {
 		return split[1];
 	}
 
-	public static List<Squadra> getSquadre(String lega) throws Exception {
+	public static void getSquadre(String lega) throws Exception {
+		try {
 		String ll = lega;
 		if (lega.equalsIgnoreCase(Campionati.JB.name())){
 			ll = "jb-fanta";
@@ -979,7 +1005,12 @@ public class Main {
 			}
 		}
 		upsertSalva(Constant.FORMAZIONE + lega , toJson(squadre));
-		return squadre;
+//		return squadre;
+		}
+		catch (Exception e)
+		{
+			
+		}
 	}
 
 	private static List<Squadra> deserializzaSquadraFG(String lega) throws Exception {
