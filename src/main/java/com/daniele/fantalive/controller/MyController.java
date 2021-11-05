@@ -319,6 +319,12 @@ public class MyController {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		constant.KEEP_ALIVE_END=ZonedDateTime.now().withHour(23).withMinute(0).withSecond(0);
 		ret.put("agg", constant.KEEP_ALIVE_END);
+		String visKeepAlive = "N";
+		ZonedDateTime now = ZonedDateTime.now();
+		if (Constant.KEEP_ALIVE_END.isAfter(now)) {
+			visKeepAlive="S";
+		}
+		Main.toSocket.put("visKeepAlive", visKeepAlive);
 		return ret;
 	}
 	@PostMapping("/setGiornata")
