@@ -324,7 +324,12 @@ public class MyController {
 	@PostMapping("/setKeepAliveEnd")
 	public Map<String, Object> setKeepAliveEnd(@RequestBody Map<String,Object> body) throws Exception  {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		constant.KEEP_ALIVE_END=ZonedDateTime.now().withHour(23).withMinute(0).withSecond(0);
+		boolean verso = (boolean) body.get("verso");
+		if (verso) {
+			constant.KEEP_ALIVE_END=ZonedDateTime.now().withHour(23).withMinute(0).withSecond(0);
+		} else {
+			constant.KEEP_ALIVE_END=ZonedDateTime.now().plusHours(-1);
+		}
 		String visKeepAlive = "N";
 		ZonedDateTime now = ZonedDateTime.now();
 		if (Constant.KEEP_ALIVE_END.isAfter(now)) {

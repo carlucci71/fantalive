@@ -122,7 +122,7 @@ app.run(
 			$rootScope.getMessaggio = function(message){
 				if (message){
 					var msg = JSON.parse(message);
-					console.log(msg);
+//					console.log(msg);
 					if (msg.res){
 						$rootScope.result=msg.res;
 		                angular.forEach($rootScope.result, function(value,camp) {
@@ -570,11 +570,11 @@ app.run(
 						alert("Errore-8-3: " + angular.toJson(error));
 				});
 			}
-			$rootScope.setKeepAliveEnd = function(){
+			$rootScope.setKeepAliveEnd = function(verso){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
-				$resource('./setKeepAliveEnd',{}).save({'keepAliveEnd':$rootScope.keepAliveEnd}).$promise.then(function() {
+				$resource('./setKeepAliveEnd',{}).save({'verso': verso}).$promise.then(function() {
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
 				}).catch(function(error) {

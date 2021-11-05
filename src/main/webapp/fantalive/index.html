@@ -127,7 +127,10 @@
 	<span>Giornata <input type=number ng-model="giornata"> <button ng-click="setGiornata()">SET</button></span>
  	<button ng-click="preparaSquadre()">Prepara squadre</button>
 	<br>
-	<span><button ng-click="setKeepAliveEnd()">SET KEEP ALIVE END</button></span>
+	<span>
+		<button ng-click="setKeepAliveEnd(true)">SET KEEP ALIVE END</button>
+		<button ng-click="setKeepAliveEnd(false)">CLEAR KEEP ALIVE END</button>
+	</span>
 	<br>
 	<textarea style="width:800px;height:200px " type=text ng-model="file"></textarea>
 	<br>
