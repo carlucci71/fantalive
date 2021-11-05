@@ -317,8 +317,8 @@ public class MyController {
 	@PostMapping("/setKeepAliveEnd")
 	public Map<String, Object> setKeepAliveEnd(@RequestBody Map<String,Object> body)  {
 		Map<String, Object> ret = new HashMap<String, Object>();
-//		constant.KEEP_ALIVE_END=(ZonedDateTime)body.get("keepAliveEnd");
-	constant.KEEP_ALIVE_END=ZonedDateTime.now().withHour(23).withMinute(0).withSecond(0);
+		constant.KEEP_ALIVE_END=ZonedDateTime.now().withHour(23).withMinute(0).withSecond(0);
+		ret.put("agg", constant.KEEP_ALIVE_END);
 		return ret;
 	}
 	@PostMapping("/setGiornata")
