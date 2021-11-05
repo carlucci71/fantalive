@@ -5,6 +5,23 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Constant {
+	public static enum Campionati {BE, FANTAVIVA, LUCCICAR, JB}
+	public static final String URL_NOTIFICA_NAS = "http://192.168.1.105:7080/fantalive-0.0.1-SNAPSHOT/";
+	public static final String URL_NOTIFICA_HEROKU = "https://fantalive71.herokuapp.com/fantalive/index.html";
+	public static final int DELTA_VIVA_FG=2;
+	public static final int DELTA_LUCCICAR_FG=2;
+	public static final int DELTA_JB_FG=3;
+	public static final String COMP_VIVA_FG = "319871";
+	public static final String COMP_LUCCICAR_FG = "379529";
+	public static final String COMP_JB_FG = "387633";
+	public static final int DELTA_FS=7;
+	public static final int NUM_PARTITE_FS = 4;
+	public static final String COMP_FS = "135324";
+	public static final int PRIMA_GIORNATA_FS = 10716452;
+	public static final String SPORT_ID_LIVE_GAZZETTA = "1";
+	public static final String COMP_ID_LIVE_GAZZETTA = "21";
+	public static final String I_LIVE_FANTACALCIO = "16";
+
 	public static Integer GIORNATA;
 	public static Long CHAT_ID_FANTALIVE;
 	public static String TOKEN_BOT_FANTALIVE;

@@ -24,10 +24,10 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 
-import com.daniele.fantalive.bl.Main.Campionati;
 import com.daniele.fantalive.model.Return;
 import com.daniele.fantalive.model.Squadra;
 import com.daniele.fantalive.util.Constant;
+import com.daniele.fantalive.util.Constant.Campionati;
 
 public class FantaLiveBOT extends TelegramLongPollingBot{
 
@@ -279,8 +279,8 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	private List<List<InlineKeyboardButton>> generaElencoPartiteSimulate() {
 		try {
 			List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-			Campionati[] campionati = Main.Campionati.values();
-			for (Campionati campionato : campionati) {
+			Constant.Campionati[] campionati = Constant.Campionati.values();
+			for (Constant.Campionati campionato : campionati) {
 				List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
 				Set<String> getpartiteSimulate = Main.getpartiteSimulate(campionato.name());
 				for (String partitaSimulata : getpartiteSimulate) {
@@ -297,12 +297,12 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	private List<List<InlineKeyboardButton>> generaElencoCampionati(String cb, boolean all) {
 		try {
 			List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-			Campionati[] campionati = Main.Campionati.values();
+			Constant.Campionati[] campionati = Constant.Campionati.values();
 			List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
 			if (all) {
 				keyboardButtonsRow1.add(new InlineKeyboardButton().setText("ALL").setCallbackData(cb + "ALL"));
 			}
-			for (Campionati campionato : campionati) {
+			for (Constant.Campionati campionato : campionati) {
 				keyboardButtonsRow1.add(new InlineKeyboardButton().setText(campionato.name()).setCallbackData(cb + campionato.name()));
 			}
 			rowList.add(keyboardButtonsRow1);

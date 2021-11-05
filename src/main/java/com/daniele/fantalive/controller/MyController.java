@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.daniele.fantalive.bl.FantaCronacaLiveBOT;
 import com.daniele.fantalive.bl.FantaLiveBOT;
 import com.daniele.fantalive.bl.Main;
-import com.daniele.fantalive.bl.Main.Campionati;
 import com.daniele.fantalive.configurazione.SocketHandlerFantalive;
 import com.daniele.fantalive.entity.Salva;
 import com.daniele.fantalive.model.Giocatore;
@@ -39,6 +38,7 @@ import com.daniele.fantalive.model.Return;
 import com.daniele.fantalive.model.Squadra;
 import com.daniele.fantalive.repository.SalvaRepository;
 import com.daniele.fantalive.util.Constant;
+import com.daniele.fantalive.util.Constant.Campionati;
 
 @Component
 @RestController
@@ -254,7 +254,7 @@ public class MyController {
 			set.add(squadra.getNome());
 		}
 		if (set.size() != squadre.size()) throw new RuntimeException("Nomi doppi!!");
-		if (r.getNome().equalsIgnoreCase(Campionati.BE.name()) && r.getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate. Salva!");
+		if (r.getNome().equalsIgnoreCase(Constant.Campionati.BE.name()) && r.getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate. Salva!");
 		Main.upsertSalva(Constant.FORMAZIONE + r.getNome(), Main.toJson(r.getSquadre()));
 		return test(true);
 	}
@@ -495,13 +495,13 @@ public class MyController {
 		{
 			Main.aggKeyFG();
 			Main.cancellaSquadre();
-			Main.getSquadre(Campionati.LUCCICAR.name());
-			Main.getSquadre(Campionati.JB.name());
+			Main.getSquadre(Constant.Campionati.LUCCICAR.name());
+			Main.getSquadre(Constant.Campionati.JB.name());
 			Main.getSquadre("fanta-viva");
 			Main.scaricaBe();
 			List<Squadra> squadre = new ArrayList<Squadra>();
-			for (int i=0;i<Main.NUM_PARTITE_FS;i++) {
-				String nome = Campionati.BE.name()+i + ".html";
+			for (int i=0;i<Constant.NUM_PARTITE_FS;i++) {
+				String nome = Constant.Campionati.BE.name()+i + ".html";
 				String testo=Main.getTesto(nome);
 				Document doc = Jsoup.parse(testo);
 //				System.out.println(testo);
@@ -530,7 +530,7 @@ public class MyController {
 					}
 				}
 			}
-			Main.upsertSalva(Constant.FORMAZIONE + Campionati.BE.name(), Main.toJson(squadre));
+			Main.upsertSalva(Constant.FORMAZIONE + Constant.Campionati.BE.name(), Main.toJson(squadre));
 			
 		}
 		catch (Exception e)
