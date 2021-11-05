@@ -392,10 +392,14 @@ public class Main {
 				if (sqDaEv.contains(squadra.getNome())) 
 				{
 					for (Giocatore giocatore : squadra.getTitolari()) {
-						snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
+						if (giocatore.getNome() != null) {
+							snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
+						}
 					}
 					for (Giocatore giocatore : squadra.getRiserve()) {
-						snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
+						if (giocatore.getNome() != null) {
+							snapshot.put(r.getCampionato().replaceAll("#", "") + "#" + squadra.getNome().replaceAll("#", "") + "#" + giocatore.getNome().replaceAll("#", ""), giocatore);
+						}
 					}
 				}
 			}

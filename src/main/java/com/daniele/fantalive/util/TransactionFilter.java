@@ -24,7 +24,7 @@ public class TransactionFilter implements Filter {
 		String requestURI = req.getRequestURI();
 		if (!requestURI.equalsIgnoreCase("/fantalive/fantalive-websocket")) {
 			Constant.LAST_REFRESH=ZonedDateTime.now();
-			System.out.println("Chiamata per:  " + requestURI + " " + Constant.dateTimeFormatterOut.format(Constant.LAST_REFRESH));
+//			System.out.println("Chiamata per:  " + requestURI + " " + Constant.dateTimeFormatterOut.format(Constant.LAST_REFRESH));
 		}
         chain.doFilter(request, response);
 //        System.out.println("Committing a transaction for req :  " + requestURI);
