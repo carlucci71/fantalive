@@ -122,7 +122,7 @@ app.run(
 			$rootScope.getMessaggio = function(message){
 				if (message){
 					var msg = JSON.parse(message);
-					console.log(msg);
+//					console.log(msg);
 					if (msg.res){
 						$rootScope.result=msg.res;
 		                angular.forEach($rootScope.result, function(value,camp) {
