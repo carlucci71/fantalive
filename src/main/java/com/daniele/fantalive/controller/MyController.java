@@ -1,5 +1,6 @@
 package com.daniele.fantalive.controller;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;
@@ -315,7 +316,7 @@ public class MyController {
 	}
 	
 	@PostMapping("/setKeepAliveEnd")
-	public Map<String, Object> setKeepAliveEnd(@RequestBody Map<String,Object> body)  {
+	public Map<String, Object> setKeepAliveEnd(@RequestBody Map<String,Object> body) throws Exception  {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		constant.KEEP_ALIVE_END=ZonedDateTime.now().withHour(23).withMinute(0).withSecond(0);
 		String visKeepAlive = "N";
@@ -326,6 +327,7 @@ public class MyController {
 		Main.toSocket.put("visKeepAlive", visKeepAlive);
 		ret.put("KEEP_ALIVE_END", constant.KEEP_ALIVE_END);
 		ret.put("VIS_KEEP_ALIVE", visKeepAlive);
+		socketHandlerFantalive.invia(Main.toSocket );
 		return ret;
 	}
 	@PostMapping("/setGiornata")
