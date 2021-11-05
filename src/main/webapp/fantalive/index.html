@@ -35,8 +35,11 @@
 <span ng-show="timeRefresh"><label>Refresh tra: </label>{{20-(timeRefresh/1000)}}s</span>
 <br>
 <label>Last refresh http: </label>{{lastRefresh}}
-<label>Last keep alive: </label>{{lastKeepAlive}}
-<label>End keep alive: </label>{{keepAliveEnd}}
+
+<span ng-show="visKeepAlive=='S'">
+	<label>Last keep alive: ??? </label>{{lastKeepAlive}}
+	<label>End keep alive: </label>{{keepAliveEnd}}
+</span>
 <span ng-show="!loading && !disabilitaNotificaTelegram"><br>{{runningBot}} <button ng-click="startStopBot()">START/STOP BOT</button></span>
 <br>
  	<label ng-show="loading">CARICAMENTO IN CORSO</label>
@@ -120,7 +123,11 @@
 	</div>
 	<div ng-show="configura">
 	<br>
+	
+	<span>Giornata <input type=number ng-model="giornata"> <button ng-click="setGiornata()">SET</button></span>
  	<button ng-click="preparaSquadre()">Prepara squadre</button>
+	<br>
+	<span><button ng-click="setKeepAliveEnd()">SET KEEP ALIVE END</button></span>
 	<br>
 	<textarea style="width:800px;height:200px " type=text ng-model="file"></textarea>
 	<br>

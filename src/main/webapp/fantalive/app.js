@@ -162,6 +162,9 @@ app.run(
 					if (msg.keepAliveEnd){
 						$rootScope.keepAliveEnd=msg.keepAliveEnd;
 					}
+					if (msg.visKeepAlive){
+						$rootScope.visKeepAlive=msg.visKeepAlive;
+					}
 				}
 				$rootScope.$apply();
 			};
@@ -567,11 +570,29 @@ app.run(
 						alert("Errore-8-3: " + angular.toJson(error));
 				});
 			}
+			$rootScope.setKeepAliveEnd = function(){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./setKeepAliveEnd',{}).save({'keepAliveEnd':$rootScope.keepAliveEnd}).$promise.then(function() {
+					$rootScope.fine=new Date();
+					$rootScope.loading=false;
+				}).catch(function(error) {
+					$rootScope.fine=new Date();
+					$rootScope.loading=false;
+					if (error && error.data && error.data.message)
+						alert("Errore-9-1: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore-9-2: " + error.data);
+					else 
+						alert("Errore-9-3: " + angular.toJson(error));
+				});
+			}
 			$rootScope.setGiornata = function(){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
-				$resource('./setGiornata',{}).save({'giornata':$rootScope.giornata}).$promise.then(function(data) {
+				$resource('./setGiornata',{}).save({'giornata':$rootScope.giornata}).$promise.then(function() {
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
 				}).catch(function(error) {

@@ -2,6 +2,7 @@ package com.daniele.fantalive.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,6 +103,13 @@ public class MyController {
 		if (Constant.LAST_KEEP_ALIVE != null) Main.toSocket.put("lastKeepAlive", Constant.dateTimeFormatterOut.format(Constant.LAST_KEEP_ALIVE));
 		if (Constant.LAST_REFRESH != null) Main.toSocket.put("lastRefresh", Constant.dateTimeFormatterOut.format(Constant.LAST_REFRESH));
 		Main.toSocket.put("keepAliveEnd", Constant.dateTimeFormatterOut.format(Constant.KEEP_ALIVE_END));
+		String visKeepAlive = "N";
+		ZonedDateTime now = ZonedDateTime.now();
+		if (Constant.KEEP_ALIVE_END.isAfter(now)) {
+			visKeepAlive="S";
+		}
+		Main.toSocket.put("visKeepAlive", visKeepAlive);
+		
 		String runningBot="STOPPED";
 		if (Main.fantaLiveBot != null && Main.fantaLiveBot.isRunning()) {
 			runningBot="RUNNING";
@@ -304,6 +312,14 @@ public class MyController {
 	@PostMapping("/delSqEv")
 	public Map<String, Return>  delSqEv(@RequestBody Map<String,String> body) throws Exception  {
 		return Main.go(true,null,body.get("sqEv"));
+	}
+	
+	@PostMapping("/setKeepAliveEnd")
+	public Map<String, Object> setKeepAliveEnd(@RequestBody Map<String,Object> body)  {
+		Map<String, Object> ret = new HashMap<String, Object>();
+//		constant.KEEP_ALIVE_END=(ZonedDateTime)body.get("keepAliveEnd");
+	constant.KEEP_ALIVE_END=ZonedDateTime.now().withHour(23).withMinute(0).withSecond(0);
+		return ret;
 	}
 	@PostMapping("/setGiornata")
 	public Map<String, Object> setGiornata(@RequestBody Map<String,Object> body)  {
