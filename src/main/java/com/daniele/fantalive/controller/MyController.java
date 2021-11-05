@@ -93,10 +93,15 @@ public class MyController {
 	}
 	@Scheduled(fixedRate = 5000)//FIXME TOGLIERE SPEGNI LIVE
 	public void chckNotifica() throws Exception {
-		System.out.println("*************************************************");
 		Main.timeRefresh = (int) Main.toSocket.get("timeRefresh");
 		if (Main.timeRefresh==Constant.SCHEDULED_SNAP) {
+			try {
 			Main.snapshot(true);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace(System.out);
+			}
 		}
 		Main.timeRefresh=Main.timeRefresh+5000;
 		Main.toSocket.put("timeRefresh", Main.timeRefresh);
