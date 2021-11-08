@@ -34,10 +34,10 @@
 <label ng-show="aggiornamento" >Dati aggiornati alle: </label>{{aggiornamento}}
 <span ng-show="timeRefresh"><label>Refresh tra: </label>{{20-(timeRefresh/1000)}}s</span>
 <br>
-<label>Last refresh http: </label>{{lastRefresh}}
+<label>Last refresh: </label>{{lastRefresh}}
 
 <span ng-show="visKeepAlive=='S'">
-	<label>Last keep alive: ??? </label>{{lastKeepAlive}}
+	<!--  <label>Last keep alive: ??? </label>{{lastKeepAlive}} -->
 	<label>End keep alive: </label>{{keepAliveEnd}}
 </span>
 <span ng-show="!loading && !disabilitaNotificaTelegram"><br>{{runningBot}} <button ng-click="startStopBot()">START/STOP BOT</button></span>
@@ -126,7 +126,7 @@
 	
 	<span>Giornata <input type=number ng-model="giornata"> <button ng-click="setGiornata()">SET</button></span>
  	<button ng-click="preparaSquadre()">Prepara squadre</button>
-	<br>
+	<br><br>
 	<span>
 		<button ng-click="setKeepAliveEnd(true)">SET KEEP ALIVE END</button>
 		<button ng-click="setKeepAliveEnd(false)">CLEAR KEEP ALIVE END</button>

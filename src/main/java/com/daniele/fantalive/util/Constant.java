@@ -31,7 +31,7 @@ public class Constant {
 	public static boolean LIVE_FROM_FILE;
 	public static boolean DISABILITA_NOTIFICA_TELEGRAM;
 	public static ZonedDateTime KEEP_ALIVE_END;
-	public static ZonedDateTime LAST_KEEP_ALIVE;
+//	public static ZonedDateTime LAST_KEEP_ALIVE;
 	public static int SCHEDULED_SNAP;
 	public static  int NUM_SQUADRE_BE = 0;	
 	public static final String FORMAZIONE = "formazione";

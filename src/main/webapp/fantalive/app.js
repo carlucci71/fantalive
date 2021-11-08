@@ -153,9 +153,9 @@ app.run(
 					if (msg.runningBot){
 						$rootScope.runningBot=msg.runningBot;
 					}
-					if (msg.lastKeepAlive){
-						$rootScope.lastKeepAlive=msg.lastKeepAlive;
-					}
+//					if (msg.lastKeepAlive){
+//						$rootScope.lastKeepAlive=msg.lastKeepAlive;
+//					}
 					if (msg.lastRefresh){
 						$rootScope.lastRefresh=msg.lastRefresh;
 					}
