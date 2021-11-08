@@ -2,6 +2,7 @@ package com.daniele.fantalive.controller;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -325,7 +326,7 @@ public class MyController {
 			constant.KEEP_ALIVE_END=ZonedDateTime.now().plusHours(-1);
 		}
 		String visKeepAlive = "N";
-		ZonedDateTime now = ZonedDateTime.now();
+		ZonedDateTime now = ZonedDateTime.now().withZoneSameLocal(ZoneId.of("Europe/Rome"));
 		if (Constant.KEEP_ALIVE_END.isAfter(now)) {
 			visKeepAlive="S";
 		}
