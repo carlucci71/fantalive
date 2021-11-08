@@ -321,12 +321,12 @@ public class MyController {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		boolean verso = (boolean) body.get("verso");
 		if (verso) {
-			constant.KEEP_ALIVE_END=ZonedDateTime.now().withHour(23).withMinute(0).withSecond(0);
+			constant.KEEP_ALIVE_END=ZonedDateTime.now().withHour(23).withMinute(0).withSecond(0).withZoneSameLocal(ZoneId.of("Europe/Rome"));
 		} else {
 			constant.KEEP_ALIVE_END=ZonedDateTime.now().plusHours(-1);
 		}
 		String visKeepAlive = "N";
-		ZonedDateTime now = ZonedDateTime.now().withZoneSameLocal(ZoneId.of("Europe/Rome"));
+		ZonedDateTime now = ZonedDateTime.now();
 		if (Constant.KEEP_ALIVE_END.isAfter(now)) {
 			visKeepAlive="S";
 		}
