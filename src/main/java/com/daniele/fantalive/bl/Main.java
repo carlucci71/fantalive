@@ -89,6 +89,7 @@ public class Main {
 	static ObjectMapper mapper;
 	static Map<String , String> getIconaIDGioc;	
 	static Map<String , Integer> statusMatch;	
+	static Map<Integer , ZonedDateTime> calendario;	
 	static Set<String > sqJB;	
 	public static Map<String, String> keyFG=null;
 	public static int timeRefresh = 0;
@@ -99,6 +100,47 @@ public class Main {
 		socketHandlerFantalive=socketHandlerSpring;
 		constant=constantSpring;
 		constant.AUTH_FS=getAuthFS();
+		if (calendario==null) {
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
+			calendario = new LinkedHashMap() {{
+				put(12,    ZonedDateTime.parse("07/11/2021 - 01:00:00 +0000", dtf));
+				put(13,    ZonedDateTime.parse("21/11/2021 - 01:00:00 +0000", dtf));
+				put(14,    ZonedDateTime.parse("28/11/2021 - 01:00:00 +0000", dtf));
+				put(15,    ZonedDateTime.parse("01/12/2021 - 01:00:00 +0000", dtf));
+				put(16,    ZonedDateTime.parse("05/12/2021 - 01:00:00 +0000", dtf));
+				put(17,    ZonedDateTime.parse("12/12/2021 - 01:00:00 +0000", dtf));
+				put(18,    ZonedDateTime.parse("19/12/2021 - 01:00:00 +0000", dtf));
+				put(19,    ZonedDateTime.parse("22/12/2021 - 01:00:00 +0000", dtf));
+				put(20,    ZonedDateTime.parse("06/01/2022 - 01:00:00 +0000", dtf));
+				put(21,    ZonedDateTime.parse("09/01/2022 - 01:00:00 +0000", dtf));
+				put(22,    ZonedDateTime.parse("16/01/2022 - 01:00:00 +0000", dtf));
+				put(33,    ZonedDateTime.parse("23/01/2022 - 01:00:00 +0000", dtf));
+				put(24,    ZonedDateTime.parse("06/02/2022 - 01:00:00 +0000", dtf));
+				put(25,    ZonedDateTime.parse("13/02/2022 - 01:00:00 +0000", dtf));
+				put(26,    ZonedDateTime.parse("20/02/2022 - 01:00:00 +0000", dtf));
+				put(27,    ZonedDateTime.parse("27/02/2022 - 01:00:00 +0000", dtf));
+				put(28,    ZonedDateTime.parse("06/03/2022 - 01:00:00 +0000", dtf));
+				put(29,    ZonedDateTime.parse("13/03/2022 - 01:00:00 +0000", dtf));
+				put(30,    ZonedDateTime.parse("20/03/2022 - 01:00:00 +0000", dtf));
+				put(31,    ZonedDateTime.parse("03/04/2022 - 01:00:00 +0000", dtf));
+				put(32,    ZonedDateTime.parse("10/04/2022 - 01:00:00 +0000", dtf));
+				put(33,    ZonedDateTime.parse("16/04/2022 - 01:00:00 +0000", dtf));
+				put(34,    ZonedDateTime.parse("24/04/2022 - 01:00:00 +0000", dtf));
+				put(35,    ZonedDateTime.parse("01/05/2022 - 01:00:00 +0000", dtf));
+				put(36,    ZonedDateTime.parse("08/05/2022 - 01:00:00 +0000", dtf));
+				put(37,    ZonedDateTime.parse("15/05/2022 - 01:00:00 +0000", dtf));
+				put(38,    ZonedDateTime.parse("22/05/2022 - 01:00:00 +0000", dtf));
+			}};
+			ZonedDateTime now = ZonedDateTime.now();
+			
+			Set<Integer> keySet = calendario.keySet();
+			for (Integer attG : keySet) {
+				ZonedDateTime zonedDateTime = calendario.get(attG);
+				if (now.isAfter(zonedDateTime)) {
+					Constant.GIORNATA = attG +1;
+				}
+			}
+		}
 		Main.aggKeyFG();
 		if (sqDaEv==null) {
 			inizializzaSqDaEv();
@@ -566,7 +608,13 @@ public class Main {
 
 
 	public static void main(String[] args) throws Exception {
-/*
+
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
+		ZonedDateTime parse = ZonedDateTime.parse("07/11/2021 - 01:00:00 +0000", dtf);
+		System.out.println(parse);
+		
+		
+		/*
 		init(salvaRepositorySpring, socketHandlerSpring, constantSpring);
 		String authFS = getAuthFS();
 		System.out.println(authFS);
