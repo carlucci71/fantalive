@@ -101,38 +101,37 @@ public class Main {
 		constant=constantSpring;
 		constant.AUTH_FS=getAuthFS();
 		if (calendario==null) {
+			calendario = new LinkedHashMap();
+			String http = getHTTP("https://www.goal.com/it/notizie/calendario-serie-a-2021-2022-completo/161ug15ioiflh19whgevwxviur");
+//			https://www.tomshw.it/culturapop/calendario-serie-a-2021-22-risultati-e-dove-vedere-le-partite/		
+//			System.out.println(http);
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
-			calendario = new LinkedHashMap() {{
-				put(12,    ZonedDateTime.parse("07/11/2021 - 01:00:00 +0000", dtf));
-				put(13,    ZonedDateTime.parse("21/11/2021 - 01:00:00 +0000", dtf));
-				put(14,    ZonedDateTime.parse("28/11/2021 - 01:00:00 +0000", dtf));
-				put(15,    ZonedDateTime.parse("01/12/2021 - 01:00:00 +0000", dtf));
-				put(16,    ZonedDateTime.parse("05/12/2021 - 01:00:00 +0000", dtf));
-				put(17,    ZonedDateTime.parse("12/12/2021 - 01:00:00 +0000", dtf));
-				put(18,    ZonedDateTime.parse("19/12/2021 - 01:00:00 +0000", dtf));
-				put(19,    ZonedDateTime.parse("22/12/2021 - 01:00:00 +0000", dtf));
-				put(20,    ZonedDateTime.parse("06/01/2022 - 01:00:00 +0000", dtf));
-				put(21,    ZonedDateTime.parse("09/01/2022 - 01:00:00 +0000", dtf));
-				put(22,    ZonedDateTime.parse("16/01/2022 - 01:00:00 +0000", dtf));
-				put(33,    ZonedDateTime.parse("23/01/2022 - 01:00:00 +0000", dtf));
-				put(24,    ZonedDateTime.parse("06/02/2022 - 01:00:00 +0000", dtf));
-				put(25,    ZonedDateTime.parse("13/02/2022 - 01:00:00 +0000", dtf));
-				put(26,    ZonedDateTime.parse("20/02/2022 - 01:00:00 +0000", dtf));
-				put(27,    ZonedDateTime.parse("27/02/2022 - 01:00:00 +0000", dtf));
-				put(28,    ZonedDateTime.parse("06/03/2022 - 01:00:00 +0000", dtf));
-				put(29,    ZonedDateTime.parse("13/03/2022 - 01:00:00 +0000", dtf));
-				put(30,    ZonedDateTime.parse("20/03/2022 - 01:00:00 +0000", dtf));
-				put(31,    ZonedDateTime.parse("03/04/2022 - 01:00:00 +0000", dtf));
-				put(32,    ZonedDateTime.parse("10/04/2022 - 01:00:00 +0000", dtf));
-				put(33,    ZonedDateTime.parse("16/04/2022 - 01:00:00 +0000", dtf));
-				put(34,    ZonedDateTime.parse("24/04/2022 - 01:00:00 +0000", dtf));
-				put(35,    ZonedDateTime.parse("01/05/2022 - 01:00:00 +0000", dtf));
-				put(36,    ZonedDateTime.parse("08/05/2022 - 01:00:00 +0000", dtf));
-				put(37,    ZonedDateTime.parse("15/05/2022 - 01:00:00 +0000", dtf));
-				put(38,    ZonedDateTime.parse("22/05/2022 - 01:00:00 +0000", dtf));
-			}};
-			ZonedDateTime now = ZonedDateTime.now();
+			Document doc = Jsoup.parse(http);
+			Elements elements = doc.getElementsByClass("tableizer-table");
+			for (int i=0;i<elements.size();i++) {
+				Element element = elements.get(i);
+				Elements elementsTR = element.getElementsByTag("TR");
+				String giornata = elementsTR.get(0).text();
+				if (giornata.trim().equals("")) continue;
+				String giorno="";
+				String mese="";
+				int iGiornata = Integer.parseInt(giornata.substring(0,giornata.indexOf("ª")));
+				for (int ix=1;ix<elementsTR.size();ix++) {
+					Elements elementsTD = elementsTR.get(ix).getElementsByTag("TD");
+					if (elementsTD.size()<3) continue;
+					giorno = elementsTD.get(0).text();
+					giorno = lpad(giorno.substring(0,giorno.indexOf("/")),2,'0');
+					mese = elementsTD.get(0).text();
+					mese = lpad(mese.substring(mese.indexOf("/")+1),2,'0');
+				}
+				String anno="2021";
+				if (Integer.parseInt(mese)<8) anno = "2022";
+				ZonedDateTime parse = ZonedDateTime.parse(giorno + "/" + mese + "/" + anno + " - 23:59:00 +0000", dtf);
+				calendario.put(iGiornata, parse);
+			}
 			
+			ZonedDateTime now = ZonedDateTime.now();
+//			now=now.withDayOfMonth(19);
 			Set<Integer> keySet = calendario.keySet();
 			for (Integer attG : keySet) {
 				ZonedDateTime zonedDateTime = calendario.get(attG);
@@ -140,6 +139,7 @@ public class Main {
 					Constant.GIORNATA = attG +1;
 				}
 			}
+//			System.out.println(Constant.GIORNATA);
 		}
 		Main.aggKeyFG();
 		if (sqDaEv==null) {
@@ -609,16 +609,26 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
-		ZonedDateTime parse = ZonedDateTime.parse("07/11/2021 - 01:00:00 +0000", dtf);
-		System.out.println(parse);
 		
 		
 		/*
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
+		ZonedDateTime parse = ZonedDateTime.parse("07/11/2021 - 23:59:00 +0000", dtf);
+		System.out.println(parse);
+		
+		
 		init(salvaRepositorySpring, socketHandlerSpring, constantSpring);
 		String authFS = getAuthFS();
 		System.out.println(authFS);
 */
+	}
+
+	private static String lpad(String inputString, int length, char c) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < length; i++) {
+			sb.append(c);
+		}
+		return sb.substring(inputString.length()) + inputString;	
 	}
 
 	private static String getAuthFS() throws Exception {
