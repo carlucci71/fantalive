@@ -91,6 +91,7 @@ public class Main {
 	static Map<String , Integer> statusMatch;	
 	static Map<Integer , ZonedDateTime> calendario;	
 	static Set<String > sqJB;	
+	static Set<String > giocJB;	
 	public static Map<String, String> keyFG=null;
 	public static int timeRefresh = 0;
 
@@ -155,11 +156,21 @@ public class Main {
 		}
 		if (sqJB==null) {
 			sqJB = new HashSet() {{
-				add("bebocar");
-				add("FC Cherwood");
-				add("FC EU ESTAVA AQUI");
-				add("Juventiboss"); 
+//				add("bebocar");
+//				add("FC Cherwood");
+//				add("Juventiboss"); 
 				
+			}};
+		}
+		if (giocJB==null) {
+			giocJB = new HashSet() {{
+				add("Michela_2000");
+				add("PeppePalmentieri");
+				add("Andrea_S94");
+				add("bebocar");
+				add("Zamplano");
+				add("Mambo Fc");
+				add("Il sigaro di Lippi");
 			}};
 		}
 		if (statusMatch==null) {
@@ -727,10 +738,12 @@ public class Main {
 		for (int i=0;i<size;i++) {
 			Element element1 = select1.get(i);
 			String squadra = element1.select("H4").first().text();
+			String giocatore = element1.select("H5").first().text();
 			Element element = select.get(i);
 			String link = element.select("A").attr("href");
 			link=link.substring(link.lastIndexOf("=")+1);
-			if (!lega.equalsIgnoreCase("jb-fanta") || (lega.equalsIgnoreCase("jb-fanta") && sqJB.contains(squadra))){
+//			System.out.println(squadra + ";" + giocatore);
+			if (!lega.equalsIgnoreCase("jb-fanta") || (lega.equalsIgnoreCase("jb-fanta") && sqJB.contains(squadra)) || (lega.equalsIgnoreCase("jb-fanta") && giocJB.contains(giocatore))){
 				ret.put(link,squadra);
 			}
 		}
