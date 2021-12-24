@@ -29,6 +29,7 @@ public class Constant {
 	public static String APPKEY_FG;
 	public static String AUTH_FS;
 	public static boolean LIVE_FROM_FILE;
+	public static boolean ABILITA_REFRESH;
 	public static boolean DISABILITA_NOTIFICA_TELEGRAM;
 	public static ZonedDateTime KEEP_ALIVE_END;
 //	public static ZonedDateTime LAST_KEEP_ALIVE;

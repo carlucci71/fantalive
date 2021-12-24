@@ -2,13 +2,17 @@ package com.daniele.fantalive.bl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -23,6 +27,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -41,12 +46,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
-import org.hibernate.validator.internal.util.privilegedactions.GetAnnotationParameter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.FormElement;
 import org.jsoup.select.Elements;
+import org.springframework.core.io.ClassPathResource;
 
 import com.daniele.fantalive.configurazione.SocketHandlerFantalive;
 import com.daniele.fantalive.entity.Salva;
@@ -68,7 +73,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
-	
+
 	public static Map<String,Object> toSocket;
 	public static String MIO_IP;
 	public static FantaLiveBOT fantaLiveBot;
@@ -104,8 +109,8 @@ public class Main {
 		if (calendario==null) {
 			calendario = new LinkedHashMap();
 			String http = getHTTP("https://www.goal.com/it/notizie/calendario-serie-a-2021-2022-completo/161ug15ioiflh19whgevwxviur");
-//			https://www.tomshw.it/culturapop/calendario-serie-a-2021-22-risultati-e-dove-vedere-le-partite/		
-//			System.out.println(http);
+			//			https://www.tomshw.it/culturapop/calendario-serie-a-2021-22-risultati-e-dove-vedere-le-partite/		
+			//			System.out.println(http);
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
 			Document doc = Jsoup.parse(http);
 			Elements elements = doc.getElementsByClass("tableizer-table");
@@ -130,9 +135,9 @@ public class Main {
 				ZonedDateTime parse = ZonedDateTime.parse(giorno + "/" + mese + "/" + anno + " - 23:59:00 +0000", dtf);
 				calendario.put(iGiornata, parse);
 			}
-			
+
 			ZonedDateTime now = ZonedDateTime.now();
-//			now=now.withDayOfMonth(19);
+			//			now=now.withDayOfMonth(19);
 			Set<Integer> keySet = calendario.keySet();
 			for (Integer attG : keySet) {
 				ZonedDateTime zonedDateTime = calendario.get(attG);
@@ -140,7 +145,7 @@ public class Main {
 					Constant.GIORNATA = attG +1;
 				}
 			}
-//			System.out.println(Constant.GIORNATA);
+			//			System.out.println(Constant.GIORNATA);
 		}
 		Main.aggKeyFG();
 		if (sqDaEv==null) {
@@ -156,10 +161,10 @@ public class Main {
 		}
 		if (sqJB==null) {
 			sqJB = new HashSet() {{
-//				add("bebocar");
-//				add("FC Cherwood");
-//				add("Juventiboss"); 
-				
+				//				add("bebocar");
+				//				add("FC Cherwood");
+				//				add("Juventiboss"); 
+
 			}};
 		}
 		if (giocJB==null) {
@@ -220,7 +225,7 @@ public class Main {
 				put("R20",    Constant.R20);
 			}};
 		}
-		
+
 		if (eventi ==null) {
 			eventi = new HashMap<Integer, String[]>();
 			eventi.put(1000, new String[] {"portiere imbattuto","1","1","1","1","S",Constant.IMBATTUTO});
@@ -279,7 +284,7 @@ public class Main {
 			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE",Constant.Campionati.BE.name()));
 		}
 	}
-	
+
 	private static String getMinuto(String squadra, Map<String, Map<String, String>> snapOrari) {
 		Set<String> keySet = snapOrari.keySet();
 		for (String key : keySet) {
@@ -290,8 +295,8 @@ public class Main {
 		}
 		return "";
 	}
-	
-	
+
+
 	private static String livesUguali(List<Live> snapLives, Map<String, Map<String, String>> snapOrari) {
 		StringBuilder desMiniNotifica=new StringBuilder();
 		List<CambiaTag> cambiaTag = orariUguali(snapOrari);
@@ -338,7 +343,7 @@ public class Main {
 										}
 										desMiniNotifica.append(getMinuto(snapLive.getSquadra(),snapOrari)).append("\n");
 									}
-									
+
 								}
 							}
 							if (!liveGiocPresente) {
@@ -353,7 +358,7 @@ public class Main {
 					}
 				}
 				if (!liveSqPresente) {
-//					desMiniNotifica.append(" Nel vecchio live la squadra non era non presente: " + snapSq);
+					//					desMiniNotifica.append(" Nel vecchio live la squadra non era non presente: " + snapSq);
 				}
 			}
 		}
@@ -366,7 +371,7 @@ public class Main {
 		return snapLive.getGiocatori().size()==12  && 
 				((Double)snapLive.getGiocatori().get(0).get("voto")>0) &&
 				((Double)oldLive.getGiocatori().get(0).get("voto")==0);
-				
+
 	}
 	private static List<CambiaTag> orariUguali(Map<String, Map<String, String>> snapOrari) {
 		List<CambiaTag> ret = new ArrayList<>();
@@ -406,7 +411,7 @@ public class Main {
 		oldSnapLives=snapLives;
 		oldSnapOrari=snapOrari;
 		Calendar c2 = Calendar.getInstance();
-//		System.out.println("GET LIVES:" + (c2.getTimeInMillis()-c.getTimeInMillis()));
+		//		System.out.println("GET LIVES:" + (c2.getTimeInMillis()-c.getTimeInMillis()));
 
 		Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari);
 		Iterator<String> campionati = go.keySet().iterator();
@@ -470,12 +475,12 @@ public class Main {
 								segnalaTag=true;
 							}
 							if (newTag.equals("HalfTime")) {
-//								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.PAUSA));
-//								segnalaTag=true;
+								//								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.PAUSA));
+								//								segnalaTag=true;
 							}
 							if (newTag.equals("SecondHalf")) {
-//								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.SEMAFORO_2));
-//								segnalaTag=true;
+								//								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.SEMAFORO_2));
+								//								segnalaTag=true;
 							}
 							if (newTag.equals("FullTime")) {
 								mapEventi.put(newTag,new RigaNotifica(0, newTag, Constant.FINE_PARTITA));
@@ -497,7 +502,7 @@ public class Main {
 							}
 						}
 					}
-					
+
 					if (mapEventi.size()>0) {
 						String[] splitKey = key.split("#");
 						Notifica notifica = new Notifica();
@@ -524,7 +529,7 @@ public class Main {
 						if (newGioc.isCambio()) {
 							notifica.setCambio("(X)");
 						}
-//						System.out.println(notifica);
+						//						System.out.println(notifica);
 					}
 				}
 				Calendar cc=Calendar.getInstance();
@@ -542,7 +547,7 @@ public class Main {
 							Collections.sort(listN);
 							for (Notifica notifica : listN) {
 								String ret = " <b>" + getIconaIDGioc.get(notifica.getId()) + "</b> " + 
-								getDesRuolo(notifica.getCampionato(), notifica.getRuolo()) + " " + 
+										getDesRuolo(notifica.getCampionato(), notifica.getRuolo()) + " " + 
 										notifica.getGiocatore() + notifica.getCambio()  + " " + notifica.getSquadra() + " " + notifica.getVoto();
 								Set<String> ks = notifica.getEventi().keySet();
 								for (String key : ks) {
@@ -578,7 +583,7 @@ public class Main {
 										&& (notifica.getOrario().get("tag").equalsIgnoreCase("FirstHalf") || notifica.getOrario().get("tag").equalsIgnoreCase("SecondHalf")) ) {
 									des.append(" " + notifica.getOrario().get("val") + Constant.OROLOGIO + " ");
 								}
-								
+
 								des.append(ret).append("\n");
 							}
 						}
@@ -587,11 +592,11 @@ public class Main {
 					Main.inviaCronacaNotifica(des.toString());
 					Main.inviaNotifica(des.toString());
 					Calendar c4 = Calendar.getInstance();
-//					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));
+					//					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));
 				}
 			}
 			Calendar c3 = Calendar.getInstance();
-//			System.out.println("SNAPSHOT:" + (c3.getTimeInMillis()-c.getTimeInMillis()));
+			//			System.out.println("SNAPSHOT:" + (c3.getTimeInMillis()-c.getTimeInMillis()));
 			if (socketHandlerFantalive != null) {
 				Map<String, Object> map=new LinkedHashMap<>();
 				map.put("res", go);
@@ -600,10 +605,10 @@ public class Main {
 				Main.inviaCronacaNotifica(desMiniNotifica.toString());
 			}
 			Calendar c4 = Calendar.getInstance();
-//			System.out.println("ONLY WEB SOCKET:" + (c4.getTimeInMillis()-c3.getTimeInMillis()));
+			//			System.out.println("ONLY WEB SOCKET:" + (c4.getTimeInMillis()-c3.getTimeInMillis()));
 		}
 		oldSnapshot=snapshot;
-//		System.out.println("FINE SNAPSHOT");
+		//		System.out.println("FINE SNAPSHOT");
 	}
 
 	public static String getUrlNotifica() {
@@ -620,18 +625,18 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 
-		
-		
+
+
 		/*
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
 		ZonedDateTime parse = ZonedDateTime.parse("07/11/2021 - 23:59:00 +0000", dtf);
 		System.out.println(parse);
-		
-		
+
+
 		init(salvaRepositorySpring, socketHandlerSpring, constantSpring);
 		String authFS = getAuthFS();
 		System.out.println(authFS);
-*/
+		 */
 	}
 
 	private static String lpad(String inputString, int length, char c) {
@@ -660,7 +665,7 @@ public class Main {
 				viewStateGenerator=element.val();
 			}
 		}
-		
+
 		Map<String, String> headers=new HashMap<>();
 		headers.put("User-Agent", "Mozilla");
 		String contentType = "application/x-www-form-urlencoded; charset=UTF-8";
@@ -685,7 +690,7 @@ public class Main {
 		body.append("&__ASYNCPOST=true");
 		body.append("&ctl00%24MainContent%24wuc_Login1%24btnLogin=accedi");
 		Map<String, Object> postHTTP = postHTTP(contentType,urlLoginFS,body.toString(), headers);
-//		System.out.println(postHTTP.get("response"));
+		//		System.out.println(postHTTP.get("response"));
 		Map<String, List<String>> headerFields = (Map<String, List<String>>) postHTTP.get("headerFields");
 
 		Set<String> keySet = headerFields.keySet();
@@ -696,14 +701,14 @@ public class Main {
 					String[] split = string2.split("=");
 					if ("FantaSoccer_Auth".equalsIgnoreCase(split[0])) {
 						ret = split[1].substring(0,split[1].indexOf(";"));
-//						System.out.println(ret);
+						//						System.out.println(ret);
 					}
 				}
 			}
 		}
 		return ret;
 	}
-	
+
 	public static void inviaCronacaNotifica(String msg) throws Exception {
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			fantaCronacaLiveBot.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg);
@@ -716,7 +721,7 @@ public class Main {
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			ThreadSeparato threadSeparato = new ThreadSeparato(fantaLiveBot, constant.CHAT_ID_FANTALIVE,msg);
 			executor.schedule(threadSeparato, 15, TimeUnit.SECONDS);
-//			fantaLiveBot.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg,false);
+			//			fantaLiveBot.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg,false);
 		}
 		else {
 			System.out.println("Notifica:\n" + msg);
@@ -725,8 +730,8 @@ public class Main {
 		map.put("notifica", Base64.getEncoder().encodeToString(msg.getBytes()));
 		socketHandlerFantalive.invia(map);
 	}
-	
-	
+
+
 	private static Map<String, String> getNomiFG(String lega) throws Exception {
 		Map<String, String> ret = new HashMap<String, String>();
 		String url = "https://leghe.fantacalcio.it/" + lega + "/area-gioco/rose?";
@@ -742,7 +747,7 @@ public class Main {
 			Element element = select.get(i);
 			String link = element.select("A").attr("href");
 			link=link.substring(link.lastIndexOf("=")+1);
-//			System.out.println(squadra + ";" + giocatore);
+			//			System.out.println(squadra + ";" + giocatore);
 			if (!lega.equalsIgnoreCase("jb-fanta") || (lega.equalsIgnoreCase("jb-fanta") && sqJB.contains(squadra)) || (lega.equalsIgnoreCase("jb-fanta") && giocJB.contains(giocatore))){
 				ret.put(link,squadra);
 			}
@@ -750,7 +755,32 @@ public class Main {
 		return ret;
 	}
 
-	public static void scaricaBe() throws IOException, ClientProtocolException {
+	public static List<Squadra> getSquadreFromFS(String tokenNomeFile, boolean cancella, boolean conVoto) throws Exception {
+		List<Squadra> squadre = new ArrayList<Squadra>();
+		for (int i=0;i<Constant.NUM_PARTITE_FS;i++) {
+			String nome = tokenNomeFile + Constant.Campionati.BE.name()+i + ".html";
+			String testo=Main.getTesto(nome);
+			if (testo==null) {
+				throw new RuntimeException("File non trovato: " + nome);
+			}
+			Document doc = Jsoup.parse(testo);
+			//				System.out.println(testo);
+			Squadra squadraCasa = Main.getFromFS(doc, "Casa",i, conVoto);
+			Squadra squadraTrasferta = Main.getFromFS(doc, "Trasferta",i, conVoto);
+			double modificatoreDifesaDaAssegnareCasa = squadraCasa.getModificatoreDifesaDaAssegnare();
+			double modificatoreDifesaDaAssegnareTrasferta = squadraTrasferta.getModificatoreDifesaDaAssegnare();
+			squadraCasa.setModificatoreDifesaDaAssegnare(modificatoreDifesaDaAssegnareTrasferta);
+			squadraTrasferta.setModificatoreDifesaDaAssegnare(modificatoreDifesaDaAssegnareCasa);
+			squadre.add(squadraCasa);
+			squadre.add(squadraTrasferta);
+			if (cancella) {
+				Main.cancellaSalva(nome);
+			}
+		}
+		return squadre;
+	}
+
+	public static void scaricaBe(Integer gg, String tokenNomeFile) throws IOException, ClientProtocolException {
 		BasicCookieStore cookieStore = new BasicCookieStore();
 		BasicClientCookie cookie;
 		cookie = new BasicClientCookie("FantaSoccer_Auth", constant.AUTH_FS);
@@ -760,7 +790,8 @@ public class Main {
 		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
 		try {
 			for (int i=0;i<4;i++) {
-				HttpGet httpget = new HttpGet("https://www.fanta.soccer/it/lega/privata/" + Constant.COMP_FS + "/dettaglipartita/" + String.valueOf(constant.GIORNATA-Constant.DELTA_FS) + "/" + String.valueOf(i + Constant.PRIMA_GIORNATA_FS + (Constant.NUM_PARTITE_FS*(constant.GIORNATA-Constant.DELTA_FS-1))) + "/");
+				String uri = "https://www.fanta.soccer/it/lega/privata/" + Constant.COMP_FS + "/dettaglipartita/" + String.valueOf(gg-Constant.DELTA_FS) + "/" + String.valueOf(i + Constant.PRIMA_GIORNATA_FS + (Constant.NUM_PARTITE_FS*(gg-Constant.DELTA_FS-1))) + "/";
+				HttpGet httpget = new HttpGet(uri);
 				ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 					@Override
 					public String handleResponse(
@@ -776,7 +807,7 @@ public class Main {
 
 				};
 				String responseBody = httpclient.execute(httpget, responseHandler);
-				upsertSalva(Constant.Campionati.BE.name() + i + ".html", responseBody);
+				upsertSalva(tokenNomeFile + Constant.Campionati.BE.name() + i + ".html", responseBody);
 			}
 		} finally {
 			httpclient.close();
@@ -812,7 +843,7 @@ public class Main {
 	}
 
 	public static Map<String,Object> postHTTP(String contentType, String url, String body,  Map<String, String>... headers) throws Exception {
-//		System.out.println("POST " + url + " " + printMap(headers));
+		//		System.out.println("POST " + url + " " + printMap(headers));
 		Map <String, Object> ret = new HashMap<>();
 		URL obj = new URL(url);
 		HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
@@ -876,11 +907,11 @@ public class Main {
 	}
 
 	public static String getHTTP(String url, Map<String, String>... headers) throws Exception {
-//		System.out.println("GET " + url + " " + printMap(headers));
+		//		System.out.println("GET " + url + " " + printMap(headers));
 		URL obj = new URL(url);
 		HttpURLConnection getConnection = (HttpURLConnection) obj.openConnection();
 		getConnection.setRequestMethod("GET");
-//		getConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0");
+		//		getConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0");
 
 		if (headers!=null && headers.length>0) {
 			Iterator<String> iterator = headers[0].keySet().iterator();
@@ -890,10 +921,10 @@ public class Main {
 			}
 		}
 		int responseCode = getConnection.getResponseCode();
-		
+
 		Map<String, List<String>> headerFields = getConnection.getHeaderFields();
-//		System.out.println(headerFields);
-		
+		//		System.out.println(headerFields);
+
 		StringBuffer response = new StringBuffer();
 		if (responseCode == HttpURLConnection.HTTP_OK) {
 			BufferedReader in = new BufferedReader(new InputStreamReader(getConnection.getInputStream()));
@@ -923,12 +954,12 @@ public class Main {
 	public static void aggKeyFG() throws Exception {
 		int giornata=constant.GIORNATA;
 		Main.keyFG=new HashMap<String, String>();
-		
-		
-		
+
+
+
 		//https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?id_comp=319871&r=1&f=1_1631365200000.json
-		
-		
+
+
 		Main.keyFG.put(Constant.Campionati.FANTAVIVA.name(), "id_comp=" + Constant.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG) + "_" + calcolaAggKey("fanta-viva") + ".json");
 		Main.keyFG.put(Constant.Campionati.LUCCICAR.name(), "id_comp=" + Constant.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey(Constant.Campionati.LUCCICAR.name()) + ".json");
 		Main.keyFG.put(Constant.Campionati.JB.name(), "id_comp=" + Constant.COMP_JB_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_JB_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_JB_FG) + "_" + calcolaAggKey("jb-fanta") + ".json");
@@ -940,7 +971,7 @@ public class Main {
 		if (lega.equalsIgnoreCase(Constant.Campionati.JB.name())) giornata=constant.GIORNATA-Constant.DELTA_JB_FG;
 		String url = "https://leghe.fantacalcio.it/" + lega + "/formazioni/" + giornata + "?id=" + Constant.COMP_VIVA_FG;
 		String string = Main.getHTTP(url);
-//		System.out.println(string);
+		//		System.out.println(string);
 		string = string.substring(string.indexOf(".s('tmp', ")+11);
 		string=string.substring(0,string.indexOf(")"));
 		string = string.replace("|", "@");
@@ -1114,7 +1145,7 @@ public class Main {
 					if (contaNuoviEventiOld != contaNuoviEventiNew) {
 						if (!ret.contains(codEvento)) {
 							if (codEvento==1000 && ng != null && og != null && ng.getVoto()==6 && og.getVoto()==0) {
-//								System.out.println("primo imbattuto per: " + ng.getNome());
+								//								System.out.println("primo imbattuto per: " + ng.getNome());
 							}
 							else {
 								Map<Integer, Integer> m = new HashMap<>();
@@ -1151,7 +1182,7 @@ public class Main {
 	private synchronized static Map<String, Return> postGo(boolean conLive, String sqDaAddEvid, String sqDaDelEvid,List<Live> lives,Map<String, Map<String, String>> orari) throws Exception {
 		List<Return> go = new ArrayList<Return>();
 		for (ConfigCampionato configCampionato : configsCampionato) {
-			Return r = getReturn(configCampionato, conLive, lives, orari);
+			Return r = getReturn(configCampionato, conLive, lives, orari, false);
 			go.add(r);
 		}
 		Map<String, Return> ret =new TreeMap<String, Return>();
@@ -1248,26 +1279,26 @@ public class Main {
 				lives.add(live);
 			}
 		}
-		
+
 		for (Live live : lives) {
 			List<Map<String, Object>> giocatori = live.getGiocatori();
 			for (Map<String,Object> giocatore : giocatori) {
-//				System.out.println(giocatore.get("nome") + "-" + giocatore.get("voto") + "-");
+				//				System.out.println(giocatore.get("nome") + "-" + giocatore.get("voto") + "-");
 				if (giocatore.get("voto")!=null && Double.parseDouble(giocatore.get("voto").toString())==55) {
 					giocatore.put("voto", 0d);
 				}
 			}
 		}
-		
+
 		Set<String> keySetOrari = orari.keySet();
 		for (String squadra : keySetOrari) {
 			Map orario = (Map) orari.get(squadra);
-//			System.out.println(squadra + "-" + orario.get("tag"));
+			//			System.out.println(squadra + "-" + orario.get("tag"));
 			String tag = getStatusMatch((String) orario.get("tag"), sqStatusMatch.get(squadra));
 			orario.put("tag", tag);
 			sqStatusMatch.put(squadra,statusMatch.get(tag));
 		}
-		
+
 		Map<String, Object> ret = new HashMap<>();
 		ret.put("orari", orari);
 		ret.put("lives", lives);
@@ -1289,7 +1320,7 @@ public class Main {
 		return tag;
 	}
 
-	private static Return getReturn(ConfigCampionato configCampionato, boolean conLive, List<Live> lives,Map<String, Map<String, String>> orari) throws Exception {
+	private static Return getReturn(ConfigCampionato configCampionato, boolean conLive, List<Live> lives,Map<String, Map<String, String>> orari, boolean conVoto) throws Exception {
 		Integer numGiocatori = configCampionato.getNumGiocatori();
 		String tipo = configCampionato.getTipo();
 		String campionato = configCampionato.getCampionato();
@@ -1359,7 +1390,7 @@ public class Main {
 		}
 		for (Squadra squadra : squadre.get(campionato)) {
 			for (Giocatore giocatore : squadra.getTitolari()) {
-				findGiocatoreInLives(giocatore, lives,tipo);
+				findGiocatoreInLives(giocatore, lives,tipo, conVoto);
 				if (giocatore != null && giocatore.getRuolo() != null && (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P"))) {
 					if (giocatore.getVoto()>0 && !giocatore.getCodEventi().contains(4) && !giocatore.getCodEventi().contains(1000)) {
 						giocatore.getCodEventi().add(1000);
@@ -1375,7 +1406,7 @@ public class Main {
 		}
 		for (Squadra squadra : squadre.get(campionato)) {
 			for (Giocatore giocatore : squadra.getRiserve()) {
-				findGiocatoreInLives(giocatore, lives,tipo);
+				findGiocatoreInLives(giocatore, lives,tipo, conVoto);
 				if (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P")) {
 					if (giocatore.getVoto()>0 && !giocatore.getCodEventi().contains(4) && !giocatore.getCodEventi().contains(1000)) {
 						giocatore.getCodEventi().add(1000);
@@ -1394,7 +1425,7 @@ public class Main {
 		return r;
 	}
 
-	private static void findGiocatoreInLives(Giocatore giocatore, List<Live> lives, String tipo) {
+	private static void findGiocatoreInLives(Giocatore giocatore, List<Live> lives, String tipo, boolean conVoto) {
 		for (Iterator iterator = lives.iterator(); iterator.hasNext();) {
 			Live live = (Live) iterator.next();
 			if (giocatore == null) {
@@ -1409,12 +1440,12 @@ public class Main {
 							if (map.get("nome")!= null &&  map.get("nome").toString().toUpperCase().startsWith("DZ")) {
 								System.out.println();
 							}
-							*/
+							 */
 							giocatore.setSquadraGioca(true);
 						}
 					}
 				}
-				
+
 				for (Map<String, Object> g : giocatori) {
 					String nomeGiocatoreLive=g.get("nome").toString();
 					List<Integer> codEventi=new ArrayList<Integer>();
@@ -1456,7 +1487,7 @@ public class Main {
 		return squadre;
 	}
 
-	public static Squadra getFromFS(Document doc, String dove, int progPartita ) {
+	public static Squadra getFromFS(Document doc, String dove, int progPartita, boolean conVoto ) {
 		Element first = doc.select(".table-formazione" + dove.toLowerCase() + "-fantapartita").first();
 		Elements select = first.select("th");
 		Squadra squadra = new Squadra();
@@ -1480,19 +1511,50 @@ public class Main {
 		partiteSimulate.add(partitaSimulata);
 		squadra.setPartiteSimulate(partiteSimulate);
 
-		
+
 		for (int i=0;i<11;i++) {
-			Giocatore giocatore = estraiGiocatoreFromFS(doc,i,dove,"Titolari");
+			Giocatore giocatore = estraiGiocatoreFromFS(doc,i,dove,"Titolari", conVoto);
 			if (giocatore != null) {
 				squadra.getTitolari().add(giocatore);
 			}
 		}
 		for (int i=0;i<20;i++) {
-			Giocatore giocatore = estraiGiocatoreFromFS(doc,i,dove,"Panchinari");
+			Giocatore giocatore = estraiGiocatoreFromFS(doc,i,dove,"Panchinari", conVoto);
 			if (giocatore != null) {
 				squadra.getRiserve().add(giocatore);
 			}
 		}
+
+		if (conVoto) {
+			Element element = doc.select(".table-formazione" + dove.toLowerCase() + "-fantapartita").get(1);
+			Elements elementsByTagTR = element.getElementsByTag("TR");
+			for (int ix=0;ix<elementsByTagTR.size();ix++) {
+				Element elementAtt = elementsByTagTR.get(ix);
+				Elements elementsByTagTD = elementAtt.getElementsByTag("TD");
+				if (elementsByTagTD.size() == 2) {
+					String val;
+					String des;
+					if (dove.equalsIgnoreCase("casa")) {
+						val=elementsByTagTD.get(0).text();
+						des=elementsByTagTD.get(1).text();
+					}
+					else {
+						val=elementsByTagTD.get(1).text();
+						des=elementsByTagTD.get(0).text();
+					}
+					if (des.equalsIgnoreCase("Modificatore difesa")) {
+						squadra.setModificatoreDifesaDaAssegnare(Double.parseDouble(val.replace(",", ".")));
+					}
+					if (des.equalsIgnoreCase("Modificatore attacco")) {
+						squadra.setModificatoreAttacco(Double.parseDouble(val.replace(",", ".")));
+					}
+					if (des.equalsIgnoreCase("Malus formazione automatica")) {
+						squadra.setMalusFormazioneAutomatica(Double.parseDouble(val.replace(",", ".")));
+					}
+				}
+			}
+		}
+
 		return squadra;
 	}
 	public static void adattaNomePartitaSimulata(List<Squadra> squadre) {
@@ -1525,7 +1587,8 @@ public class Main {
 		return lega.substring(0,1) + (1+progPartita);
 	}
 
-	private static Giocatore estraiGiocatoreFromFS(Document doc, int i, String dove, String ruolo) {
+	private static Giocatore estraiGiocatoreFromFS(Document doc, int i, String dove, String ruolo, boolean conVoto) {
+
 		Element first = doc.select("#MainContent_wuc_DettagliPartita1_rpt" + ruolo + dove + "_lblNome_" + i).first();
 		Giocatore giocatore = null;
 		if (first != null) {
@@ -1533,7 +1596,7 @@ public class Main {
 			String text = first.text();
 			String squadra=text.substring(text.indexOf("(")+1,text.length()-1);
 			if(!text.equalsIgnoreCase("-")) {
-//				String squadra = first.childNodes().get(1).toString().substring(2,5);
+				//				String squadra = first.childNodes().get(1).toString().substring(2,5);
 				String nomeG=text.substring(0,text.indexOf("(")-1);
 				if (nomeG.equalsIgnoreCase("Fabian Ruiz .")) nomeG="Ruiz .";
 				if (nomeG.equalsIgnoreCase("Leao R.")) nomeG="Rafael Leao ";
@@ -1570,12 +1633,12 @@ public class Main {
 				if (nomeG.equalsIgnoreCase("N'Zola M.")) nomeG="Nzola ";
 				if (nomeG.equalsIgnoreCase("Molina N.") && squadra.equalsIgnoreCase("UDI")) nomeG="Molina N. ";
 				if (nomeG.equalsIgnoreCase("Danilo .") && squadra.equalsIgnoreCase("BOL")) nomeG="Danilo LAR. ";
-/*
+				/*
 			if (nomeG.toUpperCase().contains("ESSI")) {
 				System.err.println("*" + nomeG + "*");
 			}
-*/
-				
+				 */
+
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
 				if (nomeG.equalsIgnoreCase("")) nomeG="";
@@ -1590,11 +1653,84 @@ public class Main {
 				giocatore.setNome(nomeG);
 				giocatore.setNomeTrim(nomeG.replaceAll(" ", ""));
 				giocatore.setSquadra(squadra);
+				if (conVoto) {
+					String textVoto = doc.select("#MainContent_wuc_DettagliPartita1_rpt" + ruolo + dove + "_lblVoto_" + i).first().text();
+					if (!textVoto.equals("-") && !textVoto.equals("s.v.")) {
+						giocatore.setVoto(Double.parseDouble(textVoto.replace(",", ".")));
+					}
+					Elements elementsByTag = doc.select("#MainContent_wuc_DettagliPartita1_rpt" + ruolo + dove + "_lblBM_" + i).first().getElementsByTag("IMG");
+					for (int ix=0;ix<elementsByTag.size();ix++) {
+						Element element = elementsByTag.get(ix);
+						String tipoBM = element.attr("data-original-title");
+						addBM(tipoBM,giocatore);
+					}
+					Elements iconaEntreEsce = doc.select("#MainContent_wuc_DettagliPartita1_rpt" +  ruolo + dove +  "_imgIcona_" + i);
+					int size = iconaEntreEsce.size();
+					if (size > 0) {
+						if ("Entra".equalsIgnoreCase(iconaEntreEsce.first().attr("data-original-title"))) {
+							giocatore.setEntra(true);
+						}
+						if ("Esce".equalsIgnoreCase(iconaEntreEsce.first().attr("data-original-title"))) {
+							giocatore.setEsce(true);
+						}
+					}
+
+				}
 				first = doc.select("#MainContent_wuc_DettagliPartita1_rpt" + ruolo + dove + "_lblRuolo_" + i).first();
 				giocatore.setRuolo(first.text());
 			}
 		}
 		return giocatore; 
+	}
+
+	private static void addBM(String tipoBM, Giocatore giocatore) {
+		giocatore.getModificatori().add(tipoBM);
+		if (tipoBM.equals("1 assist (+1)"))
+		{
+			giocatore.setModificatore(giocatore.getModificatore()+1);
+		} 
+		else if (tipoBM.equals("Ammonito (-0,5)"))
+		{
+			giocatore.setModificatore(giocatore.getModificatore()-0.5);
+		} 
+		else if (tipoBM.equals("Espulso (-1)"))
+		{
+			giocatore.setModificatore(giocatore.getModificatore()-1);
+		} 
+		else if (tipoBM.equals("porta imbattuta (1)"))
+		{
+			giocatore.setModificatore(giocatore.getModificatore()+1);
+		} 
+		else if (tipoBM.equals("1 gol subito (-1)"))
+		{
+			giocatore.setModificatore(giocatore.getModificatore()-1);
+		} 
+		else if (tipoBM.equals("1 rigore segnato (+2)"))
+		{
+			giocatore.setModificatore(giocatore.getModificatore()+2);
+			giocatore.setNumGol(giocatore.getNumGol()+1);
+		} 
+		else if (tipoBM.equals("1 gol segnato (+3)"))
+		{
+			giocatore.setModificatore(giocatore.getModificatore()+3);
+			giocatore.setNumGol(giocatore.getNumGol()+1);
+		}
+		else if (tipoBM.equals("1 rigore fallito (-3)"))
+		{
+			giocatore.setModificatore(giocatore.getModificatore()-3);
+		}
+		else if (tipoBM.equals("1 rigore parato (+3)"))
+		{
+			giocatore.setModificatore(giocatore.getModificatore()+3);
+		}
+		else if (tipoBM.equals("1 autorete (-3)"))
+		{
+			giocatore.setModificatore(giocatore.getModificatore()-3);
+		}
+		else
+		{
+			throw new RuntimeException("Gestire BM:" + tipoBM);
+		}
 	}
 
 	public static String toJson(Object o)
@@ -1673,10 +1809,24 @@ public class Main {
 		}
 		return ret;
 	}
-	public static String getTesto(String nome) {
+	public static String getTesto(String nome) throws Exception {
+		if (salvaRepository==null) {
+			return getTestoNoSpring(nome);
+		}
 		Salva findOne = salvaRepository.findOne(nome);
 		if (findOne==null) return null;
 		return findOne.getTesto();
+	}
+	public static String getTestoNoSpring(String nome) throws Exception {
+		Properties prop = new Properties();
+		prop.load(new ClassPathResource("application-DEV.properties").getInputStream());
+		String datasourceUrl = prop.getProperty("spring.datasource.url");
+		Connection connection = DriverManager.getConnection(datasourceUrl);
+		PreparedStatement prepareStatement = connection.prepareStatement("select * from salva where nome=?");
+		prepareStatement.setString(1, nome);
+		ResultSet rs = prepareStatement.executeQuery();
+		rs.next();
+		return rs.getString("testo");
 	}
 	public static void upsertSalva(String nome, String testo) {
 		Salva findOne = salvaRepository.findOne(nome);
@@ -1770,15 +1920,15 @@ public class Main {
 					.append("Proiezione --> <b><i>")
 					.append(casa.equalsIgnoreCase("S")?sq.getProiezione()+2 + "(*)":sq.getProiezione())
 					.append("</i></b>\n\n");
-					
+
 					if(chatId.intValue() == Constant.CHAT_ID_FANTALIVE.intValue()) {
 						testo
 						.append("\n")
 						.append(Main.getUrlNotifica());
 					}
-					
-					
-//					System.err.println(testo.toString());
+
+
+					//					System.err.println(testo.toString());
 					return testo.toString(); 
 				}
 			}
@@ -1804,8 +1954,8 @@ public class Main {
 	}
 	private static void dettaglioTestoGiocatore(StringBuilder testo, Giocatore giocatore, String campionato) {
 		testo
-//		.append("\uD83C\uDC06")
-//		.append(" ")
+		//		.append("\uD83C\uDC06")
+		//		.append(" ")
 		.append(getIconaIDGioc.get(giocatore.getIdGioc()))
 		.append(" ")
 		.append(conVoto(giocatore))
@@ -1827,10 +1977,10 @@ public class Main {
 			testo.append("(*)");
 		}
 		testo
-//		.append("\n")
+		//		.append("\n")
 		.append(getOrario(giocatore.getOrario()))
 		.append("\n");
-		
+
 		for (Integer evento : giocatore.getCodEventi()) {
 			testo
 			.append(desEvento(evento,campionato))
@@ -1859,7 +2009,7 @@ public class Main {
 			ret = ret + " " + (1+Integer.parseInt(orario.get("val").substring(11,13)));
 			ret = ret + ":" + orario.get("val").substring(14,16);
 			return ret;
-//			return " " + ret + Constant.SCHEDULATA + " ";
+			//			return " " + ret + Constant.SCHEDULATA + " ";
 		}
 		return " " + orario.get("val") + Constant.OROLOGIO + " ";
 	}
@@ -1868,7 +2018,7 @@ public class Main {
 		if (giocatore.getOrario().get("tag").equals("FullTime")) return true;
 		if (giocatore.getCodEventi().contains(14)) return true;
 		return false;
-		
+
 	}
 	private static String partitaFinita(Giocatore giocatore){
 		if (chkPartitaFinita(giocatore))  return Constant.PARTITA_FINITA;
@@ -1994,8 +2144,8 @@ public class Main {
 		}
 		return ret;
 	}
-	
-	
+
+
 	public static Set<String> getpartiteSimulate(String campionato) throws Exception {
 		Set<String> ret=new TreeSet<>();
 		Map<String, Return> go = Main.go(false,null, null);

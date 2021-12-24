@@ -61,9 +61,11 @@ public class MyController {
 	}
 
 
-	@Scheduled(fixedRate = 60000)//FIXME TOGLIERE SPEGNI LIVE
+	@Scheduled(fixedRate = 60000)
 	public void scheduleKeepAlive() throws Exception {
-		keepAlive();
+		if (constant.ABILITA_REFRESH) {
+			keepAlive();
+		}
 	}
 	@GetMapping("/getMyFile")
 	public String getFile() throws Exception {
@@ -92,32 +94,35 @@ public class MyController {
 		}
 		return ret;
 	}
-	@Scheduled(fixedRate = 5000)//FIXME TOGLIERE SPEGNI LIVE
+	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
-		Main.timeRefresh = (int) Main.toSocket.get("timeRefresh");
-		if (Main.timeRefresh==Constant.SCHEDULED_SNAP) {
-			Main.snapshot(true);
+		if (constant.ABILITA_REFRESH) {
+	
+			Main.timeRefresh = (int) Main.toSocket.get("timeRefresh");
+			if (Main.timeRefresh==Constant.SCHEDULED_SNAP) {
+				Main.snapshot(true);
+			}
+			Main.timeRefresh=Main.timeRefresh+5000;
+			Main.toSocket.put("timeRefresh", Main.timeRefresh);
+			Main.toSocket.put("liveFromFile", constant.LIVE_FROM_FILE);
+			Main.toSocket.put("disabilitaNotificaTelegram", constant.DISABILITA_NOTIFICA_TELEGRAM);
+	//		if (Constant.LAST_KEEP_ALIVE != null) Main.toSocket.put("lastKeepAlive", Constant.dateTimeFormatterOut.format(Constant.LAST_KEEP_ALIVE));
+			if (Constant.LAST_REFRESH != null) Main.toSocket.put("lastRefresh", Constant.dateTimeFormatterOut.format(Constant.LAST_REFRESH));
+			Main.toSocket.put("keepAliveEnd", Constant.dateTimeFormatterOut.format(Constant.KEEP_ALIVE_END));
+			String visKeepAlive = "N";
+			ZonedDateTime now = ZonedDateTime.now();
+			if (Constant.KEEP_ALIVE_END.isAfter(now)) {
+				visKeepAlive="S";
+			}
+			Main.toSocket.put("visKeepAlive", visKeepAlive);
+			
+			String runningBot="STOPPED";
+			if (Main.fantaLiveBot != null && Main.fantaLiveBot.isRunning()) {
+				runningBot="RUNNING";
+			}
+			Main.toSocket.put("runningBot", runningBot);
+			socketHandlerFantalive.invia(Main.toSocket );
 		}
-		Main.timeRefresh=Main.timeRefresh+5000;
-		Main.toSocket.put("timeRefresh", Main.timeRefresh);
-		Main.toSocket.put("liveFromFile", constant.LIVE_FROM_FILE);
-		Main.toSocket.put("disabilitaNotificaTelegram", constant.DISABILITA_NOTIFICA_TELEGRAM);
-//		if (Constant.LAST_KEEP_ALIVE != null) Main.toSocket.put("lastKeepAlive", Constant.dateTimeFormatterOut.format(Constant.LAST_KEEP_ALIVE));
-		if (Constant.LAST_REFRESH != null) Main.toSocket.put("lastRefresh", Constant.dateTimeFormatterOut.format(Constant.LAST_REFRESH));
-		Main.toSocket.put("keepAliveEnd", Constant.dateTimeFormatterOut.format(Constant.KEEP_ALIVE_END));
-		String visKeepAlive = "N";
-		ZonedDateTime now = ZonedDateTime.now();
-		if (Constant.KEEP_ALIVE_END.isAfter(now)) {
-			visKeepAlive="S";
-		}
-		Main.toSocket.put("visKeepAlive", visKeepAlive);
-		
-		String runningBot="STOPPED";
-		if (Main.fantaLiveBot != null && Main.fantaLiveBot.isRunning()) {
-			runningBot="RUNNING";
-		}
-		Main.toSocket.put("runningBot", runningBot);
-		socketHandlerFantalive.invia(Main.toSocket );
 	}
 	@RequestMapping("/getOrariFromDb")
 	public Map<String, String> getOrariFromDb() throws Exception {
@@ -263,7 +268,6 @@ public class MyController {
 	public Squadra simulaCambi(@RequestBody Map<String,Squadra> body)  {
 		Squadra sq = body.get("sq");
 		Squadra squadra = new Squadra();
-		squadra.setDeltaModificatore(sq.getDeltaModificatore());
 		squadra.setCasaProiezione(sq.isCasaProiezione());
 		squadra.setNome(sq.getNome());
 		squadra.setEvidenza(sq.isEvidenza());
@@ -499,17 +503,8 @@ public class MyController {
 			Main.getSquadre(Constant.Campionati.LUCCICAR.name());
 			Main.getSquadre(Constant.Campionati.JB.name());
 			Main.getSquadre("fanta-viva");
-			Main.scaricaBe();
-			List<Squadra> squadre = new ArrayList<Squadra>();
-			for (int i=0;i<Constant.NUM_PARTITE_FS;i++) {
-				String nome = Constant.Campionati.BE.name()+i + ".html";
-				String testo=Main.getTesto(nome);
-				Document doc = Jsoup.parse(testo);
-//				System.out.println(testo);
-				squadre.add(Main.getFromFS(doc, "Casa",i));
-				squadre.add(Main.getFromFS(doc, "Trasferta",i));
-				Main.cancellaSalva(nome);
-			}
+			Main.scaricaBe(Constant.GIORNATA,"");
+			List<Squadra> squadre = Main.getSquadreFromFS("",true, false);
 			Main.adattaNomePartitaSimulata(squadre);
 			String nomePartitaSimulata=null;
 			for (Squadra squadra : squadre) {//todo evidenze fantaviva
@@ -539,5 +534,7 @@ public class MyController {
 			e.printStackTrace(System.out);
 		}
 	}
+
+
 
 }

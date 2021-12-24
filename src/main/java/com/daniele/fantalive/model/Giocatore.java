@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 public class Giocatore {
+	private int numGol=0;
 	private List<Integer> codEventi=new ArrayList<Integer>();
+	private List<String> modificatori=new ArrayList<String>();
 	private Map<String,String> orario=new HashMap<String,String>();
 	private String id;
 	private String ruolo;
@@ -23,6 +25,8 @@ public class Giocatore {
 	private boolean cambiato;
 	private boolean nonCambiabile;
 	private String idGioc;
+	private boolean entra=false;
+	private boolean esce=false;
 	private boolean notificaLive;
 	public String getRuolo() {
 		return ruolo;
@@ -82,6 +86,10 @@ public class Giocatore {
 	public String toString() {
 		return nome + "(" + ruolo + ") " + squadra + " " + id + " " + (squadraGioca?"":"N/A") + " " + evento + codEventi   
 				+ " voto=" + voto  
+				+ " numGol=" + numGol  
+				+ " entra=" + entra  
+				+ " esce=" + esce
+				+ " modificatori=" + modificatori  
 				+ " modificatore=" + modificatore + ", FM=" + (modificatore + voto)
 				+ " orario=" + orario + " cambio=" + cambio + " idGioc=" + idGioc; 
 	}
@@ -138,6 +146,30 @@ public class Giocatore {
 	}
 	public void setNonCambiabile(boolean nonCambiabile) {
 		this.nonCambiabile = nonCambiabile;
+	}
+	public List<String> getModificatori() {
+		return modificatori;
+	}
+	public void setModificatori(List<String> modificatori) {
+		this.modificatori = modificatori;
+	}
+	public int getNumGol() {
+		return numGol;
+	}
+	public void setNumGol(int numGol) {
+		this.numGol = numGol;
+	}
+	public boolean isEntra() {
+		return entra;
+	}
+	public void setEntra(boolean entra) {
+		this.entra = entra;
+	}
+	public boolean isEsce() {
+		return esce;
+	}
+	public void setEsce(boolean esce) {
+		this.esce = esce;
 	}
 
 }

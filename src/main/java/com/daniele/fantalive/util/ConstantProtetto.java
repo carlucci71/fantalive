@@ -21,6 +21,7 @@ public class ConstantProtetto {
 		}
 		constant.DISABILITA_NOTIFICA_TELEGRAM = Boolean.valueOf(System.getenv("DISABILITA_NOTIFICA_TELEGRAM"));
 		constant.LIVE_FROM_FILE = Boolean.valueOf(System.getenv("LIVE_FROM_FILE"));
+		constant.ABILITA_REFRESH = Boolean.valueOf(System.getenv("ABILITA_REFRESH"));
 		constant.CHAT_ID_FANTALIVE = Long.valueOf(System.getenv("CHAT_ID_FANTALIVE"));
 		constant.TOKEN_BOT_FANTALIVE = System.getenv("TOKEN_BOT_FANTALIVE");
 		constant.TOKEN_BOT_FANTACRONACALIVE = System.getenv("TOKEN_BOT_FANTACRONACALIVE");
