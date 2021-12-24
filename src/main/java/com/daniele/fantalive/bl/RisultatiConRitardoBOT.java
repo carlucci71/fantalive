@@ -13,24 +13,21 @@ import org.telegram.telegrambots.meta.generics.BotSession;
 
 import com.daniele.fantalive.util.Constant;
 
-public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
+public class RisultatiConRitardoBOT extends TelegramLongPollingBot{
 
 	private static BotSession registerBot;
-	private static String CHI;
-	
-
 	@Override
 	public void onUpdateReceived(Update update) {
 	}
 
 	@Override
 	public String getBotUsername() {
-		return "FantaCronacaLiveBot";
+		return "RisultatiConRitardoBot";
 	}
 
 	@Override
 	public String getBotToken() {
-		return Constant.TOKEN_BOT_FANTACRONACALIVE;
+		return Constant.TOKEN_BOT_RISULTATICONRITARDO;
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -38,7 +35,7 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 		Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
-		FantaCronacaLiveBOT bot = inizializza();
+		RisultatiConRitardoBOT bot = inizializza();
 		try {
 			bot.inviaMessaggio(c.CHAT_ID_FANTALIVE, "Status:STARTED");
 		}
@@ -48,16 +45,15 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 		System.err.println("FINE");
 	}
 
-	public static FantaCronacaLiveBOT inizializza() throws Exception {
+	public static RisultatiConRitardoBOT inizializza() throws Exception {
 		ApiContextInitializer.init();
 		TelegramBotsApi api = new TelegramBotsApi();
-		FantaCronacaLiveBOT f = new FantaCronacaLiveBOT();
+		RisultatiConRitardoBOT f = new RisultatiConRitardoBOT();
 		try {
 			registerBot = api.registerBot(f);
 		} catch (TelegramApiRequestException e) {
 			throw new RuntimeException(e);
 		}
-		f.messaggioBenvenuto();
 		return f;
 	}
 	public void inviaMessaggio(long chatId,String msg) throws TelegramApiException {
@@ -66,42 +62,6 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 		} catch (TelegramApiException e) {
 			throw e;
 		}
-	}
-	private void messaggioBenvenuto() throws Exception {
-		inviaMessaggio(Constant.CHAT_ID_FANTALIVE, Constant.CIAO + " Benvenuto!" +
-		Constant.PARTITA_FINITA +
-		Constant.PARTITA_NON_FINITA  +
-		Constant.OK_VOTO +
-		Constant.NO_VOTO_IN_CORSO +
-		Constant.PALLONE +
-		Constant.SVEGLIA  +
-		Constant.OROLOGIO +
-		Constant.SCHEDULATA +
-		Constant.DEFINITIVA +
-		Constant.NO_VOTO_FINITO  +
-		Constant.RIGORE_PARATO +
-		Constant.NO_VOTO_DA_INIZIARE +
-		Constant.SCHIERATO +
-		Constant.NON_SCHIERATO +
-		Constant.SEMAFORO_1 +
-		Constant.SEMAFORO_2 +
-		Constant.IMBATTUTO +
-		Constant.ASSIST +	
-		Constant.GOL +
-		Constant.USCITO +
-		Constant.ENTRATO +
-		Constant.GOL_ANNULLATO +
-		Constant.INFORTUNIO +
-		Constant.AMMONITO +
-		Constant.ESPULSO +
-		Constant.GOL_SUBITO +
-		Constant.RIGORE_SBAGLIATO +  
-		Constant.RIGORE_SEGNATO +
-		Constant.AUTOGOL +	
-		Constant.CIAO +
-		Constant.KEEP_ALIVE );
-
-		
 	}
 	private SendMessage creaSendMessage(long chatId,String msg) {
 		SendMessage sendMessage = new SendMessage();

@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.daniele.fantalive.bl.FantaCronacaLiveBOT;
 import com.daniele.fantalive.bl.FantaLiveBOT;
 import com.daniele.fantalive.bl.Main;
+import com.daniele.fantalive.bl.RisultatiConRitardoBOT;
 import com.daniele.fantalive.configurazione.SocketHandlerFantalive;
 import com.daniele.fantalive.entity.Salva;
 import com.daniele.fantalive.model.Giocatore;
@@ -56,8 +57,9 @@ public class MyController {
 		Main.init(salvaRepository,socketHandlerFantalive,constant);
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
-			Main.fantaCronacaLiveBot = FantaCronacaLiveBOT.inizializza("WEBAPP");
-		}
+			Main.fantaCronacaLiveBot = FantaCronacaLiveBOT.inizializza();
+			Main.risultatiConRitardoBOT = RisultatiConRitardoBOT.inizializza();
+			}
 	}
 
 
@@ -94,7 +96,7 @@ public class MyController {
 		}
 		return ret;
 	}
-	@Scheduled(fixedRate = 5000)
+	@Scheduled(fixedRate = 10000)
 	public void chckNotifica() throws Exception {
 		if (constant.ABILITA_REFRESH) {
 	
@@ -246,9 +248,11 @@ public class MyController {
 		if (Main.fantaLiveBot.isRunning()) {
 			Main.fantaLiveBot.stopBot();
 			Main.fantaCronacaLiveBot.stopBot();
+			Main.risultatiConRitardoBOT.stopBot();
 		} else {
 			Main.fantaLiveBot.startBot();
 			Main.fantaCronacaLiveBot.startBot();
+			Main.risultatiConRitardoBOT.startBot();
 		}
 	}
 	@PostMapping("/salva")

@@ -26,6 +26,7 @@ public class Constant {
 	public static Long CHAT_ID_FANTALIVE;
 	public static String TOKEN_BOT_FANTALIVE;
 	public static String TOKEN_BOT_FANTACRONACALIVE;
+	public static String TOKEN_BOT_RISULTATICONRITARDO;
 	public static String APPKEY_FG;
 	public static String AUTH_FS;
 	public static boolean LIVE_FROM_FILE;

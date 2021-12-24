@@ -188,7 +188,15 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 		c = (Constant) method.invoke(c);		
 		
 		Main.init(null,null,c);
-		inizializza("MAIN");
+		FantaLiveBOT bot = inizializza("MAIN");
+		
+		try {
+			bot.inviaMessaggio(c.CHAT_ID_FANTALIVE, "Status:STARTED", false);
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.out);
+		}
+		System.err.println("FINE");
 	}
 
 	public static FantaLiveBOT inizializza(String chi) throws Exception {
