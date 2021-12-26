@@ -2,14 +2,13 @@ package com.daniele.fantalive.bl;
 
 import java.lang.reflect.Method;
 
-import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.BotSession;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import com.daniele.fantalive.util.Constant;
 
@@ -46,15 +45,10 @@ public class RisultatiConRitardoBOT extends TelegramLongPollingBot{
 	}
 
 	public static RisultatiConRitardoBOT inizializza() throws Exception {
-		ApiContextInitializer.init();
-		TelegramBotsApi api = new TelegramBotsApi();
-		RisultatiConRitardoBOT f = new RisultatiConRitardoBOT();
-		try {
-			registerBot = api.registerBot(f);
-		} catch (TelegramApiRequestException e) {
-			throw new RuntimeException(e);
-		}
-		return f;
+		TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+		RisultatiConRitardoBOT risultatiConRitardoBOT = new RisultatiConRitardoBOT();
+		registerBot=telegramBotsApi.registerBot(risultatiConRitardoBOT);
+		return risultatiConRitardoBOT;
 	}
 	public void inviaMessaggio(long chatId,String msg) throws TelegramApiException {
 		try {
@@ -67,7 +61,7 @@ public class RisultatiConRitardoBOT extends TelegramLongPollingBot{
 		SendMessage sendMessage = new SendMessage();
 		sendMessage.enableHtml(true);
 		sendMessage.setParseMode("html");
-		sendMessage.setChatId(chatId);
+		sendMessage.setChatId(Long.toString(chatId));
 		String messaggio="";
 		messaggio = messaggio + "\n" + msg;
 		sendMessage.setText(messaggio);
