@@ -236,7 +236,7 @@ app.run(
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
-				$resource('./caricaFileFromData',{}).save({'orari':$rootScope.fileOrari,'lives':$rootScope.fileLives}).$promise.then(function(data) {
+				$resource('./caricaFileFromData',{}).save({'snapPartite':$rootScope.fileOrari,'lives':$rootScope.fileLives}).$promise.then(function(data) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 				});

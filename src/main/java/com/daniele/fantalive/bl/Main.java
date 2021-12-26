@@ -2,7 +2,6 @@ package com.daniele.fantalive.bl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -11,7 +10,6 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -448,7 +446,7 @@ public class Main {
 			ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
 			String time=zdt.format(formatter);
 			if (salva) {
-				upsertSalva(time + "-" + "orari", toJson(snapOrari));
+				upsertSalva(time + "-" + "snapPartite", toJson(snapOrari));
 				upsertSalva(time + "-" + "lives", toJson(snapLives));
 			}
 			if (oldSnapshot!=null) {
@@ -728,12 +726,8 @@ public class Main {
 
 	public static void inviaRisultatiNotifica(String msg) throws Exception {
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
-			if (false) {
-				ThreadSeparato threadSeparato = new ThreadSeparato(risultatiConRitardoBOT, constant.CHAT_ID_FANTALIVE,msg);
-				executor.schedule(threadSeparato, 1, TimeUnit.SECONDS);//FIXME
-			} else {
-				risultatiConRitardoBOT.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg);
-			}
+			ThreadSeparato threadSeparato = new ThreadSeparato(risultatiConRitardoBOT, constant.CHAT_ID_FANTALIVE,msg);
+			executor.schedule(threadSeparato, 15, TimeUnit.SECONDS);
 		}
 		else {
 			System.out.println("Notifica:\n" + msg);
@@ -840,12 +834,10 @@ public class Main {
 
 	private static Map<String, Map<String, Object>> oldSnapPartite=new LinkedHashMap();
 
-	private static Map<String, Map<String, String>> partiteLive() throws Exception {
+	private static Map<String, Map<String, Object>> partiteLive() throws Exception {
 		Map<String, Map<String, Object>> snapPartite=new LinkedHashMap();
-		Map<String, Map<String, String>> orari=null;
-		orari=new HashMap<String, Map<String,String>>();
 		Map<String, Object> jsonToMap;
-		if (false) {
+		if (true) {
 			String callHTTP= getHTTP("https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=" + Constant.SPORT_ID_LIVE_GAZZETTA + "&competitionId=" + Constant.COMP_ID_LIVE_GAZZETTA);
 			jsonToMap = jsonToMap(callHTTP);
 		} else {
@@ -868,9 +860,15 @@ public class Main {
 		for (Map map : l) {
 			List<Map> lm = (List<Map>) map.get("matches");
 			for (Map map2 : lm) {
-				HashMap<String,String> orario=new HashMap<String,String>();
+				Map awayTeam = (Map)map2.get("awayTeam");
+				Map homeTeam = (Map)map2.get("homeTeam");
+				String sqFuori = ((String)awayTeam.get("teamCode")).toUpperCase();
+				String sqCasa = ((String)homeTeam.get("teamCode")).toUpperCase();
+
+
+				Map<String, Object> partite = new LinkedHashMap();
 				Map timing = (Map)map2.get("timing");
-				orario.put("tag", (String)timing.get("tag"));
+				String tag = (String)timing.get("tag");
 				Object valTiming=timing.get("val");
 				if (timing.get("val") != null) {
 					valTiming= valTiming.toString();
@@ -879,18 +877,8 @@ public class Main {
 				else {
 					valTiming="N/A";
 				}
-				orario.put("val", valTiming.toString());
-				Map awayTeam = (Map)map2.get("awayTeam");
-				Map homeTeam = (Map)map2.get("homeTeam");
-				String sqFuori = ((String)awayTeam.get("teamCode")).toUpperCase();
-				String sqCasa = ((String)homeTeam.get("teamCode")).toUpperCase();
-				orari.put(sqFuori, orario);
-				orari.put(sqCasa, orario);
-
-
-
-				Map<String, Object> partite = new LinkedHashMap();
-				partite.put("status", map2.get("status"));
+				partite.put("tag",tag);
+				partite.put("val", valTiming.toString());
 				Map<String, Object> sq = new HashMap<>();
 				sq.put("gol", homeTeam.get("score"));
 				List<Map> goals = (List<Map>) ((Map)homeTeam.get("starData")).get("goals");
@@ -919,97 +907,9 @@ public class Main {
 				partite.put(sqFuori, sq);
 				String key = sqCasa + " vs " + sqFuori;
 				snapPartite.put(key, partite);
-				Map<String, Object> oldPartite = getOldSnapPartite().get(key);
-				StringBuilder messaggio=null;
-				if (oldPartite != null) {
-					String oldStatus = (String) oldPartite.get("status");
-					String status = (String) partite.get("status");
-					if (!status.equals(oldStatus)) {
-						if (messaggio==null) {
-							messaggio=new StringBuilder(key + "\n");
-						}
-						messaggio.append("Status:" + status + "\n");
-					}
-
-					Integer oldGolCasa = (Integer) ((Map)oldPartite.get(sqCasa)).get("gol");
-					Integer oldGolFuori = (Integer) ((Map)oldPartite.get(sqFuori)).get("gol");
-					Integer golCasa = (Integer) ((Map)partite.get(sqCasa)).get("gol");
-					Integer golFuori = (Integer) ((Map)partite.get(sqFuori)).get("gol");
-					if (oldGolCasa != golCasa || oldGolFuori != golFuori) {
-						if (messaggio==null) {
-							messaggio=new StringBuilder(key + "\n");
-						}
-						messaggio.append("Risultato:" + golCasa + "-" + golFuori + "\n");
-					}
-
-					List<Map> oldRetiCasa = (List<Map>) ((Map)oldPartite.get(sqCasa)).get("RETI");
-					List<Map> retiCasa = (List<Map>) ((Map)partite.get(sqCasa)).get("RETI");
-					if (oldRetiCasa.size()>retiCasa.size()) {
-						if (messaggio==null) {
-							messaggio=new StringBuilder(key + "\n");
-						}
-						messaggio.append("Correzione reti per " + sqCasa + ": " + retiCasa + "\n");
-					}
-					for (int i=0;i<retiCasa.size();i++) {
-						Map mapRetiCasa = retiCasa.get(i);
-						if (oldRetiCasa.size() > i) {
-							Map mapOldRetiCasa = oldRetiCasa.get(i);
-							if (!mapRetiCasa.get("tipo").equals(mapOldRetiCasa.get("tipo")) || !mapRetiCasa.get("minuto").equals(mapOldRetiCasa.get("minuto"))
-									|| !mapRetiCasa.get("giocatore").equals(mapOldRetiCasa.get("giocatore"))) {
-								if (messaggio==null) {
-									messaggio=new StringBuilder(key + "\n");
-								}
-								messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", sqCasa,mapRetiCasa, mapOldRetiCasa));
-							}
-						} else {
-							if (messaggio==null) {
-								messaggio=new StringBuilder(key + "\n");
-							}
-							messaggio.append("Nuova rete:" + mapRetiCasa + "\n");
-						}
-					}
-
-					List<Map> oldRetiFuori = (List<Map>) ((Map)oldPartite.get(sqFuori)).get("RETI");
-					List<Map> retiFuori = (List<Map>) ((Map)partite.get(sqFuori)).get("RETI");
-					if (oldRetiFuori.size()>retiFuori.size()) {
-						if (messaggio==null) {
-							messaggio=new StringBuilder(key + "\n");
-						}
-						messaggio.append("Correzione reti per " + sqFuori + ": " + retiFuori + "\n");
-					}
-					for (int i=0;i<retiFuori.size();i++) {
-						Map mapRetiFuori = retiFuori.get(i);
-						if (oldRetiFuori.size() > i) {
-							Map mapOldRetiFuori = oldRetiFuori.get(i);
-							if (!mapRetiFuori.get("tipo").equals(mapOldRetiFuori.get("tipo")) || !mapRetiFuori.get("minuto").equals(mapOldRetiFuori.get("minuto"))
-									|| !mapRetiFuori.get("giocatore").equals(mapOldRetiFuori.get("giocatore"))) {
-								if (messaggio==null) {
-									messaggio=new StringBuilder(key + "\n");
-								}
-								messaggio.append(String.format("Correzione rete di %s : da %s a %s \n",sqFuori, mapRetiFuori, mapOldRetiFuori));
-							}
-						} else {
-							if (messaggio==null) {
-								messaggio=new StringBuilder(key + "\n");
-							}
-							messaggio.append("Nuova rete:" + mapRetiFuori + "\n");
-						}
-					}
-					if (messaggio != null) {
-						try {
-							inviaRisultatiNotifica(messaggio.toString());
-						} catch (Exception e)
-						{
-//							e.printStackTrace(System.out);
-						}
-					}
-				}
 			}
 		}
-		foto++;
-		System.out.println("FOTO --> " + foto);
-		oldSnapPartite=snapPartite;
-		return orari;
+		return snapPartite;
 	}
 	static int foto=0;
 
@@ -1430,26 +1330,149 @@ public class Main {
 	}
 
 	public static Map<String, Object> getLives(boolean fromFile) throws Exception {
-		Map orari;
 		List<Live> lives = new ArrayList<Live>();
+		Map<String, Map<String, Object>> snapPartite;
 		if (fromFile) {
-			orari =  jsonToMap(getTesto("orari"));
+			snapPartite =  jsonToSnapPartite(getTesto("snapPartite"));//TODO SALVARE
 			lives =  jsonToLives(getTesto("lives"));
 
 		} else {
-			orari=partiteLive();
-			Iterator<Integer> iterator = sq.keySet().iterator();
-			while (iterator.hasNext()) {
-				Integer integer = (Integer) iterator.next();
-				//https://www.fantacalcio.it/api/live/10?g=23&i=15
-				String sqFromLive = getHTTP("https://www.fantacalcio.it/api/live/" + integer + "?g=" + constant.GIORNATA + "&i=" + Constant.I_LIVE_FANTACALCIO);
-				List<Map<String, Object>> getLiveFromFG = jsonToList(sqFromLive);
-				Live live = new Live();
-				live.setSquadra(sq.get(integer));
-				live.setGiocatori(getLiveFromFG);
-				lives.add(live);
-			}
+			snapPartite=partiteLive();
+			lives=recuperaLives();
 		}
+		foto++;
+//		System.out.println("FOTO --> " + foto);
+		Map<String, Map<String, String>> orari=new HashMap<>();
+		/*
+		snapPartite.values().forEach(partita -> { 
+			partita.forEach((keyPartita,vPartita)-> { 
+				if (keyPartita.equalsIgnoreCase("tag")) {
+					System.out.println("tag:" + vPartita);
+				}
+				else if (keyPartita.equalsIgnoreCase("val")) {
+					System.out.println("val:" + vPartita);
+				}
+				else {
+					System.out.println("sq:" + keyPartita);
+					System.out.println("valSq:" + vPartita);
+				}
+			});
+		});
+		 */
+		for (Map<String, Object> partita : snapPartite.values()) {
+			String tag = "";
+			String val = "";
+			List<String> alSq=new ArrayList<>();
+			for (Map.Entry<String, Object> s : partita.entrySet()) {
+				if (s.getKey().equalsIgnoreCase("tag")) {
+					tag = (String) s.getValue();
+				}
+				else if (s.getKey().equalsIgnoreCase("val")) {
+					val = (String) s.getValue();
+				}
+				else {
+					alSq.add(s.getKey());
+				}
+			}
+			//costruisce orari da snapPartite
+			Map<String, String> map = new HashMap<>();
+			map.put("tag", tag);
+			map.put("val", val);
+			String sqCasa=alSq.get(0);
+			String sqFuori=alSq.get(1);
+			orari.put(sqCasa, map);
+			orari.put(sqFuori, map);
+			String key = sqCasa + " vs " + sqFuori;
+			//confronta con oldSnapPartite
+			Map<String, Object> oldPartita = getOldSnapPartite().get(key);
+			StringBuilder messaggio=null;
+			if (oldPartita != null) {
+				String oldTag = (String) oldPartita.get("tag");
+				if (!tag.equals(oldTag)) {
+					if (messaggio==null) {
+						messaggio=new StringBuilder(key + "\n");
+					}
+					messaggio.append("Status:" + tag + "\n");
+				}
+
+				Integer oldGolCasa = (Integer) ((Map)oldPartita.get(sqCasa)).get("gol");
+				Integer oldGolFuori = (Integer) ((Map)oldPartita.get(sqFuori)).get("gol");
+				Integer golCasa = (Integer) ((Map)partita.get(sqCasa)).get("gol");
+				Integer golFuori = (Integer) ((Map)partita.get(sqFuori)).get("gol");
+				if (oldGolCasa != golCasa || oldGolFuori != golFuori) {
+					if (messaggio==null) {
+						messaggio=new StringBuilder(key + "\n");
+					}
+					messaggio.append("Risultato:" + golCasa + "-" + golFuori + "\n");
+				}
+
+				List<Map> oldRetiCasa = (List<Map>) ((Map)oldPartita.get(sqCasa)).get("RETI");
+				List<Map> retiCasa = (List<Map>) ((Map)partita.get(sqCasa)).get("RETI");
+				if (oldRetiCasa.size()>retiCasa.size()) {
+					if (messaggio==null) {
+						messaggio=new StringBuilder(key + "\n");
+					}
+					messaggio.append("Correzione reti per " + sqCasa + ": " + retiCasa + "\n");
+				}
+				for (int i=0;i<retiCasa.size();i++) {
+					Map mapRetiCasa = retiCasa.get(i);
+					if (oldRetiCasa.size() > i) {
+						Map mapOldRetiCasa = oldRetiCasa.get(i);
+						if (!mapRetiCasa.get("tipo").equals(mapOldRetiCasa.get("tipo")) || !mapRetiCasa.get("minuto").equals(mapOldRetiCasa.get("minuto"))
+								|| !mapRetiCasa.get("giocatore").equals(mapOldRetiCasa.get("giocatore"))) {
+							if (messaggio==null) {
+								messaggio=new StringBuilder(key + "\n");
+							}
+							messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", sqCasa,mapRetiCasa, mapOldRetiCasa));
+						}
+					} else {
+						if (messaggio==null) {
+							messaggio=new StringBuilder(key + "\n");
+						}
+						messaggio.append("Nuova rete:" + mapRetiCasa + "\n");
+					}
+				}
+
+				List<Map> oldRetiFuori = (List<Map>) ((Map)oldPartita.get(sqFuori)).get("RETI");
+				List<Map> retiFuori = (List<Map>) ((Map)partita.get(sqFuori)).get("RETI");
+				if (oldRetiFuori.size()>retiFuori.size()) {
+					if (messaggio==null) {
+						messaggio=new StringBuilder(key + "\n");
+					}
+					messaggio.append("Correzione reti per " + sqFuori + ": " + retiFuori + "\n");
+				}
+				for (int i=0;i<retiFuori.size();i++) {
+					Map mapRetiFuori = retiFuori.get(i);
+					if (oldRetiFuori.size() > i) {
+						Map mapOldRetiFuori = oldRetiFuori.get(i);
+						if (!mapRetiFuori.get("tipo").equals(mapOldRetiFuori.get("tipo")) || !mapRetiFuori.get("minuto").equals(mapOldRetiFuori.get("minuto"))
+								|| !mapRetiFuori.get("giocatore").equals(mapOldRetiFuori.get("giocatore"))) {
+							if (messaggio==null) {
+								messaggio=new StringBuilder(key + "\n");
+							}
+							messaggio.append(String.format("Correzione rete di %s : da %s a %s \n",sqFuori, mapRetiFuori, mapOldRetiFuori));
+						}
+					} else {
+						if (messaggio==null) {
+							messaggio=new StringBuilder(key + "\n");
+						}
+						messaggio.append("Nuova rete:" + mapRetiFuori + "\n");
+					}
+				}
+				if (messaggio != null) {
+					try {
+						inviaRisultatiNotifica(messaggio.toString());
+					} catch (Exception e)
+					{
+						e.printStackTrace(System.out);
+					}
+				}
+			}
+
+
+		}
+
+
 
 		for (Live live : lives) {
 			List<Map<String, Object>> giocatori = live.getGiocatori();
@@ -1472,8 +1495,31 @@ public class Main {
 
 		Map<String, Object> ret = new HashMap<>();
 		ret.put("orari", orari);
+		ret.put("snapPartite", snapPartite);
 		ret.put("lives", lives);
+
+
+
+		oldSnapPartite=snapPartite;
+
+
 		return ret;
+	}
+
+	private static List<Live> recuperaLives() throws Exception {
+		List<Live> lives = new ArrayList<Live>();
+		Iterator<Integer> iterator = sq.keySet().iterator();
+		while (iterator.hasNext()) {
+			Integer integer = (Integer) iterator.next();
+			//https://www.fantacalcio.it/api/live/10?g=23&i=15
+			String sqFromLive = getHTTP("https://www.fantacalcio.it/api/live/" + integer + "?g=" + constant.GIORNATA + "&i=" + Constant.I_LIVE_FANTACALCIO);
+			List<Map<String, Object>> getLiveFromFG = jsonToList(sqFromLive);
+			Live live = new Live();
+			live.setSquadra(sq.get(integer));
+			live.setGiocatori(getLiveFromFG);
+			lives.add(live);
+		}
+		return lives;
 	}
 
 	private static String getStatusMatch(String tag, Integer oldStatusMatch) {
@@ -1943,6 +1989,17 @@ public class Main {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public static Map<String, Map<String, Object>> jsonToSnapPartite(String json)
+	{
+		try
+		{
+			return mapper.readValue(json, new TypeReference<Map<String, Map<String, Object>>>(){});
+		} catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 	public static Map<String, Object> jsonToMap(String json)
 	{
 		try
@@ -1956,7 +2013,7 @@ public class Main {
 	public static void svecchiaFile() {
 		Iterable<Salva> findAll = salvaRepository.findAll();
 		for (Salva salva : findAll) {
-			if(!salva.getNome().equals("lives") && !salva.getNome().equals("orari") && !salva.getNome().startsWith(Constant.FORMAZIONE)) {
+			if(!salva.getNome().equals("lives") && !salva.getNome().equals("snapPartite") && !salva.getNome().startsWith(Constant.FORMAZIONE)) {
 				salvaRepository.delete(salva);
 			}
 		}

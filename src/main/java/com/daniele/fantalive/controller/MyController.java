@@ -87,7 +87,7 @@ public class MyController {
 				Constant.LAST_REFRESH=ZonedDateTime.now();
 			}
 			else {
-				System.out.println("non ancora refresh:" + between);
+//				System.out.println("non ancora refresh:" + between);
 				ret = "NON ANCORA REFRESH:" + between;
 			}
 		} else {
@@ -129,7 +129,7 @@ public class MyController {
 	@RequestMapping("/getOrariFromDb")
 	public Map<String, String> getOrariFromDb() throws Exception {
 		Map<String, String> ret = new HashMap<>();
-		ret.put("file", Main.getTesto("orari"));
+		ret.put("file", Main.getTesto("snapPartite"));
 		return ret;
 	}
 	@RequestMapping("/getLivesFromDb")
@@ -148,7 +148,7 @@ public class MyController {
 	public Map<String, String> getOrariFromLive() throws Exception {
 		Map<String, String> ret = new HashMap<>();
 		Map<String, Object> lives = Main.getLives(false);
-		ret.put("file", Main.toJson(lives.get("orari")));
+		ret.put("file", Main.toJson(lives.get("snapPartite")));
 		return ret;
 	}
 	@RequestMapping("/getLivesFromLive")
@@ -178,16 +178,16 @@ public class MyController {
 		Map<String, String>  ret=new HashMap<>();
 		String orari = Main.getTesto(body.get("name")+"-orari");
 		String lives = Main.getTesto(body.get("name")+"-lives");
-		Main.upsertSalva("orari", orari);
+		Main.upsertSalva("snapPartite", orari);
 		Main.upsertSalva("lives", lives);
 		Main.snapshot(false);
-		ret.put("orari", orari );
+		ret.put("snapPartite", orari );
 		ret.put("lives", lives );
 		return ret;
 	}
 	@PostMapping("/caricaFileFromData")
 	public void caricaFileFromData(@RequestBody Map<String,Object> body) throws Exception {
-		Main.upsertSalva("orari", (String) body.get("orari"));
+		Main.upsertSalva("snapPartite", (String) body.get("snapPartite"));
 		Main.upsertSalva("lives", (String) body.get("lives"));
 	}
 	@PostMapping("/caricaFile")
@@ -195,7 +195,7 @@ public class MyController {
 		String content = (String) body.get("file");
 		String tipoFile = (String) body.get("tipoFile");
 		if (tipoFile.equalsIgnoreCase("O")) {
-			Main.upsertSalva("orari", content);
+			Main.upsertSalva("snapPartite", content);
 		}
 		if (tipoFile.equalsIgnoreCase("L")) {
 			Main.upsertSalva("lives", content);
