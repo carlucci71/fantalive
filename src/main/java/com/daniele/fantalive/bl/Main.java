@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,6 +44,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -1384,7 +1386,7 @@ public class Main {
 			orari.put(sqFuori, map);
 			String key = sqCasa + " vs " + sqFuori;
 			//confronta con oldSnapPartite
-			Map<String, Object> oldPartita = getOldSnapPartite().get(key);
+			Map<String, Object> oldPartita = oldSnapPartite.get(key);
 			StringBuilder messaggio=null;
 			if (oldPartita != null) {
 				String oldTag = (String) oldPartita.get("tag");
@@ -2452,8 +2454,42 @@ public class Main {
 		return sb;
 	}
 
-	public static Map<String, Map<String, Object>> getOldSnapPartite() {
-		return oldSnapPartite;
+	public static StringBuilder getOldSnapPartite() {
+		StringBuilder sb = new StringBuilder();
+
+		oldSnapPartite.forEach((k,partita) -> {
+			String tag = (String) partita.get("tag");
+			String val = (String) partita.get("val");
+			sb.append(k + " " + tag + " " + (val.equals("N/A")?"":val) + "\n");
+			Map<Integer, Map<String, String>> reti = new TreeMap<>();
+			StringBuilder risultato=new StringBuilder();
+			partita.forEach((p, v) -> { 
+				if (!p.toString().equals("tag") && !p.toString().equals("val")) {
+					risultato.append(((Map)v).get("gol"));
+					risultato.append(" ");
+					List<Map> r = (List<Map>) ((Map)v).get("RETI");
+					for (Map map : r) {
+						String tipo = (String) map.get("tipo");
+						String minuto = (String) map.get("minuto");
+						String giocatore = (String) map.get("giocatore");
+						String squadra = p.toString();
+						Map<String, String> dati = new HashMap<>();
+						dati.put("tipo", tipo);
+						dati.put("giocatore", giocatore);
+						dati.put("squadra", squadra);
+						reti.put(Integer.parseInt(minuto), dati);
+					}
+				}
+			});
+			sb.append(risultato + "\n");
+
+			reti.forEach((minuto,dati) -> {
+				sb.append(minuto + " " + dati.get("squadra") + " " + dati.get("tipo") + " " + dati.get("giocatore") + "\n");
+			});
+			
+			sb.append("\n");
+		});
+		return sb;
 	}
 
 

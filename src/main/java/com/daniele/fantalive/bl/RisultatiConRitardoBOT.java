@@ -1,9 +1,12 @@
 package com.daniele.fantalive.bl;
 
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -17,8 +20,36 @@ public class RisultatiConRitardoBOT extends TelegramLongPollingBot{
 	private static BotSession registerBot;
 	@Override
 	public void onUpdateReceived(Update update) {
+		try {
+			if(update.hasMessage()){
+				Long chatId = update.getMessage().getChatId();
+				String text = update.getMessage().getText();
+				if(update.getMessage().hasText()){
+					if(text.equals("/risultati")){
+						String testoCallback =Main.getOldSnapPartite().toString();
+						execute(creaSendMessage(chatId, testoCallback , false));
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace(System.out);
+			//			throw new RuntimeException(e);
+		}
+
 	}
 
+	private SendMessage creaSendMessage(long chatId,String msg, boolean bReply) {
+		SendMessage sendMessage = new SendMessage();
+		sendMessage.enableHtml(true);
+		sendMessage.setParseMode("html");
+		sendMessage.setChatId(Long.toString(chatId));
+		sendMessage.setText(msg);
+		return sendMessage;
+	}
+
+	
 	@Override
 	public String getBotUsername() {
 		return "RisultatiConRitardoBot";
