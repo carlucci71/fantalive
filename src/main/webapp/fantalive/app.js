@@ -570,11 +570,16 @@ app.run(
 						alert("Errore-8-3: " + angular.toJson(error));
 				});
 			}
-			$rootScope.setKeepAliveEnd = function(verso){
+			$rootScope.accendiKeepAlive = function(verso){
+				$rootScope.setKeepAliveEnd(true, "./fantalive");
+				window.location.href = './fantalive/index.html';
+			}
+			$rootScope.setKeepAliveEnd = function(verso, prefix){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
-				$resource('./setKeepAliveEnd',{}).save({'verso': verso}).$promise.then(function() {
+				$resource(prefix + '/setKeepAliveEnd',{}).save({'verso': verso}).$promise.then(function(x) {
+					console.log(x);
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
 				}).catch(function(error) {

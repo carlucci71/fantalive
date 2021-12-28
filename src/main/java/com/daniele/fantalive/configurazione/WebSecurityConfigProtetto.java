@@ -30,8 +30,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
     	 httpSecurity
-         .authorizeRequests()
-//         	 .antMatchers("/fantalive/setKeepAliveEnd/**").permitAll()
+             .authorizeRequests()
+     	     .antMatchers("/index2.html").permitAll()
+     	     .antMatchers("/fantalive/app.js").permitAll()
+      	     .antMatchers("/fantalive/setKeepAliveEnd/**").permitAll()
              .antMatchers("/**").hasRole("USER")
           .and()
           	 .formLogin()
