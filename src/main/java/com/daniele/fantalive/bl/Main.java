@@ -913,8 +913,6 @@ public class Main {
 		}
 		return snapPartite;
 	}
-	static int foto=0;
-
 	public static Map<String,Object> postHTTP(String contentType, String url, String body,  Map<String, String>... headers) throws Exception {
 		//		System.out.println("POST " + url + " " + printMap(headers));
 		Map <String, Object> ret = new HashMap<>();
@@ -1342,25 +1340,7 @@ public class Main {
 			snapPartite=partiteLive();
 			lives=recuperaLives();
 		}
-		foto++;
-//		System.out.println("FOTO --> " + foto);
 		Map<String, Map<String, String>> orari=new HashMap<>();
-		/*
-		snapPartite.values().forEach(partita -> { 
-			partita.forEach((keyPartita,vPartita)-> { 
-				if (keyPartita.equalsIgnoreCase("tag")) {
-					System.out.println("tag:" + vPartita);
-				}
-				else if (keyPartita.equalsIgnoreCase("val")) {
-					System.out.println("val:" + vPartita);
-				}
-				else {
-					System.out.println("sq:" + keyPartita);
-					System.out.println("valSq:" + vPartita);
-				}
-			});
-		});
-		 */
 		for (Map<String, Object> partita : snapPartite.values()) {
 			String tag = "";
 			String val = "";
@@ -1470,12 +1450,7 @@ public class Main {
 					}
 				}
 			}
-
-
 		}
-
-
-
 		for (Live live : lives) {
 			List<Map<String, Object>> giocatori = live.getGiocatori();
 			for (Map<String,Object> giocatore : giocatori) {
@@ -1485,7 +1460,6 @@ public class Main {
 				}
 			}
 		}
-
 		Set<String> keySetOrari = orari.keySet();
 		for (String squadra : keySetOrari) {
 			Map orario = (Map) orari.get(squadra);
@@ -1499,12 +1473,7 @@ public class Main {
 		ret.put("orari", orari);
 		ret.put("snapPartite", snapPartite);
 		ret.put("lives", lives);
-
-
-
 		oldSnapPartite=snapPartite;
-
-
 		return ret;
 	}
 
@@ -2454,13 +2423,16 @@ public class Main {
 		return sb;
 	}
 
-	public static StringBuilder getOldSnapPartite() {
+	public static String getOldSnapPartite() throws Exception {
 		StringBuilder sb = new StringBuilder();
-
+		if (oldSnapPartite.isEmpty()) {
+			getLives(false);
+		}
 		oldSnapPartite.forEach((k,partita) -> {
 			String tag = (String) partita.get("tag");
 			String val = (String) partita.get("val");
-			sb.append(k + " " + tag + " " + (val.equals("N/A")?"":val) + "\n");
+			sb.append(k + " " + tag + " " + (val.equals("N/A")?"":val));
+			sb.append("     " + Constant.GOL);
 			Map<Integer, Map<String, String>> reti = new TreeMap<>();
 			StringBuilder risultato=new StringBuilder();
 			partita.forEach((p, v) -> { 
@@ -2489,7 +2461,7 @@ public class Main {
 			
 			sb.append("\n");
 		});
-		return sb;
+		return sb.toString();
 	}
 
 

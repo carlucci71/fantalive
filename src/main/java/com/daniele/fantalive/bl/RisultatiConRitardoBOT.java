@@ -26,7 +26,7 @@ public class RisultatiConRitardoBOT extends TelegramLongPollingBot{
 				String text = update.getMessage().getText();
 				if(update.getMessage().hasText()){
 					if(text.equals("/risultati")){
-						String testoCallback =Main.getOldSnapPartite().toString();
+						String testoCallback = Main.getOldSnapPartite();
 						execute(creaSendMessage(chatId, testoCallback , false));
 					}
 				}
