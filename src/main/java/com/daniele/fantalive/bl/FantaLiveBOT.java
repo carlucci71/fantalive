@@ -3,6 +3,7 @@ package com.daniele.fantalive.bl;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,16 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	private static BotSession registerBot;
 	private static String CHI;
 	private Set<Long> ricercheGiocatori=new HashSet<>();
+
+	
+	/*
+giocatori - seleziona un giocatore
+campionati - seleziona un campionato
+proiezioni - visualizza proiezioni campionati
+simulazioni - simula incontri
+viskeepalive - visualizza keep alive
+switchkeepalive - switch keep alive
+	 */
 	
 	
 	private synchronized SendMessage setButtonsGiocatori(long chatId, String filtro) throws Exception {
@@ -100,7 +111,18 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 				Long chatId = update.getMessage().getChatId();
 				String text = update.getMessage().getText();
 				if(update.getMessage().hasText()){
-					if(text.equals("/campionati")){
+					if(text.equals("/viskeepalive")){
+						Map<String, String> visKeepAliveEnd = Main.visKeepAliveEnd();
+						inviaMessaggio(chatId, visKeepAliveEnd.get("VIS_KEEP_ALIVE"), false);
+					}
+					else if(text.equals("/switchkeepalive")){
+						Map<String, String> visKeepAliveEnd = Main.visKeepAliveEnd();
+						Map<String, Object> body=new HashMap<String, Object>();
+						body.put("verso", (visKeepAliveEnd.get("VIS_KEEP_ALIVE").equals("S")?false:true));
+						Map<String, Object> setKeepAliveEnd = Main.setKeepAliveEnd(body);
+						inviaMessaggio(chatId, setKeepAliveEnd.get("VIS_KEEP_ALIVE").toString(), false);
+					}
+					else if(text.equals("/campionati")){
 						execute(sendInlineKeyBoardCampionati(chatId,"campionati ",false,text));
 					}
 					else if(text.equals("/proiezioni")){

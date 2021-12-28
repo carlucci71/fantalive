@@ -114,10 +114,11 @@ public class Main {
 		if (calendario==null) {
 			calendario = new LinkedHashMap();
 			String http = getHTTP("https://www.goal.com/it/notizie/calendario-serie-a-2021-2022-completo/161ug15ioiflh19whgevwxviur");
+//			System.out.println(http);
 			//			https://www.tomshw.it/culturapop/calendario-serie-a-2021-22-risultati-e-dove-vedere-le-partite/		
 			//			System.out.println(http);
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
-			Document doc = Jsoup.parse(http);
+			Document doc = Jsoup.parse(http);//, StandardCharsets.UTF_8.toString()
 			Elements elements = doc.getElementsByClass("table-container-scroll");
 			for (int i=0;i<elements.size();i++) {
 				Element element = elements.get(i);
@@ -126,7 +127,13 @@ public class Main {
 				if (giornata.trim().equals("")) continue;
 				String giorno="";
 				String mese="";
-				int iGiornata = Integer.parseInt(giornata.substring(0,giornata.indexOf("ª")));
+				int iGiornata;
+				try {
+					iGiornata = Integer.parseInt(giornata.substring(0,giornata.indexOf("ª")));
+				}
+				catch (Exception e ) {
+					iGiornata = Integer.parseInt(giornata.substring(0,giornata.indexOf("ª")-1));
+				}
 				for (int ix=1;ix<elementsTR.size();ix++) {
 					Elements elementsTD = elementsTR.get(ix).getElementsByTag("TD");
 					if (elementsTD.size()<3) continue;
@@ -2462,6 +2469,34 @@ public class Main {
 			sb.append("\n");
 		});
 		return sb.toString();
+	}
+	public static Map<String, String> visKeepAliveEnd() throws Exception {
+		String visKeepAlive = "N";
+		if (Constant.KEEP_ALIVE_END.isAfter(ZonedDateTime.now())) {
+			visKeepAlive="S";
+		}
+		Map<String, String> ret = new HashMap<String, String>();
+		ret.put("VIS_KEEP_ALIVE", visKeepAlive);
+		return ret;
+	}
+	public static Map<String, Object> setKeepAliveEnd(Map<String, Object> body) throws Exception {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		boolean verso = (boolean) body.get("verso");
+		if (verso) {
+			constant.KEEP_ALIVE_END=ZonedDateTime.now().withHour(23).withMinute(0).withSecond(0).withZoneSameLocal(ZoneId.of("Europe/Rome"));
+		} else {
+			constant.KEEP_ALIVE_END=ZonedDateTime.now().plusHours(-1);
+		}
+		String visKeepAlive = "N";
+		ZonedDateTime now = ZonedDateTime.now();
+		if (Constant.KEEP_ALIVE_END.isAfter(now)) {
+			visKeepAlive="S";
+		}
+		Main.toSocket.put("visKeepAlive", visKeepAlive);
+		ret.put("KEEP_ALIVE_END", constant.KEEP_ALIVE_END);
+		ret.put("VIS_KEEP_ALIVE", visKeepAlive);
+		socketHandlerFantalive.invia(Main.toSocket );
+		return ret;
 	}
 
 

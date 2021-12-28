@@ -27,7 +27,7 @@ public class ConstantProtetto {
 		constant.TOKEN_BOT_FANTACRONACALIVE = System.getenv("TOKEN_BOT_FANTACRONACALIVE");
 		constant.TOKEN_BOT_RISULTATICONRITARDO = System.getenv("TOKEN_BOT_RISULTATICONRITARDO");
 		constant.APPKEY_FG = System.getenv("APPKEY_FG");
-		constant.GIORNATA = Integer.valueOf(System.getenv("GIORNATA"));
+		constant.GIORNATA = 1;//Integer.valueOf(System.getenv("GIORNATA"));
 		constant.UTENTE_FS = System.getenv("UTENTE_FS");
 		constant.PWD_FS = System.getenv("PWD_FS");
 		constant.NUM_SQUADRE_BE = Integer.valueOf(System.getenv("NUM_SQUADRE_BE"));
