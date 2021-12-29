@@ -24,6 +24,7 @@ public class ConstantProtetto {
 		constant.ABILITA_REFRESH = Boolean.valueOf(System.getenv("ABILITA_REFRESH"));
 		constant.CHAT_ID_FANTALIVE = Long.valueOf(System.getenv("CHAT_ID_FANTALIVE"));
 		constant.TOKEN_BOT_FANTALIVE = System.getenv("TOKEN_BOT_FANTALIVE");
+		constant.TOKEN_BOT_LINKATTIVAZIONEFANTALIVE= System.getenv("TOKEN_BOT_LINKATTIVAZIONEFANTALIVE");
 		constant.TOKEN_BOT_FANTACRONACALIVE = System.getenv("TOKEN_BOT_FANTACRONACALIVE");
 		constant.TOKEN_BOT_RISULTATICONRITARDO = System.getenv("TOKEN_BOT_RISULTATICONRITARDO");
 		constant.APPKEY_FG = System.getenv("APPKEY_FG");
