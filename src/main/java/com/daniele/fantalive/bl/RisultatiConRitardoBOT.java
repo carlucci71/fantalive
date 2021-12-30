@@ -1,12 +1,14 @@
 package com.daniele.fantalive.bl;
 
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -49,7 +51,7 @@ public class RisultatiConRitardoBOT extends TelegramLongPollingBot{
 		return sendMessage;
 	}
 
-	
+
 	@Override
 	public String getBotUsername() {
 		return "RisultatiConRitardoBot";
@@ -61,6 +63,11 @@ public class RisultatiConRitardoBOT extends TelegramLongPollingBot{
 	}
 
 	public static void main(String[] args) throws Exception {
+		String val = "2022-01-06T11:30:00Z";
+		ZonedDateTime zoneDateTime = ZonedDateTime.parse(val, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC")));
+		String data = zoneDateTime.format(DateTimeFormatter.ofPattern("E dd/MM/yyyy HH:mm").withZone(ZoneId.of("Europe/Rome")));
+		System.out.println(data);
+
 		Constant c=null;
 		Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
 		Method method = cl.getDeclaredMethod("constant");
@@ -72,6 +79,9 @@ public class RisultatiConRitardoBOT extends TelegramLongPollingBot{
 		catch (Exception e) {
 			e.printStackTrace(System.out);
 		}
+		Main.init(null,null,c);
+		String testoCallback = Main.getOldSnapPartite();
+		System.out.println(testoCallback);
 		System.err.println("FINE");
 	}
 

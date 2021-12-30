@@ -2438,6 +2438,13 @@ public class Main {
 		oldSnapPartite.forEach((k,partita) -> {
 			String tag = (String) partita.get("tag");
 			String val = (String) partita.get("val");
+			
+			if (tag.equalsIgnoreCase("PreMatch")) {
+				ZonedDateTime zoneDateTime = ZonedDateTime.parse(val, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC")));
+				val = zoneDateTime.format(DateTimeFormatter.ofPattern("E dd/MM/yyyy HH:mm").withZone(ZoneId.of("Europe/Rome")));
+			}
+			
+			
 			sb.append(k + " " + tag + " " + (val.equals("N/A")?"":val));
 			sb.append("     " + Constant.GOL);
 			Map<Integer, Map<String, String>> reti = new TreeMap<>();
