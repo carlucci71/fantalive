@@ -2446,7 +2446,7 @@ public class Main {
 			
 			
 			sb.append(k + " " + tag + " " + (val.equals("N/A")?"":val));
-			sb.append("     " + Constant.GOL);
+			sb.append("     " + Constant.GOL + " ");
 			Map<Integer, Map<String, String>> reti = new TreeMap<>();
 			StringBuilder risultato=new StringBuilder();
 			partita.forEach((p, v) -> { 
