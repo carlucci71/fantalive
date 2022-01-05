@@ -288,10 +288,10 @@ public class Main {
 		}
 		if (configsCampionato==null) {
 			configsCampionato = new ArrayList<ConfigCampionato>();
-			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.JB.name()));
-			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.LUCCICAR.name()));
-			configsCampionato.add(new ConfigCampionato(22,"FANTAGAZZETTA",Constant.Campionati.FANTAVIVA.name()));
-			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE",Constant.Campionati.BE.name()));
+			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.JB.name(),"NOMANTRA"));
+			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.LUCCICAR.name(),"NOMANTRA"));
+			configsCampionato.add(new ConfigCampionato(22,"FANTAGAZZETTA",Constant.Campionati.FANTAVIVA.name(),"MANTRA"));
+			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE",Constant.Campionati.BE.name(),"NOMANTRA"));
 		}
 	}
 
@@ -773,7 +773,7 @@ public class Main {
 			String link = element.select("A").attr("href");
 			link=link.substring(link.lastIndexOf("=")+1);
 			//			System.out.println(squadra + ";" + giocatore);
-			if (!lega.equalsIgnoreCase("jb-fanta") || (lega.equalsIgnoreCase("jb-fanta") && sqJB.contains(squadra)) || (lega.equalsIgnoreCase("jb-fanta") && giocJB.contains(giocatore))){
+			if (!lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.JB.name())) || (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.JB.name())) && sqJB.contains(squadra)) || (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.JB.name())) && giocJB.contains(giocatore))){
 				ret.put(link,squadra);
 			}
 		}
@@ -1035,12 +1035,23 @@ public class Main {
 
 		//https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?id_comp=319871&r=1&f=1_1631365200000.json
 
+		
 
-		Main.keyFG.put(Constant.Campionati.FANTAVIVA.name(), "id_comp=" + Constant.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG) + "_" + calcolaAggKey("fanta-viva") + ".json");
-		Main.keyFG.put(Constant.Campionati.LUCCICAR.name(), "id_comp=" + Constant.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey(Constant.Campionati.LUCCICAR.name()) + ".json");
-		Main.keyFG.put(Constant.Campionati.JB.name(), "id_comp=" + Constant.COMP_JB_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_JB_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_JB_FG) + "_" + calcolaAggKey("jb-fanta") + ".json");
+		Main.keyFG.put(Constant.Campionati.FANTAVIVA.name(), "id_comp=" + Constant.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.FANTAVIVA.name())) + ".json");
+		Main.keyFG.put(Constant.Campionati.LUCCICAR.name(), "id_comp=" + Constant.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.LUCCICAR.name())) + ".json");
+		Main.keyFG.put(Constant.Campionati.JB.name(), "id_comp=" + Constant.COMP_JB_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_JB_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_JB_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.JB.name())) + ".json");
 	}
 
+	public static final Map<String, String> aliasCampionati = new HashMap<>();
+    static {
+    	aliasCampionati.put(Constant.Campionati.LUCCICAR.name(), Constant.Campionati.LUCCICAR.name());
+    	aliasCampionati.put(Constant.Campionati.BE.name(), Constant.Campionati.BE.name());
+    	aliasCampionati.put(Constant.Campionati.JB.name(), "jb-fanta");
+    	aliasCampionati.put(Constant.Campionati.FANTAVIVA.name(), "fanta-viva");
+    }	
+	
+	
+	
 	private static String calcolaAggKey(String lega) throws Exception {
 		int giornata=constant.GIORNATA-Constant.DELTA_VIVA_FG;
 		if (lega.equalsIgnoreCase(Constant.Campionati.LUCCICAR.name())) giornata=constant.GIORNATA-Constant.DELTA_LUCCICAR_FG;
@@ -1055,13 +1066,10 @@ public class Main {
 		return split[1];
 	}
 
-	public static void getSquadre(String lega) throws Exception {
+	public static void getSquadreMantra(String lega) throws Exception {
 		try {
-			String ll = lega;
-			if (lega.equalsIgnoreCase(Constant.Campionati.JB.name())){
-				ll = "jb-fanta";
-			}
-			Map<String, String> nomiFG = getNomiFG(ll);
+			String aliasLega = aliasCampionati.get(lega);
+			Map<String, String> nomiFG = getNomiFG(aliasLega);
 			lega=lega.replace("-", "").toUpperCase();
 			List<Squadra> squadre=new ArrayList<Squadra>();
 			Map<String,String> headers = new HashMap<String, String>();
@@ -1444,6 +1452,7 @@ public class Main {
 				ZoneId zoneId = ZoneId.of( "Europe/Rome" );
 				ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
 				returns.setAggiornamento(zdt.format(formatter));
+				returns.setTipologia(retAtt.getTipologia());
 				returns.setConLive(conLive);
 				ret.put(campionato, returns);
 			}
@@ -1689,6 +1698,7 @@ public class Main {
 		String tipo = configCampionato.getTipo();
 		String campionato = configCampionato.getCampionato();
 		Return r=new Return();
+		r.setTipologia(configCampionato.getTipologia());
 		r.setNome(campionato.toUpperCase());
 		r.setCampionato(campionato.toUpperCase());
 		Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();

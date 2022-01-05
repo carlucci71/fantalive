@@ -58,7 +58,10 @@
 				<img ng-click="simulaCambiMantra(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" ng-show="visSimulaCambiMantra(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" style="width: 20px; cursor: pointer;" title="applica cambi mantra" src="./ico/simulaMantra.png"></img>
 
 				<br>
-				<visualizzasquadra rcampionato="squadralive.campionato" rlive="getResultMyCampionato(squadralive.campionato).conLive"  eventi="eventi"   squadra="getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra)"></visualizzasquadra>
+				<!-- in tabelle -->
+				<visualizzasquadra r="getResultMyCampionato(squadralive.campionato)" rcampionato="squadralive.campionato"  
+				rlive="getResultMyCampionato(squadralive.campionato).conLive" eventi="eventi" 
+				squadra="getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra)"></visualizzasquadra>
 				</td>
 			</tr>
 			</table>
@@ -122,7 +125,8 @@
 						<input ng-show="nomePartitaSimulata" type=button value="add" ng-click="addPartitaSimulata(r.nome,squadra,nomePartitaSimulata,casaPartitaSimulata)"></input>
 					</div>
 					<div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1">
-							<visualizzasquadra rcampionato="r.campionato" rlive="r.conLive" eventi="eventi"  squadra="squadra"></visualizzasquadra>
+						<!-- dentro squadra -->
+							<visualizzasquadra r="r" rcampionato="r.campionato" rlive="r.conLive" eventi="eventi"  squadra="squadra"></visualizzasquadra>
 					</div>
 				</div>
 			</div>

@@ -399,7 +399,7 @@ app.run(
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
-				$resource('./simulaCambiMantra',{}).save({'sq':sq}).$promise.then(function(data) {
+				$resource('./simulaCambiMantra/' + r.campionato,{}).save({'sq':sq}).$promise.then(function(data) {
 					r.squadre.splice(sq.prog, 1,data);
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
@@ -416,7 +416,7 @@ app.run(
 			}
 			$rootScope.visSimulaCambiMantra=function(r,sq){
 				if (!r.conLive) return false;
-				if (r.campionato!='FANTAVIVA') return false;
+				if (r.tipologia!='MANTRA') return false;
 //				if (sq.nome!='Tavolino') return false;
 				/*
 				var iContaT=0;
@@ -823,6 +823,7 @@ app.directive("visualizzasquadra", function() {
 		restrict: "E",
 		templateUrl: "/fantalive/squadraTemplate.html",
 		scope: {
+			r: "=",
 			rcampionato: "=",
 			rlive: "=",
 			eventi: "=",

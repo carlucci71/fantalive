@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -265,8 +266,8 @@ public class MyController {
 		return test(true);
 	}
 	
-	@PostMapping("/simulaCambiMantra")
-	public Squadra simulaCambiMantra(@RequestBody Map<String,Squadra> body) throws Exception  {
+	@PostMapping("/simulaCambiMantra/{lega}")
+	public Squadra simulaCambiMantra(@PathVariable String lega,@RequestBody Map<String,Squadra> body) throws Exception  {
 		List<String> assenti=new ArrayList<>();
 		Squadra sq = body.get("sq");
 		for (Giocatore giocatore : sq.getTitolari()) {
@@ -279,8 +280,7 @@ public class MyController {
 				assenti.add(giocatore.getId());
 			}
 		}
-		String lega="fanta-viva";//TODO passare
-		Map<String, Object> simulaCambiMantra = Main.simulaCambiMantra(lega, assenti, sq);
+		Map<String, Object> simulaCambiMantra = Main.simulaCambiMantra(Main.aliasCampionati.get(lega), assenti, sq);
 
 		Squadra squadra = new Squadra();
 		squadra.setModulo((sq.getModulo()));
@@ -680,9 +680,9 @@ public class MyController {
 		{
 			Main.aggKeyFG();
 			Main.cancellaSquadre();
-			Main.getSquadre(Constant.Campionati.LUCCICAR.name());
-			Main.getSquadre(Constant.Campionati.JB.name());
-			Main.getSquadre("fanta-viva");
+			Main.getSquadreMantra(Constant.Campionati.LUCCICAR.name());
+			Main.getSquadreMantra(Constant.Campionati.JB.name());
+			Main.getSquadreMantra(Constant.Campionati.FANTAVIVA.name());
 			Main.scaricaBe(Constant.GIORNATA,"");
 			List<Squadra> squadre = Main.getSquadreFromFS("",true, false);
 			Main.adattaNomePartitaSimulata(squadre);

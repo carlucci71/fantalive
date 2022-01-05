@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Return {
 
-	
+	private String tipologia;
 	private String aggiornamento;
 	private String nome;
 	private String campionato;
@@ -41,10 +41,16 @@ public class Return {
 	public void setAggiornamento(String aggiornamento) {
 		this.aggiornamento = aggiornamento;
 	}
+	public String getTipologia() {
+		return tipologia;
+	}
+	public void setTipologia(String tipologia) {
+		this.tipologia = tipologia;
+	}
 	@Override
 	public String toString() {
-		return "Return [aggiornamento=" + aggiornamento + ", nome=" + nome + ", campionato=" + campionato + ", conLive="
-				+ conLive + ", squadre=" + squadre + "]";
+		return "Return [tipologia=" + tipologia + ", aggiornamento=" + aggiornamento + ", nome=" + nome
+				+ ", campionato=" + campionato + ", conLive=" + conLive + ", squadre=" + squadre + "]";
 	}
 	
 }

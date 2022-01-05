@@ -15,12 +15,12 @@
 		</td>
 		<td style="padding: 2px; widthX: 150px; text-align: center">{{getOrario(giocatore.orario)}}</td>
 		<td>
-			<input ng-show="rlive" type=checkbox ng-model="giocatore.cambio"></input>
-			<input ng-show="rlive" type=checkbox ng-model="giocatore.nonCambiabile"></input>
-
-			<input ng-show="rlive" type=checkbox ng-model="giocatore.mantraCambio"></input>
-			<label ng-show="rlive && giocatore.mantraMalus!=0">{{giocatore.mantraMalus}}</label>
-
+			&nbsp;<input ng-disabled="r.tipologia=='MANTRA'" ng-show="rlive" type=checkbox ng-model="giocatore.cambio"></input>
+			&nbsp;<input ng-disabled="r.tipologia=='MANTRA'" ng-show="rlive" type=checkbox ng-model="giocatore.nonCambiabile"></input>
+			<span ng-show="r.tipologia=='MANTRA'">
+				&nbsp;<input ng-show="rlive" type=checkbox ng-model="giocatore.mantraCambio"></input>
+				&nbsp;<label ng-show="rlive && giocatore.mantraMalus!=0">{{giocatore.mantraMalus}}</label>
+			</span>&nbsp;
 		</td>
 	</tr>
 </table>
@@ -58,12 +58,12 @@
 		</td>
 		<td style="padding: 2px; widthX: 150px; text-align: center">{{getOrario(giocatore.orario)}}</td>
 		<td>
-			<input ng-show="rlive" type=checkbox ng-model="giocatore.cambio"></input>
-			<input ng-show="rlive" type=checkbox ng-model="giocatore.nonCambiabile"></input>
-
-			<input ng-show="rlive" type=checkbox ng-model="giocatore.mantraCambio"></input>
-			<label ng-show="rlive && giocatore.mantraMalus!=0">{{giocatore.mantraMalus}}</label>
-
+			&nbsp;<input ng-disabled="r.tipologia=='MANTRA'" ng-show="rlive" type=checkbox ng-model="giocatore.cambio"></input>
+			&nbsp;<input ng-disabled="r.tipologia=='MANTRA'" ng-show="rlive" type=checkbox ng-model="giocatore.nonCambiabile"></input>
+			<span ng-show="r.tipologia=='MANTRA'">
+				&nbsp;<input ng-show="rlive" type=checkbox ng-model="giocatore.mantraCambio"></input>
+				&nbsp;<label ng-show="rlive && giocatore.mantraMalus!=0">{{giocatore.mantraMalus}}</label>
+			</span>&nbsp;
 		</td>
 	</tr>
 </table>
