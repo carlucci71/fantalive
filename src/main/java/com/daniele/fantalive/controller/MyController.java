@@ -280,10 +280,13 @@ public class MyController {
 			}
 		}
 		String lega="fanta-viva";//TODO passare
-		Map<String, Object> simulaCambiMantra = Main.simulaCambiMantra(lega, assenti);
+		Map<String, Object> simulaCambiMantra = Main.simulaCambiMantra(lega, assenti, sq);
 
 		Squadra squadra = new Squadra();
+		squadra.setModulo((sq.getModulo()));
+		squadra.setIdSquadra(sq.getIdSquadra());
 		squadra.setTitolariOriginali(sq.getTitolariOriginali());
+		squadra.setRiserveOriginali(sq.getRiserveOriginali());
 		squadra.setCasaProiezione(sq.isCasaProiezione());
 		squadra.setNome(sq.getNome());
 		squadra.setEvidenza(sq.isEvidenza());
@@ -458,6 +461,10 @@ public class MyController {
 		Squadra sq = body.get("sq");
 		Squadra squadra = new Squadra();
 		squadra.setCasaProiezione(sq.isCasaProiezione());
+		squadra.setModulo((sq.getModulo()));
+		squadra.setIdSquadra(sq.getIdSquadra());
+		squadra.setTitolariOriginali(sq.getTitolariOriginali());
+		squadra.setRiserveOriginali(sq.getRiserveOriginali());
 		squadra.setNome(sq.getNome());
 		squadra.setEvidenza(sq.isEvidenza());
 		squadra.setPartiteSimulate(sq.getPartiteSimulate());

@@ -1091,6 +1091,8 @@ public class Main {
 								Squadra squadra = new Squadra();
 								squadre.add(squadra);
 								squadra.setNome(nome);
+								squadra.setModulo(map2.get("m").toString().replaceAll(";", ""));
+								squadra.setIdSquadra(map2.get("id").toString());
 								List<PartitaSimulata> partiteSimulate=new ArrayList<>();
 								PartitaSimulata partitaSimulata=new PartitaSimulata();
 								partitaSimulata.setCampionato(lega);
@@ -1169,6 +1171,13 @@ public class Main {
 				squadra.setTitolariOriginali(originali);
 			}
 			
+			for (Squadra squadra : squadre) {
+				List<Giocatore> originali = new ArrayList<>();
+				for (Giocatore giocatore : squadra.getRiserve()) {
+					originali.add(giocatore);
+				}
+				squadra.setRiserveOriginali(originali);
+			}
 			
 			upsertSalva(Constant.FORMAZIONE + lega , toJson(squadre));
 			//		return squadre;
@@ -1179,7 +1188,7 @@ public class Main {
 		}
 	}
 
-	public static Map<String, Object> simulaCambiMantra(String lega, List<String> assenti) throws Exception {
+	public static Map<String, Object> simulaCambiMantra(String lega, List<String> assenti, Squadra sq) throws Exception {
 		Map<String, Object> jsonToMap;
 		Map bodyMap = new HashMap<>();
 		bodyMap.put("username", constant.UTENTE_FG);
@@ -1202,23 +1211,8 @@ public class Main {
 
 			}
 		}
-		
-		/************************/
-		
-		
-		Map<String, String> nomiFG = getNomiFG(lega);//tutti gli id
-		headers.put("app_key", constant.APPKEY_FG);
-		String url = "https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?" + keyFG.get(lega.replace("-", "").toUpperCase());
-		String string = getHTTP(url, headers );
-		jsonToMap = jsonToMap(string);
-		if (jsonToMap.get("data") == null) throw new RuntimeException("aggiornare KeyFG per " + lega.replace("-", "").toUpperCase());
-		List<Map> formazioni = (List<Map>) ((Map)jsonToMap.get("data")).get("formazioni");//tutte le formazioni
-		System.out.println(toJson(formazioni)+ "-----------------" + toJson(nomiFG));
-		
-		
-		
-		
-		/*************************/
+
+		/*
 		headers=new HashMap<>();
 		headers.put("app_key", constant.APPKEY_FG_MOBILE);
 		headers.put("lega_token", lega_token);
@@ -1229,7 +1223,8 @@ public class Main {
 		data = (Map<String, Object>) jsonToMap.get("data");
 		Map<String, Object>  formazione = (Map<String, Object>) data.get("formazione");//mia formazione TODO recupera formazione di altri
 		List<Map<String, Object>>  calciatori = (List<Map<String, Object>>) data.get("calciatori");//miei calciatori
-		String modulo = (String) formazione.get("modulo");
+		*/
+		String modulo = sq.getModulo();
 		Map mapBody = new HashMap<>();
 		List<Map> teams = new ArrayList<>();
 		Map mapT = new HashMap<>();
@@ -1237,8 +1232,8 @@ public class Main {
 		mapT.put("modulo", modulo);//modulo
 		mapT.put("moduloS", "");
 		List<Map> players = new ArrayList<>();
-		addPlayer(players, (List<String>) formazione.get("titolari"), assenti);//aggiunto giocatore
-		addPlayer(players, (List<String>) formazione.get("panchinari"), assenti);//aggiunto giocatore
+		addPlayer(players, sq.getTitolariOriginali(), assenti);//aggiunto giocatore
+		addPlayer(players, sq.getRiserveOriginali(), assenti);//aggiunto giocatore
 		mapT.put("players", players);
 		teams.add(mapT);
 		mapBody.put("teams", teams);
@@ -1252,8 +1247,9 @@ public class Main {
 		teams = (List<Map>) ((Map)mapResponse.get("data")).get("teams");
 		Map mapRisposta = teams.get(0);
 		players = (List<Map>) mapRisposta.get("players");
-		for (Map<String,Object> calciatore : calciatori) {
-			Integer idCalciatore = (Integer) calciatore.get("id");
+		List<Map<String,Object>> calciatori=new ArrayList<>();
+		for (Giocatore giocatore : sq.getTitolari()) {
+			Integer idCalciatore = Integer.parseInt(giocatore.getId());
 			Double malus=null;
 			Boolean played=null;
 			Double rank=null;
@@ -1264,10 +1260,41 @@ public class Main {
 					rank = (Double) player.get("rank");
 				}
 			}
+			Map<String,Object> calciatore = new HashMap<>();
 			calciatore.put("malus", malus);
 			calciatore.put("played", played);
 			calciatore.put("rank", rank);
+			calciatore.put("id",idCalciatore);
+			calciatore.put("n",giocatore.getNome());
+			calciatore.put("s",giocatore.getSquadra());
+			calciatore.put("r",giocatore.getRuolo());
+			calciatori.add(calciatore);
 		}
+		for (Giocatore giocatore : sq.getRiserve()) {
+			Integer idCalciatore = Integer.parseInt(giocatore.getId());
+			Double malus=null;
+			Boolean played=null;
+			Double rank=null;
+			for (Map player : players) {
+				if (((Integer)player.get("id")).equals(idCalciatore)) {
+					malus = (Double) player.get("malus");
+					played = (Boolean) player.get("played");
+					rank = (Double) player.get("rank");
+				}
+			}
+			Map<String,Object> calciatore = new HashMap<>();
+			calciatore.put("malus", malus);
+			calciatore.put("played", played);
+			calciatore.put("rank", rank);
+			calciatore.put("id",idCalciatore);
+			calciatore.put("n",giocatore.getNome());
+			calciatore.put("s",giocatore.getSquadra());
+			calciatore.put("r",giocatore.getRuolo());
+			calciatori.add(calciatore);
+		}
+		
+		
+
 		Map<String, Object> ret = new HashMap<>();
 		ret.put("modulo",mapRisposta.get("modulo"));
 		ret.put("moduloS",mapRisposta.get("moduloS"));
@@ -1275,29 +1302,10 @@ public class Main {
 		List<Map<String, Object>>  calciatoriNonEntra = new ArrayList<>();
 		for (Map<String,Object> calciatore : calciatori) {
 			Map<String, Object> calciatoreDef = new HashMap<>();
-			calciatoreDef.put("prob numero maglia",calciatore.get("i"));
-			calciatoreDef.put("perc gioca",calciatore.get("it"));
-			int st = (int)calciatore.get("st");
-			calciatoreDef.put("disponibile",(st==1?"S":(st==2?"inforunato":(st==3?"squalificato":(st==4?"assente":"???")))));
-			calciatoreDef.put("nota assenza",(calciatore.get("c").equals("")?"":calciatore.get("c")));
-//			calciatoreDef.put("nota assenza 2",(calciatore.get("d").equals("")?"":calciatore.get("d")));
 			calciatoreDef.put("id",calciatore.get("id"));
 			calciatoreDef.put("nome",calciatore.get("n"));
-//			calciatoreDef.put("id squadra",calciatore.get("id_s"));
 			calciatoreDef.put("squadra",calciatore.get("s"));
-//			calciatoreDef.put("nazione campionato",calciatore.get("camp"));
-//			calciatoreDef.put("id campionato",calciatore.get("id_camp"));
 			calciatoreDef.put("ruolo",calciatore.get("r"));
-			calciatoreDef.put("ceduto",((int)calciatore.get("ced")==0?"N":"S"));
-//			calciatoreDef.put("img",calciatore.get("img"));
-			calciatoreDef.put("nazionalita",calciatore.get("naz"));
-			calciatoreDef.put("mv",calciatore.get("mv"));
-			calciatoreDef.put("fanta media",calciatore.get("mfv"));
-			calciatoreDef.put("casa fuori",((int)calciatore.get("t_caf")==0?"C":"F"));
-//			calciatoreDef.put("incontro casa",calciatore.get("t_a"));
-//			calciatoreDef.put("incontro fuori",calciatore.get("t_b"));
-			calciatoreDef.put("contro",((int)calciatore.get("t_caf")==0?calciatore.get("t_b"):calciatore.get("t_a")));
-			calciatoreDef.put("valutazione",calciatore.get("cmp"));
 			calciatoreDef.put("malus",(calciatore.get("malus")==null?"N/A":calciatore.get("malus")));
 			calciatoreDef.put("played",(calciatore.get("played")==null?false:calciatore.get("played")));
 			Double rank = (Double) calciatore.get("rank");
@@ -1313,11 +1321,11 @@ public class Main {
 		return ret;
 	}
 
-	private static void addPlayer(List<Map> players, List<String> titolari,List<String> assenti) {
-		for (String gioc : titolari) {
+	private static void addPlayer(List<Map> players, List<Giocatore> titolari,List<String> assenti) {
+		for (Giocatore gioc : titolari) {
 			Map player = new HashMap<>();
-			player.put("id",gioc);
-			if (assenti.contains(gioc)) {
+			player.put("id",gioc.getId());
+			if (assenti.contains(gioc.getId())) {
 				player.put("rank",56);
 			} else {
 				player.put("rank",6);

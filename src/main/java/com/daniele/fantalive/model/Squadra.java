@@ -17,6 +17,7 @@ private double modificatoreAttacco=0;
 private double malusFormazioneAutomatica=0;
 private List<Giocatore> titolari=new ArrayList<Giocatore>();
 private List<Giocatore> titolariOriginali=new ArrayList<Giocatore>();
+private List<Giocatore> riserveOriginali=new ArrayList<Giocatore>();
 private List<PartitaSimulata> partiteSimulate=new ArrayList<PartitaSimulata>();
 private List<Giocatore> riserve=new ArrayList<Giocatore>();
 public double tmp;
@@ -238,6 +239,12 @@ public String getModulo() {
 }
 public void setModulo(String modulo) {
 	this.modulo = modulo;
+}
+public List<Giocatore> getRiserveOriginali() {
+	return riserveOriginali;
+}
+public void setRiserveOriginali(List<Giocatore> riserveOriginali) {
+	this.riserveOriginali = riserveOriginali;
 }
 
 }
