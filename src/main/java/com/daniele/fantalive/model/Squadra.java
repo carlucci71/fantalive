@@ -20,6 +20,9 @@ private List<Giocatore> titolariOriginali=new ArrayList<Giocatore>();
 private List<PartitaSimulata> partiteSimulate=new ArrayList<PartitaSimulata>();
 private List<Giocatore> riserve=new ArrayList<Giocatore>();
 public double tmp;
+private String idSquadra;
+private String modulo;
+
 
 public String getNome() {
 	return nome;
@@ -223,6 +226,18 @@ public List<Giocatore> getTitolariOriginali() {
 }
 public void setTitolariOriginali(List<Giocatore> titolariOriginali) {
 	this.titolariOriginali = titolariOriginali;
+}
+public String getIdSquadra() {
+	return idSquadra;
+}
+public void setIdSquadra(String idSquadra) {
+	this.idSquadra = idSquadra;
+}
+public String getModulo() {
+	return modulo;
+}
+public void setModulo(String modulo) {
+	this.modulo = modulo;
 }
 
 }

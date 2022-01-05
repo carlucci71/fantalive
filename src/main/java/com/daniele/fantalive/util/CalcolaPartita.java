@@ -22,7 +22,7 @@ import com.daniele.fantalive.repository.SalvaRepository;
 
 
 public class CalcolaPartita {
-	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 10;
+	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 12;
 	private static final boolean SALVA_FILE=false;
 	private static final int ICASA=2;
 	private static final boolean USA_SPRING=false;
