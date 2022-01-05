@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Return {
 
+	
 	private String aggiornamento;
 	private String nome;
 	private String campionato;

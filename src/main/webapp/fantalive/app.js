@@ -417,7 +417,7 @@ app.run(
 			$rootScope.visSimulaCambiMantra=function(r,sq){
 				if (!r.conLive) return false;
 				if (r.campionato!='FANTAVIVA') return false;
-				if (sq.nome!='Tavolino') return false;
+//				if (sq.nome!='Tavolino') return false;
 				/*
 				var iContaT=0;
                 angular.forEach(sq.titolari, function(value,chiave) {

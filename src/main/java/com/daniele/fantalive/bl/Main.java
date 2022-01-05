@@ -1244,6 +1244,10 @@ public class Main {
 		postHTTP = postHTTP("application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/V1_LegaFormazioni/Simulatore",toJson(mapBody), headers);
 		response = (String) postHTTP.get("response");
 		mapResponse = jsonToMap(response);
+		List listErrorMessage = (List)mapResponse.get("error_msgs");
+		if (listErrorMessage != null) {
+			throw new RuntimeException(listErrorMessage.get(0).toString());
+		}
 		teams = (List<Map>) ((Map)mapResponse.get("data")).get("teams");
 		Map mapRisposta = teams.get(0);
 		players = (List<Map>) mapRisposta.get("players");
