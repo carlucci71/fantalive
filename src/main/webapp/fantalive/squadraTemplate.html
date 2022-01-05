@@ -17,6 +17,10 @@
 		<td>
 			<input ng-show="rlive" type=checkbox ng-model="giocatore.cambio"></input>
 			<input ng-show="rlive" type=checkbox ng-model="giocatore.nonCambiabile"></input>
+
+			<input ng-show="rlive" type=checkbox ng-model="giocatore.mantraCambio"></input>
+			<label ng-show="rlive && giocatore.mantraMalus!=0">{{giocatore.mantraMalus}}</label>
+
 		</td>
 	</tr>
 </table>
@@ -56,6 +60,10 @@
 		<td>
 			<input ng-show="rlive" type=checkbox ng-model="giocatore.cambio"></input>
 			<input ng-show="rlive" type=checkbox ng-model="giocatore.nonCambiabile"></input>
+
+			<input ng-show="rlive" type=checkbox ng-model="giocatore.mantraCambio"></input>
+			<label ng-show="rlive && giocatore.mantraMalus!=0">{{giocatore.mantraMalus}}</label>
+
 		</td>
 	</tr>
 </table>

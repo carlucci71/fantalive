@@ -29,6 +29,7 @@ public class Constant {
 	public static String TOKEN_BOT_RISULTATICONRITARDO;
 	public static String TOKEN_BOT_LINKATTIVAZIONEFANTALIVE;
 	public static String APPKEY_FG;
+	public static String APPKEY_FG_MOBILE;
 	public static String AUTH_FS;
 	public static boolean LIVE_FROM_FILE;
 	public static boolean ABILITA_REFRESH;
@@ -41,6 +42,8 @@ public class Constant {
 	public static ZonedDateTime LAST_REFRESH;
 	public static String PWD_FS;
 	public static String UTENTE_FS;
+	public static String PWD_FG;
+	public static String UTENTE_FG;
 	/*-------------------------------------------------------------------------------------------*/
 	public static DateTimeFormatter dateTimeFormatterIn = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
 	public static DateTimeFormatter dateTimeFormatterOut = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Rome"));

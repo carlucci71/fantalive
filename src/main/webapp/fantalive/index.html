@@ -54,6 +54,9 @@
 				<td ng-repeat="squadralive in partiteLive[visPartitaLive].squadre">
 				<label>{{getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra).nome}} -->{{calcolaProiezione(squadralive)}} </label>
 				<img ng-click="simulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" ng-show="visSimulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
+				&nbsp;&nbsp;
+				<img ng-click="simulaCambiMantra(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" ng-show="visSimulaCambiMantra(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" style="width: 20px; cursor: pointer;" title="applica cambi mantra" src="./ico/simulaMantra.png"></img>
+
 				<br>
 				<visualizzasquadra rcampionato="squadralive.campionato" rlive="getResultMyCampionato(squadralive.campionato).conLive"  eventi="eventi"   squadra="getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra)"></visualizzasquadra>
 				</td>
@@ -101,6 +104,10 @@
 					<input type=checkbox ng-checked="partitaLive[r.nome].indexOf(squadra.nome)>-1" ng-click="toggleCheckbox(r.nome,squadra)"></input>
 					 --> 
 					<img ng-click="simulaCambi(r,squadra)" ng-show="visSimulaCambi(r,squadra)" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
+					&nbsp;&nbsp;
+					<img ng-click="simulaCambiMantra(r,squadra)" ng-show="visSimulaCambiMantra(r,squadra)" style="width: 20px; cursor: pointer;" title="applica cambi mantra" src="./ico/simulaMantra.png"></img>
+
+
 					<input type=button value="&#9851;" ng-style="{'color':simPresente(squadra)}" ng-click="addSimulazione=!addSimulazione"></input>
 					
 					<div ng-show="addSimulazione">

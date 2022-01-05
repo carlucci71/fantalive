@@ -131,7 +131,13 @@ public double getMediaRiserve() {
 	return Math.ceil(getTotaleRiserve()/getContaRiserve()*100)/100;
 }
 public Double getProiezione() {
-	return getTotaleTitolari() + 6 * (11-getContaTitolari() - getContaNonCambiabili()) ;
+	double d = getTotaleTitolari() + 6 * (11-getContaTitolari() - getContaNonCambiabili());
+	for (Giocatore giocatore : titolari) {
+		if (giocatore.getMantraMalus() != null) {
+			d=d+giocatore.getMantraMalus();
+		}
+	}
+	return new BigDecimal(d, MathContext.DECIMAL128).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
 }
 public Double getTotale() {
 //	return getTotaleTitolari() + getModificatoreDifesa() + getModificatoreCentrocampo() + getModificatoreAttacco() + getMalusFormazioneAutomatica();

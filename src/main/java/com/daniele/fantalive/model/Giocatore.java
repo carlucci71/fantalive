@@ -24,6 +24,8 @@ public class Giocatore {
 	private boolean cambio;
 	private boolean cambiato;
 	private boolean nonCambiabile;
+	private boolean mantraCambio;
+	private Double mantraMalus;
 	private String idGioc;
 	private boolean entra=false;
 	private boolean esce=false;
@@ -170,6 +172,18 @@ public class Giocatore {
 	}
 	public void setEsce(boolean esce) {
 		this.esce = esce;
+	}
+	public boolean isMantraCambio() {
+		return mantraCambio;
+	}
+	public void setMantraCambio(boolean mantraCambio) {
+		this.mantraCambio = mantraCambio;
+	}
+	public Double getMantraMalus() {
+		return mantraMalus;
+	}
+	public void setMantraMalus(Double mantraMalus) {
+		this.mantraMalus = mantraMalus;
 	}
 
 }

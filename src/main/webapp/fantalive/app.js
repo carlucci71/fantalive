@@ -395,7 +395,40 @@ app.run(
 						alert("Errore-3-3: " + angular.toJson(error));
 				});
 			}
+			$rootScope.simulaCambiMantra=function(r,sq){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./simulaCambiMantra',{}).save({'sq':sq}).$promise.then(function(data) {
+					r.squadre.splice(sq.prog, 1,data);
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				}).catch(function(error) {
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+					if (error && error.data && error.data.message)
+						alert("Errore-4-1: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore-4-2: " + error.data);
+					else 
+						alert("Errore-4-3: " + angular.toJson(error));
+				});
+			}
+			$rootScope.visSimulaCambiMantra=function(r,sq){
+				if (!r.conLive) return false;
+				if (r.campionato!='FANTAVIVA') return false;
+				if (sq.nome!='Tavolino') return false;
+				/*
+				var iContaT=0;
+                angular.forEach(sq.titolari, function(value,chiave) {
+                	if (value.mantraCambio) iContaT++;
+                });
+				if (iContaT==0) return false;
+				*/
+				return true;
+			}
 			$rootScope.visSimulaCambi=function(r,sq){
+				//return true se c'è almeno un titolare da cambiare e se sono uguali il numero dei titolari ed il numero delle riserve da cambiare
 				if (!r.conLive) return false;
 				var iContaT=0;
                 angular.forEach(sq.titolari, function(value,chiave) {

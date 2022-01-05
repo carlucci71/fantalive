@@ -1,12 +1,11 @@
 package com.daniele.fantalive.controller;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.chrono.ChronoZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -16,8 +15,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -40,7 +37,6 @@ import com.daniele.fantalive.model.Return;
 import com.daniele.fantalive.model.Squadra;
 import com.daniele.fantalive.repository.SalvaRepository;
 import com.daniele.fantalive.util.Constant;
-import com.daniele.fantalive.util.Constant.Campionati;
 
 @Component
 @RestController
@@ -268,6 +264,195 @@ public class MyController {
 		Main.upsertSalva(Constant.FORMAZIONE + r.getNome(), Main.toJson(r.getSquadre()));
 		return test(true);
 	}
+	
+	@PostMapping("/simulaCambiMantra")
+	public Squadra simulaCambiMantra(@RequestBody Map<String,Squadra> body) throws Exception  {
+		List<String> assenti=new ArrayList<>();
+		Squadra sq = body.get("sq");
+		for (Giocatore giocatore : sq.getTitolari()) {
+			if (giocatore.isMantraCambio()) {
+				assenti.add(giocatore.getId());
+			}
+		}
+		for (Giocatore giocatore : sq.getRiserve()) {
+			if (giocatore.isMantraCambio()) {
+				assenti.add(giocatore.getId());
+			}
+		}
+		String lega="fanta-viva";//TODO passare
+		Map<String, Object> simulaCambiMantra = Main.simulaCambiMantra(lega, assenti);
+
+		Squadra squadra = new Squadra();
+		squadra.setTitolariOriginali(sq.getTitolariOriginali());
+		squadra.setCasaProiezione(sq.isCasaProiezione());
+		squadra.setNome(sq.getNome());
+		squadra.setEvidenza(sq.isEvidenza());
+		squadra.setPartiteSimulate(sq.getPartiteSimulate());
+		squadra.setProg(sq.getProg());
+		List<Giocatore> nuovaListaGiocatori=new ArrayList<Giocatore>();
+		int iContaPosizione=0;
+		List<Map<String, Object>> calciatoriEntra = (List<Map<String, Object>>) simulaCambiMantra.get("calciatoriEntra");
+		List<Map<String, Object>> calciatoriNonEntra = (List<Map<String, Object>>) simulaCambiMantra.get("calciatoriNonEntra");
+		
+		for (Giocatore giocatore : sq.getTitolari()) {
+			Giocatore entra = entra(giocatore, calciatoriEntra, "E", squadra.getTitolariOriginali());
+			if (entra != null) {
+				nuovaListaGiocatori.add(entra);
+			}
+		}
+		for (Giocatore giocatore : sq.getRiserve()) {
+			Giocatore entra = entra(giocatore, calciatoriEntra, "E", squadra.getTitolariOriginali());
+			if (entra != null) {
+				nuovaListaGiocatori.add(entra);
+			}
+		}
+		Collections.sort(nuovaListaGiocatori, new Comp());
+		squadra.setTitolari(nuovaListaGiocatori);
+
+		nuovaListaGiocatori=new ArrayList<Giocatore>();
+		for (Giocatore giocatore : sq.getTitolari()) {
+			Giocatore entra = entra(giocatore, calciatoriNonEntra, "U", squadra.getTitolariOriginali());
+			if (entra != null) {
+				nuovaListaGiocatori.add(entra);
+			}
+		}
+		for (Giocatore giocatore : sq.getRiserve()) {
+			Giocatore entra = entra(giocatore, calciatoriNonEntra, "U", squadra.getTitolariOriginali());
+			if (entra != null) {
+				nuovaListaGiocatori.add(entra);
+			}
+		}
+		Collections.sort(nuovaListaGiocatori, new Comp());
+		squadra.setRiserve(nuovaListaGiocatori);
+
+		int iContaTitolari = squadra.getTitolari().size();
+		if (iContaTitolari < 11) {
+			Map <String, Integer> contaMacroRuoli=new HashMap<>();
+			contaMacroRuoli.put("P", 0);
+			contaMacroRuoli.put("D", 0);
+			contaMacroRuoli.put("C", 0);
+			contaMacroRuoli.put("A", 0);
+			for (Giocatore giocatore : squadra.getTitolari()) {
+				String macroRuolo = macroRuoliMantra.get(giocatore.getRuolo().split(";")[0]);
+				Integer conta = contaMacroRuoli.get(macroRuolo);
+				conta++;
+				contaMacroRuoli.put(macroRuolo, conta);
+			}
+//			System.out.println(contaMacroRuoli);
+//			System.out.println(simulaCambiMantra.get("moduloS"));
+			Integer contaP = contaMacroRuoli.get("P");
+			if (contaP==0) {
+				for (Giocatore titolare : squadra.getTitolariOriginali()) {
+					String macroRuolo = macroRuoliMantra.get(titolare.getRuolo().split(";")[0]);
+					if (macroRuolo.equals("P")) {
+						Giocatore giocatore = getGiocatore(titolare.getId(), squadra.getRiserve());
+						giocatore.setNonCambiabile(true);
+						giocatore.setCambio(false);
+						giocatore.setCambiato(false);
+						squadra.getTitolari().add(0,giocatore);
+						List<Giocatore> nuoveRiserve = new ArrayList<>();
+						for (Giocatore riserva : squadra.getRiserve()) {
+							if (!riserva.getId().equals(giocatore.getId())) {
+								nuoveRiserve.add(riserva);
+							}
+						}
+						squadra.setRiserve(nuoveRiserve);
+					}
+				}
+				iContaTitolari++;
+			}
+
+			for (Giocatore titolare : squadra.getTitolariOriginali()) {
+				if (iContaTitolari>=11) continue;
+				Giocatore giocatore = getGiocatore(titolare.getId(), squadra.getRiserve());
+				if (giocatore != null) {
+					giocatore.setNonCambiabile(true);
+					giocatore.setCambio(false);
+					giocatore.setCambiato(false);
+					squadra.getTitolari().add(giocatore);
+					List<Giocatore> nuoveRiserve = new ArrayList<>();
+					for (Giocatore riserva : squadra.getRiserve()) {
+						if (!riserva.getId().equals(giocatore.getId())) {
+							nuoveRiserve.add(riserva);
+						}
+					}
+					squadra.setRiserve(nuoveRiserve);
+					iContaTitolari++;
+				}
+			}
+
+		}
+		
+		return squadra;
+	}
+	
+	private Giocatore getGiocatore(String id, List<Giocatore> list) {
+		for (Giocatore giocatore : list) {
+			if (giocatore.getId().equals(id)) {
+				return giocatore;
+			}
+		}
+		return null;
+	}
+	
+	private class Comp implements Comparator<Giocatore> {
+
+		public int compare(final Giocatore g1, final Giocatore g2) {
+				String r1 = macroRuoliMantra.get(g1.getRuolo().split(";")[0]);
+				String r2 = macroRuoliMantra.get(g2.getRuolo().split(";")[0]);
+				return r2.compareTo(r1);
+		}
+
+	}
+	
+	private static final Map<String, String> macroRuoliMantra = new HashMap<>();
+    static {
+    	macroRuoliMantra.put("Por", "P");
+    	
+    	macroRuoliMantra.put("Dd", "D");
+    	macroRuoliMantra.put("Ds", "D");
+    	macroRuoliMantra.put("Dc", "D");
+
+    	macroRuoliMantra.put("E", "C");
+    	macroRuoliMantra.put("C", "C");
+    	macroRuoliMantra.put("M", "C");
+
+    	macroRuoliMantra.put("W", "A");
+    	macroRuoliMantra.put("T", "A");
+    	macroRuoliMantra.put("Pc", "A");
+    	macroRuoliMantra.put("A", "A");
+    }	
+	
+	
+	private Giocatore entra(Giocatore giocatore, List<Map<String, Object>> listaCalciatori,  String enUs, List<Giocatore> titolariOriginali) {
+		String id = giocatore.getId();
+		for (Map<String, Object> calciatore : listaCalciatori) {
+			Integer idSimulaCalciatore = (Integer) calciatore.get("id");
+			if (Integer.parseInt(id)==idSimulaCalciatore) {
+				giocatore.setMantraMalus((Double) calciatore.get("malus"));
+				if (isTitolareOriginale(giocatore, titolariOriginali) && enUs.equals("E") || !isTitolareOriginale(giocatore, titolariOriginali) && enUs.equals("U")) {
+					giocatore.setCambiato(false);
+					giocatore.setCambio(false);
+				} else {
+					giocatore.setCambiato(true);
+					giocatore.setCambio(true);
+				}
+				giocatore.setNonCambiabile(false);
+				return giocatore;
+			}
+		}
+		return null;
+	}
+	
+	private boolean isTitolareOriginale(Giocatore giocatore, List<Giocatore> titolariOriginali) {
+		for (Giocatore titolareOriginale : titolariOriginali) {
+			if (giocatore.getId().equals(titolareOriginale.getId())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	@PostMapping("/simulaCambi")
 	public Squadra simulaCambi(@RequestBody Map<String,Squadra> body)  {
 		Squadra sq = body.get("sq");

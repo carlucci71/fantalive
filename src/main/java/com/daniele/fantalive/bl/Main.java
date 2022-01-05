@@ -22,7 +22,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,7 +43,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -114,7 +112,7 @@ public class Main {
 		if (calendario==null) {
 			calendario = new LinkedHashMap();
 			String http = getHTTP("https://www.goal.com/it/notizie/calendario-serie-a-2021-2022-completo/161ug15ioiflh19whgevwxviur");
-//			System.out.println(http);
+			//			System.out.println(http);
 			//			https://www.tomshw.it/culturapop/calendario-serie-a-2021-22-risultati-e-dove-vedere-le-partite/		
 			//			System.out.println(http);
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
@@ -768,7 +766,7 @@ public class Main {
 		Elements select = doc.select(".left-heading-link");
 		int size = select1.size();
 		for (int i=0;i<size;i++) {
-			Element element1 = select1.get(i);
+			Element element1 = select1.get(i);//TODO QUI????
 			String squadra = element1.select("H4").first().text();
 			String giocatore = element1.select("H5").first().text();
 			Element element = select.get(i);
@@ -1162,12 +1160,171 @@ public class Main {
 					}
 				}
 			}
+			
+			for (Squadra squadra : squadre) {
+				List<Giocatore> originali = new ArrayList<>();
+				for (Giocatore giocatore : squadra.getTitolari()) {
+					originali.add(giocatore);
+				}
+				squadra.setTitolariOriginali(originali);
+			}
+			
+			
 			upsertSalva(Constant.FORMAZIONE + lega , toJson(squadre));
 			//		return squadre;
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace(System.out);
+		}
+	}
 
+	public static Map<String, Object> simulaCambiMantra(String lega, List<String> assenti) throws Exception {
+		Map<String, Object> jsonToMap;
+		Map bodyMap = new HashMap<>();
+		bodyMap.put("username", constant.UTENTE_FG);
+		bodyMap.put("password", constant.PWD_FG);
+		Map<String, String> headers=new HashMap<>();
+		headers.put("app_key", constant.APPKEY_FG_MOBILE);
+		Map<String, Object> postHTTP = postHTTP("application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/v1_utente/login",toJson(bodyMap), headers);
+		String response = (String) postHTTP.get("response");
+		Map<String, Object> mapResponse = jsonToMap(response);//dati del login
+		Map data = (Map) mapResponse.get("data");
+		Map utente = (Map) data.get("utente");			
+		String user_token = (String) utente.get("utente_token");
+		List<Map> leghe = (List<Map>) data.get("leghe");			
+		String lega_token = "";
+		int id_squadra=0;
+		for (Map legaAtt : leghe) {
+			if (((String)legaAtt.get("alias")).equalsIgnoreCase(lega)) {
+				lega_token = (String) legaAtt.get("token");
+				id_squadra = (int) legaAtt.get("id_squadra");
+
+			}
+		}
+		
+		/************************/
+		
+		
+		Map<String, String> nomiFG = getNomiFG(lega);//tutti gli id
+		headers.put("app_key", constant.APPKEY_FG);
+		String url = "https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?" + keyFG.get(lega.replace("-", "").toUpperCase());
+		String string = getHTTP(url, headers );
+		jsonToMap = jsonToMap(string);
+		if (jsonToMap.get("data") == null) throw new RuntimeException("aggiornare KeyFG per " + lega.replace("-", "").toUpperCase());
+		List<Map> formazioni = (List<Map>) ((Map)jsonToMap.get("data")).get("formazioni");//tutte le formazioni
+		System.out.println(toJson(formazioni)+ "-----------------" + toJson(nomiFG));
+		
+		
+		
+		
+		/*************************/
+		headers=new HashMap<>();
+		headers.put("app_key", constant.APPKEY_FG_MOBILE);
+		headers.put("lega_token", lega_token);
+		headers.put("user_token", user_token);
+		//https://appleghe.fantacalcio.it/api/v1/V1_LegaFormazioni/Visualizza?id_comp=319871 visualizzo la mia squadra nella competizione
+		String http = getHTTP("https://appleghe.fantacalcio.it/api/v1/V1_LegaFormazioni/Visualizza?id_comp=" + Constant.COMP_VIVA_FG, headers);
+		jsonToMap = jsonToMap(http);
+		data = (Map<String, Object>) jsonToMap.get("data");
+		Map<String, Object>  formazione = (Map<String, Object>) data.get("formazione");//mia formazione TODO recupera formazione di altri
+		List<Map<String, Object>>  calciatori = (List<Map<String, Object>>) data.get("calciatori");//miei calciatori
+		String modulo = (String) formazione.get("modulo");
+		Map mapBody = new HashMap<>();
+		List<Map> teams = new ArrayList<>();
+		Map mapT = new HashMap<>();
+		mapT.put("id", id_squadra);//id squadra
+		mapT.put("modulo", modulo);//modulo
+		mapT.put("moduloS", "");
+		List<Map> players = new ArrayList<>();
+		addPlayer(players, (List<String>) formazione.get("titolari"), assenti);//aggiunto giocatore
+		addPlayer(players, (List<String>) formazione.get("panchinari"), assenti);//aggiunto giocatore
+		mapT.put("players", players);
+		teams.add(mapT);
+		mapBody.put("teams", teams);
+		headers=new HashMap<>();
+		headers.put("app_key", constant.APPKEY_FG_MOBILE);
+		headers.put("lega_token", lega_token);
+		headers.put("user_token", user_token);
+		postHTTP = postHTTP("application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/V1_LegaFormazioni/Simulatore",toJson(mapBody), headers);
+		response = (String) postHTTP.get("response");
+		mapResponse = jsonToMap(response);
+		teams = (List<Map>) ((Map)mapResponse.get("data")).get("teams");
+		Map mapRisposta = teams.get(0);
+		players = (List<Map>) mapRisposta.get("players");
+		for (Map<String,Object> calciatore : calciatori) {
+			Integer idCalciatore = (Integer) calciatore.get("id");
+			Double malus=null;
+			Boolean played=null;
+			Double rank=null;
+			for (Map player : players) {
+				if (((Integer)player.get("id")).equals(idCalciatore)) {
+					malus = (Double) player.get("malus");
+					played = (Boolean) player.get("played");
+					rank = (Double) player.get("rank");
+				}
+			}
+			calciatore.put("malus", malus);
+			calciatore.put("played", played);
+			calciatore.put("rank", rank);
+		}
+		Map<String, Object> ret = new HashMap<>();
+		ret.put("modulo",mapRisposta.get("modulo"));
+		ret.put("moduloS",mapRisposta.get("moduloS"));
+		List<Map<String, Object>>  calciatoriEntra = new ArrayList<>();
+		List<Map<String, Object>>  calciatoriNonEntra = new ArrayList<>();
+		for (Map<String,Object> calciatore : calciatori) {
+			Map<String, Object> calciatoreDef = new HashMap<>();
+			calciatoreDef.put("prob numero maglia",calciatore.get("i"));
+			calciatoreDef.put("perc gioca",calciatore.get("it"));
+			int st = (int)calciatore.get("st");
+			calciatoreDef.put("disponibile",(st==1?"S":(st==2?"inforunato":(st==3?"squalificato":(st==4?"assente":"???")))));
+			calciatoreDef.put("nota assenza",(calciatore.get("c").equals("")?"":calciatore.get("c")));
+//			calciatoreDef.put("nota assenza 2",(calciatore.get("d").equals("")?"":calciatore.get("d")));
+			calciatoreDef.put("id",calciatore.get("id"));
+			calciatoreDef.put("nome",calciatore.get("n"));
+//			calciatoreDef.put("id squadra",calciatore.get("id_s"));
+			calciatoreDef.put("squadra",calciatore.get("s"));
+//			calciatoreDef.put("nazione campionato",calciatore.get("camp"));
+//			calciatoreDef.put("id campionato",calciatore.get("id_camp"));
+			calciatoreDef.put("ruolo",calciatore.get("r"));
+			calciatoreDef.put("ceduto",((int)calciatore.get("ced")==0?"N":"S"));
+//			calciatoreDef.put("img",calciatore.get("img"));
+			calciatoreDef.put("nazionalita",calciatore.get("naz"));
+			calciatoreDef.put("mv",calciatore.get("mv"));
+			calciatoreDef.put("fanta media",calciatore.get("mfv"));
+			calciatoreDef.put("casa fuori",((int)calciatore.get("t_caf")==0?"C":"F"));
+//			calciatoreDef.put("incontro casa",calciatore.get("t_a"));
+//			calciatoreDef.put("incontro fuori",calciatore.get("t_b"));
+			calciatoreDef.put("contro",((int)calciatore.get("t_caf")==0?calciatore.get("t_b"):calciatore.get("t_a")));
+			calciatoreDef.put("valutazione",calciatore.get("cmp"));
+			calciatoreDef.put("malus",(calciatore.get("malus")==null?"N/A":calciatore.get("malus")));
+			calciatoreDef.put("played",(calciatore.get("played")==null?false:calciatore.get("played")));
+			Double rank = (Double) calciatore.get("rank");
+			calciatoreDef.put("rank",((rank==null?"N/A":rank.compareTo(new Double("6"))==0?"S":(rank.compareTo(new Double("56"))==0?"N":"???"))));
+			if (((Boolean)calciatoreDef.get("played"))) {
+				calciatoriEntra.add(calciatoreDef);
+			} else {
+				calciatoriNonEntra.add(calciatoreDef);
+			}
+		}
+		ret.put("calciatoriEntra",calciatoriEntra);
+		ret.put("calciatoriNonEntra",calciatoriNonEntra);
+		return ret;
+	}
+
+	private static void addPlayer(List<Map> players, List<String> titolari,List<String> assenti) {
+		for (String gioc : titolari) {
+			Map player = new HashMap<>();
+			player.put("id",gioc);
+			if (assenti.contains(gioc)) {
+				player.put("rank",56);
+			} else {
+				player.put("rank",6);
+			}
+			player.put("played",false);
+			player.put("malus",0);
+			players.add(player);
 		}
 	}
 
@@ -2438,13 +2595,13 @@ public class Main {
 		oldSnapPartite.forEach((k,partita) -> {
 			String tag = (String) partita.get("tag");
 			String val = (String) partita.get("val");
-			
+
 			if (tag.equalsIgnoreCase("PreMatch")) {
 				ZonedDateTime zoneDateTime = ZonedDateTime.parse(val, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC")));
 				val = zoneDateTime.format(DateTimeFormatter.ofPattern("E dd/MM/yyyy HH:mm").withZone(ZoneId.of("Europe/Rome")));
 			}
-			
-			
+
+
 			sb.append(k + " " + tag + " " + (val.equals("N/A")?"":val));
 			sb.append("     " + Constant.GOL + " ");
 			Map<Integer, Map<String, String>> reti = new TreeMap<>();
@@ -2472,7 +2629,7 @@ public class Main {
 			reti.forEach((minuto,dati) -> {
 				sb.append(minuto + " " + dati.get("squadra") + " " + dati.get("tipo") + " " + dati.get("giocatore") + "\n");
 			});
-			
+
 			sb.append("\n");
 		});
 		return sb.toString();
