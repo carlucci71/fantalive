@@ -244,11 +244,17 @@ public class MyController {
 	public void  startStopBot() throws Exception  {
 		if (Main.fantaLiveBot.isRunning()) {
 			Main.fantaLiveBot.stopBot();
-			Main.fantaCronacaLiveBot.stopBot();
-			Main.risultatiConRitardoBOT.stopBot();
 		} else {
 			Main.fantaLiveBot.startBot();
+		}
+		if (Main.fantaCronacaLiveBot.isRunning()) {
+			Main.fantaCronacaLiveBot.stopBot();
+		} else {
 			Main.fantaCronacaLiveBot.startBot();
+		}
+		if (Main.risultatiConRitardoBOT.isRunning()) {
+			Main.risultatiConRitardoBOT.stopBot();
+		} else {
 			Main.risultatiConRitardoBOT.startBot();
 		}
 	}
