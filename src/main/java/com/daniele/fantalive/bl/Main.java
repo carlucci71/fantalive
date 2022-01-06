@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -1066,7 +1067,7 @@ public class Main {
 		return split[1];
 	}
 
-	public static void getSquadreMantra(String lega) throws Exception {
+	public static void getSquadreFromFG(String lega) throws Exception {
 		try {
 			String aliasLega = aliasCampionati.get(lega);
 			Map<String, String> nomiFG = getNomiFG(aliasLega);
@@ -1559,7 +1560,7 @@ public class Main {
 					if (messaggio==null) {
 						messaggio=new StringBuilder(key + "\n");
 					}
-					messaggio.append("Status:" + tag + "\n");
+					messaggio.append(tag + "\n");
 				}
 
 				Integer oldGolCasa = (Integer) ((Map)oldPartita.get(sqCasa)).get("gol");
@@ -1579,7 +1580,7 @@ public class Main {
 					if (messaggio==null) {
 						messaggio=new StringBuilder(key + "\n");
 					}
-					messaggio.append("Correzione reti per " + sqCasa + ": " + retiCasa + "\n");
+					messaggio.append("Correzione reti per " + sqCasa + ": " + logReti(retiCasa) + "\n");
 				}
 				for (int i=0;i<retiCasa.size();i++) {
 					Map mapRetiCasa = retiCasa.get(i);
@@ -1590,13 +1591,13 @@ public class Main {
 							if (messaggio==null) {
 								messaggio=new StringBuilder(key + "\n");
 							}
-							messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", sqCasa,mapRetiCasa, mapOldRetiCasa));
+							messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", sqCasa,logRete(mapOldRetiCasa), logRete(mapRetiCasa)));
 						}
 					} else {
 						if (messaggio==null) {
 							messaggio=new StringBuilder(key + "\n");
 						}
-						messaggio.append("Nuova rete:" + mapRetiCasa + "\n");
+						messaggio.append(logRete(mapRetiCasa));
 					}
 				}
 
@@ -1606,7 +1607,7 @@ public class Main {
 					if (messaggio==null) {
 						messaggio=new StringBuilder(key + "\n");
 					}
-					messaggio.append("Correzione reti per " + sqFuori + ": " + retiFuori + "\n");
+					messaggio.append("Correzione reti per " + sqFuori + ": " + logReti(retiFuori) + "\n");
 				}
 				for (int i=0;i<retiFuori.size();i++) {
 					Map mapRetiFuori = retiFuori.get(i);
@@ -1617,13 +1618,13 @@ public class Main {
 							if (messaggio==null) {
 								messaggio=new StringBuilder(key + "\n");
 							}
-							messaggio.append(String.format("Correzione rete di %s : da %s a %s \n",sqFuori, mapRetiFuori, mapOldRetiFuori));
+							messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", sqCasa,logRete(mapOldRetiFuori), logRete(mapRetiFuori)));
 						}
 					} else {
 						if (messaggio==null) {
 							messaggio=new StringBuilder(key + "\n");
 						}
-						messaggio.append("Nuova rete:" + mapRetiFuori + "\n");
+						messaggio.append(logRete(mapRetiFuori));
 					}
 				}
 				if (messaggio != null) {
@@ -1662,12 +1663,24 @@ public class Main {
 		return ret;
 	}
 
+	private static String logRete(Map mapRete) {
+		return MessageFormat.format("{0} {1} al {2}\n", mapRete.get("tipo"), mapRete.get("giocatore"), mapRete.get("minuto"));
+	}
+
+	private static String logReti(List<Map> listMmapRete) {
+		StringBuilder sb = new StringBuilder();
+		for (Map mapRete : listMmapRete) {
+			sb.append(MessageFormat.format("{0} {1} al {2}\n", mapRete.get("tipo"), mapRete.get("giocatore"), mapRete.get("minuto")));
+		}
+		return sb.toString();
+	}
+	
 	private static List<Live> recuperaLives() throws Exception {
 		List<Live> lives = new ArrayList<Live>();
 		Iterator<Integer> iterator = sq.keySet().iterator();
 		while (iterator.hasNext()) {
 			Integer integer = (Integer) iterator.next();
-			//https://www.fantacalcio.it/api/live/10?g=23&i=15
+			//https://www.fantacalcio.it/api/live/10?g=23&i=16 g è la giornata
 			String sqFromLive = getHTTP("https://www.fantacalcio.it/api/live/" + integer + "?g=" + constant.GIORNATA + "&i=" + Constant.I_LIVE_FANTACALCIO);
 			List<Map<String, Object>> getLiveFromFG = jsonToList(sqFromLive);
 			Live live = new Live();
@@ -2624,8 +2637,8 @@ public class Main {
 			}
 
 
-			sb.append(k + " " + tag + " " + (val.equals("N/A")?"":val));
-			sb.append("     " + Constant.GOL + " ");
+			sb.append(k + "\n\t" + tag + " " + (val.equals("N/A")?"":val));
+			sb.append("\n");
 			Map<Integer, Map<String, String>> reti = new TreeMap<>();
 			StringBuilder risultato=new StringBuilder();
 			partita.forEach((p, v) -> { 

@@ -680,9 +680,9 @@ public class MyController {
 		{
 			Main.aggKeyFG();
 			Main.cancellaSquadre();
-			Main.getSquadreMantra(Constant.Campionati.LUCCICAR.name());
-			Main.getSquadreMantra(Constant.Campionati.JB.name());
-			Main.getSquadreMantra(Constant.Campionati.FANTAVIVA.name());
+			Main.getSquadreFromFG(Constant.Campionati.LUCCICAR.name());
+			Main.getSquadreFromFG(Constant.Campionati.JB.name());
+			Main.getSquadreFromFG(Constant.Campionati.FANTAVIVA.name());
 			Main.scaricaBe(Constant.GIORNATA,"");
 			List<Squadra> squadre = Main.getSquadreFromFS("",true, false);
 			Main.adattaNomePartitaSimulata(squadre);
