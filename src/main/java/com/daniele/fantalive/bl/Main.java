@@ -199,6 +199,7 @@ public class Main {
 				put("Postponed",    5);
 				put("Cancelled",    6);
 				put("Walkover",    7);
+				put("Notplayed",    8);
 			}};
 		}
 		if (getIconaIDGioc==null) {
@@ -1120,8 +1121,8 @@ public class Main {
 									squadra.setEvidenza(true);
 								} 
 								else if (lega.equalsIgnoreCase(Constant.Campionati.JB.name()) && !squadra.getNome().equalsIgnoreCase("bebocar")) {
-									//								partitaSimulata.setNome("  JB");
-									//								squadra.setEvidenza(true);
+									partitaSimulata.setNome("  JB");
+									squadra.setEvidenza(false);
 								} 
 								else {
 									partitaSimulata.setNome(getNomePartitaSimulata(lega, progPartita));
@@ -1694,6 +1695,9 @@ public class Main {
 	private static String getStatusMatch(String tag, Integer oldStatusMatch) {
 		if (oldStatusMatch!=null) {
 			Integer attStatusMatch = statusMatch.get(tag);
+			if (attStatusMatch == null) {
+				attStatusMatch=100;
+			}
 			if (oldStatusMatch>attStatusMatch) {
 				Set<String> keySetSM = statusMatch.keySet();
 				for (String keySM : keySetSM) {

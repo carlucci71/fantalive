@@ -246,7 +246,7 @@ switchkeepalive - switch keep alive
 		sendMessage.setText("Digita il giocatore che vuoi ricercare");
 		return sendMessage;
 	}
-	private SendMessage sendInlineKeyBoardPartiteSimulate(long chatId, String cb, String testo){
+	private SendMessage sendInlineKeyBoardPartiteSimulate(long chatId, String cb, String testo) throws Exception{
 		InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 		inlineKeyboardMarkup.setKeyboard(generaElencoPartiteSimulate());
 		SendMessage sendMessage = new SendMessage();
@@ -327,7 +327,7 @@ switchkeepalive - switch keep alive
 			throw new RuntimeException(e);
 		}
 	}
-	private List<List<InlineKeyboardButton>> generaElencoPartiteSimulate() {
+	private List<List<InlineKeyboardButton>> generaElencoPartiteSimulate() throws Exception {
 		try {
 			List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
 			Constant.Campionati[] campionati = Constant.Campionati.values();
@@ -345,7 +345,7 @@ switchkeepalive - switch keep alive
 			return rowList;
 		}
 		catch (Exception e ) {
-			throw new RuntimeException(e);
+			throw e;
 		}
 	}
 	private List<List<InlineKeyboardButton>> generaElencoCampionati(String cb, boolean all) {
