@@ -2641,6 +2641,7 @@ public class Main {
 			sb.append("\n");
 			Map<Integer, Map<String, String>> reti = new TreeMap<>();
 			StringBuilder risultato=new StringBuilder();
+			risultato.append("\t");
 			partita.forEach((p, v) -> { 
 				if (!p.toString().equals("tag") && !p.toString().equals("val")) {
 					risultato.append(((Map)v).get("gol"));
@@ -2662,7 +2663,7 @@ public class Main {
 			sb.append(risultato + "\n");
 
 			reti.forEach((minuto,dati) -> {
-				sb.append(minuto + " " + dati.get("squadra") + " " + dati.get("tipo") + " " + dati.get("giocatore") + "\n");
+				sb.append("\t" + minuto + " " + dati.get("squadra") + " " + dati.get("tipo") + " " + dati.get("giocatore") + "\n");
 			});
 
 			sb.append("\n");
