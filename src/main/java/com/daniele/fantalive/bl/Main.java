@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -44,6 +46,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -74,6 +78,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class Main {
 
@@ -167,7 +172,8 @@ public class Main {
 			toSocket.put("timeRefresh", 0);
 		}
 		if (mapper==null) {
-			mapper = new ObjectMapper();
+//			mapper = new ObjectMapper();
+			mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		}
 		if (sqJB==null) {
@@ -261,6 +267,36 @@ public class Main {
 			eventi.put(23, new String[] {"assist low2","0.5","1","1","1","S",Constant.ASSIST});
 			eventi.put(24, new String[] {"assist medium2","1","1","1","1","S",Constant.ASSIST});
 			eventi.put(25, new String[] {"assist hight2","1.5","1","1","1","S",Constant.ASSIST});
+			
+			/*
+
+            case "1": case 'amm': url += 'ammonito'; break;
+            //case "5": case 'ass': url += 'assistMovimento'; break;
+            //case "6": case 'asf': url += 'assistFermo'; break;
+            case "10": case 'aut': url += 'autogol'; break;            
+            case "2": case 'esp': url += 'espulso'; break;
+            case "3": case 'gol': url += 'golFatto'; break;
+            case "12": case 'gp': url += 'golPareggio'; break;
+            case "4": case 'gs': url += 'golSubito'; break;
+            case "11": case 'gv': url += 'golVittoria'; break;
+            case "0": case 'migliore': url += 'migliore'; break;
+            case "13": case 'imb': url += 'portiereImbattuto'; break;
+            case "7": case 'rig_pa': url += 'rigoreParato'; break;
+            case "8": case 'rig_sb': url += 'rigoreSbagliato'; break;
+            case "9": case 'rig': url += 'rigoreSegnato'; break;
+            case "0": case 'sp': url += 'spostato'; break;
+            case "14": case 'out': url += 'uscito'; break;
+            case "15": case 'in': url += 'entrato'; break;
+            case "16": case 'var': url += 'golAnnullatoVAR'; break;
+            case "17": case 'inf': url += 'infortunato'; break;
+            case "20": case 'ass_i': url += 'ultimoPassaggio'; break;
+            case "21": case 'ass_s': url += 'assistSoft'; break;
+            case "22": case 'ass': url += 'assist'; break;
+            case "23": case 'ass_g': url += 'assistGold'; break;
+            //case "24": case 'ass_2': url += qualityAssist ? 'assistMovimentoLvMedio' : 'assistFermo'; break;
+            //case "25": case 'ass_3': url += qualityAssist ? 'assistMovimentoLvAlto' : 'assistFermo'; break;			 */
+			
+			
 		}
 		if (sq==null) {
 			sq = new LinkedHashMap<Integer, String>();
@@ -636,9 +672,13 @@ public class Main {
 
 
 	public static void main(String[] args) throws Exception {
-
-
-
+		Constant c=null;
+		Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
+		Method method = cl.getDeclaredMethod("constant");
+		c = (Constant) method.invoke(c);		
+		init(null, null, c);
+		Map<String, Object> bm_FG = bm_FG(Main.aliasCampionati.get(Constant.Campionati.JB.name()));
+		System.out.println(toJson(bm_FG));
 		/*
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
 		ZonedDateTime parse = ZonedDateTime.parse("07/11/2021 - 23:59:00 +0000", dtf);
@@ -649,6 +689,76 @@ public class Main {
 		String authFS = getAuthFS();
 		System.out.println(authFS);
 		 */
+	}
+
+	private static Map<String, Object> bm_FG(String lega) throws Exception {
+		Map bodyMap = new HashMap<>();
+		bodyMap.put("username", constant.UTENTE_FG);
+		bodyMap.put("password", constant.PWD_FG);
+		Map<String, String> headers=new HashMap<>();
+		headers.put("app_key", constant.APPKEY_FG_MOBILE);
+		Map<String, Object> mapPutHTTP = putHTTP("application/json", "https://leghe.fantacalcio.it/api/v1/v1_utente/login?alias_lega=login", toJson(bodyMap), headers);
+		List<String> listCookie = ((List<String>)((Map)mapPutHTTP.get("headerFields")).get("Set-Cookie"));
+		String cookieName = "LegheFG2_Leghe2021";
+		String cookieValue=null;
+		for (String cookie : listCookie) {
+			int indexOf = cookie.indexOf(cookieName);
+			if (indexOf>-1) {
+				cookieValue=cookie.substring(cookieName.length()+1);
+				cookieValue=cookieValue.substring(0,cookieValue.indexOf("; expires="));
+			}
+		}
+		String responseBody;
+		BasicCookieStore cookieStore = new BasicCookieStore();
+		BasicClientCookie cookie;
+		cookie = new BasicClientCookie(cookieName, cookieValue);
+		cookie.setDomain("leghe.fantacalcio.it");
+		cookie.setPath("/");
+		cookieStore.addCookie(cookie);
+		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+		try {
+				String uri = "https://leghe.fantacalcio.it/" + lega + "/gestione-lega/opzioni-calcolo";
+				HttpGet httpget = new HttpGet(uri);
+				ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+					@Override
+					public String handleResponse(
+							final HttpResponse response) throws ClientProtocolException, IOException {
+						int status = response.getStatusLine().getStatusCode();
+						if (status >= 200 && status < 300) {
+							HttpEntity entity = response.getEntity();
+							return entity != null ? EntityUtils.toString(entity) : null;
+						} else {
+							throw new ClientProtocolException("Unexpected response status: " + status);
+						}
+					}
+
+				};
+				responseBody = httpclient.execute(httpget, responseHandler);
+		} finally {
+			httpclient.close();
+		}
+		String token = "__.s('lo', __.d('";
+		responseBody=responseBody.substring(responseBody.indexOf(token)+token.length());
+		responseBody=responseBody.substring(0,responseBody.indexOf("'));"));
+		byte[] decode = Base64.getDecoder().decode(responseBody.getBytes());
+		String ret = new String(decode);
+		Map<String, Object> jsonToMap = jsonToMap(ret);
+	    return jsonToMap;
+	}	
+	
+	private static void getAllBM_FG() throws Exception {
+		Set<Integer> se = new HashSet<>();
+		init(null, null, null);
+		String http = getHTTP("https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/16/live_20.json");
+		Map<String, Object> jsonToMap = jsonToMap(http);
+		List<Map> l = (List<Map>) ((Map)jsonToMap.get("data")).get("pl");
+		for (Map map: l) {
+			List<Integer> bm = (List<Integer>) map.get("bm");
+			for (Integer integer : bm) {
+				se.add(integer);
+			}
+		}
+		System.out.println(se);
 	}
 
 	private static String lpad(String inputString, int length, char c) {
@@ -971,6 +1081,56 @@ public class Main {
 	}
 	public static Map<String, Object> postHTTP(String url, Map<String, Object> body, Map<String, String>... headers) throws Exception {
 		return postHTTP("application/json", url, toJson(body),  headers);
+	}
+	public static Map<String,Object> putHTTP(String contentType, String url, String body,  Map<String, String>... headers) throws Exception {
+		//		System.out.println("POST " + url + " " + printMap(headers));
+		Map <String, Object> ret = new HashMap<>();
+		URL obj = new URL(url);
+		HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
+		postConnection.setRequestMethod("PUT");
+		if (headers!=null && headers.length>0) {
+			Iterator<String> iterator = headers[0].keySet().iterator();
+			while (iterator.hasNext()) {
+				String key = (String) iterator.next();
+				postConnection.setRequestProperty(key, headers[0].get(key));
+			}
+		}
+		postConnection.setRequestProperty("content-type", contentType);
+		postConnection.setDoOutput(true);
+		OutputStream os = postConnection.getOutputStream();
+		os.write(body.getBytes());
+		os.flush();
+		os.close();
+
+		int responseCode = postConnection.getResponseCode();
+		StringBuffer response = new StringBuffer();
+		if (responseCode == HttpURLConnection.HTTP_OK) {
+			postConnection.getHeaderField("LegheFG2_Leghe2021");
+			Map<String, List<String>> headerFields = postConnection.getHeaderFields();
+			ret.put("headerFields", headerFields);
+			BufferedReader in = new BufferedReader(new InputStreamReader(postConnection.getInputStream()));
+			String inputLine;
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+		} else {
+			BufferedReader bfOutputResponse = new BufferedReader(
+					new InputStreamReader(postConnection.getErrorStream()));
+			String outputLine;
+			StringBuffer sfResponse = new StringBuffer();
+			while ((outputLine = bfOutputResponse.readLine()) != null) {
+				sfResponse.append(outputLine);
+			}
+			bfOutputResponse.close();
+
+			// print result
+			String stringResponse = sfResponse.toString();
+			throw new RuntimeException("POST NOT WORKED ".concat(url).concat(" -> ").concat(body).concat("STACK:")
+					.concat(stringResponse));
+		}
+		ret.put("response", response.toString());
+		return ret; 
 	}
 	private static String printMap(Map<String, String>[] headers) {
 		StringBuilder sb = new StringBuilder();
