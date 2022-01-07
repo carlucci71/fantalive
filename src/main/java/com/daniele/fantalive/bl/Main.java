@@ -90,6 +90,7 @@ public class Main {
 	private static Map<Integer, String> sq=null;
 	private static Map<String, Integer> sqStatusMatch=new HashMap<>();
 	public static HashMap<Integer, String[]> eventi=null;
+	public static HashMap<String, Object> modificatori=new HashMap<>();
 	private static List<ConfigCampionato> configsCampionato=null;
 	public static List<String> sqDaEv= null;
 	private static Map<String, Giocatore> oldSnapshot=null;
@@ -98,8 +99,8 @@ public class Main {
 	private static SocketHandlerFantalive socketHandlerFantalive=null;
 	private static ScheduledExecutorService executor = null;	
 	private static Constant constant=null;
-	private static List<Live> oldSnapLives=null;
-	private static Map<String, Map<String, String>> oldSnapOrari=null;
+	public static List<Live> oldSnapLives=null;
+	public static Map<String, Map<String, String>> oldSnapOrari=null;
 	static ObjectMapper mapper;
 	static Map<String , String> getIconaIDGioc;	
 	static Map<String , Integer> statusMatch;	
@@ -245,58 +246,55 @@ public class Main {
 		}
 
 		if (eventi ==null) {
-			eventi = new HashMap<Integer, String[]>();
-			eventi.put(1000, new String[] {"portiere imbattuto","1","1","1","1","S",Constant.IMBATTUTO});
-			eventi.put(1, new String[] {"ammonito","-0.5","-0.5","-0.5","-0.5","S",Constant.AMMONITO});
-			eventi.put(2, new String[] {"espulso","-1","-1","-1","-1","S",Constant.ESPULSO});
-			eventi.put(3, new String[] {"gol","3","3","3","3","S",Constant.GOL});
-			eventi.put(4, new String[] {"gol subito","-1","-1","-1","-1","S",Constant.GOL_SUBITO});
-			eventi.put(7, new String[] {"rigore parato","3","3","3","3","S",Constant.RIGORE_PARATO});
-			eventi.put(8, new String[] {"rigore sbagliato","-3","-3","-3","-3","S",Constant.RIGORE_SBAGLIATO});
-			eventi.put(9, new String[] {"rigore segnato","3","3","2","2","S",Constant.RIGORE_SEGNATO});
-			eventi.put(10, new String[] {"autogol","-2","-3","-3","-3","S",Constant.AUTOGOL});
-			eventi.put(11, new String[] {"gol vittoria","0","0","0","0","N",Constant.GOL});
-			eventi.put(12, new String[] {"gol pareggio","0","0","0","0","N",Constant.GOL});
-			eventi.put(14, new String[] {"uscito","0","0","0","0","S",Constant.USCITO});
-			eventi.put(15, new String[] {"entrato","0","0","0","0","S",Constant.ENTRATO});
-			eventi.put(16, new String[] {"gol annullato","0","0","0","0","N",Constant.GOL_ANNULLATO});
-			eventi.put(17, new String[] {"infortunio","0","0","0","0","N",Constant.INFORTUNIO});
-			eventi.put(20, new String[] {"assist low1","0.5","1","1","1","S",Constant.ASSIST});
-			eventi.put(21, new String[] {"assist medium1","1","1","1","1","S",Constant.ASSIST});
-			eventi.put(22, new String[] {"assist hight1","1.5","1","1","1","S",Constant.ASSIST});
-			eventi.put(23, new String[] {"assist low2","0.5","1","1","1","S",Constant.ASSIST});
-			eventi.put(24, new String[] {"assist medium2","1","1","1","1","S",Constant.ASSIST});
-			eventi.put(25, new String[] {"assist hight2","1.5","1","1","1","S",Constant.ASSIST});
-			
 			/*
-
-            case "1": case 'amm': url += 'ammonito'; break;
-            //case "5": case 'ass': url += 'assistMovimento'; break;
-            //case "6": case 'asf': url += 'assistFermo'; break;
-            case "10": case 'aut': url += 'autogol'; break;            
-            case "2": case 'esp': url += 'espulso'; break;
-            case "3": case 'gol': url += 'golFatto'; break;
-            case "12": case 'gp': url += 'golPareggio'; break;
-            case "4": case 'gs': url += 'golSubito'; break;
-            case "11": case 'gv': url += 'golVittoria'; break;
-            case "0": case 'migliore': url += 'migliore'; break;
-            case "13": case 'imb': url += 'portiereImbattuto'; break;
-            case "7": case 'rig_pa': url += 'rigoreParato'; break;
-            case "8": case 'rig_sb': url += 'rigoreSbagliato'; break;
-            case "9": case 'rig': url += 'rigoreSegnato'; break;
-            case "0": case 'sp': url += 'spostato'; break;
-            case "14": case 'out': url += 'uscito'; break;
-            case "15": case 'in': url += 'entrato'; break;
-            case "16": case 'var': url += 'golAnnullatoVAR'; break;
-            case "17": case 'inf': url += 'infortunato'; break;
-            case "20": case 'ass_i': url += 'ultimoPassaggio'; break;
-            case "21": case 'ass_s': url += 'assistSoft'; break;
-            case "22": case 'ass': url += 'assist'; break;
-            case "23": case 'ass_g': url += 'assistGold'; break;
-            //case "24": case 'ass_2': url += qualityAssist ? 'assistMovimentoLvMedio' : 'assistFermo'; break;
-            //case "25": case 'ass_3': url += qualityAssist ? 'assistMovimentoLvAlto' : 'assistFermo'; break;			 */
+			 	descrizione
+				FANTAVIVA
+				LUCCICAR
+				BE
+				JB
+				attivo
+				icona
+				des_FG
+			 */
 			
 			
+			
+			eventi = new HashMap<Integer, String[]>();
+			eventi.put(1000, new String[] {"portiere imbattuto","","","1","","S",Constant.IMBATTUTO,"portiere_imbattuto"});
+			eventi.put(1, new String[] {"ammonito","","","-0.5","","S",Constant.AMMONITO,"ammonizione"});
+			eventi.put(2, new String[] {"espulso","","","-1","","S",Constant.ESPULSO,"espulsione"});
+			eventi.put(3, new String[] {"gol","","","3","","S",Constant.GOL,"gol_segnato"});
+			eventi.put(4, new String[] {"gol subito","","","-1","","S",Constant.GOL_SUBITO,"gol_subito"});
+			eventi.put(7, new String[] {"rigore parato","","","3","","S",Constant.RIGORE_PARATO,"rigore_parato"});
+			eventi.put(8, new String[] {"rigore sbagliato","","","-3","","S",Constant.RIGORE_SBAGLIATO,"rigore_sbagliato"});
+			eventi.put(9, new String[] {"rigore segnato","","","2","","S",Constant.RIGORE_SEGNATO,"rigore_segnato"});
+			eventi.put(10, new String[] {"autogol","","","-3","","S",Constant.AUTOGOL,"autogol"});
+			eventi.put(11, new String[] {"gol vittoria","","","0","","N",Constant.GOL,"gol_decisivo_vittoria"});
+			eventi.put(12, new String[] {"gol pareggio","","","0","","N",Constant.GOL,"gol_decisivo_pareggio"});
+			eventi.put(14, new String[] {"uscito","","","0","","S",Constant.USCITO,""});
+			eventi.put(15, new String[] {"entrato","","","0","","S",Constant.ENTRATO,""});
+			eventi.put(16, new String[] {"gol annullato","","","0","","N",Constant.GOL_ANNULLATO,""});
+			eventi.put(17, new String[] {"infortunio","","","0","","N",Constant.INFORTUNIO,""});
+			eventi.put(20, new String[] {"assist involontario","","","1","","S",Constant.ASSIST,"assist_inv"});
+			eventi.put(21, new String[] {"assist soft","","","1","","S",Constant.ASSIST,"assist_soft"});
+			eventi.put(22, new String[] {"assist","","","1","","S",Constant.ASSIST,"assist"});
+			eventi.put(23, new String[] {"assist_gold","","","1","","S",Constant.ASSIST,"assist_gold"});
+			eventi.put(24, new String[] {"assist movimento livello medio","","","1","","S",Constant.ASSIST,"assistMovimentoLvMedio"});
+			eventi.put(25, new String[] {"assist movimento livello alto","","","1","","S",Constant.ASSIST,""});
+			
+			Map<String, Object> bmFantaviva = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.FANTAVIVA.name()));
+			Map<String, Object> bmJB = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.JB.name()));
+			Map<String, Object> bmLuccicar = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.LUCCICAR.name()));
+			for (Integer key : eventi.keySet()) {
+				String[] valori = eventi.get(key);
+				String kFg=valori[7];
+				overrideBM(bmFantaviva, valori, kFg,1);
+				overrideBM(bmLuccicar, valori, kFg,2);
+				overrideBM(bmJB, valori, kFg,4);
+			}
+			modificatori.put(Constant.Campionati.FANTAVIVA.name(), ((Map)bmFantaviva.get("modificatori")));
+			modificatori.put(Constant.Campionati.JB.name(), ((Map)bmJB.get("modificatori")));
+			modificatori.put(Constant.Campionati.LUCCICAR.name(), ((Map)bmLuccicar.get("modificatori")));
 		}
 		if (sq==null) {
 			sq = new LinkedHashMap<Integer, String>();
@@ -331,6 +329,23 @@ public class Main {
 			configsCampionato.add(new ConfigCampionato(22,"FANTAGAZZETTA",Constant.Campionati.FANTAVIVA.name(),"MANTRA"));
 			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE",Constant.Campionati.BE.name(),"NOMANTRA"));
 		}
+	}
+
+	private static void overrideBM(Map<String, Object> bm, String[] valori, String kFg, int posizione) {
+		bm=(Map<String, Object>) bm.get("bonus_malus");
+		Double newval=null;
+		if (!kFg.equals("")) {
+			Object object = bm.get(kFg);
+			if (object instanceof List) {
+				newval=(Double) ((List)object).get(0);
+			} else {
+				newval = (Double) object;
+			}
+		}
+		if (newval==null) {
+			newval=new Double(0);
+		}
+		valori[posizione]=Double.toString(newval);
 	}
 
 	private static String getMinuto(String squadra, Map<String, Map<String, String>> snapOrari) {
@@ -677,7 +692,7 @@ public class Main {
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
 		init(null, null, c);
-		Map<String, Object> bm_FG = bm_FG(Main.aliasCampionati.get(Constant.Campionati.JB.name()));
+		Map<String, Object> bm_FG = bm_FG(Main.aliasCampionati.get(Constant.Campionati.LUCCICAR.name()));
 		System.out.println(toJson(bm_FG));
 		/*
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
@@ -1192,13 +1207,6 @@ public class Main {
 	public static void aggKeyFG() throws Exception {
 		int giornata=constant.GIORNATA;
 		Main.keyFG=new HashMap<String, String>();
-
-
-
-		//https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?id_comp=319871&r=1&f=1_1631365200000.json
-
-		
-
 		Main.keyFG.put(Constant.Campionati.FANTAVIVA.name(), "id_comp=" + Constant.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.FANTAVIVA.name())) + ".json");
 		Main.keyFG.put(Constant.Campionati.LUCCICAR.name(), "id_comp=" + Constant.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.LUCCICAR.name())) + ".json");
 		Main.keyFG.put(Constant.Campionati.JB.name(), "id_comp=" + Constant.COMP_JB_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_JB_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_JB_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.JB.name())) + ".json");
@@ -1215,9 +1223,10 @@ public class Main {
 	
 	
 	private static String calcolaAggKey(String lega) throws Exception {
-		int giornata=constant.GIORNATA-Constant.DELTA_VIVA_FG;
-		if (lega.equalsIgnoreCase(Constant.Campionati.LUCCICAR.name())) giornata=constant.GIORNATA-Constant.DELTA_LUCCICAR_FG;
-		if (lega.equalsIgnoreCase(Constant.Campionati.JB.name())) giornata=constant.GIORNATA-Constant.DELTA_JB_FG;
+		int giornata=0;
+		if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.FANTAVIVA.name()))) giornata=constant.GIORNATA-Constant.DELTA_VIVA_FG;
+		if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.LUCCICAR.name()))) giornata=constant.GIORNATA-Constant.DELTA_LUCCICAR_FG;
+		if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.JB.name()))) giornata=constant.GIORNATA-Constant.DELTA_JB_FG;
 		String url = "https://leghe.fantacalcio.it/" + lega + "/formazioni/" + giornata + "?id=" + Constant.COMP_VIVA_FG;
 		String string = Main.getHTTP(url);
 		//		System.out.println(string);
@@ -1887,8 +1896,29 @@ public class Main {
 				for (int i=0;i<squadra.getTitolari().size();i++) {
 					Giocatore giocatore = squadra.getTitolari().get(i);
 					giocatore.setModificatore(0);
-					giocatore.setVoto(0);
-					giocatore.setSquadraGioca(false);
+					/*
+					if (sqStatusMatch==null) {
+						System.out.println();
+					}
+					if (giocatore == null) {
+						System.out.println();
+					}
+					if (giocatore.getSquadra()==null) {
+						System.out.println();
+					}
+					if (sqStatusMatch.get(giocatore.getSquadra().toUpperCase())==null) {
+						System.out.println();
+					}
+					*/
+					if (giocatore == null || giocatore.getSquadra()==null || sqStatusMatch == null || sqStatusMatch.get(giocatore.getSquadra().toUpperCase()) == null || sqStatusMatch.get(giocatore.getSquadra().toUpperCase()) != 8) {
+						giocatore.setVoto(0);
+						giocatore.setSquadraGioca(false);
+						giocatore.setNonGioca(false);
+					} else {
+						giocatore.setVoto(6);
+						giocatore.setSquadraGioca(true);
+						giocatore.setNonGioca(true);
+					}
 					giocatore.setEvento("");
 					giocatore.setNotificaLive(false);
 					giocatore.setCodEventi(new ArrayList<Integer>());
@@ -1896,8 +1926,15 @@ public class Main {
 				for (int i=0;i<squadra.getRiserve().size();i++) {
 					Giocatore giocatore = squadra.getRiserve().get(i);
 					giocatore.setModificatore(0);
-					giocatore.setVoto(0);
-					giocatore.setSquadraGioca(false);
+					if (giocatore == null || giocatore.getSquadra()==null || sqStatusMatch == null || sqStatusMatch.get(giocatore.getSquadra().toUpperCase()) == null || sqStatusMatch.get(giocatore.getSquadra().toUpperCase()) != 8) {
+						giocatore.setVoto(0);
+						giocatore.setSquadraGioca(false);
+						giocatore.setNonGioca(false);
+					} else {
+						giocatore.setVoto(6);
+						giocatore.setSquadraGioca(true);
+						giocatore.setNonGioca(true);
+					}
 					giocatore.setEvento("");
 					giocatore.setNotificaLive(false);
 					giocatore.setCodEventi(new ArrayList<Integer>());
@@ -1940,6 +1977,7 @@ public class Main {
 			}
 		}
 		for (Squadra squadra : squadre.get(campionato)) {
+			boolean isAmmonito=false;
 			for (Giocatore giocatore : squadra.getTitolari()) {
 				findGiocatoreInLives(giocatore, lives,tipo, conVoto);
 				if (giocatore != null && giocatore.getRuolo() != null && (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P"))) {
@@ -1953,7 +1991,18 @@ public class Main {
 						giocatore.setOrario(orari.get(giocatore.getSquadra().toUpperCase()));
 					}
 				}
+				if (giocatore.getCodEventi().contains(1) || giocatore.getCodEventi().contains(2)) {
+					isAmmonito=true;
+				}
 			}
+			if (modificatori.get(campionato) != null) {
+				if (!isAmmonito) {
+					squadra.setFairPlay((double) ((Map)modificatori.get(campionato)).get("fairplay"));
+				} else {
+					squadra.setFairPlay(0);
+				}
+			}
+
 		}
 		for (Squadra squadra : squadre.get(campionato)) {
 			for (Giocatore giocatore : squadra.getRiserve()) {
@@ -2543,10 +2592,16 @@ public class Main {
 		.append(getOrario(giocatore.getOrario()))
 		.append("\n");
 
-		for (Integer evento : giocatore.getCodEventi()) {
-			testo
-			.append(desEvento(evento,campionato))
-			.append("  ");
+		if (giocatore.isNonGioca()) {
+				testo
+				.append(" NON GIOCA ")
+				.append("  ");
+		}else {
+			for (Integer evento : giocatore.getCodEventi()) {
+				testo
+				.append(desEvento(evento,campionato))
+				.append("  ");
+			}
 		}
 		testo
 		.append("\n");

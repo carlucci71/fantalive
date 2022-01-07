@@ -6,8 +6,11 @@
 		<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.ruolo}}</td>
 		<td style="padding: 2px; widthX: 50px; text-align: center">{{getVoto(giocatore)}}</td>
 		<td style="padding: 2px; widthX: 200px; text-align: center">
-			<span ng-repeat="codE in giocatore.codEventi track by $index">
+			<span ng-hide="giocatore.nonGioca" ng-repeat="codE in giocatore.codEventi track by $index">
 				<img style="width: 20px;" title="{{desEvento(codE,rcampionato)}}" ng-src="./ico/{{codE}}.png" />
+			</span>
+			<span ng-show="giocatore.nonGioca">
+				<img style="width: 20px;" title="gara non giocata" ng-src="./ico/notplayed.jpg" />
 			</span>
 		</td>
 		<td style="padding: 2px; widthX: 50px; text-align: center">{{getFantaVoto(giocatore)}}
@@ -30,12 +33,14 @@
 		<td style="padding: 2px; width: 50px; text-align: center">giocatori con voto</td>
 		<td style="padding: 2px; width: 50px; text-align: center">media votati</td>
 		<td style="padding: 2px; width: 50px; text-align: center">ancora da giocare</td>
+		<td style="padding: 2px; width: 50px; text-align: center">fp</td>
 		<td style="padding: 2px; width: 50px; text-align: center">totale</td>
 	</tr>
 	<tr>
 		<td style="padding: 2px; width: 50px; text-align: center">{{squadra.contaTitolari}}</td>
 		<td style="padding: 2px; width: 50px; text-align: center">{{squadra.mediaTitolari | number:2}}</td>
 		<td style="padding: 2px; width: 50px; text-align: center">{{squadra.contaSquadraTitolariNonGioca}}</td>
+		<td style="padding: 2px; width: 50px; text-align: center">{{squadra.fairPlay}}</td>
 		<td style="padding: 2px; width: 50px; text-align: center">{{squadra.totaleTitolari}}</td>
 	</tr>
 </table>
@@ -49,8 +54,11 @@
 		<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.ruolo}}</td>
 		<td style="padding: 2px; widthX: 50px; text-align: center">{{getVoto(giocatore)}}</td>
 		<td style="padding: 2px; widthX: 200px; text-align: center">
-			<span ng-repeat="codE in giocatore.codEventi track by $index">
+			<span ng-hide="giocatore.nonGioca" ng-repeat="codE in giocatore.codEventi track by $index">
 				<img style="width: 20px;" title="{{desEvento(codE,rcampionato)}}" ng-src="./ico/{{codE}}.png" />
+			</span>
+			<span ng-show="giocatore.nonGioca">
+				<img style="width: 20px;" title="gara non giocata" ng-src="./ico/notplayed.jpg" />
 			</span>
 		</td>
 		<td style="padding: 2px; widthX: 50px; text-align: center">{{getFantaVoto(giocatore)}}

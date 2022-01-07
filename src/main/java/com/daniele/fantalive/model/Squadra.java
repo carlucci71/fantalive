@@ -23,7 +23,7 @@ private List<Giocatore> riserve=new ArrayList<Giocatore>();
 public double tmp;
 private String idSquadra;
 private String modulo;
-
+private double fairPlay=0;
 
 public String getNome() {
 	return nome;
@@ -141,6 +141,7 @@ public Double getProiezione() {
 			d=d+giocatore.getMantraMalus();
 		}
 	}
+	d=d+fairPlay;
 	return new BigDecimal(d, MathContext.DECIMAL128).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
 }
 public Double getTotale() {
@@ -245,6 +246,12 @@ public List<Giocatore> getRiserveOriginali() {
 }
 public void setRiserveOriginali(List<Giocatore> riserveOriginali) {
 	this.riserveOriginali = riserveOriginali;
+}
+public double getFairPlay() {
+	return fairPlay;
+}
+public void setFairPlay(double fairPlay) {
+	this.fairPlay = fairPlay;
 }
 
 }

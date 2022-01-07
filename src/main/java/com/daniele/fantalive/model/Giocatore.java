@@ -21,6 +21,7 @@ public class Giocatore {
 	private String evento="";
 	private double modificatore=0;
 	private String squadra;
+	private boolean nonGioca;
 	private boolean cambio;
 	private boolean cambiato;
 	private boolean nonCambiabile;
@@ -184,6 +185,12 @@ public class Giocatore {
 	}
 	public void setMantraMalus(Double mantraMalus) {
 		this.mantraMalus = mantraMalus;
+	}
+	public boolean isNonGioca() {
+		return nonGioca;
+	}
+	public void setNonGioca(boolean nonGioca) {
+		this.nonGioca = nonGioca;
 	}
 
 }

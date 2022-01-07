@@ -232,7 +232,13 @@ switchkeepalive - switch keep alive
 
 	public void inviaMessaggio(long chatId,String msg,boolean bReply) throws TelegramApiException {
 		try {
-			execute(creaSendMessage(chatId, msg , bReply));
+			while (msg.length()>4000) {
+				execute(creaSendMessage(chatId, msg.substring(0,4000),bReply));
+				msg=msg.substring(4000);
+			}
+			
+			execute(creaSendMessage(chatId, msg,bReply));
+			
 		} catch (TelegramApiException e) {
 			throw e;
 		}

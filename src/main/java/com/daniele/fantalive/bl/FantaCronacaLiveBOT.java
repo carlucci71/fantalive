@@ -55,7 +55,13 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 	}
 	public void inviaMessaggio(long chatId,String msg) throws TelegramApiException {
 		try {
+			while (msg.length()>4000) {
+				execute(creaSendMessage(chatId, msg.substring(0,4000) ));
+				msg=msg.substring(4000);
+			}
+			
 			execute(creaSendMessage(chatId, msg ));
+			
 		} catch (TelegramApiException e) {
 			throw e;
 		}

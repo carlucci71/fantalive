@@ -289,6 +289,7 @@ public class MyController {
 		Map<String, Object> simulaCambiMantra = Main.simulaCambiMantra(Main.aliasCampionati.get(lega), assenti, sq);
 
 		Squadra squadra = new Squadra();
+		squadra.setFairPlay(sq.getFairPlay());
 		squadra.setModulo((sq.getModulo()));
 		squadra.setIdSquadra(sq.getIdSquadra());
 		squadra.setTitolariOriginali(sq.getTitolariOriginali());
@@ -466,6 +467,7 @@ public class MyController {
 	public Squadra simulaCambi(@RequestBody Map<String,Squadra> body)  {
 		Squadra sq = body.get("sq");
 		Squadra squadra = new Squadra();
+		squadra.setFairPlay(sq.getFairPlay());
 		squadra.setCasaProiezione(sq.isCasaProiezione());
 		squadra.setModulo((sq.getModulo()));
 		squadra.setIdSquadra(sq.getIdSquadra());
@@ -530,6 +532,8 @@ public class MyController {
 	public Map<String, Object> setGiornata(@RequestBody Map<String,Object> body)  {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		constant.GIORNATA=(Integer)body.get("giornata");
+		Main.oldSnapLives=null;
+		Main.oldSnapOrari=null;
 		return ret;
 	}
 	@GetMapping("/testIcone")
