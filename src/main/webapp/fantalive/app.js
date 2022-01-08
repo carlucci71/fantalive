@@ -395,6 +395,27 @@ app.run(
 						alert("Errore-3-3: " + angular.toJson(error));
 				});
 			}
+			$rootScope.proiezioneFG=function(r,sq1,sq2){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./proiezioneFG/' + r.campionato,{}).save({'sq1':sq1,'sq2':sq2}).$promise.then(function(data) {
+					console.log(sq1);
+					console.log(sq2);
+					console.log(data.data);
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				}).catch(function(error) {
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+					if (error && error.data && error.data.message)
+						alert("Errore-4-1: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore-4-2: " + error.data);
+					else 
+						alert("Errore-4-3: " + angular.toJson(error));
+				});
+			}
 			$rootScope.simulaCambiMantra=function(r,sq){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";

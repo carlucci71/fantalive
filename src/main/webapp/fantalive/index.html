@@ -48,20 +48,28 @@
 		<div ng-show="visPartitaLive">
 			<input type=button value="&#9851;" ng-click="visualizzaLive('')"></input>
 			<input ng-style="{'background-color':campLiveSfondo(key),'color':campLive(key)}" ng-repeat="key  in nomiPartiteLive" type=button value="&#9851; {{key.substring(2)}}" ng-click="visualizzaLive(key)"></input>
-			<br><br>
+			<br>
 			<table>
 			<tr style="vertical-align:top">
-				<td ng-repeat="squadralive in partiteLive[visPartitaLive].squadre">
-				<label>{{getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra).nome}} -->{{calcolaProiezione(squadralive)}} </label>
-				<img ng-click="simulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" ng-show="visSimulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
-				&nbsp;&nbsp;
-				<img ng-click="simulaCambiMantra(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" ng-show="visSimulaCambiMantra(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" style="width: 20px; cursor: pointer;" title="applica cambi mantra" src="./ico/simulaMantra.png"></img>
-
-				<br>
-				<!-- in tabelle -->
-				<visualizzasquadra r="getResultMyCampionato(squadralive.campionato)" rcampionato="squadralive.campionato"  
-				rlive="getResultMyCampionato(squadralive.campionato).conLive" eventi="eventi" 
-				squadra="getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra)"></visualizzasquadra>
+				<img ng-click="proiezioneFG(
+						getResultMyCampionato(partiteLive[visPartitaLive].squadre[0].campionato),
+						getSquadraByCampionatoAndName(partiteLive[visPartitaLive].squadre[0].campionato,partiteLive[visPartitaLive].squadre[0].squadra),
+						getSquadraByCampionatoAndName(partiteLive[visPartitaLive].squadre[0].campionato,partiteLive[visPartitaLive].squadre[1].squadra)
+					)" 
+					ng-show="getResultMyCampionato(partiteLive[visPartitaLive].squadre[0].campionato).tipo=='FANTAGAZZETTA'" 
+					style="width: 20px; cursor: pointer;" title="proiezione" src="./ico/proiezione.png">
+				</img>
+				<br><td ng-repeat="squadralive in partiteLive[visPartitaLive].squadre">
+					<label>{{getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra).nome}} -->{{calcolaProiezione(squadralive)}} </label>
+					<img ng-click="simulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" ng-show="visSimulaCambi(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" style="width: 20px; cursor: pointer;" title="applica cambi" src="./ico/switch.png"></img>
+					&nbsp;&nbsp;
+					<img ng-click="simulaCambiMantra(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" ng-show="visSimulaCambiMantra(getResultMyCampionato(squadralive.campionato),getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra))" style="width: 20px; cursor: pointer;" title="applica cambi mantra" src="./ico/simulaMantra.png"></img>
+	
+					<br>
+					<!-- in tabelle -->
+					<visualizzasquadra r="getResultMyCampionato(squadralive.campionato)" rcampionato="squadralive.campionato"  
+					rlive="getResultMyCampionato(squadralive.campionato).conLive" eventi="eventi" 
+					squadra="getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra)"></visualizzasquadra>
 				</td>
 			</tr>
 			</table>

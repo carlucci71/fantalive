@@ -73,12 +73,14 @@ import com.daniele.fantalive.model.RigaNotifica;
 import com.daniele.fantalive.model.Squadra;
 import com.daniele.fantalive.repository.SalvaRepository;
 import com.daniele.fantalive.util.Constant;
+import com.daniele.fantalive.util.Constant.Campionati;
 import com.daniele.fantalive.util.ThreadSeparato;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.sun.org.apache.bcel.internal.classfile.Code;
 
 public class Main {
 
@@ -692,8 +694,6 @@ public class Main {
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
 		init(null, null, c);
-		Map<String, Object> bm_FG = bm_FG(Main.aliasCampionati.get(Constant.Campionati.LUCCICAR.name()));
-		System.out.println(toJson(bm_FG));
 		/*
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
 		ZonedDateTime parse = ZonedDateTime.parse("07/11/2021 - 23:59:00 +0000", dtf);
@@ -704,6 +704,98 @@ public class Main {
 		String authFS = getAuthFS();
 		System.out.println(authFS);
 		 */
+	}
+
+	public static Map<String, Object> proiezione_FG(String lega, Squadra sq1, Squadra sq2) throws Exception{
+
+		Map<String, Object> jsonToMap;
+		Map bodyMap = new HashMap<>();
+		bodyMap.put("username", constant.UTENTE_FG);
+		bodyMap.put("password", constant.PWD_FG);
+		Map<String, String> headers=new HashMap<>();
+		headers.put("app_key", constant.APPKEY_FG_MOBILE);
+		Map<String, Object> postHTTP = postHTTP("application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/v1_utente/login",toJson(bodyMap), headers);
+		String response = (String) postHTTP.get("response");
+		Map<String, Object> mapResponse = jsonToMap(response);//dati del login
+		Map data = (Map) mapResponse.get("data");
+		Map utente = (Map) data.get("utente");			
+		String user_token = (String) utente.get("utente_token");
+		List<Map> leghe = (List<Map>) data.get("leghe");			
+		String lega_token = "";
+//		int id_squadra=0;
+		for (Map legaAtt : leghe) {
+			if (((String)legaAtt.get("alias")).equalsIgnoreCase(lega)) {
+				lega_token = (String) legaAtt.get("token");
+//				id_squadra = (int) legaAtt.get("id_squadra");
+
+			}
+		}
+		
+		Map mapBody=new HashMap<>();
+		List<Map> teams = new ArrayList<>();
+		teams.add(generaTeamsSquadra(sq1, teams));
+		teams.add(generaTeamsSquadra(sq2, teams));
+		mapBody.put("ris", "");
+		mapBody.put("teams", teams);
+		
+		headers=new HashMap<>();
+		headers.put("app_key", constant.APPKEY_FG_MOBILE);
+		headers.put("lega_token", lega_token);
+		headers.put("user_token", user_token);
+		String giornata = String.valueOf(Constant.GIORNATA - Constant.DELTA_VIVA_FG);
+		postHTTP = postHTTP("application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/V2_LegaFormazioni/Proiezione?id_comp=" 
+		+ Constant.COMP_VIVA_FG + "&giornata=" + giornata ,toJson(mapBody), headers);
+		response = (String) postHTTP.get("response");
+		mapResponse = jsonToMap(response);
+		return mapResponse;
+	}
+
+	private static Map generaTeamsSquadra(Squadra sq, List<Map> teams) {
+		String modulo = sq.getModulo();
+		Map mapT = new HashMap<>();
+		mapT.put("id", Integer.parseInt(sq.getIdSquadra()));//id squadra
+		mapT.put("modulo", modulo);//modulo
+		mapT.put("moduloS", "");
+		mapT.put("fattore", 0);//fattore casa
+		mapT.put("total", 0);//totale
+		mapT.put("cap", "");//capitano
+		mapT.put("bmp", 0);//bonus portiere
+		mapT.put("bmd", 0);//bonus difesa
+		mapT.put("bmc", 0);//bonus capitano
+		mapT.put("bma", 0);//bonus attacco
+		mapT.put("bmfp", 0);//bonus fp
+		mapT.put("bmr", 0);//bonus rendimento
+		mapT.put("bmcap", 0);// bonus capitano
+		mapT.put("ru", 0);//??
+		List<Map> players = new ArrayList<>();
+		addPlayer(players, addEventiInOriginali(sq, sq.getTitolariOriginali()), null, true);//aggiunto giocatore
+		addPlayer(players, addEventiInOriginali(sq, sq.getRiserveOriginali()), null, true);//aggiunto giocatore
+		mapT.put("players", players);
+		return mapT;
+	}
+
+	private static List<Giocatore> addEventiInOriginali(Squadra sq, List<Giocatore> l) {
+		List<Giocatore> titolari = new ArrayList<Giocatore>();
+		for (Giocatore giocatore : l) {
+			List<Integer> codEventi=null;
+			Double voto=null;
+			for (Giocatore giocatore2 : sq.getTitolari()) {
+				if (giocatore2.getId().equals(giocatore.getId())){
+					codEventi=giocatore2.getCodEventi();
+					voto=giocatore2.getVoto();
+				}
+			}
+			for (Giocatore giocatore2 : sq.getRiserve()) {
+				if (giocatore2.getId().equals(giocatore.getId())){
+					codEventi=giocatore2.getCodEventi();
+					voto=giocatore2.getVoto();
+				}
+			}
+			giocatore.setCodEventi(codEventi);
+			giocatore.setVoto(voto);
+			titolari.add(giocatore);
+		}
+		return titolari;
 	}
 
 	private static Map<String, Object> bm_FG(String lega) throws Exception {
@@ -1270,7 +1362,8 @@ public class Main {
 								Squadra squadra = new Squadra();
 								squadre.add(squadra);
 								squadra.setNome(nome);
-								squadra.setModulo(map2.get("m").toString().replaceAll(";", ""));
+								String modulo = map2.get("m").toString();
+								squadra.setModulo(modulo.substring(0,modulo.indexOf(";")));
 								squadra.setIdSquadra(map2.get("id").toString());
 								List<PartitaSimulata> partiteSimulate=new ArrayList<>();
 								PartitaSimulata partitaSimulata=new PartitaSimulata();
@@ -1390,19 +1483,6 @@ public class Main {
 
 			}
 		}
-
-		/*
-		headers=new HashMap<>();
-		headers.put("app_key", constant.APPKEY_FG_MOBILE);
-		headers.put("lega_token", lega_token);
-		headers.put("user_token", user_token);
-		//https://appleghe.fantacalcio.it/api/v1/V1_LegaFormazioni/Visualizza?id_comp=319871 visualizzo la mia squadra nella competizione
-		String http = getHTTP("https://appleghe.fantacalcio.it/api/v1/V1_LegaFormazioni/Visualizza?id_comp=" + Constant.COMP_VIVA_FG, headers);
-		jsonToMap = jsonToMap(http);
-		data = (Map<String, Object>) jsonToMap.get("data");
-		Map<String, Object>  formazione = (Map<String, Object>) data.get("formazione");//mia formazione TODO recupera formazione di altri
-		List<Map<String, Object>>  calciatori = (List<Map<String, Object>>) data.get("calciatori");//miei calciatori
-		*/
 		String modulo = sq.getModulo();
 		Map mapBody = new HashMap<>();
 		List<Map> teams = new ArrayList<>();
@@ -1411,8 +1491,8 @@ public class Main {
 		mapT.put("modulo", modulo);//modulo
 		mapT.put("moduloS", "");
 		List<Map> players = new ArrayList<>();
-		addPlayer(players, sq.getTitolariOriginali(), assenti);//aggiunto giocatore
-		addPlayer(players, sq.getRiserveOriginali(), assenti);//aggiunto giocatore
+		addPlayer(players, sq.getTitolariOriginali(), assenti, false);//aggiunto giocatore
+		addPlayer(players, sq.getRiserveOriginali(), assenti, false);//aggiunto giocatore
 		mapT.put("players", players);
 		teams.add(mapT);
 		mapBody.put("teams", teams);
@@ -1504,17 +1584,28 @@ public class Main {
 		return ret;
 	}
 
-	private static void addPlayer(List<Map> players, List<Giocatore> titolari,List<String> assenti) {
-		for (Giocatore gioc : titolari) {
+	private static void addPlayer(List<Map> players, List<Giocatore> giocatori,List<String> assenti, boolean proiezione) {
+		for (Giocatore gioc : giocatori) {
 			Map player = new HashMap<>();
 			player.put("id",gioc.getId());
-			if (assenti.contains(gioc.getId())) {
-				player.put("rank",56);
+			if (proiezione) {
+				player.put("bm",gioc.getCodEventi());
+				player.put("totBm",0);
+				double voto = gioc.getVoto();
+				if (voto == 0) {
+					voto=56;
+				}
+				player.put("rank",voto);
 			} else {
-				player.put("rank",6);
+				if (assenti.contains(gioc.getId())) {
+					player.put("rank",56);
+				} else {
+					player.put("rank",6);
+				}
 			}
 			player.put("played",false);
 			player.put("malus",0);
+
 			players.add(player);
 		}
 	}
@@ -1624,6 +1715,7 @@ public class Main {
 				ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
 				returns.setAggiornamento(zdt.format(formatter));
 				returns.setTipologia(retAtt.getTipologia());
+				returns.setTipo(retAtt.getTipo());
 				returns.setConLive(conLive);
 				ret.put(campionato, returns);
 			}
@@ -1885,6 +1977,7 @@ public class Main {
 		String campionato = configCampionato.getCampionato();
 		Return r=new Return();
 		r.setTipologia(configCampionato.getTipologia());
+		r.setTipo(configCampionato.getTipo());
 		r.setNome(campionato.toUpperCase());
 		r.setCampionato(campionato.toUpperCase());
 		Map<String, List<Squadra>>squadre=new HashMap<String, List<Squadra>>();

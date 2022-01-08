@@ -6,6 +6,7 @@ import java.util.List;
 public class Return {
 
 	private String tipologia;
+	private String tipo;
 	private String aggiornamento;
 	private String nome;
 	private String campionato;
@@ -47,10 +48,17 @@ public class Return {
 	public void setTipologia(String tipologia) {
 		this.tipologia = tipologia;
 	}
+
+	public String getTipo() {
+		return tipo;
+	}
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
 	@Override
 	public String toString() {
-		return "Return [tipologia=" + tipologia + ", aggiornamento=" + aggiornamento + ", nome=" + nome
-				+ ", campionato=" + campionato + ", conLive=" + conLive + ", squadre=" + squadre + "]";
+		return "Return [tipologia=" + tipologia + ", tipo=" + tipo + ", aggiornamento=" + aggiornamento + ", nome="
+				+ nome + ", campionato=" + campionato + ", conLive=" + conLive + ", squadre=" + squadre + "]";
 	}
 	
 }

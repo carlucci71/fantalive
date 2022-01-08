@@ -38,6 +38,7 @@ import com.daniele.fantalive.model.Return;
 import com.daniele.fantalive.model.Squadra;
 import com.daniele.fantalive.repository.SalvaRepository;
 import com.daniele.fantalive.util.Constant;
+import com.daniele.fantalive.util.Constant.Campionati;
 
 @Component
 @RestController
@@ -270,6 +271,13 @@ public class MyController {
 		if (r.getNome().equalsIgnoreCase(Constant.Campionati.BE.name()) && r.getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate. Salva!");
 		Main.upsertSalva(Constant.FORMAZIONE + r.getNome(), Main.toJson(r.getSquadre()));
 		return test(true);
+	}
+	
+	@PostMapping("/proiezioneFG/{lega}")
+	public Map<String, Object> proiezioneFG(@PathVariable String lega,@RequestBody Map<String,Squadra> body) throws Exception {
+		Squadra sq1 = body.get("sq1");
+		Squadra sq2 = body.get("sq2");
+		return Main.proiezione_FG(Main.aliasCampionati.get(lega), sq1, sq2);
 	}
 	
 	@PostMapping("/simulaCambiMantra/{lega}")
