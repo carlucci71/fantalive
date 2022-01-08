@@ -19,6 +19,14 @@
     
 <script type="text/javascript" src="./app.js"></script>
 <body data-ng-init="init()" x-ng-app="app" ng-style="{'margin-left':'20px','background-color':backLoading()}">
+
+<div ng-controller="ModalDemoCtrl as pc" class="modal-demo">
+	<!-- 
+	     <button type="button" class="btn btn-default" ng-click="open()">Open me!</button>
+	 -->
+ </div>
+
+
 <div id="floatingRectangle" ng-hide="visPartitaLive">	
 	<input type=button value="&#11104;" ng-click="shiftFloating(-10)"></input>
 	<input type=button value="&#11106;" ng-click="shiftFloating(10)"></input>
@@ -52,11 +60,9 @@
 			<table>
 			<tr style="vertical-align:top">
 				<img ng-click="proiezioneFG(
-						getResultMyCampionato(partiteLive[visPartitaLive].squadre[0].campionato),
-						getSquadraByCampionatoAndName(partiteLive[visPartitaLive].squadre[0].campionato,partiteLive[visPartitaLive].squadre[0].squadra),
-						getSquadraByCampionatoAndName(partiteLive[visPartitaLive].squadre[0].campionato,partiteLive[visPartitaLive].squadre[1].squadra)
+						partiteLive[visPartitaLive]
 					)" 
-					ng-show="getResultMyCampionato(partiteLive[visPartitaLive].squadre[0].campionato).tipo=='FANTAGAZZETTA'" 
+					ng-show="(partiteLive[visPartitaLive].squadre).length==2 && getResultMyCampionato(partiteLive[visPartitaLive].squadre[0].campionato).tipo=='FANTAGAZZETTA'" 
 					style="width: 20px; cursor: pointer;" title="proiezione" src="./ico/proiezione.png">
 				</img>
 				<br><td ng-repeat="squadralive in partiteLive[visPartitaLive].squadre">

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -46,8 +45,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -73,14 +70,12 @@ import com.daniele.fantalive.model.RigaNotifica;
 import com.daniele.fantalive.model.Squadra;
 import com.daniele.fantalive.repository.SalvaRepository;
 import com.daniele.fantalive.util.Constant;
-import com.daniele.fantalive.util.Constant.Campionati;
 import com.daniele.fantalive.util.ThreadSeparato;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.sun.org.apache.bcel.internal.classfile.Code;
 
 public class Main {
 
@@ -706,7 +701,7 @@ public class Main {
 		 */
 	}
 
-	public static Map<String, Object> proiezione_FG(String lega, Squadra sq1, Squadra sq2) throws Exception{
+	public static Map<String, Object> proiezione_FG(String lega, List<Squadra> squadre) throws Exception{
 
 		Map<String, Object> jsonToMap;
 		Map bodyMap = new HashMap<>();
@@ -733,8 +728,9 @@ public class Main {
 		
 		Map mapBody=new HashMap<>();
 		List<Map> teams = new ArrayList<>();
-		teams.add(generaTeamsSquadra(sq1, teams));
-		teams.add(generaTeamsSquadra(sq2, teams));
+		for (Squadra sq : squadre) {
+			teams.add(generaTeamsSquadra(sq, teams));
+		}
 		mapBody.put("ris", "");
 		mapBody.put("teams", teams);
 		
@@ -746,9 +742,46 @@ public class Main {
 		postHTTP = postHTTP("application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/V2_LegaFormazioni/Proiezione?id_comp=" 
 		+ Constant.COMP_VIVA_FG + "&giornata=" + giornata ,toJson(mapBody), headers);
 		response = (String) postHTTP.get("response");
-		mapResponse = jsonToMap(response);
+		mapResponse = jsonToMap(response);//System.out.println(toJson(mapBody));
+		
+		teams = (List<Map>) ((Map<String, Object>)mapResponse.get("data")).get("teams");
+		for (int i=0;i<squadre.size();i++) {
+			Map<String, Object> map = teams.get(i);
+			map.put("nome", squadre.get(i).getNome());
+			List<Map<String, Object>> pl = (List<Map<String, Object>>) map.get("players");
+			for (Map<String, Object> mapPl : pl) {
+				ripristinaInfo(mapPl, squadre.get(i));
+			}
+		}
+		//System.out.println(toJson(mapResponse));
 		return mapResponse;
 	}
+	
+	private static void ripristinaInfo(Map<String, Object> map, Squadra sq) {
+		List<Giocatore> titolari = new ArrayList<Giocatore>();
+		List<Integer> codEventi=null;
+		Double voto=null;
+		String nome=null;
+		for (Giocatore giocatore2 : sq.getTitolari()) {
+			if (giocatore2.getId().equals(map.get("id").toString())){
+				codEventi=giocatore2.getCodEventi();
+				voto=giocatore2.getVoto();
+				nome=giocatore2.getNome();
+			}
+		}
+		for (Giocatore giocatore2 : sq.getRiserve()) {
+			if (giocatore2.getId().equals(map.get("id").toString())){
+				codEventi=giocatore2.getCodEventi();
+				voto=giocatore2.getVoto();
+				nome=giocatore2.getNome();
+			}
+		}
+		map.put("bm",codEventi);
+		map.put("rank",voto);
+		map.put("nome",nome);
+	}
+
+
 
 	private static Map generaTeamsSquadra(Squadra sq, List<Map> teams) {
 		String modulo = sq.getModulo();

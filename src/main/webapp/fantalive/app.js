@@ -395,14 +395,21 @@ app.run(
 						alert("Errore-3-3: " + angular.toJson(error));
 				});
 			}
-			$rootScope.proiezioneFG=function(r,sq1,sq2){
+			$rootScope.proiezioneFG=function(i){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
-				$resource('./proiezioneFG/' + r.campionato,{}).save({'sq1':sq1,'sq2':sq2}).$promise.then(function(data) {
-					console.log(sq1);
-					console.log(sq2);
-					console.log(data.data);
+				var cc=i.squadre[0].campionato;
+				var sq=[];
+
+				angular.forEach(i, function(squadre,key) {
+					angular.forEach(squadre, function(v,key) {
+						sq.push($rootScope.getSquadraByCampionatoAndName(cc,v.squadra));
+	                });
+                });
+				
+				$resource('./proiezioneFG/' + cc,{}).save(sq).$promise.then(function(data) {
+					$rootScope.open(data.data);
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 				}).catch(function(error) {
@@ -900,7 +907,38 @@ app.directive("visualizzasquadra", function() {
 			}
 		}
 	};
-})
+});
+app.controller('ModalDemoCtrl', function ($uibModal, $log, $rootScope) {
+	var pc = this;
+	pc.data = "..."; 
+
+	$rootScope.open = function (txt) {
+		var modalInstance = $uibModal.open({
+			animation: true,
+			size: 'lg',
+			ariaLabelledBy: 'modal-title',
+			ariaDescribedBy: 'modal-body',
+			templateUrl: 'modale.html',
+			controller: 'ModalInstanceCtrl',
+			controllerAs: 'pc',
+			resolve: {
+				data: function () {
+					return txt;
+				}
+			}
+		});
+		modalInstance.result.then(function () {
+		});
+	};
+});
+app.controller('ModalInstanceCtrl', function ($uibModalInstance, data, $rootScope, $resource) {
+	var pc = this;
+	pc.data = data;
+	pc.ok = function () {
+		$uibModalInstance.dismiss('ok');
+	};
+});
+
 
 /*
 $rootScope.getFantaVoto=function(g){
