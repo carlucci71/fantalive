@@ -743,7 +743,10 @@ public class Main {
 		+ Constant.COMP_VIVA_FG + "&giornata=" + giornata ,toJson(mapBody), headers);
 		response = (String) postHTTP.get("response");
 		mapResponse = jsonToMap(response);//System.out.println(toJson(mapBody));
-		
+		List listErrorMessage = (List)mapResponse.get("error_msgs");
+		if (listErrorMessage != null) {
+			throw new RuntimeException(listErrorMessage.get(0).toString());
+		}
 		teams = (List<Map>) ((Map<String, Object>)mapResponse.get("data")).get("teams");
 		for (int i=0;i<squadre.size();i++) {
 			Map<String, Object> map = teams.get(i);
@@ -1625,8 +1628,10 @@ public class Main {
 				player.put("bm",gioc.getCodEventi());
 				player.put("totBm",0);
 				double voto = gioc.getVoto();
-				if (voto == 0) {
+				if (voto == 0 && gioc.isSquadraGioca()) {
 					voto=56;
+				} else if (voto == 0 && !gioc.isSquadraGioca()) {
+					voto=6;
 				}
 				player.put("rank",voto);
 			} else {
