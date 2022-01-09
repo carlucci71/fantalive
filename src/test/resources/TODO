@@ -1,0 +1,30 @@
+proiezione jb capitano
+proiezione via telegram
+recupera tag alla giornata
+	{
+	    VEN vs MIL = {
+	        tag = FullTime,
+	        val = 92,
+	        VEN = {
+	            gol = 0,
+	            RETI = []
+	        },
+	        MIL = {
+	            gol = 3,
+	            RETI = [{
+	                    tipo = Goal,
+	                    minuto = 2,
+	                    giocatore = Zlatan Ibrahimovic
+	                }, {
+	                    tipo = Goal,
+	                    minuto = 48,
+	                    giocatore = Theo Hernández
+	                }, {
+	                    tipo = Penalty,
+	                    minuto = 59,
+	                    giocatore = Theo Hernández
+	                }
+	            ]
+	        }
+	    }
+	}

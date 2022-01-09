@@ -3,31 +3,21 @@
 </div>
 <div class="modal-body" id="modal-body">
 	<table style="width: 850px;" >
-		<tr align=center><td></td><td>{{pc.data.teams[0].nome}}</td><td>{{pc.data.teams[1].nome}}</td></tr>
-		<tr align=center><td>risultato</td><td ><label>{{pc.data.ris.substr(0,pc.data.ris.indexOf("-"))}}</label></td><td ><label>{{pc.data.ris.substr(pc.data.ris.indexOf("-")+1)}}</label></td></tr>
-		<tr align=center><td>modificatore difesa</td><td>{{pc.data.teams[0].bmd}}</td><td>{{pc.data.teams[1].bmd}}</td></tr>
-		<tr align=center><td>fair play</td><td>{{pc.data.teams[0].bmfp}}</td><td>{{pc.data.teams[1].bmfp}}</td></tr>
-		<tr align=center><td>fattore casa</td><td>{{pc.data.teams[0].fattore}}</td><td>{{pc.data.teams[1].fattore}}</td></tr>
-		<tr align=center><td>modulo orig</td><td>{{pc.data.teams[0].modulo}}</td><td>{{pc.data.teams[1].modulo}}</td></tr>
-		<tr align=center><td>modulo</td><td>{{pc.data.teams[0].moduloS}}</td><td>{{pc.data.teams[1].moduloS}}</td></tr>
-		<tr align=center><td>TOTALE</td><td>{{pc.data.teams[0].total}}</td><td>{{pc.data.teams[1].total}}</td></tr>
+
+		<tr align=center><td></td><td ng-repeat="team in pc.data.teams">{{team.nome}}</td></tr>
+		<tr ng-show="pc.data.ris != '-'" align=center><td>risultato</td><td  ng-repeat="team in pc.data.teams"><label>{{pc.data.ris.substr(0,pc.data.ris.indexOf("-"))}}</label></td></tr>
+		<tr align=center><td>modificatore difesa</td><td  ng-repeat="team in pc.data.teams">{{team.bmd}}</td></tr>
+		<tr align=center><td>fair play</td><td  ng-repeat="team in pc.data.teams">{{team.bmfp}}</td></tr>
+		<tr align=center><td>fattore casa</td><td  ng-repeat="team in pc.data.teams">{{team.fattore}}</td></tr>
+		<tr align=center><td>modulo orig</td><td  ng-repeat="team in pc.data.teams">{{team.modulo}}</td></tr>
+		<tr align=center><td>modulo</td><td  ng-repeat="team in pc.data.teams">{{team.moduloS}}</td></tr>
+		<tr align=center><td>TOTALE</td><td  ng-repeat="team in pc.data.teams">{{team.total}}</td></tr>
 		<tr align=center><td></td>
-			<td>
-				<span ng-repeat="pl  in pc.data.teams[0].players">
+			<td ng-repeat="team in pc.data.teams  track by $index">
+				<span ng-repeat="pl  in team.players">
 					<span ng-show="pl.played">
-						<label>{{pl.nome}}</label> {{pl.rank}} 
-						<span ng-repeat="bonusmalus in pl.bm track by $index">
-							<img style="width: 20px;"  ng-src="./ico/{{bonusmalus}}.png" />
-						</span>
-						<span ng-show="pl.malus != 0">malus <label>{{pl.malus}}</label> </span> 
-						<br>
-					</span>
-				</span>
-			</td>
-			<td>
-				<span ng-repeat="pl  in pc.data.teams[1].players">
-					<span ng-show="pl.played">
-						<label>{{pl.nome}}</label> {{pl.rank}} 
+						{{$index+1}}
+						<label>{{pl.nome}}</label> {{pl.fantavoto}} <span ng-hide="pl.squadraGioca">*</span>
 						<span ng-repeat="bonusmalus in pl.bm track by $index">
 							<img style="width: 20px;"  ng-src="./ico/{{bonusmalus}}.png" />
 						</span>

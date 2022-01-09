@@ -5,12 +5,14 @@ public class ConfigCampionato {
 	String tipo; 
 	String campionato;
 	String tipologia;
-	public ConfigCampionato(Integer numGiocatori, String tipo, String campionato, String tipologia) {
+	private String sfide;
+	public ConfigCampionato(Integer numGiocatori, String tipo, String campionato, String tipologia, String sfide) {
 		super();
 		this.numGiocatori = numGiocatori;
 		this.tipo = tipo;
 		this.campionato = campionato;
 		this.tipologia=tipologia;
+		this.setSfide(sfide);
 	}
 	public Integer getNumGiocatori() {
 		return numGiocatori;
@@ -30,16 +32,22 @@ public class ConfigCampionato {
 	public void setCampionato(String campionato) {
 		this.campionato = campionato;
 	}
-	@Override
-	public String toString() {
-		return "ConfigCampionato [numGiocatori=" + numGiocatori + ", tipo=" + tipo + ", campionato=" + campionato
-				+ ", tipologia=" + tipologia + "]";
-	}
 	public String getTipologia() {
 		return tipologia;
 	}
 	public void setTipologia(String tipologia) {
 		this.tipologia = tipologia;
+	}
+	public String getSfide() {
+		return sfide;
+	}
+	public void setSfide(String sfide) {
+		this.sfide = sfide;
+	}
+	@Override
+	public String toString() {
+		return "ConfigCampionato [numGiocatori=" + numGiocatori + ", tipo=" + tipo + ", campionato=" + campionato
+				+ ", tipologia=" + tipologia + ", sfide=" + sfide + "]";
 	}	
 	
 }

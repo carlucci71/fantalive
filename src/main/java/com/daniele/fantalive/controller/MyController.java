@@ -273,9 +273,9 @@ public class MyController {
 		return test(true);
 	}
 	
-	@PostMapping("/proiezioneFG/{lega}")
-	public Map<String, Object> proiezioneFG(@PathVariable String lega,@RequestBody List<Squadra> sq) throws Exception {
-		return Main.proiezione_FG(Main.aliasCampionati.get(lega), sq);
+	@PostMapping("/proiezioneFG/{lega}/{sfide}")
+	public Map<String, Object> proiezioneFG(@PathVariable String lega,@PathVariable String sfide,@RequestBody List<Squadra> sq) throws Exception {
+		return Main.proiezione_FG(Main.aliasCampionati.get(lega), sq, sfide);
 	}
 	
 	@PostMapping("/simulaCambiMantra/{lega}")

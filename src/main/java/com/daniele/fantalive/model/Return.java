@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Return {
-
+	private String sfide;
 	private String tipologia;
 	private String tipo;
 	private String aggiornamento;
@@ -55,10 +55,17 @@ public class Return {
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
+	public String getSfide() {
+		return sfide;
+	}
+	public void setSfide(String sfide) {
+		this.sfide = sfide;
+	}
 	@Override
 	public String toString() {
-		return "Return [tipologia=" + tipologia + ", tipo=" + tipo + ", aggiornamento=" + aggiornamento + ", nome="
-				+ nome + ", campionato=" + campionato + ", conLive=" + conLive + ", squadre=" + squadre + "]";
+		return "Return [sfide=" + sfide + ", tipologia=" + tipologia + ", tipo=" + tipo + ", aggiornamento="
+				+ aggiornamento + ", nome=" + nome + ", campionato=" + campionato + ", conLive=" + conLive
+				+ ", squadre=" + squadre + "]";
 	}
 	
 }

@@ -36,7 +36,7 @@
 <label ng-show="disabilitaNotificaTelegram">TELEGRAM DISABILITATO</label><br>
 <label ng-show="liveFromFile">LIVE FROM FILE</label><br>
 <label>Inizio caricamento: </label>{{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} <label>Fine: </label>{{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}<br>  
-<button ng-show="!configura && !loading" ng-click="configura=true">Configura</button>
+<button ng-show="!configura && !loading" ng-click="configura=true; visPartitaLive=false">Configura</button>
 <button ng-show="configura && !loading" ng-click="endConfigura()">Termina configurazione</button>
 <br>
 <label ng-show="aggiornamento" >Dati aggiornati alle: </label>{{aggiornamento}}
@@ -60,9 +60,9 @@
 			<table>
 			<tr style="vertical-align:top">
 				<img ng-click="proiezioneFG(
-						partiteLive[visPartitaLive]
+						getResultMyCampionato(partiteLive[visPartitaLive].squadre[0].campionato),partiteLive[visPartitaLive]
 					)" 
-					ng-show="(partiteLive[visPartitaLive].squadre).length==2 && getResultMyCampionato(partiteLive[visPartitaLive].squadre[0].campionato).tipo=='FANTAGAZZETTA'" 
+					ng-show="getResultMyCampionato(partiteLive[visPartitaLive].squadre[0].campionato).tipo=='FANTAGAZZETTA'" 
 					style="width: 20px; cursor: pointer;" title="proiezione" src="./ico/proiezione.png">
 				</img>
 				<br><td ng-repeat="squadralive in partiteLive[visPartitaLive].squadre">

@@ -71,6 +71,7 @@ import com.daniele.fantalive.model.Squadra;
 import com.daniele.fantalive.repository.SalvaRepository;
 import com.daniele.fantalive.util.Constant;
 import com.daniele.fantalive.util.ThreadSeparato;
+import com.daniele.fantalive.util.Constant.Campionati;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -321,10 +322,10 @@ public class Main {
 		}
 		if (configsCampionato==null) {
 			configsCampionato = new ArrayList<ConfigCampionato>();
-			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.JB.name(),"NOMANTRA"));
-			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.LUCCICAR.name(),"NOMANTRA"));
-			configsCampionato.add(new ConfigCampionato(22,"FANTAGAZZETTA",Constant.Campionati.FANTAVIVA.name(),"MANTRA"));
-			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE",Constant.Campionati.BE.name(),"NOMANTRA"));
+			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.JB.name(),"NOMANTRA","TUTTI"));
+			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.LUCCICAR.name(),"NOMANTRA","F1"));
+			configsCampionato.add(new ConfigCampionato(22,"FANTAGAZZETTA",Constant.Campionati.FANTAVIVA.name(),"MANTRA","PARTITE"));
+			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE",Constant.Campionati.BE.name(),"NOMANTRA","PARTITE"));
 		}
 	}
 
@@ -701,7 +702,7 @@ public class Main {
 		 */
 	}
 
-	public static Map<String, Object> proiezione_FG(String lega, List<Squadra> squadre) throws Exception{
+	public static Map<String, Object> proiezione_FG(String lega, List<Squadra> squadre, String sfide) throws Exception{
 
 		Map<String, Object> jsonToMap;
 		Map bodyMap = new HashMap<>();
@@ -717,15 +718,71 @@ public class Main {
 		String user_token = (String) utente.get("utente_token");
 		List<Map> leghe = (List<Map>) data.get("leghe");			
 		String lega_token = "";
-//		int id_squadra=0;
+		//		int id_squadra=0;
 		for (Map legaAtt : leghe) {
 			if (((String)legaAtt.get("alias")).equalsIgnoreCase(lega)) {
 				lega_token = (String) legaAtt.get("token");
-//				id_squadra = (int) legaAtt.get("id_squadra");
+				//				id_squadra = (int) legaAtt.get("id_squadra");
 
 			}
 		}
 		
+		String idComp="";
+		if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.JB.name()))) {
+			idComp = Constant.COMP_JB_FG;
+		} else if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.FANTAVIVA.name()))) {
+			idComp = Constant.COMP_VIVA_FG;
+		} else if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.LUCCICAR.name()))) {
+			idComp = Constant.COMP_LUCCICAR_FG;
+		} else {
+			throw new RuntimeException("lega non configurata: " + lega);
+		}
+
+		Map<String, Object> ret = new HashMap<>();
+
+		if (sfide.equalsIgnoreCase("PARTITE")) {
+			ret = callProiezioneFG(squadre, user_token, lega_token, idComp);
+		} else {
+			for (Squadra squadra : squadre) {
+				List<Squadra> singola = new ArrayList<>();
+				singola.add(squadra);
+				mapResponse = callProiezioneFG(singola, user_token, lega_token, idComp);
+				ret.put("state", mapResponse.get("state"));
+				ret.put("success", mapResponse.get("success"));
+				ret.put("error_msgs", mapResponse.get("error_msgs"));
+				ret.put("token", mapResponse.get("token"));
+				ret.put("update", mapResponse.get("update"));
+				Map<String, Object> mapDataResponse = (Map<String, Object>) mapResponse.get("data");
+				Map<String, Object> mapDataRet = (Map<String, Object>) ret.get("data");
+				if (mapDataRet==null) {
+					mapDataRet = new HashMap<>();
+				}
+				mapDataRet.put("ris", mapDataResponse.get("ris"));
+				mapDataRet.put("s", mapDataResponse.get("s"));
+				mapDataRet.put("adv", mapDataResponse.get("adv"));
+				mapDataRet.put("msg", mapDataResponse.get("msg"));
+
+				List<Map<String, Object>> listDataTeamsResponse = (List<Map<String, Object>>) mapDataResponse.get("teams");
+				List<Map<String, Object>> listDataTeamsRet = (List<Map<String, Object>>) mapDataRet.get("teams");
+				if (listDataTeamsRet==null) {
+					listDataTeamsRet = new ArrayList<>();
+				}
+				listDataTeamsRet.addAll(listDataTeamsResponse);
+				mapDataRet.put("teams", listDataTeamsRet);
+				ret.put("data", mapDataRet);
+//				System.out.println(toJson(ret));
+			}
+		}
+		//System.out.println(toJson(ret));
+		return ret;
+	}
+
+	private static Map<String, Object> callProiezioneFG(List<Squadra> squadre, String user_token, String lega_token, String idComp)
+			throws Exception {
+		Map<String, String> headers;
+		Map<String, Object> postHTTP;
+		String response;
+		Map<String, Object> mapResponse;
 		Map mapBody=new HashMap<>();
 		List<Map> teams = new ArrayList<>();
 		for (Squadra sq : squadre) {
@@ -733,14 +790,14 @@ public class Main {
 		}
 		mapBody.put("ris", "");
 		mapBody.put("teams", teams);
-		
+
 		headers=new HashMap<>();
 		headers.put("app_key", constant.APPKEY_FG_MOBILE);
 		headers.put("lega_token", lega_token);
 		headers.put("user_token", user_token);
 		String giornata = String.valueOf(Constant.GIORNATA - Constant.DELTA_VIVA_FG);
 		postHTTP = postHTTP("application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/V2_LegaFormazioni/Proiezione?id_comp=" 
-		+ Constant.COMP_VIVA_FG + "&giornata=" + giornata ,toJson(mapBody), headers);
+				+ idComp + "&giornata=" + giornata ,toJson(mapBody), headers);
 		response = (String) postHTTP.get("response");
 		mapResponse = jsonToMap(response);//System.out.println(toJson(mapBody));
 		List listErrorMessage = (List)mapResponse.get("error_msgs");
@@ -756,32 +813,53 @@ public class Main {
 				ripristinaInfo(mapPl, squadre.get(i));
 			}
 		}
-		//System.out.println(toJson(mapResponse));
 		return mapResponse;
 	}
 	
 	private static void ripristinaInfo(Map<String, Object> map, Squadra sq) {
 		List<Giocatore> titolari = new ArrayList<Giocatore>();
 		List<Integer> codEventi=null;
+		Double fantavoto=null;
 		Double voto=null;
+		Double rank=null;
 		String nome=null;
+		Boolean squadraGioca=null;
 		for (Giocatore giocatore2 : sq.getTitolari()) {
 			if (giocatore2.getId().equals(map.get("id").toString())){
 				codEventi=giocatore2.getCodEventi();
-				voto=giocatore2.getVoto();
+				rank=giocatore2.getVoto();
 				nome=giocatore2.getNome();
+				if (giocatore2.isSquadraGioca()) {
+					fantavoto=giocatore2.getVoto() + giocatore2.getModificatore();
+					voto=giocatore2.getVoto();
+				} else {
+					fantavoto=6d;
+					voto=6d;
+				}
+				squadraGioca = giocatore2.isSquadraGioca();
 			}
 		}
 		for (Giocatore giocatore2 : sq.getRiserve()) {
 			if (giocatore2.getId().equals(map.get("id").toString())){
 				codEventi=giocatore2.getCodEventi();
-				voto=giocatore2.getVoto();
+				rank=giocatore2.getVoto();
 				nome=giocatore2.getNome();
+				if (giocatore2.isSquadraGioca()) {
+					fantavoto=giocatore2.getVoto() + giocatore2.getModificatore();
+					voto=giocatore2.getVoto();
+				} else {
+					fantavoto=6d;
+					voto=6d;
+				}
+				squadraGioca = giocatore2.isSquadraGioca();
 			}
 		}
 		map.put("bm",codEventi);
-		map.put("rank",voto);
+		map.put("rank",rank);
+		map.put("voto",voto);
 		map.put("nome",nome);
+		map.put("fantavoto",fantavoto);
+		map.put("squadraGioca",squadraGioca);
 	}
 
 
@@ -1171,6 +1249,34 @@ public class Main {
 				snapPartite.put(key, partite);
 			}
 		}
+		/*
+{
+    VEN vs MIL = {
+        tag = FullTime,
+        val = 92,
+        VEN = {
+            gol = 0,
+            RETI = []
+        },
+        MIL = {
+            gol = 3,
+            RETI = [{
+                    tipo = Goal,
+                    minuto = 2,
+                    giocatore = Zlatan Ibrahimovic
+                }, {
+                    tipo = Goal,
+                    minuto = 48,
+                    giocatore = Theo Hernández
+                }, {
+                    tipo = Penalty,
+                    minuto = 59,
+                    giocatore = Theo Hernández
+                }
+            ]
+        }
+    }
+}		 */
 		return snapPartite;
 	}
 	public static Map<String,Object> postHTTP(String contentType, String url, String body,  Map<String, String>... headers) throws Exception {
@@ -1753,6 +1859,7 @@ public class Main {
 				ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
 				returns.setAggiornamento(zdt.format(formatter));
 				returns.setTipologia(retAtt.getTipologia());
+				returns.setSfide(retAtt.getSfide());
 				returns.setTipo(retAtt.getTipo());
 				returns.setConLive(conLive);
 				ret.put(campionato, returns);
@@ -2015,6 +2122,7 @@ public class Main {
 		String campionato = configCampionato.getCampionato();
 		Return r=new Return();
 		r.setTipologia(configCampionato.getTipologia());
+		r.setSfide(configCampionato.getSfide());
 		r.setTipo(configCampionato.getTipo());
 		r.setNome(campionato.toUpperCase());
 		r.setCampionato(campionato.toUpperCase());

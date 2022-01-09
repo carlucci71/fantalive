@@ -395,7 +395,7 @@ app.run(
 						alert("Errore-3-3: " + angular.toJson(error));
 				});
 			}
-			$rootScope.proiezioneFG=function(i){
+			$rootScope.proiezioneFG=function(r, i){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
@@ -408,7 +408,7 @@ app.run(
 	                });
                 });
 				
-				$resource('./proiezioneFG/' + cc,{}).save(sq).$promise.then(function(data) {
+				$resource('./proiezioneFG/' + cc + "/" + r.sfide,{}).save(sq).$promise.then(function(data) {
 					$rootScope.open(data.data);
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
