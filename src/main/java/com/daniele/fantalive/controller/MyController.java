@@ -168,7 +168,7 @@ public class MyController {
 	@PostMapping("/verificaNotifica")
 	public Map<String, String>  verificaNotifica(@RequestBody Map<String,String> body) throws Exception {
 		Map<String, String>  ret=new HashMap<>();
-		Main.inviaNotifica(Main.getDettaglio(Constant.CHAT_ID_FANTALIVE,body.get("campionato"),body.get("squadra"),"N"));
+		Main.inviaNotifica(Main.getDettaglio(Constant.CHAT_ID_FANTALIVE,body.get("campionato"),body.get("squadra"),"N", null));
 		return ret;
 	}
 	@PostMapping("/caricaFileFromDataByName")
@@ -275,7 +275,7 @@ public class MyController {
 	
 	@PostMapping("/proiezioneFG/{lega}/{sfide}")
 	public Map<String, Object> proiezioneFG(@PathVariable String lega,@PathVariable String sfide,@RequestBody List<Squadra> sq) throws Exception {
-		return Main.proiezione_FG(Main.aliasCampionati.get(lega), sq, sfide);
+		return Main.proiezione_FG(Main.aliasCampionati.get(lega), sq, sfide, null);
 	}
 	
 	@PostMapping("/simulaCambiMantra/{lega}")
@@ -699,30 +699,32 @@ public class MyController {
 			Main.getSquadreFromFG(Constant.Campionati.LUCCICAR.name());
 			Main.getSquadreFromFG(Constant.Campionati.JB.name());
 			Main.getSquadreFromFG(Constant.Campionati.FANTAVIVA.name());
-			Main.scaricaBe(Constant.GIORNATA,"");
-			List<Squadra> squadre = Main.getSquadreFromFS("",true, false);
-			Main.adattaNomePartitaSimulata(squadre);
-			String nomePartitaSimulata=null;
-			for (Squadra squadra : squadre) {//todo evidenze fantaviva
-				if (squadra.getNome().equalsIgnoreCase("tavolino")) {
-					squadra.setEvidenza(true);
+			if (Constant.GIORNATA-Constant.DELTA_FS>0){
+				Main.scaricaBe(Constant.GIORNATA,"");
+				List<Squadra> squadre = Main.getSquadreFromFS("",true, false);
+				Main.adattaNomePartitaSimulata(squadre);
+				String nomePartitaSimulata=null;
+				for (Squadra squadra : squadre) {//todo evidenze fantaviva
+					if (squadra.getNome().equalsIgnoreCase("tavolino")) {
+						squadra.setEvidenza(true);
+						PartitaSimulata partitaSimulata = squadra.getPartiteSimulate().get(0);
+						if (partitaSimulata.isCasa()) {
+							squadra.setCasaProiezione(true);
+						}
+						nomePartitaSimulata=partitaSimulata.getNome();
+					}
+				}
+				for (Squadra squadra : squadre) {
 					PartitaSimulata partitaSimulata = squadra.getPartiteSimulate().get(0);
-					if (partitaSimulata.isCasa()) {
-						squadra.setCasaProiezione(true);
-					}
-					nomePartitaSimulata=partitaSimulata.getNome();
-				}
-			}
-			for (Squadra squadra : squadre) {
-				PartitaSimulata partitaSimulata = squadra.getPartiteSimulate().get(0);
-				if (!squadra.getNome().equalsIgnoreCase("tavolino") && partitaSimulata.getNome().equals(nomePartitaSimulata)) {
-					squadra.setEvidenza(true);
-					if (partitaSimulata.isCasa()) {
-						squadra.setCasaProiezione(true);
+					if (!squadra.getNome().equalsIgnoreCase("tavolino") && partitaSimulata.getNome().equals(nomePartitaSimulata)) {
+						squadra.setEvidenza(true);
+						if (partitaSimulata.isCasa()) {
+							squadra.setCasaProiezione(true);
+						}
 					}
 				}
+				Main.upsertSalva(Constant.FORMAZIONE + Constant.Campionati.BE.name(), Main.toJson(squadre));
 			}
-			Main.upsertSalva(Constant.FORMAZIONE + Constant.Campionati.BE.name(), Main.toJson(squadre));
 			
 		}
 		catch (Exception e)

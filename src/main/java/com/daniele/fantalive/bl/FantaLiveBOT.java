@@ -153,18 +153,17 @@ switchkeepalive - switch keep alive
 				String testoCallback = update.getCallbackQuery().getData();
 				if (testoCallback.startsWith("campionati")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
-					execute(sendInlineKeyBoardSquadre(chatId,testoCallback, null,testoCallback, null));
+					execute(sendInlineKeyBoardSquadre(chatId,testoCallback, null,testoCallback, null, null));
 				}
 				else if (testoCallback.startsWith("proiezioni")) {
 					String campionato =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					Map<String, Object> proiezioni = Main.proiezioni(campionato);
-					execute(sendInlineKeyBoardSquadre(chatId,campionato, (List<String>) proiezioni.get("squadre"),(String) proiezioni.get("testo"),null));
+					execute(sendInlineKeyBoardSquadre(chatId,campionato, (List<String>) proiezioni.get("squadre"),(String) proiezioni.get("testo"),null, null));
 				}
 				else if (testoCallback.startsWith("dettaglio")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					String[] split = testoCallback.split("#");
-					execute(creaSendMessage(chatId,Main.getDettaglio(chatId,split[0],split[1],split[2]), false));
-
+					inviaMessaggio(chatId,Main.getDettaglio(chatId,split[0],split[1],split[2],split[3]), false);
 				}
 				else if (testoCallback.startsWith("filtro")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
@@ -174,8 +173,8 @@ switchkeepalive - switch keep alive
 				}
 				else if (testoCallback.startsWith("simulata")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
-					Map<String, Object> proiezioni = Main.getPartitaSimulata(chatId,testoCallback);
-					execute(sendInlineKeyBoardSquadre(chatId,(String) proiezioni.get("campionato"), (List<String>) proiezioni.get("squadre"),(String) proiezioni.get("testo"),(List<String>) proiezioni.get("squadreCasa")));
+					Map<String, Object> proiezioni = Main.getPartitaSimulata(chatId,testoCallback, null);
+					execute(sendInlineKeyBoardSquadre(chatId,(String) proiezioni.get("campionato"), (List<String>) proiezioni.get("squadre"),(String) proiezioni.get("testo"),(List<String>) proiezioni.get("squadreCasa"),testoCallback));
 				}
 				else {
 					execute(creaSendMessage(chatId, "cosa hai mandato? " + testoCallback , false));
@@ -274,9 +273,9 @@ switchkeepalive - switch keep alive
 		sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 		return sendMessage;
 	}
-	private SendMessage sendInlineKeyBoardSquadre(long chatId, String campionato, List<String> squadrePuntuali, String testo, List<String> simulazioneListaCasa){
+	private SendMessage sendInlineKeyBoardSquadre(long chatId, String campionato, List<String> squadrePuntuali, String testo, List<String> simulazioneListaCasa, String nomePartitaSimulata){
 		InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-		inlineKeyboardMarkup.setKeyboard(generaElencoSquadre(campionato,squadrePuntuali, simulazioneListaCasa));
+		inlineKeyboardMarkup.setKeyboard(generaElencoSquadre(campionato,squadrePuntuali, simulazioneListaCasa, nomePartitaSimulata));
 		SendMessage sendMessage =  new SendMessage();
 		sendMessage.enableHtml(true);
 		sendMessage.setParseMode("html");
@@ -285,7 +284,7 @@ switchkeepalive - switch keep alive
 		sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 		return sendMessage;
 	}
-	private List<List<InlineKeyboardButton>> generaElencoSquadre(String campionato, List<String> squadrePuntuali, List<String> simulazioneListaCasa) {
+	private List<List<InlineKeyboardButton>> generaElencoSquadre(String campionato, List<String> squadrePuntuali, List<String> simulazioneListaCasa, String nomePartitaSimulata) {
 		try {
 			List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
 			Map<String, Return> go = Main.go(false, null, null);
@@ -321,7 +320,7 @@ switchkeepalive - switch keep alive
 						}
 						InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
 						inlineKeyboardButton.setText(squadra.getNome());
-						inlineKeyboardButton.setCallbackData("dettaglio " + attCamp + "#"+ squadra.getNome()+ "#"+ casa);
+						inlineKeyboardButton.setCallbackData("dettaglio " + attCamp + "#"+ squadra.getNome()+ "#"+ casa+ (nomePartitaSimulata==null?null:"#"+ nomePartitaSimulata));
 						keyboardButtonsRow1.add(inlineKeyboardButton);
 					}
 				}

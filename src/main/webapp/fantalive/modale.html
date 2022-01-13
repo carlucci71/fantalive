@@ -5,7 +5,10 @@
 	<table style="width: 850px;" >
 
 		<tr align=center><td></td><td ng-repeat="team in pc.data.teams">{{team.nome}}</td></tr>
-		<tr ng-show="pc.data.ris != '-'" align=center><td>risultato</td><td  ng-repeat="team in pc.data.teams"><label>{{pc.data.ris.substr(0,pc.data.ris.indexOf("-"))}}</label></td></tr>
+		<tr ng-show="pc.data.ris != '-'" align=center><td>risultato</td>
+			<td><label>{{pc.data.ris.substring(0,pc.data.ris.indexOf("-"))}}</label></td>
+			<td><label>{{pc.data.ris.substring(pc.data.ris.indexOf("-")+1)}}</label></td>
+		</tr>
 		<tr align=center><td>modificatore difesa</td><td  ng-repeat="team in pc.data.teams">{{team.bmd}}</td></tr>
 		<tr align=center><td>fair play</td><td  ng-repeat="team in pc.data.teams">{{team.bmfp}}</td></tr>
 		<tr align=center><td>fattore casa</td><td  ng-repeat="team in pc.data.teams">{{team.fattore}}</td></tr>
@@ -13,9 +16,8 @@
 		<tr align=center><td>modulo</td><td  ng-repeat="team in pc.data.teams">{{team.moduloS}}</td></tr>
 		<tr align=center><td>TOTALE</td><td  ng-repeat="team in pc.data.teams">{{team.total}}</td></tr>
 		<tr align=center><td></td>
-			<td ng-repeat="team in pc.data.teams  track by $index">
-				<span ng-repeat="pl  in team.players">
-					<span ng-show="pl.played">
+			<td ng-repeat="team in pc.data.teams">
+				<span ng-repeat="pl  in team.players | filter:{ played: true }"  >
 						{{$index+1}}
 						<label>{{pl.nome}}</label> {{pl.fantavoto}} <span ng-hide="pl.squadraGioca">*</span>
 						<span ng-repeat="bonusmalus in pl.bm track by $index">
@@ -24,7 +26,6 @@
 						<span ng-show="pl.malus != 0">malus <label>{{pl.malus}}</label> </span> 
 						<br>
 					</span>
-				</span>
 			</td>
 		</tr>
 	

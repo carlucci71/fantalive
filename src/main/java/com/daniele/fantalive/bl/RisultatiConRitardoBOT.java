@@ -19,6 +19,10 @@ import com.daniele.fantalive.util.Constant;
 
 public class RisultatiConRitardoBOT extends TelegramLongPollingBot{
 
+	/*
+risultati - risultati ultima giornata
+live - risultati live ultima giornata
+	 */
 	private static BotSession registerBot;
 	@Override
 	public void onUpdateReceived(Update update) {
@@ -28,7 +32,11 @@ public class RisultatiConRitardoBOT extends TelegramLongPollingBot{
 				String text = update.getMessage().getText();
 				if(update.getMessage().hasText()){
 					if(text.equals("/risultati")){
-						String testoCallback = Main.getOldSnapPartite();
+						String testoCallback = Main.getOldSnapPartite(false);
+						execute(creaSendMessage(chatId, testoCallback , false));
+					}
+					else if(text.equals("/live")){
+						String testoCallback = Main.getOldSnapPartite(true);
 						execute(creaSendMessage(chatId, testoCallback , false));
 					}
 				}
@@ -74,13 +82,13 @@ public class RisultatiConRitardoBOT extends TelegramLongPollingBot{
 		c = (Constant) method.invoke(c);		
 		RisultatiConRitardoBOT bot = inizializza();
 		try {
-			bot.inviaMessaggio(c.CHAT_ID_FANTALIVE, "Status:STARTED");
+			bot.inviaMessaggio(c.CHAT_ID_FANTALIVE, "PROVA... Status:STARTED");
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.out);
 		}
 		Main.init(null,null,c);
-		String testoCallback = Main.getOldSnapPartite();
+		String testoCallback = Main.getOldSnapPartite(true);
 		System.out.println(testoCallback);
 		System.err.println("FINE");
 	}
