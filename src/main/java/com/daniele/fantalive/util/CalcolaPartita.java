@@ -1,6 +1,8 @@
 package com.daniele.fantalive.util;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -22,10 +24,10 @@ import com.daniele.fantalive.repository.SalvaRepository;
 
 
 public class CalcolaPartita {
-	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 12;
+	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 150;
 	private static final boolean SALVA_FILE=false;
-	private static final int ICASA=2;
 	private static final boolean USA_SPRING=false;
+	private static final int ICASA=2;
 	private static final String PARTITE = "Partite";
 	private static final String PUNTEGGI = "Punteggi";
 	private static final String PUNTI = "Punti";
@@ -66,6 +68,9 @@ public class CalcolaPartita {
 
 	private void go(String[] args) throws Exception {
 		ConfigurableApplicationContext ctx;
+		if (SALVA_FILE && !USA_SPRING) {
+			throw new RuntimeException("Se devi salvare il file devi usare spring");
+		}
 		if (USA_SPRING) {
 			ctx = new SpringApplicationBuilder(MainClass.class)
 					.profiles("DEV")
@@ -77,6 +82,12 @@ public class CalcolaPartita {
 					Main.fantaCronacaLiveBot.stopBot();
 				} 
 			}
+		} else {
+			Constant c=null;
+			Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
+			Method method = cl.getDeclaredMethod("constant");
+			c = (Constant) method.invoke(c);		
+			Main.init(null,null,c);
 		}
 
 		HashSet<String> hs=new HashSet<>();
@@ -111,100 +122,105 @@ public class CalcolaPartita {
 		f1.put(7, 6);
 		f1.put(8, 4);
 
-		
+
 		Map<String, Object> totaliBR=new HashMap<>(); 
 		Map<String, Object> totaliFormula1=new HashMap<>(); 
-//		Map<String, Object> totaliFormula1BIS=new HashMap<>(); 
+		//		Map<String, Object> totaliFormula1BIS=new HashMap<>(); 
 		Map<String, Map<String, Map<String, Object>>> totaliScontri=new HashMap<>(); 
 
 		System.err.println("---------------------" + " Scontri " + "---------------------");
 		for (int ggDaCalcolare=1;ggDaCalcolare<=MAX_GIORNATA_DA_CALCOLARE;ggDaCalcolare++) {
-			//			System.err.println("***************:" + ggDaCalcolare);
-			String tokenNomeFile = "STORICO_" + ggDaCalcolare  + "_";
-			if (SALVA_FILE) {
-				Main.scaricaBe(ggDaCalcolare + Constant.DELTA_FS,tokenNomeFile);
-			}
-			List<Squadra> squadre = Main.getSquadreFromFS(tokenNomeFile,false, true);
-			for (Squadra squadra : squadre) {
-				List<Giocatore> titolari = squadra.getTitolari();
-				List<Giocatore> riserve = squadra.getRiserve();
-				List<Giocatore> nuoviTitolari = new ArrayList<>();
-				for (Giocatore titolare : titolari) {
-					if (titolare.isEsce()) {
-						Giocatore r = null;
-						for (Giocatore riserva : riserve) {
-							if (riserva.isEntra() && titolare.getRuolo().equalsIgnoreCase(riserva.getRuolo())) {
-								if (r==null)  {
-									nuoviTitolari.add(riserva);
-									r=riserva;
+			ZonedDateTime zonedDateTime = Main.calendarioInizioGiornata.get(ggDaCalcolare + Constant.DELTA_FS);
+			ZonedDateTime now = ZonedDateTime.now();
+			if (zonedDateTime != null && now.isAfter(zonedDateTime)) {
+//				System.out.println(ggDaCalcolare + " - " + Main.calendarioInizioGiornata.get(ggDaCalcolare + Constant.DELTA_FS) + " - " + Main.calendario.get(ggDaCalcolare + Constant.DELTA_FS));
+
+				//			System.err.println("***************:" + ggDaCalcolare);
+				String tokenNomeFile = "STORICO_" + ggDaCalcolare  + "_";
+				if (SALVA_FILE) {
+					Main.scaricaBe(ggDaCalcolare + Constant.DELTA_FS,tokenNomeFile);
+				}
+				List<Squadra> squadre = Main.getSquadreFromFS(tokenNomeFile,false, true);
+				for (Squadra squadra : squadre) {
+					List<Giocatore> titolari = squadra.getTitolari();
+					List<Giocatore> riserve = squadra.getRiserve();
+					List<Giocatore> nuoviTitolari = new ArrayList<>();
+					for (Giocatore titolare : titolari) {
+						if (titolare.isEsce()) {
+							Giocatore r = null;
+							for (Giocatore riserva : riserve) {
+								if (riserva.isEntra() && titolare.getRuolo().equalsIgnoreCase(riserva.getRuolo())) {
+									if (r==null)  {
+										nuoviTitolari.add(riserva);
+										r=riserva;
+									}
 								}
 							}
+							if (r != null) {
+								riserve.remove(r);
+								riserve.add(titolare);
+							}
+						} else {
+							nuoviTitolari.add(titolare);
 						}
-						if (r != null) {
-							riserve.remove(r);
-							riserve.add(titolare);
-						}
-					} else {
-						nuoviTitolari.add(titolare);
 					}
+					squadra.setTitolariOriginali(titolari);
+					squadra.setTitolari(nuoviTitolari);
 				}
-				squadra.setTitolariOriginali(titolari);
-				squadra.setTitolari(nuoviTitolari);
-			}
-			//			System.err.println("*********************");
-			//			System.err.println(squadre);
-			//			System.err.println("*********************");
-			Map<String, Object> totaliF1=new HashMap<>(); 
-			for (int i1=0;i1<squadre.size();i1++) {
-				Squadra squadra1=squadre.get(i1);
-				String nome1 = squadra1.getNome();
-				totaliF1.put(nome1, squadra1.getTotaleTitolari());					
-				for (int i2=0;i2<squadre.size();i2++) {
-					boolean isCampionato=false;
-					if (i2-i1!=1 || ePari(i2)) {
-						if (false) continue;//campionato
-					}
-					else {
-						isCampionato=true;
-					}
-					Squadra squadra2=squadre.get(i2);
-					String nome2 = squadra2.getNome();
-					String k = Integer.toString(ggDaCalcolare) + "\t" + nome1 + "\t" + nome2;
-					if (false) {//solo coppa
-						if (!hs.contains(k)) continue;
-					}
-					if (!nome1.equals(nome2)){
-						if (nome1.startsWith("Jonny") && nome2.startsWith("C.") && ggDaCalcolare==2) {
-							//							System.out.println();
+				//			System.err.println("*********************");
+				//			System.err.println(squadre);
+				//			System.err.println("*********************");
+				Map<String, Object> totaliF1=new HashMap<>(); 
+				for (int i1=0;i1<squadre.size();i1++) {
+					Squadra squadra1=squadre.get(i1);
+					String nome1 = squadra1.getNome();
+					totaliF1.put(nome1, squadra1.getTotaleTitolari());					
+					for (int i2=0;i2<squadre.size();i2++) {
+						boolean isCampionato=false;
+						if (i2-i1!=1 || ePari(i2)) {
+							if (false) continue;//campionato
 						}
-						squadra1.setModificatoreDifesa(squadra2.getModificatoreDifesaDaAssegnare());
-						squadra2.setModificatoreDifesa(squadra1.getModificatoreDifesaDaAssegnare());
-						calcolaModificatoreCentrocampo(squadra1, squadra2);
-						int iGolCasa = getGol(squadra1.getTotale()+ICASA);
-						int iGolTrasferta = getGol(squadra2.getTotale());
-						if (iGolCasa > 0 && iGolCasa == iGolTrasferta && ( Math.abs(squadra1.getTotale() +ICASA - squadra2.getTotale()) >= 4))//FIXME BUG
-						{
-							/*
+						else {
+							isCampionato=true;
+						}
+						Squadra squadra2=squadre.get(i2);
+						String nome2 = squadra2.getNome();
+						String k = Integer.toString(ggDaCalcolare) + "\t" + nome1 + "\t" + nome2;
+						if (false) {//solo coppa
+							if (!hs.contains(k)) continue;
+						}
+						if (!nome1.equals(nome2)){
+							if (nome1.startsWith("Jonny") && nome2.startsWith("C.") && ggDaCalcolare==2) {
+								//							System.out.println();
+							}
+							squadra1.setModificatoreDifesa(squadra2.getModificatoreDifesaDaAssegnare());
+							squadra2.setModificatoreDifesa(squadra1.getModificatoreDifesaDaAssegnare());
+							calcolaModificatoreCentrocampo(squadra1, squadra2);
+							int iGolCasa = getGol(squadra1.getTotale()+ICASA);
+							int iGolTrasferta = getGol(squadra2.getTotale());
+							if (iGolCasa > 0 && iGolCasa == iGolTrasferta && ( Math.abs(squadra1.getTotale() +ICASA - squadra2.getTotale()) >= 4))//FIXME BUG
+							{
+								/*
 						Scarto stessa fascia 4
 						Il valore numerico di questo fattore � pari a 4 punti. Si applica nella seguente maniera: se i punteggi delle due squadre si trovano nella stessa fascia di gol,
 						 affinch� chi ha totalizzato il punteggio pi� alto vinca la partita � necessario che lo scarto tra i punteggi sia maggiore o uguale allo "scarto stessa fascia". In tal caso viene assegnato un gol in pi� alla squadra con punteggio pi� alto. In caso contrario la partita finisce in pareggio.
 						Esempi:
 						66 - 71. Entrambe i punteggi ricadono nella fascia di 1 gol. Con le fasce rigide la partita finirebbe 1-1. Utilizzando il fattore in questione, poich� lo scarto dei punteggi � pari a 5 >= 4 (scarto stessa fascia), la partita finisce 1-2.
 						67 - 70. Entrambe i punteggi ricadono nella fascia di 1 gol. Con le fasce rigide la partita finirebbe 1-1. Anche utilizzando il fattore in questione, poich� lo scarto dei punteggi � pari a 3 <= 4 (scarto stessa fascia), la partita finisce 1-1.
-							 */		
-							if (squadra1.getTotale() + ICASA > squadra2.getTotale())
-							{
-								iGolCasa++;
+								 */		
+								if (squadra1.getTotale() + ICASA > squadra2.getTotale())
+								{
+									iGolCasa++;
+								}
+								else
+								{
+									iGolTrasferta++;
+								}
 							}
-							else
-							{
-								iGolTrasferta++;
-							}
-						}
 
-						if (iGolCasa != iGolTrasferta && ( Math.abs(squadra1.getTotale() + ICASA - squadra2.getTotale()) <= 1))
-						{
-							/*
+							if (iGolCasa != iGolTrasferta && ( Math.abs(squadra1.getTotale() + ICASA - squadra2.getTotale()) <= 1))
+							{
+								/*
 						Scarto fasce diverse 1
 						Il valore numerico di questo fattore � pari a 3 punti. Si applica nella seguente maniera: se i punteggi delle due squadre si trovano in fasce diverse di gol, 
 						affinch� chi ha totalizzato il punteggio pi� alto vinca la partita � necessario che lo scarto tra i punteggi sia maggiore o uguale allo "scarto fasce diverse". 
@@ -212,17 +228,17 @@ public class CalcolaPartita {
 						Esempi:
 						71 - 73. Il primo punteggio ricade nella fascia di 1 gol. Il secondo ricade nella fascia dei 2 gol. Con le fasce rigide la partita finirebbe 1-2. Utilizzando il fattore in questione, poich� lo scarto dei punteggi � pari solo a 2 <= 3 (scarto fasce diverse), la partita finisce 2-2.
 						70 - 73. Il primo punteggio ricade nella fascia di 1 gol. Il secondo ricade nella fascia dei 2 gol. Con le fasce rigide la partita finirebbe 1-2. Anche utilizzando il fattore in questione, poich� lo scarto dei punteggi � pari solo a 3 >= 3 (scarto fasce diverse), la partita finisce comunque 1-2.		 
-							 */
-							if (squadra1.getTotale() + ICASA < squadra2.getTotale())
-							{
-								iGolCasa++;
+								 */
+								if (squadra1.getTotale() + ICASA < squadra2.getTotale())
+								{
+									iGolCasa++;
+								}
+								else
+								{
+									iGolTrasferta++;
+								}
 							}
-							else
-							{
-								iGolTrasferta++;
-							}
-						}
-						/*
+							/*
 						System.err.println(
 								"Giornata: " + ggDaCalcolare + "\n"
 								+ nome1 + " --> " + iGolCasa + "\n"
@@ -239,236 +255,225 @@ public class CalcolaPartita {
 //								+ "\tMalus formazione automatica: " + squadra2.getMalusFormazioneAutomatica() + "\n" 
 								);
 						;
-						 */
-						System.err.println(k+"\t" + iGolCasa +"\t" + iGolTrasferta );
-						if (iGolCasa>iGolTrasferta) {
-							Integer tot = (Integer) totaliBR.get(nome1);
-							if (tot==null) {
-								tot = 0;
-							}
-							tot=tot + 3;
-							totaliBR.put(nome1, tot);
-							if (isCampionato) {
-								//add1
-								Map<String, Map<String,Object>> mapScontri1 = totaliScontri.get(nome1);
-								if (mapScontri1==null) {
-									mapScontri1=new HashMap<>();
+							 */
+							System.err.println(k+"\t" + iGolCasa +"\t" + iGolTrasferta );
+							if (iGolCasa>iGolTrasferta) {
+								Integer tot = (Integer) totaliBR.get(nome1);
+								if (tot==null) {
+									tot = 0;
 								}
-								Map<String, Object> iScontri1 = mapScontri1.get(nome2);
-								if (iScontri1==null) {
-									iScontri1 = new HashMap<>();
-									iScontri1.put(GIOCATE, 0);
-									iScontri1.put(PUNTI, 0);
-									iScontri1.put(PARTITE, "");
-									iScontri1.put(PUNTEGGI, "");
-								}
-								else {
-									iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + "#"));
-									iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + "#"));
-									if ("tavolino".equals(nome1)) {
-										//										System.out.println();
+								tot=tot + 3;
+								totaliBR.put(nome1, tot);
+								if (isCampionato) {
+									//add1
+									Map<String, Map<String,Object>> mapScontri1 = totaliScontri.get(nome1);
+									if (mapScontri1==null) {
+										mapScontri1=new HashMap<>();
 									}
-								}
-								iScontri1.put(GIOCATE, ((Integer)iScontri1.get(GIOCATE))+1);
-								iScontri1.put(PUNTI, ((Integer)iScontri1.get(PUNTI))+3);
-								iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + iGolCasa + "-" + iGolTrasferta));
-								iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + squadra1.getTotale()+ICASA + "-" + squadra2.getTotale()));
-								mapScontri1.put(nome2, iScontri1);
-								totaliScontri.put(nome1, mapScontri1);
-								//add2
-								Map<String, Map<String,Object>> mapScontri2 = totaliScontri.get(nome2);
-								if (mapScontri2==null) {
-									mapScontri2=new HashMap<>();
-								}
-								Map<String,Object> iScontri2 = mapScontri2.get(nome1);
-								if (iScontri2==null) {
-									iScontri2 = new HashMap<>();
-									iScontri2.put(GIOCATE, 0);
-									iScontri2.put(PUNTI, 0);
-									iScontri2.put(PARTITE, "");
-									iScontri2.put(PUNTEGGI, "");
-								}
-								else {
-									iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + "#"));
-									iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + "#"));
-									if ("tavolino".equals(nome2)) {
-										//										System.out.println();
+									Map<String, Object> iScontri1 = mapScontri1.get(nome2);
+									if (iScontri1==null) {
+										iScontri1 = new HashMap<>();
+										iScontri1.put(GIOCATE, 0);
+										iScontri1.put(PUNTI, 0);
+										iScontri1.put(PARTITE, "");
+										iScontri1.put(PUNTEGGI, "");
 									}
-								}
-								iScontri2.put(GIOCATE, ((Integer)iScontri2.get(GIOCATE))+1);
-								iScontri2.put(PUNTI, ((Integer)iScontri2.get(PUNTI))+0);
-								iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + iGolTrasferta + "-" + iGolCasa));
-								iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + squadra2.getTotale() + "-" + squadra1.getTotale()+ICASA));
-								mapScontri2.put(nome1, iScontri2);
-								totaliScontri.put(nome2, mapScontri2);
-							}
-						}
-						else if (iGolTrasferta>iGolCasa) {
-							Integer tot = (Integer) totaliBR.get(nome2);
-							if (tot==null) {
-								tot = 0;
-							}
-							tot=tot + 3;
-							totaliBR.put(nome2, tot);
-							if (isCampionato) {
-								//add1
-								Map<String, Map<String,Object>> mapScontri1 = totaliScontri.get(nome1);
-								if (mapScontri1==null) {
-									mapScontri1=new HashMap<>();
-								}
-								Map<String,Object> iScontri1 = mapScontri1.get(nome2);
-								if (iScontri1==null) {
-									iScontri1 = new HashMap<>();
-									iScontri1.put(GIOCATE, 0);
-									iScontri1.put(PUNTI, 0);
-									iScontri1.put(PARTITE, "");
-									iScontri1.put(PUNTEGGI, "");
-								}
-								else {
-									iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + "#"));
-									iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + "#"));
-									if ("tavolino".equals(nome1)) {
-										//										System.out.println();
+									else {
+										iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + "#"));
+										iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + "#"));
+										if ("tavolino".equals(nome1)) {
+											//										System.out.println();
+										}
 									}
-								}
-								iScontri1.put(GIOCATE, ((Integer)iScontri1.get(GIOCATE))+1);
-								iScontri1.put(PUNTI, ((Integer)iScontri1.get(PUNTI))+0);
-								iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + iGolCasa + "-" + iGolTrasferta));
-								iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + squadra1.getTotale()+ICASA + "-" + squadra2.getTotale()));
-								mapScontri1.put(nome2, iScontri1);
-								totaliScontri.put(nome1, mapScontri1);
-								//add2
-								Map<String, Map<String,Object>> mapScontri2 = totaliScontri.get(nome2);
-								if (mapScontri2==null) {
-									mapScontri2=new HashMap<>();
-								}
-								Map<String,Object> iScontri2 = mapScontri2.get(nome1);
-								if (iScontri2==null) {
-									iScontri2 = new HashMap<>();
-									iScontri2.put(GIOCATE, 0);
-									iScontri2.put(PUNTI, 0);
-									iScontri2.put(PARTITE, "");
-									iScontri2.put(PUNTEGGI, "");
-								}
-								else {
-									iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + "#"));
-									iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + "#"));
-									if ("tavolino".equals(nome2)) {
-										//										System.out.println();
+									iScontri1.put(GIOCATE, ((Integer)iScontri1.get(GIOCATE))+1);
+									iScontri1.put(PUNTI, ((Integer)iScontri1.get(PUNTI))+3);
+									iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + iGolCasa + "-" + iGolTrasferta));
+									iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + squadra1.getTotale()+ICASA + "-" + squadra2.getTotale()));
+									mapScontri1.put(nome2, iScontri1);
+									totaliScontri.put(nome1, mapScontri1);
+									//add2
+									Map<String, Map<String,Object>> mapScontri2 = totaliScontri.get(nome2);
+									if (mapScontri2==null) {
+										mapScontri2=new HashMap<>();
 									}
-								}
-								iScontri2.put(GIOCATE, ((Integer)iScontri2.get(GIOCATE))+1);
-								iScontri2.put(PUNTI, ((Integer)iScontri2.get(PUNTI))+3);
-								iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + iGolTrasferta + "-" + iGolCasa));
-								iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + squadra2.getTotale() + "-" + squadra1.getTotale()+ICASA));
-								mapScontri2.put(nome1, iScontri2);
-								totaliScontri.put(nome2, mapScontri2);
-							}
-						} else {
-							Integer tot1 = (Integer) totaliBR.get(nome1);
-							if (tot1==null) {
-								tot1 = 0;
-							}
-							tot1=tot1+1;
-							totaliBR.put(nome1, tot1);
-							Integer tot2 = (Integer) totaliBR.get(nome2);
-							if (tot2==null) {
-								tot2 = 0;
-							}
-							tot2=tot2+1;
-							totaliBR.put(nome2, tot2);
-							if (isCampionato) {
-								//add1
-								Map<String, Map<String,Object>> mapScontri1 = totaliScontri.get(nome1);
-								if (mapScontri1==null) {
-									mapScontri1=new HashMap<>();
-								}
-								Map<String,Object> iScontri1 = mapScontri1.get(nome2);
-								if (iScontri1==null) {
-									iScontri1 = new HashMap<>();
-									iScontri1.put(GIOCATE, 0);
-									iScontri1.put(PUNTI, 0);
-									iScontri1.put(PARTITE, "");
-									iScontri1.put(PUNTEGGI, "");
-								}
-								else {
-									iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + "#"));
-									iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + "#"));
-									if ("tavolino".equals(nome1)) {
-										//										System.out.println();
+									Map<String,Object> iScontri2 = mapScontri2.get(nome1);
+									if (iScontri2==null) {
+										iScontri2 = new HashMap<>();
+										iScontri2.put(GIOCATE, 0);
+										iScontri2.put(PUNTI, 0);
+										iScontri2.put(PARTITE, "");
+										iScontri2.put(PUNTEGGI, "");
 									}
-								}
-								iScontri1.put(GIOCATE, ((Integer)iScontri1.get(GIOCATE))+1);
-								iScontri1.put(PUNTI, ((Integer)iScontri1.get(PUNTI))+1);
-								iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + iGolCasa + "-" + iGolTrasferta));
-								iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + squadra1.getTotale()+ICASA + "-" + squadra2.getTotale()));
-								mapScontri1.put(nome2, iScontri1);
-								totaliScontri.put(nome1, mapScontri1);
-								//add2
-								Map<String, Map<String,Object>> mapScontri2 = totaliScontri.get(nome2);
-								if (mapScontri2==null) {
-									mapScontri2=new HashMap<>();
-								}
-								Map<String,Object> iScontri2 = mapScontri2.get(nome1);
-								if (iScontri2==null) {
-									iScontri2 = new HashMap<>();
-									iScontri2.put(GIOCATE, 0);
-									iScontri2.put(PUNTI, 0);
-									iScontri2.put(PARTITE, "");
-									iScontri2.put(PUNTEGGI, "");
-								}
-								else {
-									iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + "#"));
-									iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + "#"));
-									if ("tavolino".equals(nome2)) {
-										//										System.out.println();
+									else {
+										iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + "#"));
+										iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + "#"));
+										if ("tavolino".equals(nome2)) {
+											//										System.out.println();
+										}
 									}
+									iScontri2.put(GIOCATE, ((Integer)iScontri2.get(GIOCATE))+1);
+									iScontri2.put(PUNTI, ((Integer)iScontri2.get(PUNTI))+0);
+									iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + iGolTrasferta + "-" + iGolCasa));
+									iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + squadra2.getTotale() + "-" + squadra1.getTotale()+ICASA));
+									mapScontri2.put(nome1, iScontri2);
+									totaliScontri.put(nome2, mapScontri2);
 								}
-								iScontri2.put(PUNTI, ((Integer)iScontri2.get(PUNTI))+1);
-								iScontri2.put(GIOCATE, ((Integer)iScontri2.get(GIOCATE))+1);
-								iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + iGolTrasferta + "-" + iGolCasa));
-								iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + squadra2.getTotale() + "-" + squadra1.getTotale()+ICASA));
-								mapScontri2.put(nome1, iScontri2);
-								totaliScontri.put(nome2, mapScontri2);
+							}
+							else if (iGolTrasferta>iGolCasa) {
+								Integer tot = (Integer) totaliBR.get(nome2);
+								if (tot==null) {
+									tot = 0;
+								}
+								tot=tot + 3;
+								totaliBR.put(nome2, tot);
+								if (isCampionato) {
+									//add1
+									Map<String, Map<String,Object>> mapScontri1 = totaliScontri.get(nome1);
+									if (mapScontri1==null) {
+										mapScontri1=new HashMap<>();
+									}
+									Map<String,Object> iScontri1 = mapScontri1.get(nome2);
+									if (iScontri1==null) {
+										iScontri1 = new HashMap<>();
+										iScontri1.put(GIOCATE, 0);
+										iScontri1.put(PUNTI, 0);
+										iScontri1.put(PARTITE, "");
+										iScontri1.put(PUNTEGGI, "");
+									}
+									else {
+										iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + "#"));
+										iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + "#"));
+										if ("tavolino".equals(nome1)) {
+											//										System.out.println();
+										}
+									}
+									iScontri1.put(GIOCATE, ((Integer)iScontri1.get(GIOCATE))+1);
+									iScontri1.put(PUNTI, ((Integer)iScontri1.get(PUNTI))+0);
+									iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + iGolCasa + "-" + iGolTrasferta));
+									iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + squadra1.getTotale()+ICASA + "-" + squadra2.getTotale()));
+									mapScontri1.put(nome2, iScontri1);
+									totaliScontri.put(nome1, mapScontri1);
+									//add2
+									Map<String, Map<String,Object>> mapScontri2 = totaliScontri.get(nome2);
+									if (mapScontri2==null) {
+										mapScontri2=new HashMap<>();
+									}
+									Map<String,Object> iScontri2 = mapScontri2.get(nome1);
+									if (iScontri2==null) {
+										iScontri2 = new HashMap<>();
+										iScontri2.put(GIOCATE, 0);
+										iScontri2.put(PUNTI, 0);
+										iScontri2.put(PARTITE, "");
+										iScontri2.put(PUNTEGGI, "");
+									}
+									else {
+										iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + "#"));
+										iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + "#"));
+										if ("tavolino".equals(nome2)) {
+											//										System.out.println();
+										}
+									}
+									iScontri2.put(GIOCATE, ((Integer)iScontri2.get(GIOCATE))+1);
+									iScontri2.put(PUNTI, ((Integer)iScontri2.get(PUNTI))+3);
+									iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + iGolTrasferta + "-" + iGolCasa));
+									iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + squadra2.getTotale() + "-" + squadra1.getTotale()+ICASA));
+									mapScontri2.put(nome1, iScontri2);
+									totaliScontri.put(nome2, mapScontri2);
+								}
+							} else {
+								Integer tot1 = (Integer) totaliBR.get(nome1);
+								if (tot1==null) {
+									tot1 = 0;
+								}
+								tot1=tot1+1;
+								totaliBR.put(nome1, tot1);
+								Integer tot2 = (Integer) totaliBR.get(nome2);
+								if (tot2==null) {
+									tot2 = 0;
+								}
+								tot2=tot2+1;
+								totaliBR.put(nome2, tot2);
+								if (isCampionato) {
+									//add1
+									Map<String, Map<String,Object>> mapScontri1 = totaliScontri.get(nome1);
+									if (mapScontri1==null) {
+										mapScontri1=new HashMap<>();
+									}
+									Map<String,Object> iScontri1 = mapScontri1.get(nome2);
+									if (iScontri1==null) {
+										iScontri1 = new HashMap<>();
+										iScontri1.put(GIOCATE, 0);
+										iScontri1.put(PUNTI, 0);
+										iScontri1.put(PARTITE, "");
+										iScontri1.put(PUNTEGGI, "");
+									}
+									else {
+										iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + "#"));
+										iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + "#"));
+										if ("tavolino".equals(nome1)) {
+											//										System.out.println();
+										}
+									}
+									iScontri1.put(GIOCATE, ((Integer)iScontri1.get(GIOCATE))+1);
+									iScontri1.put(PUNTI, ((Integer)iScontri1.get(PUNTI))+1);
+									iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + iGolCasa + "-" + iGolTrasferta));
+									iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + squadra1.getTotale()+ICASA + "-" + squadra2.getTotale()));
+									mapScontri1.put(nome2, iScontri1);
+									totaliScontri.put(nome1, mapScontri1);
+									//add2
+									Map<String, Map<String,Object>> mapScontri2 = totaliScontri.get(nome2);
+									if (mapScontri2==null) {
+										mapScontri2=new HashMap<>();
+									}
+									Map<String,Object> iScontri2 = mapScontri2.get(nome1);
+									if (iScontri2==null) {
+										iScontri2 = new HashMap<>();
+										iScontri2.put(GIOCATE, 0);
+										iScontri2.put(PUNTI, 0);
+										iScontri2.put(PARTITE, "");
+										iScontri2.put(PUNTEGGI, "");
+									}
+									else {
+										iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + "#"));
+										iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + "#"));
+										if ("tavolino".equals(nome2)) {
+											//										System.out.println();
+										}
+									}
+									iScontri2.put(PUNTI, ((Integer)iScontri2.get(PUNTI))+1);
+									iScontri2.put(GIOCATE, ((Integer)iScontri2.get(GIOCATE))+1);
+									iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + iGolTrasferta + "-" + iGolCasa));
+									iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + squadra2.getTotale() + "-" + squadra1.getTotale()+ICASA));
+									mapScontri2.put(nome1, iScontri2);
+									totaliScontri.put(nome2, mapScontri2);
+								}
 							}
 						}
 					}
 				}
+				//	System.err.println("---------------------" + " F1... " + "---------------------");
+				Map<String, Object> map = new TreeMap(new ReverseOrderTreemap(totaliF1));
+				map.putAll(totaliF1);
+				Double oldValue=0d;
+				int pos=0;
+				int conta=0;
+				//			ArrayList<Squadra> al=new ArrayList<>();
+				for (Map.Entry<String, Object> entry : map.entrySet()) {
+					conta++;
+					Double punti = (Double) entry.getValue();
+					if (!punti.equals(oldValue)) {
+						pos=conta;
+					}
+					Integer puntiF1 = f1.get(pos);
+					String nome = entry.getKey();
+					Integer t = (Integer) totaliFormula1.get(nome);
+					if (t==null) {
+						t=0;
+					}
+					t=t+puntiF1;
+					totaliFormula1.put(nome, t);
+				}			
 			}
-		//	System.err.println("---------------------" + " F1... " + "---------------------");
-			Map<String, Object> map = new TreeMap(new ReverseOrderTreemap(totaliF1));
-			map.putAll(totaliF1);
-			Double oldValue=0d;
-			int pos=0;
-			int conta=0;
-//			ArrayList<Squadra> al=new ArrayList<>();
-			for (Map.Entry<String, Object> entry : map.entrySet()) {
-				conta++;
-				Double punti = (Double) entry.getValue();
-				if (!punti.equals(oldValue)) {
-					pos=conta;
-				}
-				Integer puntiF1 = f1.get(pos);
-				String nome = entry.getKey();
-				Integer t = (Integer) totaliFormula1.get(nome);
-				if (t==null) {
-					t=0;
-				}
-				t=t+puntiF1;
-				totaliFormula1.put(nome, t);
-				/*
-				Squadra s = new Squadra();
-				s.setNome(nome);
-				s.tmp=punti;
-				al.add(s);
-				*/
-				//System.err.println(nome + "-" + punti + "-" + puntiF1);
-		    }			
-//			aggiornaF1(al, ggDaCalcolare, totaliFormula1BIS, f1);
-
-
-//			map.forEach((k,v)->System.err.println(k+"="+v));
-//			System.err.println(totaliF1);
 		}
 
 		System.err.println("---------------------" + " F1 " + "---------------------");
@@ -476,25 +481,8 @@ public class CalcolaPartita {
 		map.putAll(totaliFormula1);
 		map.forEach((k,v)->System.err.println(k+"="+v));
 
-		/*
-		System.err.println("---------------------" + " F1BIS " + "---------------------");
-		map = new TreeMap(new ReverseOrderTreemap(totaliFormula1BIS));
-		map.putAll(totaliFormula1BIS);
-		map.forEach((k,v)->System.err.println(k+"="+v));
-		*/
-		
+
 		System.err.println("---------------------" + " Battle royal " + "---------------------");
-		/*
-		List<Entry<String, Integer>> list = new ArrayList<>(totali.entrySet());
-		list.sort(Entry.comparingByValue());
-		list.forEach(System.err::println);		
-		 */
-		/*
-		Stream<Map.Entry<String, Integer>> sorted =
-				totali.entrySet().stream()
-			       .sorted(Map.Entry.comparingByValue());
-		sorted.forEach(System.err::println);		
-		 */
 		map = new TreeMap(new ReverseOrderTreemap(totaliBR));
 		map.putAll(totaliBR);
 		map.forEach((k,v)->System.err.println(k+"="+v));
@@ -542,7 +530,7 @@ public class CalcolaPartita {
 		int iContaScarto = 1;
 		for (Squadra squadra : squadre) 
 		{
-			double totalePunti = squadra.tmp;
+			double totalePunti = 0;
 			if (totalePunti == dOldValue)
 			{
 				iContaScarto++;
@@ -554,7 +542,7 @@ public class CalcolaPartita {
 				iContaScarto=1;
 			}
 			System.err.println(gg + "-" + squadra.getNome() + "-" + totalePunti + "-" + iContaPosizioni);
-			
+
 			Integer t = (Integer) totaliFormula1BIS.get(squadra.getNome());
 			if (t==null) {
 				t=0;
@@ -565,8 +553,8 @@ public class CalcolaPartita {
 
 
 	}
-	
-	
+
+
 	private static int getGol(double elabora) {
 		int iGolCasa = 0;
 		if (elabora<66)

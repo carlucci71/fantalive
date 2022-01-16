@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Squadra implements Comparable<Squadra> {
+public Squadra() {
+		super();
+	}
 String nome;
 private boolean casaProiezione;
 private int prog=0;
@@ -20,9 +23,9 @@ private List<Giocatore> titolariOriginali=new ArrayList<Giocatore>();
 private List<Giocatore> riserveOriginali=new ArrayList<Giocatore>();
 private List<PartitaSimulata> partiteSimulate=new ArrayList<PartitaSimulata>();
 private List<Giocatore> riserve=new ArrayList<Giocatore>();
-public double tmp;
 private String idSquadra;
 private String modulo;
+private String nick=null;
 private double fairPlay=0;
 
 public String getNome() {
@@ -40,7 +43,7 @@ public void setTitolari(List<Giocatore> titolari) {
 @Override
 public String toString() {
 	StringBuilder sb = new StringBuilder();
-	sb.append(nome + "\nTITOLARI:\n");
+	sb.append(nome + (nick==null?"":" (" + nick + ") ") + "\nTITOLARI:\n");
 	for (Giocatore giocatore : titolari) {
 		sb.append(giocatore + "\n");
 	}
@@ -253,5 +256,34 @@ public double getFairPlay() {
 public void setFairPlay(double fairPlay) {
 	this.fairPlay = fairPlay;
 }
+public String getNick() {
+	return nick;
+}
+public void setNick(String nick) {
+	this.nick = nick;
+}
+public Squadra clonaSquadra () {
+	Squadra squadra = new Squadra();
+	squadra.setModificatoreDifesa(getModificatoreDifesa());
+	squadra.setModificatoreDifesaDaAssegnare(getModificatoreDifesaDaAssegnare());
+	squadra.setModificatoreCentrocampo(getModificatoreCentrocampo());
+	squadra.setModificatoreAttacco(getModificatoreAttacco());
+	squadra.setMalusFormazioneAutomatica(getMalusFormazioneAutomatica());
+	squadra.setFairPlay(getFairPlay());
+	squadra.setCasaProiezione(isCasaProiezione());
+	squadra.setModulo((getModulo()));
+	squadra.setIdSquadra(getIdSquadra());
+	squadra.setTitolariOriginali(getTitolariOriginali());
+	squadra.setRiserveOriginali(getRiserveOriginali());
+	squadra.setNome(getNome());
+	squadra.setEvidenza(isEvidenza());
+	squadra.setPartiteSimulate(getPartiteSimulate());
+	squadra.setProg(getProg());
+	squadra.setNick(getNick());
+	squadra.setTitolari(getTitolari());
+	squadra.setRiserve(getRiserve());
+	return squadra;
+}
+
 
 }

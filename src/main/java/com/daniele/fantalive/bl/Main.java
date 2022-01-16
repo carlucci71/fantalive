@@ -105,9 +105,10 @@ public class Main {
 	static ObjectMapper mapper;
 	static Map<String , String> getIconaIDGioc;	
 	static Map<String , Integer> statusMatch;	
+	static Map<String , String> nickPlayer;	
 	static Map<Integer, String > reverseStatusMatch;	
-	static Map<Integer , ZonedDateTime> calendario;	
-	static Map<Integer , ZonedDateTime> calendarioInizioGiornata;	
+	public static Map<Integer , ZonedDateTime> calendario;	
+	public static Map<Integer , ZonedDateTime> calendarioInizioGiornata;	
 	static Set<String > sqJB;	
 	static Set<String > giocJB;	
 	public static Map<String, String> keyFG=null;
@@ -210,6 +211,12 @@ public class Main {
 				add("Il sigaro di Lippi");
 			}};
 		}
+		if (nickPlayer==null) {
+			nickPlayer = new HashMap() {{
+				put("PreMatch",    "");
+				put("PreMatch",    "");
+			}};
+		}
 		if (statusMatch==null) {
 			statusMatch = new HashMap() {{
 				put("PreMatch",    0);
@@ -224,6 +231,7 @@ public class Main {
 			}};
 		}
 		if (reverseStatusMatch==null) {
+			/*
 			reverseStatusMatch = new HashMap() {{
 				put(0,"PreMatch");
 				put(1,"FirstHalf");
@@ -235,6 +243,11 @@ public class Main {
 				put(7,"Walkover");
 				put(8,"Notplayed");
 			}};
+			*/
+			reverseStatusMatch = new HashMap();
+			for(Map.Entry<String, Integer> entry : statusMatch.entrySet()){
+				reverseStatusMatch.put(entry.getValue(), entry.getKey());
+			}		
 		}
 		if (getIconaIDGioc==null) {
 			getIconaIDGioc = new HashMap() {{

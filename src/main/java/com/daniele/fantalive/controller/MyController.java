@@ -293,18 +293,7 @@ public class MyController {
 			}
 		}
 		Map<String, Object> simulaCambiMantra = Main.simulaCambiMantra(Main.aliasCampionati.get(lega), assenti, sq);
-
-		Squadra squadra = new Squadra();
-		squadra.setFairPlay(sq.getFairPlay());
-		squadra.setModulo((sq.getModulo()));
-		squadra.setIdSquadra(sq.getIdSquadra());
-		squadra.setTitolariOriginali(sq.getTitolariOriginali());
-		squadra.setRiserveOriginali(sq.getRiserveOriginali());
-		squadra.setCasaProiezione(sq.isCasaProiezione());
-		squadra.setNome(sq.getNome());
-		squadra.setEvidenza(sq.isEvidenza());
-		squadra.setPartiteSimulate(sq.getPartiteSimulate());
-		squadra.setProg(sq.getProg());
+		Squadra squadra = sq.clonaSquadra();
 		List<Giocatore> nuovaListaGiocatori=new ArrayList<Giocatore>();
 		int iContaPosizione=0;
 		List<Map<String, Object>> calciatoriEntra = (List<Map<String, Object>>) simulaCambiMantra.get("calciatoriEntra");
@@ -469,20 +458,11 @@ public class MyController {
 		return false;
 	}
 	
+	
 	@PostMapping("/simulaCambi")
 	public Squadra simulaCambi(@RequestBody Map<String,Squadra> body)  {
 		Squadra sq = body.get("sq");
-		Squadra squadra = new Squadra();
-		squadra.setFairPlay(sq.getFairPlay());
-		squadra.setCasaProiezione(sq.isCasaProiezione());
-		squadra.setModulo((sq.getModulo()));
-		squadra.setIdSquadra(sq.getIdSquadra());
-		squadra.setTitolariOriginali(sq.getTitolariOriginali());
-		squadra.setRiserveOriginali(sq.getRiserveOriginali());
-		squadra.setNome(sq.getNome());
-		squadra.setEvidenza(sq.isEvidenza());
-		squadra.setPartiteSimulate(sq.getPartiteSimulate());
-		squadra.setProg(sq.getProg());
+		Squadra squadra = sq.clonaSquadra();
 		List<Giocatore> nuovaListaGiocatori=new ArrayList<Giocatore>();
 		int iContaPosizione=0;
 		for (Giocatore giocatore : sq.getTitolari()) {
@@ -494,7 +474,6 @@ public class MyController {
 			}
 		}
 		squadra.setTitolari(nuovaListaGiocatori);
-
 		nuovaListaGiocatori=new ArrayList<Giocatore>();
 		iContaPosizione=0;
 		for (Giocatore giocatore : sq.getRiserve()) {
