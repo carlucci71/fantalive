@@ -320,7 +320,7 @@ switchkeepalive - switch keep alive
 						}
 						InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
 						inlineKeyboardButton.setText(squadra.getNome());
-						inlineKeyboardButton.setCallbackData("dettaglio " + attCamp + "#"+ squadra.getNome()+ "#"+ casa+ (nomePartitaSimulata==null?null:"#"+ nomePartitaSimulata));
+						inlineKeyboardButton.setCallbackData("dettaglio " + attCamp + "#"+ squadra.getNome()+ "#"+ casa+"#"+ (nomePartitaSimulata==null?null:nomePartitaSimulata));
 						keyboardButtonsRow1.add(inlineKeyboardButton);
 					}
 				}

@@ -8,10 +8,7 @@ import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -56,9 +53,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.FormElement;
 import org.jsoup.select.Elements;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.daniele.fantalive.configurazione.SocketHandlerFantalive;
 import com.daniele.fantalive.entity.Salva;
@@ -74,7 +68,6 @@ import com.daniele.fantalive.model.Squadra;
 import com.daniele.fantalive.repository.SalvaRepository;
 import com.daniele.fantalive.util.Constant;
 import com.daniele.fantalive.util.ThreadSeparato;
-import com.daniele.fantalive.util.Constant.Campionati;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -213,8 +206,27 @@ public class Main {
 		}
 		if (nickPlayer==null) {
 			nickPlayer = new HashMap() {{
-				put("PreMatch",    "");
-				put("PreMatch",    "");
+				put("LUCCICAR-daddy","IO");
+				put("LUCCICAR-Team Frank..10","fra");
+				put("LUCCICAR-Team Alberto..04","bebo");
+				put("FANTAVIVA-AFC Richmond","Angy");
+				put("FANTAVIVA-Real Colizzati","Dum");
+				put("FANTAVIVA-Tavolino","IO");
+				put("FANTAVIVA-Reset Fc","Vale");
+				put("FANTAVIVA-AS Sersale 1975","Ben");
+				put("FANTAVIVA-Longobarda","Ale");
+				put("FANTAVIVA-A.C. Avanti Cristo","KK");
+				put("FANTAVIVA-ASC Melizzano","Dario");
+				put("FANTAVIVA-perqualcheciacciinpiu","Gigi");
+				put("FANTAVIVA-Ciulone","Andrea");
+				put("BE-Atletico Mikatanto","Dante");
+				put("BE-VincereAManiBasse","Roby");
+				put("BE-Universal","Claudio");
+				put("BE-Atletico Conc","Conc");
+				put("BE-Jonny Fighters","Gio");
+				put("BE-C. H. MOLLE","Fra");
+				put("BE-tavolino","IO");
+				put("BE-Canosa di Puglia...","New");
 			}};
 		}
 		if (statusMatch==null) {
@@ -1643,7 +1655,8 @@ public class Main {
 				}
 			}
 			if (!lega.equalsIgnoreCase(Constant.Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Constant.Campionati.JB.name())) {
-				adattaNomePartitaSimulata(squadre);
+				adattaNick(lega, squadre);
+				adattaNomePartitaSimulata(squadre, lega);
 				String nomePartitaSimulata=null;
 				for (Squadra squadra : squadre) {//todo evidenze fantaviva
 					if (squadra.getNome().equalsIgnoreCase("tavolino")) {
@@ -1690,6 +1703,12 @@ public class Main {
 		}
 	}
 
+	public static void adattaNick(String lega, List<Squadra> squadre) {
+		for (Squadra squadra : squadre) {
+				squadra.setNick(nickPlayer.get(lega + "-" + squadra.getNome()));
+		}
+	}
+	
 	public static Map<String, Object> simulaCambiMantra(String lega, List<String> assenti, Squadra sq) throws Exception {
 		Map<String, Object> jsonToMap;
 		Map bodyMap = new HashMap<>();
@@ -2499,17 +2518,23 @@ public class Main {
 
 		return squadra;
 	}
-	public static void adattaNomePartitaSimulata(List<Squadra> squadre) {
+	public static void adattaNomePartitaSimulata(List<Squadra> squadre, String lega) {
 		Map<String, List<String>> m = new HashMap<>();
 		for (Squadra squadra : squadre) {
 			List<PartitaSimulata> partiteSimulate = squadra.getPartiteSimulate();
 			for (PartitaSimulata partitaSimulata : partiteSimulate) {
-				List<String> list = m.get(partitaSimulata.getNome());
-				if (list == null) {
-					list=new ArrayList<>();
+				List<String> listaSquadre = m.get(partitaSimulata.getNome());
+				if (listaSquadre == null) {
+					listaSquadre=new ArrayList<>();
 				}
-				list.add(partitaSimulata.getSquadra());
-				m.put(partitaSimulata.getNome(), list);
+				
+				String nick = nickPlayer.get(lega + "-" + partitaSimulata.getSquadra());
+				if (nick==null) {
+					nick=partitaSimulata.getSquadra().substring(0,3);
+				}
+				
+				listaSquadre.add(nick);
+				m.put(partitaSimulata.getNome(), listaSquadre);
 			}
 		}
 
@@ -2519,7 +2544,7 @@ public class Main {
 				String nuovoNome=partitaSimulata.getNome().substring(0,partitaSimulata.getNome().length()-1);
 				List<String> listaSquadre = m.get(partitaSimulata.getNome());
 				for (String nomeSquadra : listaSquadre) {
-					nuovoNome= nuovoNome + " " + nomeSquadra.substring(0,3);
+					nuovoNome= nuovoNome + " " + nomeSquadra;
 				}
 				partitaSimulata.setNome(nuovoNome);
 			}

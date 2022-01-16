@@ -681,7 +681,8 @@ public class MyController {
 			if (Constant.GIORNATA-Constant.DELTA_FS>0){
 				Main.scaricaBe(Constant.GIORNATA,"");
 				List<Squadra> squadre = Main.getSquadreFromFS("",true, false);
-				Main.adattaNomePartitaSimulata(squadre);
+				Main.adattaNick(Constant.Campionati.BE.name(), squadre);
+				Main.adattaNomePartitaSimulata(squadre, Constant.Campionati.BE.name());
 				String nomePartitaSimulata=null;
 				for (Squadra squadra : squadre) {//todo evidenze fantaviva
 					if (squadra.getNome().equalsIgnoreCase("tavolino")) {
@@ -711,6 +712,8 @@ public class MyController {
 			e.printStackTrace(System.out);
 		}
 	}
+
+
 
 
 
