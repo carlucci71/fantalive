@@ -1681,7 +1681,6 @@ public class Main {
 				}
 				squadra.setRiserveOriginali(originali);
 			}
-
 			upsertSalva(Constant.FORMAZIONE + lega , toJson(squadre));
 			//		return squadre;
 		}
