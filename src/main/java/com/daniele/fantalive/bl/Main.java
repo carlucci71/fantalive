@@ -82,7 +82,7 @@ public class Main {
 	public static FantaCronacaLiveBOT fantaCronacaLiveBot;
 	public static RisultatiConRitardoBOT risultatiConRitardoBOT;
 	private static Map<Integer, String> sq=null;
-	private static Map<String, Integer> sqStatusMatch=new HashMap<>();
+	public static Map<String, Integer> sqStatusMatch=new HashMap<>();
 	public static HashMap<Integer, String[]> eventi=null;
 	public static HashMap<String, Object> modificatori=new HashMap<>();
 	private static List<ConfigCampionato> configsCampionato=null;

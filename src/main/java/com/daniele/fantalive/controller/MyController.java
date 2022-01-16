@@ -460,7 +460,7 @@ public class MyController {
 	
 	
 	@PostMapping("/simulaCambi")
-	public Squadra simulaCambi(@RequestBody Map<String,Squadra> body)  {
+	public Squadra simulaCambi(@RequestBody Map<String,Squadra> body) throws Exception  {
 		Squadra sq = body.get("sq");
 		Squadra squadra = sq.clonaSquadra();
 		List<Giocatore> nuovaListaGiocatori=new ArrayList<Giocatore>();
@@ -519,6 +519,8 @@ public class MyController {
 		constant.GIORNATA=(Integer)body.get("giornata");
 		Main.oldSnapLives=null;
 		Main.oldSnapOrari=null;
+		Main.sqStatusMatch=new HashMap<>();
+
 		return ret;
 	}
 	@GetMapping("/testIcone")

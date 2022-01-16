@@ -1,5 +1,7 @@
 package com.daniele.fantalive.model;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
@@ -10,9 +12,9 @@ public Squadra() {
 		super();
 	}
 String nome;
-private boolean casaProiezione;
+private Boolean casaProiezione;
 private int prog=0;
-private boolean evidenza=false;
+private Boolean evidenza=false;
 private double modificatoreDifesa=0;
 private double modificatoreCentrocampo=0;
 private double modificatoreDifesaDaAssegnare=0;
@@ -153,10 +155,10 @@ public Double getTotale() {
 	double d = getTotaleTitolari() + getModificatoreDifesa() + getModificatoreCentrocampo() + getModificatoreAttacco() + getMalusFormazioneAutomatica();
 	return new BigDecimal(d, MathContext.DECIMAL128).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
 }
-public boolean isEvidenza() {
+public Boolean isEvidenza() {
 	return evidenza;
 }
-public void setEvidenza(boolean evidenza) {
+public void setEvidenza(Boolean evidenza) {
 	this.evidenza = evidenza;
 }
 @Override
@@ -190,10 +192,10 @@ public List<PartitaSimulata> getPartiteSimulate() {
 public void setPartiteSimulate(List<PartitaSimulata> partiteSimulate) {
 	this.partiteSimulate = partiteSimulate;
 }
-public boolean isCasaProiezione() {
+public Boolean isCasaProiezione() {
 	return casaProiezione;
 }
-public void setCasaProiezione(boolean casaProiezione) {
+public void setCasaProiezione(Boolean casaProiezione) {
 	this.casaProiezione = casaProiezione;
 }
 public double getModificatoreDifesa() {
@@ -262,8 +264,18 @@ public String getNick() {
 public void setNick(String nick) {
 	this.nick = nick;
 }
-public Squadra clonaSquadra () {
+public Squadra clonaSquadra () throws Exception {
 	Squadra squadra = new Squadra();
+	Field[] fields = this.getClass().getDeclaredFields();
+	for (Field field : fields) {
+		System.out.println(field.getName());
+		Method methodGet = squadra.getClass().getMethod((field.getType().equals(Boolean.class)?"is":"get") + field.getName().substring(0,1).toUpperCase() + field.getName().substring(1));
+		Method methodPut = squadra.getClass().getMethod("set" + field.getName().substring(0,1).toUpperCase() + field.getName().substring(1), field.getType());
+//		System.out.println(methodGet.invoke(this));
+//		System.out.println(methodPut.getName());
+		methodPut.invoke(squadra, methodGet.invoke(this));
+	}
+	/*
 	squadra.setModificatoreDifesa(getModificatoreDifesa());
 	squadra.setModificatoreDifesaDaAssegnare(getModificatoreDifesaDaAssegnare());
 	squadra.setModificatoreCentrocampo(getModificatoreCentrocampo());
@@ -282,6 +294,7 @@ public Squadra clonaSquadra () {
 	squadra.setNick(getNick());
 	squadra.setTitolari(getTitolari());
 	squadra.setRiserve(getRiserve());
+	*/
 	return squadra;
 }
 
