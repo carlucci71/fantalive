@@ -107,7 +107,7 @@ public class Main {
 	public static Map<String, String> keyFG=null;
 	public static int timeRefresh = 0;
 
-	public static void init(SalvaRepository salvaRepositorySpring, SocketHandlerFantalive socketHandlerSpring, Constant constantSpring) throws Exception {
+	public static void init(SalvaRepository salvaRepositorySpring, SocketHandlerFantalive socketHandlerSpring, Constant constantSpring, boolean valorizzaBMFG) throws Exception {
 		executor = Executors.newSingleThreadScheduledExecutor();	
 		salvaRepository=salvaRepositorySpring;
 		socketHandlerFantalive=socketHandlerSpring;
@@ -333,20 +333,21 @@ public class Main {
 			eventi.put(23, new String[] {"assist_gold","","","1","","S",Constant.ASSIST,"assist_gold"});
 			eventi.put(24, new String[] {"assist movimento livello medio","","","1","","S",Constant.ASSIST,"assistMovimentoLvMedio"});
 			eventi.put(25, new String[] {"assist movimento livello alto","","","1","","S",Constant.ASSIST,""});
-
-			Map<String, Object> bmFantaviva = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.FANTAVIVA.name()));
-			Map<String, Object> bmJB = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.JB.name()));
-			Map<String, Object> bmLuccicar = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.LUCCICAR.name()));
-			for (Integer key : eventi.keySet()) {
-				String[] valori = eventi.get(key);
-				String kFg=valori[7];
-				overrideBM(bmFantaviva, valori, kFg,1);
-				overrideBM(bmLuccicar, valori, kFg,2);
-				overrideBM(bmJB, valori, kFg,4);
+			if (valorizzaBMFG) {
+				Map<String, Object> bmFantaviva = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.FANTAVIVA.name()));
+				Map<String, Object> bmJB = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.JB.name()));
+				Map<String, Object> bmLuccicar = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.LUCCICAR.name()));
+				for (Integer key : eventi.keySet()) {
+					String[] valori = eventi.get(key);
+					String kFg=valori[7];
+					overrideBM(bmFantaviva, valori, kFg,1);
+					overrideBM(bmLuccicar, valori, kFg,2);
+					overrideBM(bmJB, valori, kFg,4);
+				}
+				modificatori.put(Constant.Campionati.FANTAVIVA.name(), ((Map)bmFantaviva.get("modificatori")));
+				modificatori.put(Constant.Campionati.JB.name(), ((Map)bmJB.get("modificatori")));
+				modificatori.put(Constant.Campionati.LUCCICAR.name(), ((Map)bmLuccicar.get("modificatori")));
 			}
-			modificatori.put(Constant.Campionati.FANTAVIVA.name(), ((Map)bmFantaviva.get("modificatori")));
-			modificatori.put(Constant.Campionati.JB.name(), ((Map)bmJB.get("modificatori")));
-			modificatori.put(Constant.Campionati.LUCCICAR.name(), ((Map)bmLuccicar.get("modificatori")));
 		}
 		if (sq==null) {
 			sq = new LinkedHashMap<Integer, String>();
@@ -743,7 +744,7 @@ public class Main {
 		Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
-		init(null, null, c);
+		init(null, null, c, false);
 		/*
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
 		ZonedDateTime parse = ZonedDateTime.parse("07/11/2021 - 23:59:00 +0000", dtf);
@@ -1035,7 +1036,7 @@ public class Main {
 
 	private static void getAllBM_FG() throws Exception {
 		Set<Integer> se = new HashSet<>();
-		init(null, null, null);
+		init(null, null, null, false);
 		String http = getHTTP("https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/16/live_20.json");
 		Map<String, Object> jsonToMap = jsonToMap(http);
 		List<Map> l = (List<Map>) ((Map)jsonToMap.get("data")).get("pl");
@@ -1204,7 +1205,7 @@ public class Main {
 		return squadre;
 	}
 
-	public static void scaricaBe(Integer gg, String tokenNomeFile) throws IOException, ClientProtocolException {
+	public static void scaricaBe(Integer gg, String tokenNomeFile) throws Exception {
 		BasicCookieStore cookieStore = new BasicCookieStore();
 		BasicClientCookie cookie;
 		cookie = new BasicClientCookie("FantaSoccer_Auth", constant.AUTH_FS);
@@ -2795,25 +2796,59 @@ public class Main {
 		if (findOne==null) return null;
 		return findOne.getTesto();
 	}
-	public static String getTestoNoSpring(String nome) throws Exception {
-		Properties prop = new Properties();
-		prop.load(new ClassPathResource("application-DEV.properties").getInputStream());
-		String datasourceUrl = prop.getProperty("spring.datasource.url");
-		Connection connection = DriverManager.getConnection(datasourceUrl);
+	private static Connection connectionNoSpring=null;
+	private static synchronized Connection getConnectionNoSprig() throws Exception {
+		if (connectionNoSpring == null) {
+			Properties prop = new Properties();
+			prop.load(new ClassPathResource("application-DEV.properties").getInputStream());
+			String datasourceUrl = prop.getProperty("spring.datasource.url");
+			connectionNoSpring = DriverManager.getConnection(datasourceUrl);
+		}
+		return connectionNoSpring;
+	}
+	private static void putSalvaNoSprint(Salva salva) throws Exception {
+		Connection connection = getConnectionNoSprig();
+		PreparedStatement prepareStatement = connection.prepareStatement("delete from salva where nome=?");
+		prepareStatement.setString(1, salva.getNome());
+		prepareStatement.execute();
+		prepareStatement = connection.prepareStatement("insert into salva (nome,testo) values (?,?)");
+		prepareStatement.setString(1, salva.getNome());
+		prepareStatement.setString(2, salva.getTesto());
+		prepareStatement.execute();
+	}
+	private static String getTestoNoSpring(String nome) throws Exception {
+		Connection connection = getConnectionNoSprig();
 		PreparedStatement prepareStatement = connection.prepareStatement("select * from salva where nome=?");
 		prepareStatement.setString(1, nome);
 		ResultSet rs = prepareStatement.executeQuery();
 		rs.next();
 		return rs.getString("testo");
 	}
-	public static void upsertSalva(String nome, String testo) {
-		Salva findOne = salvaRepository.findOne(nome);
-		if (findOne==null) {
-			findOne=new Salva();
-			findOne.setNome(nome);
+	private static Salva getSalvaNoSpring(String nome) throws Exception {
+		String testo=getTestoNoSpring(nome);
+		Salva salva = new Salva();
+		salva.setNome(nome);
+		salva.setTesto(testo);
+		return salva;
+	}
+	public static void upsertSalva(String nome, String testo) throws Exception {
+		if (salvaRepository==null) {
+			Salva findOne = getSalvaNoSpring(nome);
+			if (findOne==null) {
+				findOne=new Salva();
+				findOne.setNome(nome);
+			}
+			findOne.setTesto(testo);
+			putSalvaNoSprint(findOne);
+		} else {
+			Salva findOne = salvaRepository.findOne(nome);
+			if (findOne==null) {
+				findOne=new Salva();
+				findOne.setNome(nome);
+			}
+			findOne.setTesto(testo);
+			salvaRepository.save(findOne);
 		}
-		findOne.setTesto(testo);
-		salvaRepository.save(findOne);
 	}
 	public static boolean esisteSalva(String nome) {
 		return salvaRepository.exists(nome);

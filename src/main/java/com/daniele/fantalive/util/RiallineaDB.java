@@ -22,7 +22,7 @@ public class RiallineaDB {
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
 		
-		Main.init(null,null,c);
+		Main.init(null,null,c, false);
 		Class.forName("org.postgresql.Driver");
 		Class.forName("com.mysql.jdbc.Driver");
 		String getenv = System.getenv("PG_DB_URL");

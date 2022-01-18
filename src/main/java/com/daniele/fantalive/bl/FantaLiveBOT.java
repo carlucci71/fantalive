@@ -208,7 +208,7 @@ switchkeepalive - switch keep alive
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
 		
-		Main.init(null,null,c);
+		Main.init(null,null,c, false);
 		FantaLiveBOT bot = inizializza("MAIN");
 		
 		try {

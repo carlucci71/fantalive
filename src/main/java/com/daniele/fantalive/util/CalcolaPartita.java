@@ -25,7 +25,7 @@ import com.daniele.fantalive.repository.SalvaRepository;
 
 public class CalcolaPartita {
 	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 150;
-	private static final boolean SALVA_FILE=false;
+	private static final boolean RICARICA_FROM_FS=false;
 	private static final boolean USA_SPRING=false;
 	private static final int ICASA=2;
 	private static final String PARTITE = "Partite";
@@ -68,14 +68,11 @@ public class CalcolaPartita {
 
 	private void go(String[] args) throws Exception {
 		ConfigurableApplicationContext ctx;
-		if (SALVA_FILE && !USA_SPRING) {
-			throw new RuntimeException("Se devi salvare il file devi usare spring");
-		}
 		if (USA_SPRING) {
 			ctx = new SpringApplicationBuilder(MainClass.class)
 					.profiles("DEV")
 					.web(true).run(args);
-			Main.init(ctx.getBean(SalvaRepository.class),null,ctx.getBean(Constant.class));
+			Main.init(ctx.getBean(SalvaRepository.class),null,ctx.getBean(Constant.class), false);
 			if (false) {
 				if (Main.fantaLiveBot.isRunning()) {
 					Main.fantaLiveBot.stopBot();
@@ -87,7 +84,7 @@ public class CalcolaPartita {
 			Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
 			Method method = cl.getDeclaredMethod("constant");
 			c = (Constant) method.invoke(c);		
-			Main.init(null,null,c);
+			Main.init(null,null,c, false);
 		}
 
 		HashSet<String> hs=new HashSet<>();
@@ -128,7 +125,6 @@ public class CalcolaPartita {
 		//		Map<String, Object> totaliFormula1BIS=new HashMap<>(); 
 		Map<String, Map<String, Map<String, Object>>> totaliScontri=new HashMap<>(); 
 
-		System.err.println("---------------------" + " Scontri " + "---------------------");
 		for (int ggDaCalcolare=1;ggDaCalcolare<=MAX_GIORNATA_DA_CALCOLARE;ggDaCalcolare++) {
 			ZonedDateTime zonedDateTime = Main.calendarioInizioGiornata.get(ggDaCalcolare + Constant.DELTA_FS);
 			ZonedDateTime now = ZonedDateTime.now();
@@ -137,7 +133,7 @@ public class CalcolaPartita {
 
 				//			System.err.println("***************:" + ggDaCalcolare);
 				String tokenNomeFile = "STORICO_" + ggDaCalcolare  + "_";
-				if (SALVA_FILE) {
+				if (RICARICA_FROM_FS) {
 					Main.scaricaBe(ggDaCalcolare + Constant.DELTA_FS,tokenNomeFile);
 				}
 				List<Squadra> squadre = Main.getSquadreFromFS(tokenNomeFile,false, true);
@@ -171,6 +167,7 @@ public class CalcolaPartita {
 				//			System.err.println(squadre);
 				//			System.err.println("*********************");
 				Map<String, Object> totaliF1=new HashMap<>(); 
+				System.err.println("+++ Scontri +++");
 				for (int i1=0;i1<squadre.size();i1++) {
 					Squadra squadra1=squadre.get(i1);
 					String nome1 = squadra1.getNome();
@@ -458,6 +455,8 @@ public class CalcolaPartita {
 				int pos=0;
 				int conta=0;
 				//			ArrayList<Squadra> al=new ArrayList<>();
+				System.err.println();
+				System.err.println("+++ F1 della giornata " + ggDaCalcolare + " +++");
 				for (Map.Entry<String, Object> entry : map.entrySet()) {
 					conta++;
 					Double punti = (Double) entry.getValue();
@@ -472,7 +471,9 @@ public class CalcolaPartita {
 					}
 					t=t+puntiF1;
 					totaliFormula1.put(nome, t);
-				}			
+					System.err.println(nome + " - " + entry.getValue() + "-" + puntiF1);
+				}		
+				System.err.println();
 			}
 		}
 

@@ -52,7 +52,7 @@ public class MyController {
 
 	@PostConstruct
 	private void post() throws Exception {
-		Main.init(salvaRepository,socketHandlerFantalive,constant);
+		Main.init(salvaRepository,socketHandlerFantalive,constant, true);
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 			Main.fantaCronacaLiveBot = FantaCronacaLiveBOT.inizializza();

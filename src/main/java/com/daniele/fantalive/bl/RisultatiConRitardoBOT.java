@@ -87,7 +87,7 @@ live - risultati live ultima giornata
 		catch (Exception e) {
 			e.printStackTrace(System.out);
 		}
-		Main.init(null,null,c);
+		Main.init(null,null,c, false);
 		String testoCallback = Main.getOldSnapPartite(true);
 		System.out.println(testoCallback);
 		System.err.println("FINE");
