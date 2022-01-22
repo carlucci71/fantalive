@@ -1666,6 +1666,9 @@ public class Main {
 						if (partitaSimulata.isCasa()) {
 							squadra.setCasaProiezione(true);
 						}
+						else {
+							squadra.setCasaProiezione(false);
+						}
 						nomePartitaSimulata=partitaSimulata.getNome();
 					}
 				}
@@ -1675,6 +1678,8 @@ public class Main {
 						squadra.setEvidenza(true);
 						if (partitaSimulata.isCasa()) {
 							squadra.setCasaProiezione(true);
+						} else {
+							squadra.setCasaProiezione(false);
 						}
 					}
 				}

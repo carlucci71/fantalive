@@ -693,6 +693,9 @@ public class MyController {
 						if (partitaSimulata.isCasa()) {
 							squadra.setCasaProiezione(true);
 						}
+						else {
+							squadra.setCasaProiezione(false);
+						}
 						nomePartitaSimulata=partitaSimulata.getNome();
 					}
 				}

@@ -12,7 +12,7 @@ public Squadra() {
 		super();
 	}
 String nome;
-private Boolean casaProiezione;
+private Boolean casaProiezione=false;
 private int prog=0;
 private Boolean evidenza=false;
 private double modificatoreDifesa=0;
@@ -196,6 +196,7 @@ public void setPartiteSimulate(List<PartitaSimulata> partiteSimulate) {
 	this.partiteSimulate = partiteSimulate;
 }
 public Boolean isCasaProiezione() {
+	if (casaProiezione==null) return false;
 	return casaProiezione;
 }
 public void setCasaProiezione(Boolean casaProiezione) {
