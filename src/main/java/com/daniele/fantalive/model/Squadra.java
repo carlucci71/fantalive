@@ -163,22 +163,25 @@ public void setEvidenza(Boolean evidenza) {
 }
 @Override
 public int compareTo(Squadra o) {
-//	if (this.getProiezione()==null) return -1;
-//	if (o.getProiezione()==null) return 1;
-	Double proiezioneThis = this.getProiezione();
-	Double proiezioneO = o.getProiezione();
-	if (this.isCasaProiezione()) {
-		proiezioneThis=proiezioneThis+2;
+	if (this.getProiezione()==null) return -1;
+	if (o.getProiezione()==null) return 1;
+	try {
+		Double proiezioneThis = this.getProiezione();
+		Double proiezioneO = o.getProiezione();
+		if (this.isCasaProiezione()) {
+			proiezioneThis=proiezioneThis+2;
+		}
+		if (o.isCasaProiezione()){
+			proiezioneO=proiezioneO+2;
+		}
+		return proiezioneO.compareTo(proiezioneThis);
 	}
-	if (o.isCasaProiezione()){
-		proiezioneO=proiezioneO+2;
+	catch (Exception e)
+	{
+		if (this.getNome()==null) return -1;
+		if (o.getNome()==null) return 1;
+		return this.getNome().toUpperCase().compareTo(o.getNome().toUpperCase());
 	}
-	return proiezioneO.compareTo(proiezioneThis);
-	/*
-	if (this.getNome()==null) return -1;
-	if (o.getNome()==null) return 1;
-	return this.getNome().toUpperCase().compareTo(o.getNome().toUpperCase());
-	*/
 }
 public int getProg() {
 	return prog;
