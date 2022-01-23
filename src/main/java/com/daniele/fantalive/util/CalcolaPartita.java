@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,11 +33,71 @@ public class CalcolaPartita {
 	private static final String PUNTEGGI = "Punteggi";
 	private static final String PUNTI = "Punti";
 	private static final String GIOCATE = "Giocate";
+	private static ConfigurableApplicationContext ctx;
+	private int iMaxGG=0;
+	Set<String> nomiFS=new HashSet<>();
 
 	public static void main(String[] args) throws Exception {
 		CalcolaPartita cp = new CalcolaPartita();
 		cp.go(args);
+		cp.printNomi();
+		if (USA_SPRING) {
+			if (false) {
+				ctx.stop();
+				ctx.close();
+			}
+		}
+		System.exit(0);
 	}
+	private void printNomi() throws Exception {
+		System.out.println("-------------------------");
+		Set<String> nomiFG=new HashSet<>();
+		for (int i=1;i<iMaxGG;i++) {
+			Iterator<Integer> iterator = Main.sq.keySet().iterator();
+			while (iterator.hasNext()) {
+				Integer integer = (Integer) iterator.next();
+				String sqFromLive = Main.getHTTP("https://www.fantacalcio.it/api/live/" + integer + "?g=" + i + "&i=" + Constant.I_LIVE_FANTACALCIO);
+				List<Map<String, Object>> jsonToList = Main.jsonToList(sqFromLive);
+				for (Map<String, Object> map : jsonToList) {
+					nomiFG.add(map.get("nome") + "@" + Main.sq.get(integer));
+				}
+			}
+		}
+		
+
+		
+		
+		for (String nome : nomiFG) {
+			System.out.println(nome);
+		}
+		System.out.println("-------------------------");
+		for (String nome : nomiFS) {
+			String[] split = nome.split("@");
+			String nomeFromFG = getNomeFromFG(split[0], nomiFG);
+			System.out.println(nome + "@" + nomeFromFG);
+		}
+		System.out.println("-------------------------");
+	}
+	
+	private String getNomeFromFG(String nomeFS, Set<String> nomiFG) {
+		if (nomeFS.equalsIgnoreCase("Spinazzola "))
+		{
+//			System.out.println();
+		}
+		String ret=null;
+		for (String nomeFG : nomiFG) {
+			String[] split = nomeFG.split("@");
+//			System.out.println(split[0].substring(0,split[0].lastIndexOf(" ")).replaceAll(" ", "")); //.equalsIgnoreCase(nomeGiocatoreLive.replaceAll(" ", "")))	
+			String nomeFindFS = nomeFS.substring(0,nomeFS.lastIndexOf(" ")).replaceAll(" ", "");
+			String nomeFindFG = split[0].replaceAll(" ", "");
+			if (nomeFindFS.equalsIgnoreCase(nomeFindFG))
+			{
+				ret = nomeFG;
+			}
+		}
+		return ret;
+	}
+	
 	private static boolean ePari(int numero) {
 		if ((numero % 2) == 0) {
 			return true;
@@ -67,7 +128,6 @@ public class CalcolaPartita {
 	}
 
 	private void go(String[] args) throws Exception {
-		ConfigurableApplicationContext ctx;
 		if (USA_SPRING) {
 			ctx = new SpringApplicationBuilder(MainClass.class)
 					.profiles("DEV")
@@ -129,6 +189,7 @@ public class CalcolaPartita {
 			ZonedDateTime zonedDateTime = Main.calendarioInizioGiornata.get(ggDaCalcolare + Constant.DELTA_FS);
 			ZonedDateTime now = ZonedDateTime.now();
 			if (zonedDateTime != null && now.isAfter(zonedDateTime)) {
+				iMaxGG=ggDaCalcolare + Constant.DELTA_FS;
 //				System.out.println(ggDaCalcolare + " - " + Main.calendarioInizioGiornata.get(ggDaCalcolare + Constant.DELTA_FS) + " - " + Main.calendario.get(ggDaCalcolare + Constant.DELTA_FS));
 
 				//			System.err.println("***************:" + ggDaCalcolare);
@@ -142,9 +203,11 @@ public class CalcolaPartita {
 					List<Giocatore> riserve = squadra.getRiserve();
 					List<Giocatore> nuoviTitolari = new ArrayList<>();
 					for (Giocatore titolare : titolari) {
+						nomiFS.add(titolare.getNome() + "@" + titolare.getSquadra());
 						if (titolare.isEsce()) {
 							Giocatore r = null;
 							for (Giocatore riserva : riserve) {
+								nomiFS.add(riserva.getNome() + "@" + riserva.getSquadra());
 								if (riserva.isEntra() && titolare.getRuolo().equalsIgnoreCase(riserva.getRuolo())) {
 									if (r==null)  {
 										nuoviTitolari.add(riserva);
@@ -507,17 +570,6 @@ public class CalcolaPartita {
 			}
 			System.err.println();
 		}
-
-
-
-
-		if (USA_SPRING) {
-			if (false) {
-				ctx.stop();
-				ctx.close();
-			}
-		}
-		System.exit(0);
 
 	}
 

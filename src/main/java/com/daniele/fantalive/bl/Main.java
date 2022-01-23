@@ -81,7 +81,7 @@ public class Main {
 	public static FantaLiveBOT fantaLiveBot;
 	public static FantaCronacaLiveBOT fantaCronacaLiveBot;
 	public static RisultatiConRitardoBOT risultatiConRitardoBOT;
-	private static Map<Integer, String> sq=null;
+	public static Map<Integer, String> sq=null;
 	public static Map<String, Integer> sqStatusMatch=new HashMap<>();
 	public static HashMap<Integer, String[]> eventi=null;
 	public static HashMap<String, Object> modificatori=new HashMap<>();
@@ -1244,6 +1244,7 @@ public class Main {
 	private static Map<String, Map<String, Object>> partiteLive() throws Exception {
 		Map<String, Map<String, Object>> snapPartite=new LinkedHashMap();
 		Map<String, Object> jsonToMap;
+		//https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=1&competitionId=21
 		String callHTTP= getHTTP("https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=" + Constant.SPORT_ID_LIVE_GAZZETTA + "&competitionId=" + Constant.COMP_ID_LIVE_GAZZETTA);
 
 		/*
@@ -1314,6 +1315,21 @@ public class Main {
 				else {
 					valTiming="N/A";
 				}
+				String first_half_stop=null;
+				String second_half_start=null;
+				List<Map> stats = (List<Map>) timing.get("stat");
+				if (stats != null) {
+					for (Map stat : stats) {
+						if ("first_half_stop".equalsIgnoreCase(stat.get("Type").toString())) {
+							first_half_stop = (String) stat.get("value");
+						}
+						if ("second_half_start".equalsIgnoreCase(stat.get("Type").toString())) {
+							second_half_start = (String) stat.get("value");
+						}
+					}
+				}
+				partite.put("first_half_stop",first_half_stop);
+				partite.put("second_half_start",second_half_start);
 				partite.put("tag",tag);
 				partite.put("val", valTiming.toString());
 				Map<String, Object> sq = new HashMap<>();
@@ -1321,8 +1337,9 @@ public class Main {
 				List<Map> goals = (List<Map>) ((Map)homeTeam.get("starData")).get("goals");
 				List<Map> reti = new ArrayList<>();
 				for (Map goal : goals) {
-					Map rete = new HashMap<>();
+					Map rete = new LinkedHashMap<>();
 					rete.put("tipo", goal.get("goalType"));
+					rete.put("goalTimestamp", goal.get("goalTimestamp"));
 					rete.put("minuto", goal.get("goalAbsoluteTime"));
 					rete.put("giocatore", ((Map)goal.get("goalPlayer")).get("playerName"));
 					reti.add(rete);
@@ -1334,8 +1351,9 @@ public class Main {
 				goals = (List<Map>) ((Map)awayTeam.get("starData")).get("goals");
 				reti = new ArrayList<>();
 				for (Map goal : goals) {
-					Map rete = new HashMap<>();
+					Map rete = new LinkedHashMap<>();
 					rete.put("tipo", goal.get("goalType"));
+					rete.put("goalTimestamp", goal.get("goalTimestamp"));
 					rete.put("minuto", goal.get("goalAbsoluteTime"));
 					rete.put("giocatore", ((Map)goal.get("goalPlayer")).get("playerName"));
 					reti.add(rete);
@@ -2581,7 +2599,6 @@ public class Main {
 				if (nomeG.equalsIgnoreCase("Hernandez T.")) nomeG="Hernandez T. ";
 				if (nomeG.equalsIgnoreCase("Kessie F.")) nomeG="Kessie' ";
 				if (nomeG.equalsIgnoreCase("Rafael Toloi .")) nomeG="Toloi ";
-				if (nomeG.equalsIgnoreCase("Martinez L.")) nomeG="Martinez L. ";
 				if (nomeG.equalsIgnoreCase("Donnarumma G.")) nomeG="Donnarumma G. ";
 				if (nomeG.equalsIgnoreCase("Pezzella G.")) nomeG="Pezzella Giu. ";
 				if (nomeG.equalsIgnoreCase("Gerard Deulofeu .")) nomeG="Deulofeu ";
@@ -2606,18 +2623,25 @@ public class Main {
 				if (nomeG.equalsIgnoreCase("N'Zola M.")) nomeG="Nzola ";
 				if (nomeG.equalsIgnoreCase("Molina N.") && squadra.equalsIgnoreCase("UDI")) nomeG="Molina N. ";
 				if (nomeG.equalsIgnoreCase("Danilo .") && squadra.equalsIgnoreCase("BOL")) nomeG="Danilo LAR. ";
-				if (nomeG.equalsIgnoreCase("Bastoni S.")) {
-					nomeG="Bastoni S. ";
-				}
-				if (nomeG.equalsIgnoreCase("Bastoni A.")) {
-					nomeG="Bastoni ";
-				}
-				if (nomeG.equalsIgnoreCase("")) nomeG="";
-				if (nomeG.equalsIgnoreCase("")) nomeG="";
-				if (nomeG.equalsIgnoreCase("")) nomeG="";
-				if (nomeG.equalsIgnoreCase("")) nomeG="";
-				if (nomeG.equalsIgnoreCase("")) nomeG="";
-				if (nomeG.equalsIgnoreCase("")) nomeG="";
+				if (nomeG.equalsIgnoreCase("Bastoni S.")) nomeG="Bastoni S. ";
+				if (nomeG.equalsIgnoreCase("Bastoni A.")) nomeG="Bastoni ";
+				if (nomeG.equalsIgnoreCase("Milinkovic-Savic V.")) nomeG="Milinkovic-Savic V. ";
+				if (nomeG.equalsIgnoreCase("Radu I.")) nomeG="Radu I. ";
+				if (nomeG.equalsIgnoreCase("Fares M.")) nomeG="Fares ";
+				if (nomeG.equalsIgnoreCase("Simeone G.")) nomeG="Simeone ";
+				if (nomeG.equalsIgnoreCase("Martinez L.") && squadra.equalsIgnoreCase("FIO")) nomeG="Martinez Quarta ";
+				if (nomeG.equalsIgnoreCase("Martinez L.") && squadra.equalsIgnoreCase("INT")) nomeG="Martinez L. ";
+				if (nomeG.equalsIgnoreCase("Pepe Reina .")) nomeG="Reina ";
+				if (nomeG.equalsIgnoreCase("Sergio Oliveira .")) nomeG="Oliveira ";
+				if (nomeG.equalsIgnoreCase("Ikone J.")) nomeG="Ikone' ";
+				if (nomeG.equalsIgnoreCase("Cordaz A.")) nomeG="Cordaz ";
+				if (nomeG.equalsIgnoreCase("Daniel Fuzato .")) nomeG="Fuzato ";
+				if (nomeG.equalsIgnoreCase("Alvaro Odriozola .")) nomeG="Odriozola ";
+				if (nomeG.equalsIgnoreCase("Spinazzola L.")) nomeG="Spinazzola ";
+				if (nomeG.equalsIgnoreCase("Traore H.")) nomeG="Traore' Hj. ";
+				if (nomeG.equalsIgnoreCase("Ricci S.")) nomeG="Ricci S. ";
+				if (nomeG.equalsIgnoreCase("Gonzalez N.")) nomeG="Gonzalez N. ";
+				if (nomeG.equalsIgnoreCase("Coulibaly M.")) nomeG="Coulibaly M. ";
 				/*
 				if (nomeG.contains("alvao")) {
 					System.out.println();
@@ -3406,7 +3430,7 @@ public class Main {
 	public static String getOldSnapPartite(boolean live) throws Exception {
 		StringBuilder sb = new StringBuilder();
 		if (oldSnapPartite.isEmpty()) {
-			getLives(false);
+			getLives(constant.LIVE_FROM_FILE);
 		}
 		oldSnapPartite.forEach((k,partita) -> {
 			String tag = (String) partita.get("tag");
@@ -3421,30 +3445,47 @@ public class Main {
 				}
 
 
-				Map<Integer, Map<String, String>> reti = new TreeMap<>();
+				Map<ZonedDateTime, Map<String, String>> reti = new TreeMap<>();
 				StringBuilder risultato=new StringBuilder();
-				partita.forEach((p, v) -> { 
-					if (!p.toString().equals("tag") && !p.toString().equals("val")) {
+				final String second_half_start=(String) partita.get("second_half_start");
+				partita.forEach((p, v) -> {  
+					if (!p.toString().equals("tag") && !p.toString().equals("val") && !p.toString().equals("first_half_stop") && !p.toString().equals("second_half_start")) {
 						risultato.append(((Map)v).get("gol"));
 						risultato.append(" ");
 						List<Map> r = (List<Map>) ((Map)v).get("RETI");
 						for (Map map : r) {
 							String tipo = (String) map.get("tipo");
+							String goalTimestamp = (String) map.get("goalTimestamp");
+							ZonedDateTime parseZDTGoal = ZonedDateTime.parse(goalTimestamp,  DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmssZ"));
 							String minuto = (String) map.get("minuto");
 							String giocatore = (String) map.get("giocatore");
 							String squadra = p.toString();
-							Map<String, String> dati = new HashMap<>();
+							Map<String, String> dati = new LinkedHashMap<>();
 							dati.put("tipo", tipo);
+							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm:ss");
+							dati.put("goalTimestamp", parseZDTGoal.format(formatter));
 							dati.put("giocatore", giocatore);
 							dati.put("squadra", squadra);
-							reti.put(Integer.parseInt(minuto), dati);
+							ZonedDateTime parseZDTSecondHalfStart=null;
+							if (second_half_start != null) {
+								parseZDTSecondHalfStart = ZonedDateTime.parse(second_half_start,  DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssz"));
+							}
+							if (parseZDTGoal.isBefore(parseZDTSecondHalfStart)) {
+								minuto = minuto + " PT";
+							} else {
+								minuto = minuto + " ST";
+							}
+							dati.put("minuto", minuto);
+							reti.put(parseZDTGoal, dati);
 						}
 					}
 				});
 				sb.append(k + "\t" + risultato + "\n\t" + tag + " " + (val.equals("N/A")?"":val) + "\n" );
 
 				reti.forEach((minuto,dati) -> {
-					sb.append("\t" + minuto + " " + dati.get("squadra") + " " + dati.get("tipo") + " " + dati.get("giocatore") + "\n");
+					sb.append("\t" + 
+//							dati.get("goalTimestamp") + " -- " +
+							dati.get("minuto") + " " + dati.get("squadra") + " " + dati.get("tipo") + " " + dati.get("giocatore") + "\n");
 				});
 
 				sb.append("\n");
