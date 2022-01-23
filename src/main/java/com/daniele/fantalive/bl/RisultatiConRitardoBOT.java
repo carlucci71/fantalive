@@ -1,20 +1,25 @@
 package com.daniele.fantalive.bl;
 
 import java.lang.reflect.Method;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import com.daniele.fantalive.model.Live;
 import com.daniele.fantalive.util.Constant;
 
 public class RisultatiConRitardoBOT extends TelegramLongPollingBot{
@@ -32,14 +37,50 @@ live - risultati live ultima giornata
 				String text = update.getMessage().getText();
 				if(update.getMessage().hasText()){
 					if(text.equals("/risultati")){
-						String testoCallback = Main.getOldSnapPartite(false);
-						execute(creaSendMessage(chatId, testoCallback , false));
+						Map<String, Object> oldSnapPartite = Main.getOldSnapPartite(false);
+						String testoCallback = (String) oldSnapPartite.get("testo");
+						execute(creaSendMessage(chatId, testoCallback , false, (List<String>) oldSnapPartite.get("squadre")));
 					}
 					else if(text.equals("/live")){
-						String testoCallback = Main.getOldSnapPartite(true);
-						execute(creaSendMessage(chatId, testoCallback , false));
+						Map<String, Object> oldSnapPartite = Main.getOldSnapPartite(true);
+						String testoCallback = (String) oldSnapPartite.get("testo");
+						execute(creaSendMessage(chatId, testoCallback , false, (List<String>) oldSnapPartite.get("squadre")));
 					}
 				}
+			}
+			else if(update.hasCallbackQuery()){
+				final AnswerCallbackQuery answer = new AnswerCallbackQuery();
+				answer.setShowAlert(false);
+				answer.setCallbackQueryId(update.getCallbackQuery().getId());
+				answer.setText("OK: " + update.getCallbackQuery().getData());
+				Long chatId = update.getCallbackQuery().getMessage().getChatId();
+				String testoCallback = update.getCallbackQuery().getData();
+				if (testoCallback.startsWith("dettaglio ")) {
+					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
+					Map<String, Object> lives = Main.getLives(Constant.LIVE_FROM_FILE);
+					List<Live> l = (List<Live>) lives.get("lives");
+					for (Live live : l) {
+						if (live.getSquadra().equalsIgnoreCase(testoCallback)) {
+							String testo="";
+							for (Map gioc : live.getGiocatori()) {
+								testo=testo + gioc.get("nome") + " " + gioc.get("voto") + " ";
+								String ev = (String) gioc.get("evento");
+								String[] split = ev.split(",");
+								for (String evento : split) {
+									if (!evento.equals("")) {
+										testo=testo + Main.desEvento(Integer.parseInt(evento), Constant.Campionati.BE.name()) + " ";
+									}
+								}
+								testo = testo + "\n";
+								//{nome=RUI PATRICIO, ruolo=P, voto=6.0, evento=4,4, id=4270}
+								
+								
+							}
+							execute(creaSendMessage(chatId, testo , false, null));
+						}
+					}
+				}
+				
 			}
 		}
 		catch (Exception e)
@@ -50,12 +91,27 @@ live - risultati live ultima giornata
 
 	}
 
-	private SendMessage creaSendMessage(long chatId,String msg, boolean bReply) {
+	private SendMessage creaSendMessage(long chatId,String msg, boolean bReply, List<String> elencoBottoni) {
 		SendMessage sendMessage = new SendMessage();
 		sendMessage.enableHtml(true);
 		sendMessage.setParseMode("html");
 		sendMessage.setChatId(Long.toString(chatId));
 		sendMessage.setText(msg);
+
+		if (elencoBottoni != null) {
+			InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+			List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+			for (String bottone : elencoBottoni) {
+				List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
+				InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+				inlineKeyboardButton.setText(bottone);
+				inlineKeyboardButton.setCallbackData("dettaglio " + bottone);
+				keyboardButtonsRow1.add(inlineKeyboardButton);
+				rowList.add(keyboardButtonsRow1);
+			}
+			inlineKeyboardMarkup.setKeyboard(rowList);
+			sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+		}
 		return sendMessage;
 	}
 
@@ -88,7 +144,7 @@ live - risultati live ultima giornata
 			e.printStackTrace(System.out);
 		}
 		Main.init(null,null,c, false);
-		String testoCallback = Main.getOldSnapPartite(true);
+		String testoCallback = (String) Main.getOldSnapPartite(true).get("testo");
 		System.out.println(testoCallback);
 		System.err.println("FINE");
 	}

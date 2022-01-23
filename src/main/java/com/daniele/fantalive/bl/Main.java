@@ -3247,7 +3247,7 @@ public class Main {
 		}
 		return Constant.OK_VOTO;
 	}
-	private static String desEvento(Integer ev,String r){
+	public static String desEvento(Integer ev,String r){
 		String[] evento = Main.eventi.get(ev);
 		String iconaEvento = evento[5];
 		String ret = " " + iconaEvento + " " + evento[0];
@@ -3433,11 +3433,13 @@ public class Main {
 		return sb;
 	}
 
-	public static String getOldSnapPartite(boolean live) throws Exception {
+	public static Map<String, Object> getOldSnapPartite(boolean live) throws Exception {
+		Map<String, Object> ret = new LinkedHashMap<>();
 		StringBuilder sb = new StringBuilder();
 		if (oldSnapPartite.isEmpty()) {
 			getLives(constant.LIVE_FROM_FILE);
 		}
+		List<String> sqRet=new ArrayList<>();
 		oldSnapPartite.forEach((k,partita) -> {
 			String tag = (String) partita.get("tag");
 			Integer iTag = statusMatch.get(tag);
@@ -3459,6 +3461,7 @@ public class Main {
 						risultato.append(((Map)v).get("gol"));
 						risultato.append(" ");
 						List<Map> r = (List<Map>) ((Map)v).get("RETI");
+						sqRet.add(p.toString());
 						for (Map map : r) {
 							String tipo = (String) map.get("tipo");
 							String goalTimestamp = (String) map.get("goalTimestamp");
@@ -3476,7 +3479,7 @@ public class Main {
 							if (second_half_start != null) {
 								parseZDTSecondHalfStart = ZonedDateTime.parse(second_half_start,  DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssz"));
 							}
-							if (parseZDTGoal.isBefore(parseZDTSecondHalfStart)) {
+							if (parseZDTSecondHalfStart == null || parseZDTGoal.isBefore(parseZDTSecondHalfStart)) {
 								minuto = minuto + " PT";
 							} else {
 								minuto = minuto + " ST";
@@ -3498,7 +3501,9 @@ public class Main {
 
 			}
 		});
-		return sb.toString();
+		ret.put("testo", sb.toString());
+		ret.put("squadre", sqRet);
+		return ret;
 	}
 	public static Map<String, String> visKeepAliveEnd() throws Exception {
 		String visKeepAlive = "N";
