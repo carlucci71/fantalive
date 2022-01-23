@@ -2078,6 +2078,12 @@ public class Main {
 				else if (s.getKey().equalsIgnoreCase("val")) {
 					val = (String) s.getValue();
 				}
+				else if (s.getKey().equalsIgnoreCase("first_half_stop")) {
+					
+				}
+				else if (s.getKey().equalsIgnoreCase("second_half_start")) {
+					
+				}
 				else {
 					alSq.add(s.getKey());
 				}
