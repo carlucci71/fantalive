@@ -43,8 +43,13 @@ live - risultati live ultima giornata
 					}
 					else if(text.equals("/live")){
 						Map<String, Object> oldSnapPartite = Main.getOldSnapPartite(true);
-						String testoCallback = (String) oldSnapPartite.get("testo");
-						execute(creaSendMessage(chatId, testoCallback , false, (List<String>) oldSnapPartite.get("squadre")));
+						List<String> listSq = (List<String>) oldSnapPartite.get("squadre");
+						if (listSq.size()>0) {
+							String testoCallback = (String) oldSnapPartite.get("testo");
+							execute(creaSendMessage(chatId, testoCallback , false, (List<String>) listSq));
+						} else {
+							execute(creaSendMessage(chatId, "nessuna partita live" , false, null));
+						}
 					}
 				}
 			}
@@ -76,7 +81,11 @@ live - risultati live ultima giornata
 								
 								
 							}
-							execute(creaSendMessage(chatId, testo , false, null));
+							if (testo.equals("")) {
+								execute(creaSendMessage(chatId, "partita non ancora giocata", false, null));
+							} else {
+								execute(creaSendMessage(chatId, testo , false, null));
+							}
 						}
 					}
 				}
@@ -100,16 +109,24 @@ live - risultati live ultima giornata
 
 		if (elencoBottoni != null) {
 			InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-			List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+			List<List<InlineKeyboardButton>> listOfListButton = new ArrayList<>();
+			int conta=0;
+			List<InlineKeyboardButton> listButtonsRow = new ArrayList<>();
+			InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
 			for (String bottone : elencoBottoni) {
-				List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-				InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+				if (conta>4) {
+					conta=0;
+					listOfListButton.add(listButtonsRow);
+					listButtonsRow = new ArrayList<>();
+				}
+				conta++;
+				inlineKeyboardButton = new InlineKeyboardButton();
 				inlineKeyboardButton.setText(bottone);
 				inlineKeyboardButton.setCallbackData("dettaglio " + bottone);
-				keyboardButtonsRow1.add(inlineKeyboardButton);
-				rowList.add(keyboardButtonsRow1);
+				listButtonsRow.add(inlineKeyboardButton);
 			}
-			inlineKeyboardMarkup.setKeyboard(rowList);
+			listOfListButton.add(listButtonsRow);
+			inlineKeyboardMarkup.setKeyboard(listOfListButton);
 			sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 		}
 		return sendMessage;

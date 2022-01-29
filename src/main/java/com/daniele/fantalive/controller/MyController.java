@@ -57,9 +57,10 @@ public class MyController {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 			Main.fantaCronacaLiveBot = FantaCronacaLiveBOT.inizializza();
 			Main.risultatiConRitardoBOT = RisultatiConRitardoBOT.inizializza();
-			}
+			Main.inviaCronacaNotifica("server riavviato",false);
+		}
 	}
-
+ 
 
 	@Scheduled(fixedRate = 60000)
 	public void scheduleKeepAlive() throws Exception {
@@ -80,7 +81,7 @@ public class MyController {
 			if (between >25) {
 				String http = Main.getHTTP("https://fantalive71.herokuapp.com/fantalive/index.html");
 				ret=Constant.KEEP_ALIVE + " Keep Alive!";
-				Main.inviaCronacaNotifica(ret);
+				Main.inviaCronacaNotifica(ret, false);
 				System.out.println("REFRESH!!");
 				Constant.LAST_REFRESH=ZonedDateTime.now();
 			}

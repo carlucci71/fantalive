@@ -705,7 +705,7 @@ public class Main {
 						}
 					}
 					des.append("\n").append(getUrlNotifica());
-					Main.inviaCronacaNotifica(des.toString());
+					Main.inviaCronacaNotifica(des.toString(), true);
 					Main.inviaNotifica(des.toString());
 					Calendar c4 = Calendar.getInstance();
 					//					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));
@@ -718,7 +718,7 @@ public class Main {
 				map.put("res", go);
 				map.put("miniNotifica", Base64.getEncoder().encodeToString(desMiniNotifica.getBytes()));
 				socketHandlerFantalive.invia(map);
-				Main.inviaCronacaNotifica(desMiniNotifica.toString());
+				Main.inviaCronacaNotifica(desMiniNotifica.toString(),true);
 			}
 			Calendar c4 = Calendar.getInstance();
 			//			System.out.println("ONLY WEB SOCKET:" + (c4.getTimeInMillis()-c3.getTimeInMillis()));
@@ -1119,11 +1119,14 @@ public class Main {
 		return ret;
 	}
 
-	public static void inviaCronacaNotifica(String msg) throws Exception {
+	public static void inviaCronacaNotifica(String msg, boolean ritarda) throws Exception {
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
-			ThreadSeparato threadSeparato = new ThreadSeparato(fantaCronacaLiveBot, constant.CHAT_ID_FANTALIVE,msg);
-			executor.schedule(threadSeparato, 15, TimeUnit.SECONDS);
-			//			fantaCronacaLiveBot.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg);
+			if (ritarda) {
+				ThreadSeparato threadSeparato = new ThreadSeparato(fantaCronacaLiveBot, constant.CHAT_ID_FANTALIVE,msg);
+				executor.schedule(threadSeparato, 15, TimeUnit.SECONDS);
+			} else {
+				fantaCronacaLiveBot.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg);
+			}
 		}
 		else {
 			System.out.println("Notifica:\n" + msg);
@@ -1244,8 +1247,8 @@ public class Main {
 	private static Map<String, Map<String, Object>> partiteLive() throws Exception {
 		Map<String, Map<String, Object>> snapPartite=new LinkedHashMap();
 		Map<String, Object> jsonToMap;
-		//https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=1&competitionId=21
-		String callHTTP= getHTTP("https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=" + Constant.SPORT_ID_LIVE_GAZZETTA + "&competitionId=" + Constant.COMP_ID_LIVE_GAZZETTA);
+		//https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=1&competitionId=21&day=23
+		String callHTTP= getHTTP("https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=" + Constant.SPORT_ID_LIVE_GAZZETTA + "&competitionId=" + Constant.COMP_ID_LIVE_GAZZETTA + "&day=" + constant.GIORNATA);
 
 		/*
 {
@@ -1369,33 +1372,34 @@ public class Main {
 
 	private static void overrideTag(String s1, String s2, Map<String, String> mapSnap) throws Exception {
 		//https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/16/live_21.json
-
-		ZonedDateTime zonedDateTime = calendarioInizioGiornata.get(Constant.GIORNATA);
-		ZonedDateTime now = ZonedDateTime.now();
-		if (now.isAfter(zonedDateTime)) {
-			String callHTTP= getHTTP("https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/" + Constant.I_LIVE_FANTACALCIO + "/live_" + Constant.GIORNATA + ".json");
-			Map<String, Object> jsonToMap=jsonToMap(callHTTP);
-			List<Map<String, Object>> incontri = (List<Map<String, Object>>) ((Map)jsonToMap.get("data")).get("inc");
-			for (Map<String, Object> incontro : incontri) {
-				String incSqCasa = sq.get(incontro.get("id_a"));
-				String incSqFuori = sq.get(incontro.get("id_b"));
-				if (incSqCasa.equals(s1) || incSqCasa.equals(s2)) {
-					String newVal = (String) incontro.get("d");
-					String newTag = reverseStatusMatch.get(incontro.get("sto"));
-					if (mapSnap != null && !mapSnap.get("tag").equals(newTag)) {
-						mapSnap.put("tag", newTag);
-						mapSnap.put("val", newVal);
+		if (false) {
+			ZonedDateTime zonedDateTime = calendarioInizioGiornata.get(Constant.GIORNATA);
+			ZonedDateTime now = ZonedDateTime.now();
+			if (now.isAfter(zonedDateTime)) {
+				String callHTTP= getHTTP("https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/" + Constant.I_LIVE_FANTACALCIO + "/live_" + Constant.GIORNATA + ".json");
+				Map<String, Object> jsonToMap=jsonToMap(callHTTP);
+				List<Map<String, Object>> incontri = (List<Map<String, Object>>) ((Map)jsonToMap.get("data")).get("inc");
+				for (Map<String, Object> incontro : incontri) {
+					String incSqCasa = sq.get(incontro.get("id_a"));
+					String incSqFuori = sq.get(incontro.get("id_b"));
+					if (incSqCasa.equals(s1) || incSqCasa.equals(s2)) {
+						String newVal = (String) incontro.get("d");
+						String newTag = reverseStatusMatch.get(incontro.get("sto"));
+						if (mapSnap != null && !mapSnap.get("tag").equals(newTag)) {
+							mapSnap.put("tag", newTag);
+							mapSnap.put("val", newVal);
+						}
 					}
-				}
-				if (incSqFuori.equals(s1) || incSqFuori.equals(s2)) {
-					String newVal = (String) incontro.get("d");
-					String newTag = reverseStatusMatch.get(incontro.get("sto"));
-					if (mapSnap != null && !mapSnap.get("tag").equals(newTag)) {
-						mapSnap.put("tag", newTag);
-						mapSnap.put("val", newVal);
+					if (incSqFuori.equals(s1) || incSqFuori.equals(s2)) {
+						String newVal = (String) incontro.get("d");
+						String newTag = reverseStatusMatch.get(incontro.get("sto"));
+						if (mapSnap != null && !mapSnap.get("tag").equals(newTag)) {
+							mapSnap.put("tag", newTag);
+							mapSnap.put("val", newVal);
+						}
 					}
-				}
 
+				}
 			}
 		}
 	}
@@ -3249,7 +3253,7 @@ public class Main {
 	}
 	public static String desEvento(Integer ev,String r){
 		String[] evento = Main.eventi.get(ev);
-		String iconaEvento = evento[5];
+		String iconaEvento = evento[6];
 		String ret = " " + iconaEvento + " " + evento[0];
 		String valEvento = valEvento(evento,r);
 		if (!"0".equals(valEvento)) {
