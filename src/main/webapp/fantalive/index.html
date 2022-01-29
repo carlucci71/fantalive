@@ -35,7 +35,7 @@
 </div>
 <label ng-show="disabilitaNotificaTelegram">TELEGRAM DISABILITATO</label><br>
 <label ng-show="liveFromFile">LIVE FROM FILE</label><br>
-<label>Inizio caricamento: </label>{{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} <label>fine: </label>{{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}<br>  
+<label>Inizio caricamento: </label>{{inizio | date:'yyyy-MM-dd HH:mm:ss sss'}} <label>Fine: </label>{{fine | date:'yyyy-MM-dd HH:mm:ss sss'}}<br>  
 <button ng-show="!configura && !loading" ng-click="configura=true; visPartitaLive=false">Configura</button>
 <button ng-show="configura && !loading" ng-click="endConfigura()">Termina configurazione</button>
 <br>

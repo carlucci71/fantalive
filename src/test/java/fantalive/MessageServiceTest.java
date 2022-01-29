@@ -9,7 +9,7 @@ public class MessageServiceTest {
     @DisplayName("Testa ....")
     @Test
     void testGet() {
-        assertEquals("Hello JUnit 5", "Hello JUnit 5");
+        assertEquals("Hello JUnit 5", "Hello JUnit 5x");
     }
 
 }
