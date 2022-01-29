@@ -9,7 +9,6 @@ public class MessageServiceTest {
     @DisplayName("Testa ....")
     @Test
     void testGet() {
-    	System.out.println("TESTA");
         assertEquals("Hello JUnit 5", "Hello JUnit 5xxx");
     }
 
