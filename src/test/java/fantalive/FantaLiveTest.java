@@ -84,7 +84,6 @@ public class FantaLiveTest {
 
     @Test
     public void testDettaglioCampionatoBE()  throws Exception{
-    	
 		Set<String> getpartiteSimulate = Main.getpartiteSimulate(Campionati.BE.name());
 		for (String partitaSimulata : getpartiteSimulate) {
 			if (partitaSimulata.equals("B Gio IO")) {
@@ -95,25 +94,22 @@ public class FantaLiveTest {
 				assertTrue(testo.indexOf("tavolino")>0);
 				String dett = Main.getDettaglio(constant.CHAT_ID_FANTALIVE,Campionati.BE.name(), squadre.get(0).substring(squadre.get(0).indexOf("-")+1), (squadre.contains(squadreCasa.get(0))?"S":"N"), partitaSimulata);
 				assertTrue(dett.indexOf("Raspadori")>0);
-				
 			}
 		}
     }
 
     @Test
     public void testDettaglioCampionatoFantaviva()  throws Exception{
-    	
 		Set<String> getpartiteSimulate = Main.getpartiteSimulate(Campionati.FANTAVIVA.name());
 		for (String partitaSimulata : getpartiteSimulate) {
 			if (partitaSimulata.equals("F Andrea IO")) {
-				Map<String, Object> proiezioni = Main.getPartitaSimulata(constant.CHAT_ID_FANTALIVE,partitaSimulata, null);//fai anche squadra e fantaviva
+				Map<String, Object> proiezioni = Main.getPartitaSimulata(constant.CHAT_ID_FANTALIVE,partitaSimulata, null);
 				List<String> squadre = (List<String>) proiezioni.get("squadre");
 				List<String> squadreCasa = (List<String>) proiezioni.get("squadreCasa");
 				String testo = (String) proiezioni.get("testo");
 				assertTrue(testo.indexOf("Tavolino")>0);
 				String dett = Main.getDettaglio(constant.CHAT_ID_FANTALIVE,Campionati.FANTAVIVA.name(), squadre.get(0).substring(squadre.get(0).indexOf("-")+1), (squadre.contains(squadreCasa.get(0))?"S":"N"), partitaSimulata);
 				assertTrue(dett.indexOf("Patricio")>0);
-				
 			}
 		}
     }
