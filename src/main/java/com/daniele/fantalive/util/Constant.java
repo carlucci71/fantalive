@@ -23,6 +23,7 @@ public class Constant {
 	public static final String I_LIVE_FANTACALCIO = "16";
 
 	public static Integer GIORNATA;
+	public static String instanza;
 	public static Long CHAT_ID_FANTALIVE;
 	public static String TOKEN_BOT_FANTALIVE;
 	public static String TOKEN_BOT_FANTACRONACALIVE;

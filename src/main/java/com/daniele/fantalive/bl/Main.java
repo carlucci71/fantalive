@@ -559,7 +559,7 @@ public class Main {
 			ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
 			String time=zdt.format(formatter);
 			if (salva) {
-				upsertSalva(time + "-" + "snapPartite", toJson(snapOrari));
+				upsertSalva(time + "-" + "snapPartite", toJson(getLives.get("snapPartite")));//snapOrari
 				upsertSalva(time + "-" + "lives", toJson(snapLives));
 			}
 			if (oldSnapshot!=null) {
@@ -2069,7 +2069,6 @@ public class Main {
 			lives=recuperaLives();
 		}
 		Map<String, Map<String, String>> orari=new HashMap<>();
-
 		for (String kkk : snapPartite.keySet()) {
 			Map<String, Object> partita = snapPartite.get(kkk);
 			String tag = "";

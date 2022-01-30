@@ -13,6 +13,7 @@ public class ConstantProtetto {
 	@Bean
 	public static Constant constant() {
 		Constant constant = new Constant();
+		constant.instanza=ConstantProtetto.class.getCanonicalName();
 		if(System.getenv("KEEP_ALIVE_END") != null) {
 			constant.KEEP_ALIVE_END = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_END"), Constant.dateTimeFormatterIn);
 		}
