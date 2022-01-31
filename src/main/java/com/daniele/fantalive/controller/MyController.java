@@ -57,7 +57,7 @@ public class MyController {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 			Main.fantaCronacaLiveBot = FantaCronacaLiveBOT.inizializza();
 			Main.risultatiConRitardoBOT = RisultatiConRitardoBOT.inizializza();
-			Main.inviaCronacaNotifica("server riavviato",null);
+			Main.inviaCronacaNotifica("server riavviato: " + Main.MIO_IP,null);
 		}
 	}
  
