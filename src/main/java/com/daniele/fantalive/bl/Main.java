@@ -52,8 +52,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.FormElement;
 import org.jsoup.select.Elements;
+import org.springframework.beans.BeansException;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
+import com.daniele.MainClass;
 import com.daniele.fantalive.configurazione.SocketHandlerFantalive;
 import com.daniele.fantalive.entity.Salva;
 import com.daniele.fantalive.model.CambiaTag;
@@ -705,7 +709,7 @@ public class Main {
 						}
 					}
 					des.append("\n").append(getUrlNotifica());
-					Main.inviaCronacaNotifica(des.toString(), true);
+					Main.inviaCronacaNotifica(des.toString(), 15);
 					Main.inviaNotifica(des.toString());
 					Calendar c4 = Calendar.getInstance();
 					//					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));
@@ -718,7 +722,7 @@ public class Main {
 				map.put("res", go);
 				map.put("miniNotifica", Base64.getEncoder().encodeToString(desMiniNotifica.getBytes()));
 				socketHandlerFantalive.invia(map);
-				Main.inviaCronacaNotifica(desMiniNotifica.toString(),true);
+				Main.inviaCronacaNotifica(desMiniNotifica.toString(),15);
 			}
 			Calendar c4 = Calendar.getInstance();
 			//			System.out.println("ONLY WEB SOCKET:" + (c4.getTimeInMillis()-c3.getTimeInMillis()));
@@ -739,13 +743,51 @@ public class Main {
 	}
 
 
-	public static void main(String[] args) throws Exception {
+	private static void mainSpring(String[] args) throws Exception {
+		ConfigurableApplicationContext ctx;
+		ctx = new SpringApplicationBuilder(MainClass.class)
+				.profiles("DEV")
+				.web(true).run(args);
+		Main.init(ctx.getBean(SalvaRepository.class),null,ctx.getBean(Constant.class), false);
+		boolean runningOLD = Main.fantaLiveBot.isRunning();
+		if (runningOLD) {
+			Main.fantaLiveBot.stopBot();
+			Main.fantaCronacaLiveBot.stopBot();
+			Main.risultatiConRitardoBOT.stopBot();
+		} else {
+			Main.fantaLiveBot.startBot();
+			Main.fantaCronacaLiveBot.startBot();
+			Main.risultatiConRitardoBOT.startBot();
+		}
+		boolean running = Main.fantaLiveBot.isRunning();
+		System.out.println(running != runningOLD);
+		if (running) {
+			Main.fantaLiveBot.stopBot();
+			Main.fantaCronacaLiveBot.stopBot();
+			Main.risultatiConRitardoBOT.stopBot();
+		} else {
+			Main.fantaLiveBot.startBot();
+			Main.fantaCronacaLiveBot.startBot();
+			Main.risultatiConRitardoBOT.startBot();
+		}
+		running = Main.fantaLiveBot.isRunning();
+		System.out.println(running == runningOLD);
+		ctx.stop();
+		ctx.close();
+	}
+	
+	private static void mainBatch(String[] args) throws Exception {
 		Constant c=null;
 		Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
 		init(null, null, c, false);
-		/*******************/
+	}
+	public static void main(String[] args) throws Exception {
+
+		mainSpring(args);
+		
+		
 		
 		/*
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
@@ -1121,11 +1163,11 @@ public class Main {
 		return ret;
 	}
 
-	public static void inviaCronacaNotifica(String msg, boolean ritarda) throws Exception {
+	public static void inviaCronacaNotifica(String msg, Integer ritardo) throws Exception {
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
-			if (ritarda) {
+			if (ritardo != null) {
 				ThreadSeparato threadSeparato = new ThreadSeparato(fantaCronacaLiveBot, constant.CHAT_ID_FANTALIVE,msg);
-				executor.schedule(threadSeparato, 15, TimeUnit.SECONDS);
+				executor.schedule(threadSeparato, ritardo, TimeUnit.SECONDS);
 			} else {
 				fantaCronacaLiveBot.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg);
 			}

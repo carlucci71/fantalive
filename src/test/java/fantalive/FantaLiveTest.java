@@ -16,7 +16,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.daniele.MainClass;
+import com.daniele.fantalive.bl.FantaCronacaLiveBOT;
+import com.daniele.fantalive.bl.FantaLiveBOT;
 import com.daniele.fantalive.bl.Main;
+import com.daniele.fantalive.bl.RisultatiConRitardoBOT;
 import com.daniele.fantalive.model.Live;
 import com.daniele.fantalive.util.Constant;
 import com.daniele.fantalive.util.Constant.Campionati;
@@ -112,6 +115,43 @@ public class FantaLiveTest {
 				assertTrue(dett.indexOf("Patricio")>0);
 			}
 		}
+    }
+    
+    @Test
+    public void testTelegram() throws Exception{
+    	if (Main.fantaLiveBot==null) {
+			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
+			Main.fantaCronacaLiveBot = FantaCronacaLiveBOT.inizializza();
+			Main.risultatiConRitardoBOT = RisultatiConRitardoBOT.inizializza();
+			constant.DISABILITA_NOTIFICA_TELEGRAM=false;
+    	}
+		boolean runningOLD = Main.fantaLiveBot.isRunning();
+		if (runningOLD) {
+			Main.fantaLiveBot.stopBot();
+			Main.fantaCronacaLiveBot.stopBot();
+			Main.risultatiConRitardoBOT.stopBot();
+		} else {
+			Main.fantaLiveBot.startBot();
+			Main.fantaCronacaLiveBot.startBot();
+			Main.inviaCronacaNotifica("TEST", null);
+			Main.inviaCronacaNotifica("TEST Ritardato", 1);
+			Main.risultatiConRitardoBOT.startBot();
+		}
+		boolean running = Main.fantaLiveBot.isRunning();
+		assertTrue(running != runningOLD);
+		if (running) {
+			Main.fantaLiveBot.stopBot();
+			Main.fantaCronacaLiveBot.stopBot();
+			Main.risultatiConRitardoBOT.stopBot();
+		} else {
+			Main.fantaLiveBot.startBot();
+			Main.fantaCronacaLiveBot.startBot();
+			Main.inviaCronacaNotifica("TEST", null);
+			Main.inviaCronacaNotifica("TEST Ritardato", 1);
+			Main.risultatiConRitardoBOT.startBot();
+		}
+		running = Main.fantaLiveBot.isRunning();
+		assertTrue(running == runningOLD);
     }
     
 }
