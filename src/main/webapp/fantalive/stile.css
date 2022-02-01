@@ -1,11 +1,14 @@
 .app-modal-window .modal-dialog {
-	width: 100%;
+	width: 90%;
+}
+.app-modal-window  {
+	text-align:center;
 }
 table, th, td {
   border: 1px solid black;
 }
 body {
-    position: relative
+    position: relative;
 }
 #floatingRectangle {
     z-index: 1;

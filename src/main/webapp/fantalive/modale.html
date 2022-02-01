@@ -1,38 +1,68 @@
 <div class="modal-header">
-    <h3 class="modal-title" id="modal-title">Proiezione</h3>
+	<h3 class="modal-title" id="modal-title">Proiezione</h3>
 </div>
-<div class="modal-body" id="modal-body">
-	<table style="width: 850px;" >
+<div style="text-align:center" class="modal-body" id="modal-body">
+	<table style="widthXX: 850px;">
 
-		<tr align=center><td></td><td ng-repeat="team in pc.data.teams">{{team.nome}}</td></tr>
-		<tr ng-show="pc.data.ris != '-'" align=center><td>risultato</td>
+		<tr align=center>
+			<td style="width: 300px;" ></td>
+			<td style="width: 1000px;" ng-repeat="team in pc.data.teams">{{team.nome}}</td>
+		</tr>
+		<tr ng-show="pc.data.ris != '-'" align=center>
+			<td>risultato</td>
 			<td><label>{{pc.data.ris.substring(0,pc.data.ris.indexOf("-"))}}</label></td>
 			<td><label>{{pc.data.ris.substring(pc.data.ris.indexOf("-")+1)}}</label></td>
 		</tr>
-		<tr align=center><td>modificatore difesa</td><td  ng-repeat="team in pc.data.teams">{{team.bmd}}</td></tr>
-		<tr align=center><td>fair play</td><td  ng-repeat="team in pc.data.teams">{{team.bmfp}}</td></tr>
-		<tr align=center><td>fattore casa</td><td  ng-repeat="team in pc.data.teams">{{team.fattore}}</td></tr>
-		<tr align=center><td>modulo orig</td><td  ng-repeat="team in pc.data.teams">{{team.modulo}}</td></tr>
-		<tr align=center><td>modulo</td><td  ng-repeat="team in pc.data.teams">{{team.moduloS}}</td></tr>
-		<tr align=center><td>TOTALE</td><td  ng-repeat="team in pc.data.teams">{{team.total}}</td></tr>
-		<tr align=center><td></td>
-			<td ng-repeat="team in pc.data.teams">
-				<span ng-repeat="pl  in team.players | filter:{ played: true }"  >
-						{{$index+1}}
-						<label>{{pl.nome}}</label> {{pl.fantavoto}} <span ng-hide="pl.squadraGioca">*</span>
-						<span ng-repeat="bonusmalus in pl.bm track by $index">
-							<img style="width: 20px;"  ng-src="./ico/{{bonusmalus}}.png" />
-						</span>
-						<span ng-show="pl.malus != 0">malus <label>{{pl.malus}}</label> </span> 
-						<br>
-					</span>
-			</td>
+		<tr align=center>
+			<td>modificatore difesa</td>
+			<td ng-repeat="team in pc.data.teams">{{team.bmd}}</td>
 		</tr>
-	
+		<tr align=center>
+			<td>fair play</td>
+			<td ng-repeat="team in pc.data.teams">{{team.bmfp}}</td>
+		</tr>
+		<tr align=center>
+			<td>fattore casa</td>
+			<td ng-repeat="team in pc.data.teams">{{team.fattore}}</td>
+		</tr>
+		<tr align=center>
+			<td>capitano</td>
+			<td ng-repeat="team in pc.data.teams">{{team.bmcap}}</td>
+		</tr>
+		<tr align=center>
+			<td>modulo orig</td>
+			<td ng-repeat="team in pc.data.teams">{{team.modulo}}</td>
+		</tr>
+		<tr align=center>
+			<td>modulo</td>
+			<td ng-repeat="team in pc.data.teams">{{team.moduloS}}</td>
+		</tr>
+		<tr align=center>
+			<td>TOTALE</td>
+			<td ng-repeat="team in pc.data.teams">{{team.total}}</td>
+		</tr>
+		<tr align=center>
+			<td></td>
+			<td ng-repeat="team in pc.data.teams"><span
+				ng-repeat="pl  in team.players | filter:{ played: true }">
+					{{$index+1}} 
+					<label>{{pl.nome}}</label> 
+					<!-- -{{pl.id}} -->
+					<img style="width: 20px;" ng-src="./ico/capitano.png" ng-show="pl.capitano"></img>
+					<img style="width: 20px;" ng-src="./ico/vicecapitano.jpg" ng-show="pl.viceCapitano"></img>
+					{{pl.fantavoto}} <span
+					ng-hide="pl.squadraGioca">*</span> <span
+					ng-repeat="bonusmalus in pl.bm track by $index"> <img
+						style="width: 20px;" ng-src="./ico/{{bonusmalus}}.png" />
+				</span> <span ng-show="pl.malus != 0">malus <label>{{pl.malus}}</label>
+				</span> <br>
+			</span></td>
+		</tr>
+
 	</table>
-	
-	
-	
+
+
+
 	<div ng-repeat="tm  in pc.data.teams">
 		<!-- 	<label>{{tm.bma}}</label><br>  -->
 		<!--	<label>{{tm.bmc}}</label><br>  -->
@@ -43,12 +73,11 @@
 		<!--	<label>{{tm.id}}</label><br>  -->
 		<!--	<label>{{tm.ru}}</label><br>  -->
 		<div ng-repeat="pl  in tm.players">
-		<span ng-show="pl.played">
-			<!--		<label>{{pl.id}}</label> - -->
-			<!-- 		<label>{{pl.totBM}}</label>  -->
-		</span>
+			<span ng-show="pl.played"> <!--		<label>{{pl.id}}</label> - -->
+				<!-- 		<label>{{pl.totBM}}</label>  -->
+			</span>
+		</div>
 	</div>
-</div>
-<div class="modal-footer">
-    <button class="btn btn-primary btnModale" ng-click="pc.ok()">OK</button>
-</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary btnModale" ng-click="pc.ok()">OK</button>
+	</div>

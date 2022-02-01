@@ -29,6 +29,7 @@ private String idSquadra;
 private String modulo;
 private String nick=null;
 private double fairPlay=0;
+private String capitano;
 
 public String getNome() {
 	return nome;
@@ -300,6 +301,12 @@ public Squadra clonaSquadra () throws Exception {
 	squadra.setRiserve(getRiserve());
 	*/
 	return squadra;
+}
+public String getCapitano() {
+	return capitano;
+}
+public void setCapitano(String capitano) {
+	this.capitano = capitano;
 }
 
 

@@ -891,6 +891,7 @@ public class Main {
 		}
 		mapBody.put("ris", "");
 		mapBody.put("teams", teams);
+		
 
 		headers=new HashMap<>();
 		headers.put("app_key", constant.APPKEY_FG_MOBILE);
@@ -931,8 +932,16 @@ public class Main {
 		Double rank=null;
 		String nome=null;
 		Boolean squadraGioca=null;
+		Boolean capitano=false;
+		Boolean viceCapitano=false;
 		for (Giocatore giocatore2 : sq.getTitolari()) {
 			if (giocatore2.getId().equals(map.get("id").toString())){
+				if (giocatore2.isCapitano()) {
+					capitano=true;
+				}
+				if (giocatore2.isViceCapitano()) {
+					viceCapitano=true;
+				}
 				codEventi=giocatore2.getCodEventi();
 				rank=giocatore2.getVoto();
 				nome=giocatore2.getNome();
@@ -948,6 +957,12 @@ public class Main {
 		}
 		for (Giocatore giocatore2 : sq.getRiserve()) {
 			if (giocatore2.getId().equals(map.get("id").toString())){
+				if (giocatore2.isCapitano()) {
+					capitano=true;
+				}
+				if (giocatore2.isViceCapitano()) {
+					viceCapitano=true;
+				}
 				codEventi=giocatore2.getCodEventi();
 				rank=giocatore2.getVoto();
 				nome=giocatore2.getNome();
@@ -965,6 +980,9 @@ public class Main {
 		map.put("rank",rank);
 		map.put("voto",voto);
 		map.put("nome",nome);
+		map.put("nome",nome);
+		map.put("capitano",capitano);
+		map.put("viceCapitano",viceCapitano);
 		map.put("fantavoto",fantavoto);
 		map.put("squadraGioca",squadraGioca);
 	}
@@ -979,7 +997,7 @@ public class Main {
 		mapT.put("moduloS", "");
 		mapT.put("fattore", 0);//fattore casa
 		mapT.put("total", 0);//totale
-		mapT.put("cap", "");//capitano
+		mapT.put("cap", sq.getCapitano());//capitano
 		mapT.put("bmp", 0);//bonus portiere
 		mapT.put("bmd", 0);//bonus difesa
 		mapT.put("bmc", 0);//bonus capitano
@@ -1665,6 +1683,16 @@ public class Main {
 					String nome = nomiFG.get(map2.get("id").toString());
 					if (nome == null) continue;
 					contaSquadre++;
+					String capitano = (String) map2.get("cap");
+					String[] cap = capitano.split(";");
+					String c="";
+					if (cap.length>0) {
+							c=cap[0];
+					}
+					String vc="";
+					if (cap.length>1) {
+							vc=cap[1];
+					}
 					List<Map> giocatori = (List<Map>) map2.get("pl");
 					if (giocatori != null) {
 						for (int i=0;i<giocatori.size();i++) {
@@ -1672,6 +1700,7 @@ public class Main {
 								Squadra squadra = new Squadra();
 								squadre.add(squadra);
 								squadra.setNome(nome);
+								squadra.setCapitano(capitano);
 								String modulo = map2.get("m").toString();
 								squadra.setModulo(modulo.substring(0,modulo.indexOf(";")));
 								squadra.setIdSquadra(map2.get("id").toString());
@@ -1710,7 +1739,12 @@ public class Main {
 							g.setNomeTrim(giocatori.get(i).get("n").toString().replaceAll(" ", ""));
 							g.setRuolo(giocatori.get(i).get("r").toString());
 							g.setSquadra(giocatori.get(i).get("t").toString());
-
+							if (g.getId().equals(c)) {
+								g.setCapitano(true);
+							}
+							if (g.getId().equals(vc)) {
+								g.setViceCapitano(true);
+							}
 							if (i<11) {
 								squadre.get(contaSq-1).getTitolari().add(g);
 							} 

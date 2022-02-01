@@ -741,10 +741,16 @@ app.run(
 			$rootScope.simPresente=function(squadra){
 				if (squadra.partiteSimulate.length>0) return "red";
 			}
-			$rootScope.campLive=function(partitaSimulata){
+			$rootScope.weightCampLive=function(partitaSimulata){
 //				if (partitaSimulata==$rootScope.visPartitaLive) return "blue";
-				if (partitaSimulata.substring(0,1)=="B")  return "green";
-				if (partitaSimulata.substring(0,1)=="F")  return "blue";
+				if (partitaSimulata.indexOf(" IO")>0) return "bold";
+				if (partitaSimulata.substring(0,1)=="B") return "normal";
+				if (partitaSimulata.substring(0,1)=="F") return "normal";
+				return "bold";
+			}
+			$rootScope.campLive=function(partitaSimulata){
+				if (partitaSimulata.substring(0,1)=="B") return "green";
+				if (partitaSimulata.substring(0,1)=="F") return "blue";
 				return "orange";
 			}
 			$rootScope.campLiveSfondo=function(partitaSimulata){

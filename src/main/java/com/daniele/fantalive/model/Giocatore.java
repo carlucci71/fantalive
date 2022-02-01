@@ -31,6 +31,8 @@ public class Giocatore {
 	private boolean entra=false;
 	private boolean esce=false;
 	private boolean notificaLive;
+	private boolean capitano=false;
+	private boolean viceCapitano=false;
 	public String getRuolo() {
 		return ruolo;
 	}
@@ -87,9 +89,12 @@ public class Giocatore {
 	}
 	@Override
 	public String toString() {
-		return nome + "(" + ruolo + ") " + squadra + " " + id + " " + (squadraGioca?"":"N/A") + " " + evento + codEventi   
+		return nome + "(" + ruolo + ") " + squadra + " " + id + " " 
+				+ (capitano?"C":"")
+				+ (viceCapitano?"VC":"")
+				+ (squadraGioca?"":"N/A") + " " + evento + codEventi   
 				+ " voto=" + voto  
-				+ " numGol=" + numGol  
+				+ " numGol=" + numGol
 				+ " entra=" + entra  
 				+ " esce=" + esce
 				+ " modificatori=" + modificatori  
@@ -191,6 +196,18 @@ public class Giocatore {
 	}
 	public void setNonGioca(boolean nonGioca) {
 		this.nonGioca = nonGioca;
+	}
+	public boolean isCapitano() {
+		return capitano;
+	}
+	public void setCapitano(boolean capitano) {
+		this.capitano = capitano;
+	}
+	public boolean isViceCapitano() {
+		return viceCapitano;
+	}
+	public void setViceCapitano(boolean viceCapitano) {
+		this.viceCapitano = viceCapitano;
 	}
 
 }

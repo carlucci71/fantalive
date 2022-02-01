@@ -55,7 +55,7 @@
 	<div ng-show="!configura">
 		<div ng-show="visPartitaLive">
 			<input type=button value="&#9851;" ng-click="visualizzaLive('')"></input>
-			<input ng-style="{'background-color':campLiveSfondo(key),'color':campLive(key)}" ng-repeat="key  in nomiPartiteLive" type=button value="&#9851; {{key.substring(2)}}" ng-click="visualizzaLive(key)"></input>
+			<input ng-style="{'background-color':campLiveSfondo(key),'font-weight':weightCampLive(key),'color':campLive(key)}" ng-repeat="key  in nomiPartiteLive" type=button value="&#9851; {{key.substring(2)}}" ng-click="visualizzaLive(key)"></input>
 			<br>
 			<table>
 			<tr style="vertical-align:top">
