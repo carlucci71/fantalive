@@ -3014,6 +3014,7 @@ public class Main {
 			l = (List<Map<String, Object>>) p.get("teams");
 			List<String> nomi=new ArrayList<>();
 			List<Double> modDif=new ArrayList<>();
+			List<Double> modCapitano=new ArrayList<>();
 			List<Double> fp=new ArrayList<>();
 			List<Double> fattori=new ArrayList<>();
 			List<String> moduli=new ArrayList<>();
@@ -3023,6 +3024,7 @@ public class Main {
 				for (Map<String, Object> map : l) {
 					players = (List<Map<String, Object>>) map.get("players");
 					modDif.add((Double) map.get("bmd"));
+					modCapitano.add((Double) map.get("bmcap"));
 					fp.add((Double) map.get("bmfp"));
 					fattori.add((Double) map.get("fattore"));
 					moduli.add((String) map.get("modulo"));
@@ -3039,6 +3041,7 @@ public class Main {
 				String nome = nomi.get(i);
 				sb.append("<b>" + nome + "</b>\n");
 				sb.append("Modificatore difesa " + modDif.get(i)  + "\n");
+				sb.append("Modificatore capitano " + modCapitano.get(i)  + "\n");
 				sb.append("Fairplay " + fp.get(i)  + "\n");
 				sb.append("Fattore casa " +  fattori.get(i)  + "\n");
 				sb.append("Modulo orig " +  moduli.get(i)  + "\n");
