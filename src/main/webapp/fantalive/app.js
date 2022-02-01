@@ -921,6 +921,7 @@ app.controller('ModalDemoCtrl', function ($uibModal, $log, $rootScope) {
 			templateUrl: 'modale.html',
 			controller: 'ModalInstanceCtrl',
 			controllerAs: 'pc',
+			windowClass: 'app-modal-window',
 			resolve: {
 				data: function () {
 					return txt;
