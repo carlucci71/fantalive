@@ -48,9 +48,12 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attribute;
+import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.FormElement;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -749,29 +752,9 @@ public class Main {
 				.profiles("DEV")
 				.web(true).run(args);
 		Main.init(ctx.getBean(SalvaRepository.class),null,ctx.getBean(Constant.class), false);
-		boolean runningOLD = Main.fantaLiveBot.isRunning();
-		if (runningOLD) {
-			Main.fantaLiveBot.stopBot();
-			Main.fantaCronacaLiveBot.stopBot();
-			Main.risultatiConRitardoBOT.stopBot();
-		} else {
-			Main.fantaLiveBot.startBot();
-			Main.fantaCronacaLiveBot.startBot();
-			Main.risultatiConRitardoBOT.startBot();
-		}
-		boolean running = Main.fantaLiveBot.isRunning();
-		System.out.println(running != runningOLD);
-		if (running) {
-			Main.fantaLiveBot.stopBot();
-			Main.fantaCronacaLiveBot.stopBot();
-			Main.risultatiConRitardoBOT.stopBot();
-		} else {
-			Main.fantaLiveBot.startBot();
-			Main.fantaCronacaLiveBot.startBot();
-			Main.risultatiConRitardoBOT.startBot();
-		}
-		running = Main.fantaLiveBot.isRunning();
-		System.out.println(running == runningOLD);
+		/*******/
+		//....
+		/*******/
 		ctx.stop();
 		ctx.close();
 	}
@@ -782,11 +765,57 @@ public class Main {
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
 		init(null, null, c, false);
+		Map<Integer, Float> votiAlvin = getVotiAlvin(23);
+		System.out.println(votiAlvin);
+	}
+
+	private static Map<Integer, Float> getVotiAlvin(int giornata) throws Exception {
+		Map<Integer, Float> ret = new HashMap<>();
+		String http = getHTTP("https://www.fantacalcio.it/voti-fantacalcio-serie-a/2021-22/" + giornata);
+		Document doc = Jsoup.parse(http);//, StandardCharsets.UTF_8.toString()
+		Elements elements = doc.getElementsByAttribute("role");
+		for (int i=0;i<elements.size();i++) {
+			Element elementTR = elements.get(i);
+			String role=elementTR.attr("role");
+			Integer id=null;
+			Float voto=null;
+			if (role.equalsIgnoreCase("row")) {
+				List<Node> childNodes = elementTR.childNodes();
+				for (Node node : childNodes) {
+					if ("td".equalsIgnoreCase(node.nodeName())) {
+						List<Node> childTRNodes = node.childNodes();
+						for (Node nodeTR : childTRNodes) {
+							if ("a".equalsIgnoreCase(nodeTR.nodeName())) {
+								id = Integer.parseInt(nodeTR.attr("href").split("/")[6]);
+							}
+							else {
+								boolean isRel=false;
+								boolean isDataSource2=false;
+								List<Attribute> asList = nodeTR.parentNode().attributes().asList();
+								for (Attribute attribute : asList) {
+									if ("data-source".equalsIgnoreCase(attribute.getKey()) && "2".equalsIgnoreCase(attribute.getValue())) {
+										isDataSource2=true;
+									}
+									if ("class".equalsIgnoreCase(attribute.getKey()) && "rel".equalsIgnoreCase(attribute.getValue())) {
+										isRel=true;
+									}
+								}
+								if (isDataSource2 && isRel && nodeTR.childNodeSize()>0) {
+									voto=Float.parseFloat(nodeTR.childNode(0).toString().replace(",", "."));
+								}
+							}
+						}
+					}
+				}
+			}
+			ret.put(id, voto);
+		}
+		return ret;
 	}
 	public static void main(String[] args) throws Exception {
 
-		mainSpring(args);
-		
+//		mainSpring(args);
+		mainBatch(args);
 		
 		
 		/*
@@ -1684,14 +1713,16 @@ public class Main {
 					if (nome == null) continue;
 					contaSquadre++;
 					String capitano = (String) map2.get("cap");
-					String[] cap = capitano.split(";");
 					String c="";
-					if (cap.length>0) {
-							c=cap[0];
-					}
 					String vc="";
-					if (cap.length>1) {
-							vc=cap[1];
+					if (capitano != null) {
+						String[] cap = capitano.split(";");
+						if (cap.length>0) {
+								c=cap[0];
+						}
+						if (cap.length>1) {
+								vc=cap[1];
+						}
 					}
 					List<Map> giocatori = (List<Map>) map2.get("pl");
 					if (giocatori != null) {
