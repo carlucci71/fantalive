@@ -79,7 +79,7 @@ public class MyController {
 			long between = 0;
 			if (Constant.LAST_REFRESH != null) between = ChronoUnit.MINUTES.between(Constant.LAST_REFRESH,now);
 			if (between >25) {
-				String http = Main.getHTTP("https://fantalive71.herokuapp.com/fantalive/index.html");
+				String http = (String) Main.callHTTP("GET", "application/json; charset=UTF-8","https://fantalive71.herokuapp.com/fantalive/index.html", null).get("response");
 				ret=Constant.KEEP_ALIVE + " Keep Alive!";
 				Main.inviaCronacaNotifica(ret, null);
 				System.out.println("REFRESH!!");

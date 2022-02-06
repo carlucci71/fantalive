@@ -11,7 +11,7 @@ public class RicercaTag {
 		for (int i=1;i<2222;i++) {
 			String s = "https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=1&competitionId=" + i;
 			try {
-				String http = Main.getHTTP(s);
+				String http = (String) Main.callHTTP("GET", "application/json; charset=UTF-8",s, null).get("response");
 				Map<String, Object> jsonToMap = Main.jsonToMap(http);
 				List<Map> l = (List<Map>) ((Map)jsonToMap.get("data")).get("games");
 				for (Map map : l) {

@@ -56,7 +56,7 @@ public class CalcolaPartita {
 			Iterator<Integer> iterator = Main.sq.keySet().iterator();
 			while (iterator.hasNext()) {
 				Integer integer = (Integer) iterator.next();
-				String sqFromLive = Main.getHTTP("https://www.fantacalcio.it/api/live/" + integer + "?g=" + i + "&i=" + Constant.I_LIVE_FANTACALCIO);
+				String sqFromLive = (String) Main.callHTTP("GET", "application/json; charset=UTF-8", "https://www.fantacalcio.it/api/live/" + integer + "?g=" + i + "&i=" + Constant.I_LIVE_FANTACALCIO, null).get("response");
 				List<Map<String, Object>> jsonToList = Main.jsonToList(sqFromLive);
 				for (Map<String, Object> map : jsonToList) {
 					nomiFG.add(map.get("nome") + "@" + Main.sq.get(integer));

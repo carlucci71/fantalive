@@ -39,7 +39,7 @@ public class FantaLiveTest {
 
     @Test
     public void testOldsnap() throws Exception{
-		String testoCallback = (String) Main.getOldSnapPartite(false, null).get("testo");
+		String testoCallback = (String) Main.getOldSnapPartite(false).get("testo");
 		assertTrue(testoCallback.indexOf("Orsolini")>0);
     }
 

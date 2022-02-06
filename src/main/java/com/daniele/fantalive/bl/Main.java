@@ -122,7 +122,7 @@ public class Main {
 		if (calendario==null) {
 			calendario = new LinkedHashMap();
 			calendarioInizioGiornata = new LinkedHashMap<>();
-			String http = getHTTP("https://www.goal.com/it/notizie/calendario-serie-a-2021-2022-completo/161ug15ioiflh19whgevwxviur");
+			String http = (String) callHTTP("GET", "application/json; charset=UTF-8", "https://www.goal.com/it/notizie/calendario-serie-a-2021-2022-completo/161ug15ioiflh19whgevwxviur", null).get("response");
 			//			System.out.println(http);
 			//			https://www.tomshw.it/culturapop/calendario-serie-a-2021-22-risultati-e-dove-vedere-le-partite/		
 			//			System.out.println(http);
@@ -770,7 +770,7 @@ public class Main {
 
 	private static Map<Integer, Float> getVotiAlvin(int giornata) throws Exception {
 		Map<Integer, Float> ret = new HashMap<>();
-		String http = getHTTP("https://www.fantacalcio.it/voti-fantacalcio-serie-a/2021-22/" + giornata);
+		String http = (String) callHTTP("GET", "application/json; charset=UTF-8", "https://www.fantacalcio.it/voti-fantacalcio-serie-a/2021-22/" + giornata, null).get("response");
 		Document doc = Jsoup.parse(http);//, StandardCharsets.UTF_8.toString()
 		Elements elements = doc.getElementsByAttribute("role");
 		for (int i=0;i<elements.size();i++) {
@@ -846,7 +846,7 @@ public class Main {
 		bodyMap.put("password", constant.PWD_FG);
 		Map<String, String> headers=new HashMap<>();
 		headers.put("app_key", constant.APPKEY_FG_MOBILE);
-		Map<String, Object> postHTTP = postHTTP("application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/v1_utente/login",toJson(bodyMap), headers);
+		Map<String, Object> postHTTP = callHTTP("POST", "application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/v1_utente/login",toJson(bodyMap), headers);
 		String response = (String) postHTTP.get("response");
 		Map<String, Object> mapResponse = jsonToMap(response);//dati del login
 		Map data = (Map) mapResponse.get("data");
@@ -954,7 +954,7 @@ public class Main {
 		headers.put("lega_token", lega_token);
 		headers.put("user_token", user_token);
 		String giornata = String.valueOf(Constant.GIORNATA - Constant.DELTA_VIVA_FG);
-		postHTTP = postHTTP("application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/V2_LegaFormazioni/Proiezione?id_comp=" 
+		postHTTP = callHTTP("POST","application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/V2_LegaFormazioni/Proiezione?id_comp=" 
 				+ idComp + "&giornata=" + giornata ,toJson(mapBody), headers);
 		response = (String) postHTTP.get("response");
 		mapResponse = jsonToMap(response);//System.out.println(toJson(mapBody));
@@ -1103,7 +1103,7 @@ public class Main {
 		bodyMap.put("password", constant.PWD_FG);
 		Map<String, String> headers=new HashMap<>();
 		headers.put("app_key", constant.APPKEY_FG_MOBILE);
-		Map<String, Object> mapPutHTTP = putHTTP("application/json", "https://leghe.fantacalcio.it/api/v1/v1_utente/login?alias_lega=login", toJson(bodyMap), headers);
+		Map<String, Object> mapPutHTTP = callHTTP("PUT","application/json", "https://leghe.fantacalcio.it/api/v1/v1_utente/login?alias_lega=login", toJson(bodyMap), headers);
 		List<String> listCookie = ((List<String>)((Map)mapPutHTTP.get("headerFields")).get("Set-Cookie"));
 		String cookieName = "LegheFG2_Leghe2021";
 		String cookieValue=null;
@@ -1155,7 +1155,7 @@ public class Main {
 	private static void getAllBM_FG() throws Exception {
 		Set<Integer> se = new HashSet<>();
 		init(null, null, null, false);
-		String http = getHTTP("https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/16/live_20.json");
+		String http = (String) callHTTP("GET", "application/json; charset=UTF-8", "https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/16/live_20.json", null).get("response");
 		Map<String, Object> jsonToMap = jsonToMap(http);
 		List<Map> l = (List<Map>) ((Map)jsonToMap.get("data")).get("pl");
 		for (Map map: l) {
@@ -1178,7 +1178,7 @@ public class Main {
 	private static String getAuthFS() throws Exception {
 		String ret=null;
 		String urlLoginFS = "https://www.fanta.soccer/it/login/";
-		String http = getHTTP(urlLoginFS);
+		String http = (String) callHTTP("GET", "application/json; charset=UTF-8", urlLoginFS, null).get("response");
 		Document doc = Jsoup.parse(http);
 		List<FormElement> forms2 = doc.select("body").forms();
 		Elements elements = forms2.get(0).elements();
@@ -1217,7 +1217,7 @@ public class Main {
 		body.append("&ctl00%24MainContent%24wuc_Login1%24txtConfermaPassword=");
 		body.append("&__ASYNCPOST=true");
 		body.append("&ctl00%24MainContent%24wuc_Login1%24btnLogin=accedi");
-		Map<String, Object> postHTTP = postHTTP(contentType,urlLoginFS,body.toString(), headers);
+		Map<String, Object> postHTTP = callHTTP("POST",contentType,urlLoginFS,body.toString(), headers);
 		//		System.out.println(postHTTP.get("response"));
 		Map<String, List<String>> headerFields = (Map<String, List<String>>) postHTTP.get("headerFields");
 
@@ -1281,7 +1281,7 @@ public class Main {
 	private static Map<String, String> getNomiFG(String lega) throws Exception {
 		Map<String, String> ret = new HashMap<String, String>();
 		String url = "https://leghe.fantacalcio.it/" + lega + "/area-gioco/rose?";
-		String response = getHTTP(url);
+		String response = (String) callHTTP("GET", "application/json; charset=UTF-8", url, null).get("response");
 		Document doc = Jsoup.parse(response);
 		Elements select1 = doc.select(".list-rosters-item");
 		Elements select = doc.select(".left-heading-link");
@@ -1366,7 +1366,7 @@ public class Main {
 		Map<String, Map<String, Object>> snapPartite=new LinkedHashMap();
 		Map<String, Object> jsonToMap;
 		//https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=1&competitionId=21&day=23
-		String callHTTP= getHTTP("https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=" + Constant.SPORT_ID_LIVE_GAZZETTA + "&competitionId=" + Constant.COMP_ID_LIVE_GAZZETTA + "&day=" + constant.GIORNATA);
+		String callHTTP= (String) callHTTP("GET", "application/json; charset=UTF-8", "https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=" + Constant.SPORT_ID_LIVE_GAZZETTA + "&competitionId=" + Constant.COMP_ID_LIVE_GAZZETTA + "&day=" + constant.GIORNATA, null).get("response");
 
 		/*
 {
@@ -1494,7 +1494,7 @@ public class Main {
 			ZonedDateTime zonedDateTime = calendarioInizioGiornata.get(Constant.GIORNATA);
 			ZonedDateTime now = ZonedDateTime.now();
 			if (now.isAfter(zonedDateTime)) {
-				String callHTTP= getHTTP("https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/" + Constant.I_LIVE_FANTACALCIO + "/live_" + Constant.GIORNATA + ".json");
+				String callHTTP= (String) callHTTP("GET", "application/json; charset=UTF-8", "https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/" + Constant.I_LIVE_FANTACALCIO + "/live_" + Constant.GIORNATA + ".json", null).get("response");
 				Map<String, Object> jsonToMap=jsonToMap(callHTTP);
 				List<Map<String, Object>> incontri = (List<Map<String, Object>>) ((Map)jsonToMap.get("data")).get("inc");
 				for (Map<String, Object> incontro : incontri) {
@@ -1521,7 +1521,60 @@ public class Main {
 			}
 		}
 	}
-	public static Map<String,Object> postHTTP(String contentType, String url, String body,  Map<String, String>... headers) throws Exception {
+	public static Map<String,Object> callHTTP(String verbo, String contentType, String url, String body,  Map<String, String>... headers) throws Exception {
+		//		System.out.println(verbo + " " + url + " " + printMap(headers));
+		Map <String, Object> ret = new HashMap<>();
+		URL obj = new URL(url);
+		HttpURLConnection connectionHTTP = (HttpURLConnection) obj.openConnection();
+		connectionHTTP.setRequestMethod(verbo);
+		if (headers!=null && headers.length>0) {
+			Iterator<String> iterator = headers[0].keySet().iterator();
+			while (iterator.hasNext()) {
+				String key = (String) iterator.next();
+				connectionHTTP.setRequestProperty(key, headers[0].get(key));
+			}
+		}
+		if (!verbo.equals("GET")) {
+			connectionHTTP.setRequestProperty("content-type", contentType);
+			connectionHTTP.setDoOutput(true);
+			OutputStream os = connectionHTTP.getOutputStream();
+			os.write(body.getBytes());
+			os.flush();
+			os.close();
+		}
+		else {
+			if (body != null) {
+				throw new RuntimeException("Per le chiamate con verbo GET non valorizzare il body");
+			}
+		}
+		int responseCode = connectionHTTP.getResponseCode();
+		StringBuffer response = new StringBuffer();
+		if (responseCode == HttpURLConnection.HTTP_OK) {
+			Map<String, List<String>> headerFields = connectionHTTP.getHeaderFields();
+			ret.put("headerFields", headerFields);
+			BufferedReader in = new BufferedReader(new InputStreamReader(connectionHTTP.getInputStream()));
+			String inputLine;
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+		} else {
+			BufferedReader bfOutputResponse = new BufferedReader(
+					new InputStreamReader(connectionHTTP.getErrorStream()));
+			String outputLine;
+			StringBuffer sfResponse = new StringBuffer();
+			while ((outputLine = bfOutputResponse.readLine()) != null) {
+				sfResponse.append(outputLine);
+			}
+			bfOutputResponse.close();
+			String stringResponse = sfResponse.toString();
+			throw new RuntimeException(verbo + " NOT WORKED ".concat(url).concat(" -> ").concat(body).concat("STACK:")
+					.concat(stringResponse));
+		}
+		ret.put("response", response.toString());
+		return ret; 
+	}
+	public static Map<String,Object> postHTTP_DEPRECATA(String contentType, String url, String body,  Map<String, String>... headers) throws Exception {
 		//		System.out.println("POST " + url + " " + printMap(headers));
 		Map <String, Object> ret = new HashMap<>();
 		URL obj = new URL(url);
@@ -1540,7 +1593,6 @@ public class Main {
 		os.write(body.getBytes());
 		os.flush();
 		os.close();
-
 		int responseCode = postConnection.getResponseCode();
 		StringBuffer response = new StringBuffer();
 		if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -1561,8 +1613,6 @@ public class Main {
 				sfResponse.append(outputLine);
 			}
 			bfOutputResponse.close();
-
-			// print result
 			String stringResponse = sfResponse.toString();
 			throw new RuntimeException("POST NOT WORKED ".concat(url).concat(" -> ").concat(body).concat("STACK:")
 					.concat(stringResponse));
@@ -1570,10 +1620,7 @@ public class Main {
 		ret.put("response", response.toString());
 		return ret; 
 	}
-	public static Map<String, Object> postHTTP(String url, Map<String, Object> body, Map<String, String>... headers) throws Exception {
-		return postHTTP("application/json", url, toJson(body),  headers);
-	}
-	public static Map<String,Object> putHTTP(String contentType, String url, String body,  Map<String, String>... headers) throws Exception {
+	public static Map<String,Object> putHTTP_DEPRECATA(String contentType, String url, String body,  Map<String, String>... headers) throws Exception {
 		//		System.out.println("POST " + url + " " + printMap(headers));
 		Map <String, Object> ret = new HashMap<>();
 		URL obj = new URL(url);
@@ -1592,7 +1639,6 @@ public class Main {
 		os.write(body.getBytes());
 		os.flush();
 		os.close();
-
 		int responseCode = postConnection.getResponseCode();
 		StringBuffer response = new StringBuffer();
 		if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -1614,8 +1660,6 @@ public class Main {
 				sfResponse.append(outputLine);
 			}
 			bfOutputResponse.close();
-
-			// print result
 			String stringResponse = sfResponse.toString();
 			throw new RuntimeException("POST NOT WORKED ".concat(url).concat(" -> ").concat(body).concat("STACK:")
 					.concat(stringResponse));
@@ -1635,13 +1679,11 @@ public class Main {
 		return sb.toString();
 	}
 
-	public static String getHTTP(String url, Map<String, String>... headers) throws Exception {
+	public static String getHTTP_DEPRECATO(String url, Map<String, String>... headers) throws Exception {
 		//		System.out.println("GET " + url + " " + printMap(headers));
 		URL obj = new URL(url);
 		HttpURLConnection getConnection = (HttpURLConnection) obj.openConnection();
 		getConnection.setRequestMethod("GET");
-		//		getConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0");
-
 		if (headers!=null && headers.length>0) {
 			Iterator<String> iterator = headers[0].keySet().iterator();
 			while (iterator.hasNext()) {
@@ -1650,10 +1692,7 @@ public class Main {
 			}
 		}
 		int responseCode = getConnection.getResponseCode();
-
 		Map<String, List<String>> headerFields = getConnection.getHeaderFields();
-		//		System.out.println(headerFields);
-
 		StringBuffer response = new StringBuffer();
 		if (responseCode == HttpURLConnection.HTTP_OK) {
 			BufferedReader in = new BufferedReader(new InputStreamReader(getConnection.getInputStream()));
@@ -1671,8 +1710,6 @@ public class Main {
 				sfResponse.append(outputLine);
 			}
 			bfOutputResponse.close();
-
-			// print result
 			String stringResponse = sfResponse.toString();
 			throw new RuntimeException("GET NOT WORKED ".concat(url).concat(" -> ").concat("STACK:")
 					.concat(stringResponse));
@@ -1704,7 +1741,7 @@ public class Main {
 		if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.LUCCICAR.name()))) giornata=constant.GIORNATA-Constant.DELTA_LUCCICAR_FG;
 		if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.JB.name()))) giornata=constant.GIORNATA-Constant.DELTA_JB_FG;
 		String url = "https://leghe.fantacalcio.it/" + lega + "/formazioni/" + giornata + "?id=" + Constant.COMP_VIVA_FG;
-		String string = Main.getHTTP(url);
+		String string = (String) Main.callHTTP("GET", "application/json; charset=UTF-8", url, null).get("response");
 		//		System.out.println(string);
 		string = string.substring(string.indexOf(".s('tmp', ")+11);
 		string=string.substring(0,string.indexOf(")"));
@@ -1722,7 +1759,7 @@ public class Main {
 			Map<String,String> headers = new HashMap<String, String>();
 			headers.put("app_key", constant.APPKEY_FG);
 			String url = "https://leghe.fantacalcio.it/servizi/V1_LegheFormazioni/Pagina?" + keyFG.get(lega);
-			String string = getHTTP(url, headers );
+			String string = (String) callHTTP("GET", "application/json; charset=UTF-8", url, null, headers ).get("response");
 			//		System.out.println(url + " <--> " +  headers + " <--> " + string);
 			Map<String, Object> jsonToMap = jsonToMap(string);
 			if (jsonToMap.get("data") == null) throw new RuntimeException("aggiornare KeyFG per " + lega);
@@ -1880,7 +1917,7 @@ public class Main {
 		bodyMap.put("password", constant.PWD_FG);
 		Map<String, String> headers=new HashMap<>();
 		headers.put("app_key", constant.APPKEY_FG_MOBILE);
-		Map<String, Object> postHTTP = postHTTP("application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/v1_utente/login",toJson(bodyMap), headers);
+		Map<String, Object> postHTTP = callHTTP("POST","application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/v1_utente/login",toJson(bodyMap), headers);
 		String response = (String) postHTTP.get("response");
 		Map<String, Object> mapResponse = jsonToMap(response);//dati del login
 		Map data = (Map) mapResponse.get("data");
@@ -1913,7 +1950,7 @@ public class Main {
 		headers.put("app_key", constant.APPKEY_FG_MOBILE);
 		headers.put("lega_token", lega_token);
 		headers.put("user_token", user_token);
-		postHTTP = postHTTP("application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/V1_LegaFormazioni/Simulatore",toJson(mapBody), headers);
+		postHTTP = callHTTP("POST","application/json; charset=UTF-8","https://appleghe.fantacalcio.it/api/v1/V1_LegaFormazioni/Simulatore",toJson(mapBody), headers);
 		response = (String) postHTTP.get("response");
 		mapResponse = jsonToMap(response);
 		List listErrorMessage = (List)mapResponse.get("error_msgs");
@@ -2282,7 +2319,7 @@ public class Main {
 				 */
 			}
 			if (cambioTag) {
-				String testoCallback = (String) getOldSnapPartite(false, sqCasa + " vs " + sqFuori).get("testo");
+				String testoCallback = visSnapPartita(new ArrayList<>(), sqCasa + " vs " + sqFuori, partita);
 				messaggio=new StringBuilder(testoCallback);
 			} else {
 				Integer oldGolCasa = (Integer) ((Map)oldPartita.get(sqCasa)).get("gol");
@@ -2379,7 +2416,7 @@ public class Main {
 		while (iterator.hasNext()) {
 			Integer integer = (Integer) iterator.next();
 			//https://www.fantacalcio.it/api/live/10?g=23&i=16 g è la giornata
-			String sqFromLive = getHTTP("https://www.fantacalcio.it/api/live/" + integer + "?g=" + constant.GIORNATA + "&i=" + Constant.I_LIVE_FANTACALCIO);
+			String sqFromLive = (String) callHTTP("GET", "application/json; charset=UTF-8", "https://www.fantacalcio.it/api/live/" + integer + "?g=" + constant.GIORNATA + "&i=" + Constant.I_LIVE_FANTACALCIO, null).get("response");
 			List<Map<String, Object>> getLiveFromFG = jsonToList(sqFromLive);
 			Live live = new Live();
 			live.setSquadra(sq.get(integer));
@@ -3585,8 +3622,7 @@ public class Main {
 		.append("</i></b>\n\n");
 		return sb;
 	}
-
-	public static Map<String, Object> getOldSnapPartite(boolean live, String partitaPuntuale) throws Exception {
+	public static Map<String, Object> getOldSnapPartite(boolean live) throws Exception {
 		Map<String, Object> ret = new LinkedHashMap<>();
 		StringBuilder sb = new StringBuilder();
 		if (oldSnapPartite.isEmpty()) {
@@ -3594,71 +3630,71 @@ public class Main {
 		}
 		List<String> sqRet=new ArrayList<>();
 		oldSnapPartite.forEach((k,partita) -> {
-			if (partitaPuntuale == null || k.equalsIgnoreCase(partitaPuntuale)) {
-				String tag = (String) partita.get("tag");
-				Integer iTag = statusMatch.get(tag);
-				if (! live || (live && (iTag==1 || iTag==2 || iTag==3))) {
-
-					String val = (String) partita.get("val");
-
-					if (tag.equalsIgnoreCase("PreMatch")) {
-						ZonedDateTime zoneDateTime = ZonedDateTime.parse(val, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC")));
-						val = zoneDateTime.format(DateTimeFormatter.ofPattern("E dd/MM/yyyy HH:mm").withZone(ZoneId.of("Europe/Rome")));
-					}
-
-
-					Map<ZonedDateTime, Map<String, String>> reti = new TreeMap<>();
-					StringBuilder risultato=new StringBuilder();
-					final String second_half_start=(String) partita.get("second_half_start");
-					partita.forEach((p, v) -> {  
-						if (!p.toString().equals("tag") && !p.toString().equals("val") && !p.toString().equals("first_half_stop") && !p.toString().equals("second_half_start")) {
-							risultato.append(((Map)v).get("gol"));
-							risultato.append(" ");
-							List<Map> r = (List<Map>) ((Map)v).get("RETI");
-							sqRet.add(p.toString());
-							for (Map map : r) {
-								String tipo = (String) map.get("tipo");
-								String goalTimestamp = (String) map.get("goalTimestamp");
-								ZonedDateTime parseZDTGoal = ZonedDateTime.parse(goalTimestamp,  DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmssZ"));
-								String minuto = (String) map.get("minuto");
-								String giocatore = (String) map.get("giocatore");
-								String squadra = p.toString();
-								Map<String, String> dati = new LinkedHashMap<>();
-								dati.put("tipo", tipo);
-								DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm:ss");
-								dati.put("goalTimestamp", parseZDTGoal.format(formatter));
-								dati.put("giocatore", giocatore);
-								dati.put("squadra", squadra);
-								ZonedDateTime parseZDTSecondHalfStart=null;
-								if (second_half_start != null) {
-									parseZDTSecondHalfStart = ZonedDateTime.parse(second_half_start,  DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssz"));
-								}
-								if (parseZDTSecondHalfStart == null || parseZDTGoal.isBefore(parseZDTSecondHalfStart)) {
-									minuto = minuto + " PT";
-								} else {
-									minuto = minuto + " ST";
-								}
-								dati.put("minuto", minuto);
-								reti.put(parseZDTGoal, dati);
-							}
-						}
-					});
-					sb.append(k + "\t" + risultato + "\n\t" + tag + " " + (val.equals("N/A")?"":val) + "\n" );
-
-					reti.forEach((minuto,dati) -> {
-						sb.append("\t" + 
-								//							dati.get("goalTimestamp") + " -- " +
-								dati.get("minuto") + " " + dati.get("squadra") + " " + dati.get("tipo") + " " + dati.get("giocatore") + "\n");
-					});
-
-					sb.append("\n");
-
-				}
+			String tag = (String) partita.get("tag");
+			Integer iTag = statusMatch.get(tag);
+			if (! live || (live && (iTag==1 || iTag==2 || iTag==3))) {
+				sb.append(visSnapPartita(sqRet, k, partita));
 			}
 		});
 		ret.put("testo", sb.toString());
 		ret.put("squadre", sqRet);
 		return ret;
+	}
+	private static String visSnapPartita(List<String> sqRet, String keyPartita, Map<String, Object> partita) {
+		StringBuilder sb=new StringBuilder();
+		String tag = (String) partita.get("tag");
+		String val = (String) partita.get("val");
+		if (tag.equalsIgnoreCase("PreMatch")) {
+			ZonedDateTime zoneDateTime = ZonedDateTime.parse(val, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC")));
+			val = zoneDateTime.format(DateTimeFormatter.ofPattern("E dd/MM/yyyy HH:mm").withZone(ZoneId.of("Europe/Rome")));
+		}
+		Map<ZonedDateTime, Map<String, String>> reti = new TreeMap<>();
+		StringBuilder risultato=new StringBuilder();
+		final String second_half_start=(String) partita.get("second_half_start");
+		StringBuilder sepGol=new StringBuilder("-");
+		partita.forEach((p, v) -> {  
+			if (!p.toString().equals("tag") && !p.toString().equals("val") && !p.toString().equals("first_half_stop") && !p.toString().equals("second_half_start")) {
+				risultato.append(((Map)v).get("gol"));
+				risultato.append(sepGol);
+				if (sepGol.toString().equals("-")) {
+					sepGol.replace(0, 1, " ");
+				} 
+				List<Map> r = (List<Map>) ((Map)v).get("RETI");
+				sqRet.add(p.toString());
+				for (Map map : r) {
+					String tipo = (String) map.get("tipo");
+					String goalTimestamp = (String) map.get("goalTimestamp");
+					ZonedDateTime parseZDTGoal = ZonedDateTime.parse(goalTimestamp,  DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmssZ"));
+					String minuto = (String) map.get("minuto");
+					String giocatore = (String) map.get("giocatore");
+					String squadra = p.toString();
+					Map<String, String> dati = new LinkedHashMap<>();
+					dati.put("tipo", tipo);
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm:ss");
+					dati.put("goalTimestamp", parseZDTGoal.format(formatter));
+					dati.put("giocatore", giocatore);
+					dati.put("squadra", squadra);
+					ZonedDateTime parseZDTSecondHalfStart=null;
+					if (second_half_start != null) {
+						parseZDTSecondHalfStart = ZonedDateTime.parse(second_half_start,  DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssz"));
+					}
+					if (parseZDTSecondHalfStart == null || parseZDTGoal.isBefore(parseZDTSecondHalfStart)) {
+						minuto = minuto + " PT";
+					} else {
+						minuto = minuto + " ST";
+					}
+					dati.put("minuto", minuto);
+					reti.put(parseZDTGoal, dati);
+				}
+			}
+		});
+		sb.append(keyPartita + "\t" + risultato + "\n\t" + tag + " " + (val.equals("N/A")?"":val) + "\n" );
+		reti.forEach((minuto,dati) -> {
+			sb.append("\t" + 
+					dati.get("minuto") + " " + dati.get("squadra") + " " + dati.get("tipo") + " " + dati.get("giocatore") + "\n");
+		});
+		sb.append("\n");
+		return sb.toString();
 	}
 	public static Map<String, String> visKeepAliveEnd() throws Exception {
 		String visKeepAlive = "N";
