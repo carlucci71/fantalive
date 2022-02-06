@@ -49,13 +49,11 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
-import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.FormElement;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
-import org.springframework.beans.BeansException;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -74,6 +72,7 @@ import com.daniele.fantalive.model.RigaNotifica;
 import com.daniele.fantalive.model.Squadra;
 import com.daniele.fantalive.repository.SalvaRepository;
 import com.daniele.fantalive.util.Constant;
+import com.daniele.fantalive.util.Constant.Campionati;
 import com.daniele.fantalive.util.ThreadSeparato;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -262,7 +261,7 @@ public class Main {
 				put(7,"Walkover");
 				put(8,"Notplayed");
 			}};
-			*/
+			 */
 			reverseStatusMatch = new HashMap();
 			for(Map.Entry<String, Integer> entry : statusMatch.entrySet()){
 				reverseStatusMatch.put(entry.getValue(), entry.getKey());
@@ -758,14 +757,14 @@ public class Main {
 		ctx.stop();
 		ctx.close();
 	}
-	
+
 	private static void mainBatch(String[] args) throws Exception {
 		Constant c=null;
 		Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
 		init(null, null, c, false);
-		Map<Integer, Float> votiAlvin = getVotiAlvin(23);
+		Map<Integer, Float> votiAlvin = getVotiAlvin(24);
 		System.out.println(votiAlvin);
 	}
 
@@ -801,23 +800,32 @@ public class Main {
 									}
 								}
 								if (isDataSource2 && isRel && nodeTR.childNodeSize()>0) {
-									voto=Float.parseFloat(nodeTR.childNode(0).toString().replace(",", "."));
+									try
+									{
+										voto=Float.parseFloat(nodeTR.childNode(0).toString().replace(",", "."));
+									}
+									catch (Exception e)
+									{
+
+									}
 								}
 							}
 						}
 					}
 				}
 			}
-			ret.put(id, voto);
+			if (voto != null) {
+				ret.put(id, voto);
+			}
 		}
 		return ret;
 	}
 	public static void main(String[] args) throws Exception {
 
-//		mainSpring(args);
+		//		mainSpring(args);
 		mainBatch(args);
-		
-		
+
+
 		/*
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
 		ZonedDateTime parse = ZonedDateTime.parse("07/11/2021 - 23:59:00 +0000", dtf);
@@ -868,6 +876,25 @@ public class Main {
 
 		Map<String, Object> ret = new HashMap<>();
 
+		if (lega.equals(aliasCampionati.get(Campionati.JB.name()))) {
+			Map<Integer, Float> votiAlvin = getVotiAlvin(Constant.GIORNATA);
+			for (Squadra squadra : squadre) {
+				for (Giocatore giocatore : squadra.getTitolari()) {
+					Float votoAlvin = votiAlvin.get(Integer.parseInt(giocatore.getId()));
+					if (votoAlvin != null) {
+						giocatore.setVoto(Double.valueOf(Float.valueOf(votoAlvin).toString()).doubleValue());
+					}
+				}
+				for (Giocatore giocatore : squadra.getRiserve()) {
+					Float votoAlvin = votiAlvin.get(giocatore.getId());
+					if (votoAlvin != null) {
+						giocatore.setVoto(Double.valueOf(Float.valueOf(votoAlvin).toString()).doubleValue());
+					}
+				}
+			}
+		}
+		
+		
 		if (sfide.equalsIgnoreCase("PARTITE")) {
 			ret = callProiezioneFG(squadre, user_token, lega_token, idComp, squadraSimulata);
 		} else {
@@ -920,7 +947,7 @@ public class Main {
 		}
 		mapBody.put("ris", "");
 		mapBody.put("teams", teams);
-		
+
 
 		headers=new HashMap<>();
 		headers.put("app_key", constant.APPKEY_FG_MOBILE);
@@ -1718,10 +1745,10 @@ public class Main {
 					if (capitano != null) {
 						String[] cap = capitano.split(";");
 						if (cap.length>0) {
-								c=cap[0];
+							c=cap[0];
 						}
 						if (cap.length>1) {
-								vc=cap[1];
+							vc=cap[1];
 						}
 					}
 					List<Map> giocatori = (List<Map>) map2.get("pl");
@@ -1842,10 +1869,10 @@ public class Main {
 
 	public static void adattaNick(String lega, List<Squadra> squadre) {
 		for (Squadra squadra : squadre) {
-				squadra.setNick(nickPlayer.get(lega + "-" + squadra.getNome()));
+			squadra.setNick(nickPlayer.get(lega + "-" + squadra.getNome()));
 		}
 	}
-	
+
 	public static Map<String, Object> simulaCambiMantra(String lega, List<String> assenti, Squadra sq) throws Exception {
 		Map<String, Object> jsonToMap;
 		Map bodyMap = new HashMap<>();
@@ -2191,10 +2218,10 @@ public class Main {
 					val = (String) s.getValue();
 				}
 				else if (s.getKey().equalsIgnoreCase("first_half_stop")) {
-					
+
 				}
 				else if (s.getKey().equalsIgnoreCase("second_half_start")) {
-					
+
 				}
 				else {
 					alSq.add(s.getKey());
@@ -2243,8 +2270,10 @@ public class Main {
 		Map<String, Object> oldPartita = oldSnapPartite.get(key);
 		StringBuilder messaggio=null;
 		if (oldPartita != null) {
+			boolean cambioTag=false;
 			String oldTag = (String) oldPartita.get("tag");
 			if (!tag.equals(oldTag)) {
+				cambioTag=true;
 				if (messaggio==null) {
 					messaggio=new StringBuilder(key + "\n");
 				}
@@ -2255,7 +2284,7 @@ public class Main {
 			Integer oldGolFuori = (Integer) ((Map)oldPartita.get(sqFuori)).get("gol");
 			Integer golCasa = (Integer) ((Map)partita.get(sqCasa)).get("gol");
 			Integer golFuori = (Integer) ((Map)partita.get(sqFuori)).get("gol");
-			if (oldGolCasa != golCasa || oldGolFuori != golFuori) {
+			if (oldGolCasa != golCasa || oldGolFuori != golFuori || cambioTag) {
 				if (messaggio==null) {
 					messaggio=new StringBuilder(key + "\n");
 				}
@@ -2669,12 +2698,12 @@ public class Main {
 				if (listaSquadre == null) {
 					listaSquadre=new ArrayList<>();
 				}
-				
+
 				String nick = nickPlayer.get(lega + "-" + partitaSimulata.getSquadra());
 				if (nick==null) {
 					nick=partitaSimulata.getSquadra().substring(0,3);
 				}
-				
+
 				listaSquadre.add(nick);
 				m.put(partitaSimulata.getNome(), listaSquadre);
 			}
@@ -3052,83 +3081,86 @@ public class Main {
 			List<String> moduliS=new ArrayList<>();
 			List<Double> totali=new ArrayList<>();
 			List<Map<String, Object>> players = new ArrayList<>();
-				for (Map<String, Object> map : l) {
-					players = (List<Map<String, Object>>) map.get("players");
-					modDif.add((Double) map.get("bmd"));
-					modCapitano.add((Double) map.get("bmcap"));
-					fp.add((Double) map.get("bmfp"));
-					fattori.add((Double) map.get("fattore"));
-					moduli.add((String) map.get("modulo"));
-					moduliS.add((String) map.get("moduloS"));
-					nomi.add((String) map.get("nome"));
-					totali.add((Double) map.get("total"));
+			for (Map<String, Object> map : l) {
+				players = (List<Map<String, Object>>) map.get("players");
+				modDif.add((Double) map.get("bmd"));
+				modCapitano.add((Double) map.get("bmcap"));
+				fp.add((Double) map.get("bmfp"));
+				fattori.add((Double) map.get("fattore"));
+				moduli.add((String) map.get("modulo"));
+				moduliS.add((String) map.get("moduloS"));
+				nomi.add((String) map.get("nome"));
+				totali.add((Double) map.get("total"));
 			}
 			String ris = (String) p.get("ris");
 			if (!ris.equals("-")) {
 				sb.append("Risultato: " + ris + "\n");
 			}
 			for (int i=0;i<nomi.size();i++) {
-				Squadra squadra=squadreFG.get(i);
-				String nome = nomi.get(i);
-				sb.append("<b>" + nome + "</b>\n");
-				sb.append("Modificatore difesa " + modDif.get(i)  + "\n");
-				sb.append("Modificatore capitano " + modCapitano.get(i)  + "\n");
-				sb.append("Fairplay " + fp.get(i)  + "\n");
-				sb.append("Fattore casa " +  fattori.get(i)  + "\n");
-				sb.append("Modulo orig " +  moduli.get(i)  + "\n");
-				sb.append("Modulo " +  moduliS.get(i)  + "\n");
-				sb.append("\n");
-				if (squadraSimulata != null) {
-					int index=0;
-					for (Map<String, Object> map2 : players) {
-						if ((Boolean)map2.get("played")) {
-							index++;
-							sb.append(index + " ");
-							sb.append("<b>" + (String)map2.get("nome") + "</b> ");
-							sb.append(map2.get("fantavoto"));
-							if ((boolean)map2.get("squadraGioca") == false) {
-								sb.append("*");
-							}
-							sb.append(" ");
-							List<Integer> bm=(List<Integer>) map2.get("bm");
-							for (Integer integer : bm) {
-								sb.append( desEvento(integer, campionatoFG) + " ");
-																
-							}
-							if ((double)map2.get("malus") != 0) {
-								sb.append(" MALUS: " + map2.get("malus"));
+				for (Squadra squadra : squadreFG) {
+					String nome = nomi.get(i);
+					if (squadra.getNome().equals(nome)) {
+						sb.append("<b>" + nome + "</b>\n");
+						sb.append("Modificatore difesa " + modDif.get(i)  + "\n");
+						sb.append("Modificatore capitano " + modCapitano.get(i)  + "\n");
+						sb.append("Fairplay " + fp.get(i)  + "\n");
+						sb.append("Fattore casa " +  fattori.get(i)  + "\n");
+						sb.append("Modulo orig " +  moduli.get(i)  + "\n");
+						sb.append("Modulo " +  moduliS.get(i)  + "\n");
+						sb.append("\n");
+						if (squadraSimulata != null) {
+							int index=0;
+							for (Map<String, Object> map2 : players) {
+								if ((Boolean)map2.get("played")) {
+									index++;
+									sb.append(index + " ");
+									sb.append("<b>" + (String)map2.get("nome") + "</b> ");
+									sb.append(map2.get("fantavoto"));
+									if ((boolean)map2.get("squadraGioca") == false) {
+										sb.append("*");
+									}
+									sb.append(" ");
+									List<Integer> bm=(List<Integer>) map2.get("bm");
+									for (Integer integer : bm) {
+										sb.append( desEvento(integer, campionatoFG) + " ");
+
+									}
+									if ((double)map2.get("malus") != 0) {
+										sb.append(" MALUS: " + map2.get("malus"));
+									}
+									sb.append("\n");
+								}
 							}
 							sb.append("\n");
 						}
+						sb.append("Titolari");
+						sb.append("\n");
+						sb.append("Giocatori con voto: ");
+						sb.append(squadra.getContaTitolari());
+						sb.append("\n");
+						sb.append("Media votati: ");
+						sb.append(squadra.getMediaTitolari());
+						sb.append("\n");
+						sb.append("Ancora da giocare: ");
+						sb.append(squadra.getContaSquadraTitolariNonGioca());
+						sb.append("\n");
+						sb.append("Totale: ");
+						sb.append(squadra.getTotaleTitolari());
+						sb.append("\n");
+						sb.append("\n");
+						sb.append("Riserve");
+						sb.append("\n");
+						sb.append("Giocatori con voto: ");
+						sb.append(squadra.getContaRiserve());
+						sb.append("\n");
+						sb.append("Ancora da giocare: ");
+						sb.append(squadra.getContaSquadraRiserveNonGioca());
+						sb.append("\n\n");
+						sb.append("Proiezione --> <b><i>");
+						sb.append(totali.get(i));
+						sb.append("</i></b>\n\n");
 					}
-					sb.append("\n");
 				}
-				sb.append("Titolari");
-				sb.append("\n");
-				sb.append("Giocatori con voto: ");
-				sb.append(squadra.getContaTitolari());
-				sb.append("\n");
-				sb.append("Media votati: ");
-				sb.append(squadra.getMediaTitolari());
-				sb.append("\n");
-				sb.append("Ancora da giocare: ");
-				sb.append(squadra.getContaSquadraTitolariNonGioca());
-				sb.append("\n");
-				sb.append("Totale: ");
-				sb.append(squadra.getTotaleTitolari());
-				sb.append("\n");
-				sb.append("\n");
-				sb.append("Riserve");
-				sb.append("\n");
-				sb.append("Giocatori con voto: ");
-				sb.append(squadra.getContaRiserve());
-				sb.append("\n");
-				sb.append("Ancora da giocare: ");
-				sb.append(squadra.getContaSquadraRiserveNonGioca());
-				sb.append("\n\n");
-				sb.append("Proiezione --> <b><i>");
-				sb.append(totali.get(i));
-				sb.append("</i></b>\n\n");
 			}
 		}
 		ret.put("testo", sb.toString());
@@ -3143,10 +3175,10 @@ public class Main {
 			Return return1 = go.get(campionato);
 			StringBuilder testo = new StringBuilder();
 			List<Squadra> squadre = return1.getSquadre();
-			if (return1.getTipo().equalsIgnoreCase("FANTAGAZZETTA")) {
+			if (return1.getTipo().equalsIgnoreCase("FANTAGAZZETTA") && !nomePartitaSimulata.equals("-")) {
 				/******/ //TODO
 				Map<String, Object> partitaSimulata = getPartitaSimulata(chatId,nomePartitaSimulata,squadra);
-//				System.out.println(toJson(partitaSimulata.get("testo")));
+				//				System.out.println(toJson(partitaSimulata.get("testo")));
 				/*
 				testo
 				.append("\n<b>")
@@ -3186,13 +3218,13 @@ public class Main {
 				.append("Proiezione --> <b><i>")
 				.append(casa.equalsIgnoreCase("S")?sq.getProiezione()+2 + "(*)":sq.getProiezione())
 				.append("</i></b>\n\n");
-				
+
 				if(chatId.intValue() == Constant.CHAT_ID_FANTALIVE.intValue()) {
 					testo
 					.append("\n")
 					.append(Main.getUrlNotifica());
 				}		
-				*/
+				 */
 				testo = new StringBuilder(partitaSimulata.get("testo").toString()) ;
 				return testo.toString(); 
 			}
@@ -3366,19 +3398,19 @@ public class Main {
 		String[] evento = Main.eventi.get(ev);
 		String iconaEvento = evento[6];
 		String ret = " " + iconaEvento + " " + evento[0];
-		String valEvento = valEvento(evento,r);
-		if (!"0".equals(valEvento)) {
+		Double valEvento = valEvento(evento,r);
+		if (!valEvento.equals(new Double(0))) {
 			ret = ret + " (" + valEvento + ") "; 
 		}
 		return ret;
 	}
-	private static String valEvento(String[] evento,String r){
+	private static Double valEvento(String[] evento,String r){
 		int pos=0;
 		if (r.equals(Constant.Campionati.FANTAVIVA.name())) pos=1;
 		if (r.equals(Constant.Campionati.LUCCICAR.name())) pos=2;
 		if (r.equals(Constant.Campionati.BE.name())) pos=3;
 		if (r.equals(Constant.Campionati.JB.name())) pos=4;
-		return evento[pos];
+		return Double.parseDouble(evento[pos]);
 	}
 
 	public static Set<String> getElencoGiocatori(String filtro) throws Exception {
@@ -3608,7 +3640,7 @@ public class Main {
 
 				reti.forEach((minuto,dati) -> {
 					sb.append("\t" + 
-//							dati.get("goalTimestamp") + " -- " +
+							//							dati.get("goalTimestamp") + " -- " +
 							dati.get("minuto") + " " + dati.get("squadra") + " " + dati.get("tipo") + " " + dati.get("giocatore") + "\n");
 				});
 

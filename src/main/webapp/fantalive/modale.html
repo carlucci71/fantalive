@@ -43,20 +43,23 @@
 		</tr>
 		<tr align=center>
 			<td></td>
-			<td ng-repeat="team in pc.data.teams"><span
-				ng-repeat="pl  in team.players | filter:{ played: true }">
-					{{$index+1}} 
-					<label>{{pl.nome}}</label> 
-					<!-- -{{pl.id}} -->
+			<td ng-repeat="team in pc.data.teams" style="vertical-align:top">
+				<span ng-repeat="pl  in team.players "> 
+					<label ng-show="pl.played">{{pl.nome}}</label> 
+					<strike ng-show="!pl.played">{{pl.nome}}</strike> 
 					<img style="width: 20px;" ng-src="./ico/capitano.png" ng-show="pl.capitano"></img>
 					<img style="width: 20px;" ng-src="./ico/vicecapitano.jpg" ng-show="pl.viceCapitano"></img>
-					{{pl.fantavoto}} <span
-					ng-hide="pl.squadraGioca">*</span> <span
-					ng-repeat="bonusmalus in pl.bm track by $index"> <img
-						style="width: 20px;" ng-src="./ico/{{bonusmalus}}.png" />
-				</span> <span ng-show="pl.malus != 0">malus <label>{{pl.malus}}</label>
-				</span> <br>
-			</span></td>
+					<span ng-show="pl.played">
+						{{pl.fantavoto}} 
+						<span ng-hide="pl.squadraGioca">*</span> 
+						<span ng-repeat="bonusmalus in pl.bm track by $index"> 
+							<img style="width: 20px;" ng-src="./ico/{{bonusmalus}}.png" />
+						</span> 
+					<span ng-show="pl.malus != 0">malus <label>{{pl.malus}}</label></span> 
+					</span> 
+					<br>
+				</span>
+			</td>
 		</tr>
 
 	</table>
