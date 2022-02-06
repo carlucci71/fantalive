@@ -893,8 +893,8 @@ public class Main {
 				}
 			}
 		}
-		
-		
+
+
 		if (sfide.equalsIgnoreCase("PARTITE")) {
 			ret = callProiezioneFG(squadre, user_token, lega_token, idComp, squadraSimulata);
 		} else {
@@ -2264,7 +2264,7 @@ public class Main {
 		return ret;
 	}
 
-	private static void generaNotificheRisultati(Map<String, Object> partita, String tag, String sqCasa, String sqFuori) {
+	private static void generaNotificheRisultati(Map<String, Object> partita, String tag, String sqCasa, String sqFuori) throws Exception {
 		String key = sqCasa + " vs " + sqFuori;
 		//confronta con oldSnapPartite
 		Map<String, Object> oldPartita = oldSnapPartite.get(key);
@@ -2274,74 +2274,80 @@ public class Main {
 			String oldTag = (String) oldPartita.get("tag");
 			if (!tag.equals(oldTag)) {
 				cambioTag=true;
+				/*
 				if (messaggio==null) {
 					messaggio=new StringBuilder(key + "\n");
 				}
 				messaggio.append(tag + "\n");
+				 */
 			}
-
-			Integer oldGolCasa = (Integer) ((Map)oldPartita.get(sqCasa)).get("gol");
-			Integer oldGolFuori = (Integer) ((Map)oldPartita.get(sqFuori)).get("gol");
-			Integer golCasa = (Integer) ((Map)partita.get(sqCasa)).get("gol");
-			Integer golFuori = (Integer) ((Map)partita.get(sqFuori)).get("gol");
-			if (oldGolCasa != golCasa || oldGolFuori != golFuori || cambioTag) {
-				if (messaggio==null) {
-					messaggio=new StringBuilder(key + "\n");
-				}
-				messaggio.append("Risultato:" + golCasa + "-" + golFuori + "\n");
-			}
-
-			List<Map> oldRetiCasa = (List<Map>) ((Map)oldPartita.get(sqCasa)).get("RETI");
-			List<Map> retiCasa = (List<Map>) ((Map)partita.get(sqCasa)).get("RETI");
-			if (oldRetiCasa.size()>retiCasa.size()) {
-				if (messaggio==null) {
-					messaggio=new StringBuilder(key + "\n");
-				}
-				messaggio.append("Correzione reti per " + sqCasa + ": " + logReti(retiCasa) + "\n");
-			}
-			for (int i=0;i<retiCasa.size();i++) {
-				Map mapRetiCasa = retiCasa.get(i);
-				if (oldRetiCasa.size() > i) {
-					Map mapOldRetiCasa = oldRetiCasa.get(i);
-					if (!mapRetiCasa.get("tipo").equals(mapOldRetiCasa.get("tipo")) || !mapRetiCasa.get("minuto").equals(mapOldRetiCasa.get("minuto"))
-							|| !mapRetiCasa.get("giocatore").equals(mapOldRetiCasa.get("giocatore"))) {
-						if (messaggio==null) {
-							messaggio=new StringBuilder(key + "\n");
-						}
-						messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", sqCasa,logRete(mapOldRetiCasa), logRete(mapRetiCasa)));
-					}
-				} else {
+			if (cambioTag) {
+				String testoCallback = (String) getOldSnapPartite(false, sqCasa + " vs " + sqFuori).get("testo");
+				messaggio=new StringBuilder(testoCallback);
+			} else {
+				Integer oldGolCasa = (Integer) ((Map)oldPartita.get(sqCasa)).get("gol");
+				Integer oldGolFuori = (Integer) ((Map)oldPartita.get(sqFuori)).get("gol");
+				Integer golCasa = (Integer) ((Map)partita.get(sqCasa)).get("gol");
+				Integer golFuori = (Integer) ((Map)partita.get(sqFuori)).get("gol");
+				if (oldGolCasa != golCasa || oldGolFuori != golFuori) {
 					if (messaggio==null) {
 						messaggio=new StringBuilder(key + "\n");
 					}
-					messaggio.append(logRete(mapRetiCasa));
+					messaggio.append("Risultato:" + golCasa + "-" + golFuori + "\n");
 				}
-			}
 
-			List<Map> oldRetiFuori = (List<Map>) ((Map)oldPartita.get(sqFuori)).get("RETI");
-			List<Map> retiFuori = (List<Map>) ((Map)partita.get(sqFuori)).get("RETI");
-			if (oldRetiFuori.size()>retiFuori.size()) {
-				if (messaggio==null) {
-					messaggio=new StringBuilder(key + "\n");
-				}
-				messaggio.append("Correzione reti per " + sqFuori + ": " + logReti(retiFuori) + "\n");
-			}
-			for (int i=0;i<retiFuori.size();i++) {
-				Map mapRetiFuori = retiFuori.get(i);
-				if (oldRetiFuori.size() > i) {
-					Map mapOldRetiFuori = oldRetiFuori.get(i);
-					if (!mapRetiFuori.get("tipo").equals(mapOldRetiFuori.get("tipo")) || !mapRetiFuori.get("minuto").equals(mapOldRetiFuori.get("minuto"))
-							|| !mapRetiFuori.get("giocatore").equals(mapOldRetiFuori.get("giocatore"))) {
-						if (messaggio==null) {
-							messaggio=new StringBuilder(key + "\n");
-						}
-						messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", sqCasa,logRete(mapOldRetiFuori), logRete(mapRetiFuori)));
-					}
-				} else {
+				List<Map> oldRetiCasa = (List<Map>) ((Map)oldPartita.get(sqCasa)).get("RETI");
+				List<Map> retiCasa = (List<Map>) ((Map)partita.get(sqCasa)).get("RETI");
+				if (oldRetiCasa.size()>retiCasa.size()) {
 					if (messaggio==null) {
 						messaggio=new StringBuilder(key + "\n");
 					}
-					messaggio.append(logRete(mapRetiFuori));
+					messaggio.append("Correzione reti per " + sqCasa + ": " + logReti(retiCasa) + "\n");
+				}
+				for (int i=0;i<retiCasa.size();i++) {
+					Map mapRetiCasa = retiCasa.get(i);
+					if (oldRetiCasa.size() > i) {
+						Map mapOldRetiCasa = oldRetiCasa.get(i);
+						if (!mapRetiCasa.get("tipo").equals(mapOldRetiCasa.get("tipo")) || !mapRetiCasa.get("minuto").equals(mapOldRetiCasa.get("minuto"))
+								|| !mapRetiCasa.get("giocatore").equals(mapOldRetiCasa.get("giocatore"))) {
+							if (messaggio==null) {
+								messaggio=new StringBuilder(key + "\n");
+							}
+							messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", sqCasa,logRete(mapOldRetiCasa), logRete(mapRetiCasa)));
+						}
+					} else {
+						if (messaggio==null) {
+							messaggio=new StringBuilder(key + "\n");
+						}
+						messaggio.append(logRete(mapRetiCasa));
+					}
+				}
+
+				List<Map> oldRetiFuori = (List<Map>) ((Map)oldPartita.get(sqFuori)).get("RETI");
+				List<Map> retiFuori = (List<Map>) ((Map)partita.get(sqFuori)).get("RETI");
+				if (oldRetiFuori.size()>retiFuori.size()) {
+					if (messaggio==null) {
+						messaggio=new StringBuilder(key + "\n");
+					}
+					messaggio.append("Correzione reti per " + sqFuori + ": " + logReti(retiFuori) + "\n");
+				}
+				for (int i=0;i<retiFuori.size();i++) {
+					Map mapRetiFuori = retiFuori.get(i);
+					if (oldRetiFuori.size() > i) {
+						Map mapOldRetiFuori = oldRetiFuori.get(i);
+						if (!mapRetiFuori.get("tipo").equals(mapOldRetiFuori.get("tipo")) || !mapRetiFuori.get("minuto").equals(mapOldRetiFuori.get("minuto"))
+								|| !mapRetiFuori.get("giocatore").equals(mapOldRetiFuori.get("giocatore"))) {
+							if (messaggio==null) {
+								messaggio=new StringBuilder(key + "\n");
+							}
+							messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", sqCasa,logRete(mapOldRetiFuori), logRete(mapRetiFuori)));
+						}
+					} else {
+						if (messaggio==null) {
+							messaggio=new StringBuilder(key + "\n");
+						}
+						messaggio.append(logRete(mapRetiFuori));
+					}
 				}
 			}
 			if (messaggio != null) {
@@ -3580,7 +3586,7 @@ public class Main {
 		return sb;
 	}
 
-	public static Map<String, Object> getOldSnapPartite(boolean live) throws Exception {
+	public static Map<String, Object> getOldSnapPartite(boolean live, String partitaPuntuale) throws Exception {
 		Map<String, Object> ret = new LinkedHashMap<>();
 		StringBuilder sb = new StringBuilder();
 		if (oldSnapPartite.isEmpty()) {
@@ -3588,64 +3594,66 @@ public class Main {
 		}
 		List<String> sqRet=new ArrayList<>();
 		oldSnapPartite.forEach((k,partita) -> {
-			String tag = (String) partita.get("tag");
-			Integer iTag = statusMatch.get(tag);
-			if (! live || (live && (iTag==1 || iTag==2 || iTag==3))) {
+			if (partitaPuntuale == null || k.equalsIgnoreCase(partitaPuntuale)) {
+				String tag = (String) partita.get("tag");
+				Integer iTag = statusMatch.get(tag);
+				if (! live || (live && (iTag==1 || iTag==2 || iTag==3))) {
 
-				String val = (String) partita.get("val");
+					String val = (String) partita.get("val");
 
-				if (tag.equalsIgnoreCase("PreMatch")) {
-					ZonedDateTime zoneDateTime = ZonedDateTime.parse(val, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC")));
-					val = zoneDateTime.format(DateTimeFormatter.ofPattern("E dd/MM/yyyy HH:mm").withZone(ZoneId.of("Europe/Rome")));
-				}
-
-
-				Map<ZonedDateTime, Map<String, String>> reti = new TreeMap<>();
-				StringBuilder risultato=new StringBuilder();
-				final String second_half_start=(String) partita.get("second_half_start");
-				partita.forEach((p, v) -> {  
-					if (!p.toString().equals("tag") && !p.toString().equals("val") && !p.toString().equals("first_half_stop") && !p.toString().equals("second_half_start")) {
-						risultato.append(((Map)v).get("gol"));
-						risultato.append(" ");
-						List<Map> r = (List<Map>) ((Map)v).get("RETI");
-						sqRet.add(p.toString());
-						for (Map map : r) {
-							String tipo = (String) map.get("tipo");
-							String goalTimestamp = (String) map.get("goalTimestamp");
-							ZonedDateTime parseZDTGoal = ZonedDateTime.parse(goalTimestamp,  DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmssZ"));
-							String minuto = (String) map.get("minuto");
-							String giocatore = (String) map.get("giocatore");
-							String squadra = p.toString();
-							Map<String, String> dati = new LinkedHashMap<>();
-							dati.put("tipo", tipo);
-							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm:ss");
-							dati.put("goalTimestamp", parseZDTGoal.format(formatter));
-							dati.put("giocatore", giocatore);
-							dati.put("squadra", squadra);
-							ZonedDateTime parseZDTSecondHalfStart=null;
-							if (second_half_start != null) {
-								parseZDTSecondHalfStart = ZonedDateTime.parse(second_half_start,  DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssz"));
-							}
-							if (parseZDTSecondHalfStart == null || parseZDTGoal.isBefore(parseZDTSecondHalfStart)) {
-								minuto = minuto + " PT";
-							} else {
-								minuto = minuto + " ST";
-							}
-							dati.put("minuto", minuto);
-							reti.put(parseZDTGoal, dati);
-						}
+					if (tag.equalsIgnoreCase("PreMatch")) {
+						ZonedDateTime zoneDateTime = ZonedDateTime.parse(val, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC")));
+						val = zoneDateTime.format(DateTimeFormatter.ofPattern("E dd/MM/yyyy HH:mm").withZone(ZoneId.of("Europe/Rome")));
 					}
-				});
-				sb.append(k + "\t" + risultato + "\n\t" + tag + " " + (val.equals("N/A")?"":val) + "\n" );
 
-				reti.forEach((minuto,dati) -> {
-					sb.append("\t" + 
-							//							dati.get("goalTimestamp") + " -- " +
-							dati.get("minuto") + " " + dati.get("squadra") + " " + dati.get("tipo") + " " + dati.get("giocatore") + "\n");
-				});
 
-				sb.append("\n");
+					Map<ZonedDateTime, Map<String, String>> reti = new TreeMap<>();
+					StringBuilder risultato=new StringBuilder();
+					final String second_half_start=(String) partita.get("second_half_start");
+					partita.forEach((p, v) -> {  
+						if (!p.toString().equals("tag") && !p.toString().equals("val") && !p.toString().equals("first_half_stop") && !p.toString().equals("second_half_start")) {
+							risultato.append(((Map)v).get("gol"));
+							risultato.append(" ");
+							List<Map> r = (List<Map>) ((Map)v).get("RETI");
+							sqRet.add(p.toString());
+							for (Map map : r) {
+								String tipo = (String) map.get("tipo");
+								String goalTimestamp = (String) map.get("goalTimestamp");
+								ZonedDateTime parseZDTGoal = ZonedDateTime.parse(goalTimestamp,  DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmssZ"));
+								String minuto = (String) map.get("minuto");
+								String giocatore = (String) map.get("giocatore");
+								String squadra = p.toString();
+								Map<String, String> dati = new LinkedHashMap<>();
+								dati.put("tipo", tipo);
+								DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm:ss");
+								dati.put("goalTimestamp", parseZDTGoal.format(formatter));
+								dati.put("giocatore", giocatore);
+								dati.put("squadra", squadra);
+								ZonedDateTime parseZDTSecondHalfStart=null;
+								if (second_half_start != null) {
+									parseZDTSecondHalfStart = ZonedDateTime.parse(second_half_start,  DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssz"));
+								}
+								if (parseZDTSecondHalfStart == null || parseZDTGoal.isBefore(parseZDTSecondHalfStart)) {
+									minuto = minuto + " PT";
+								} else {
+									minuto = minuto + " ST";
+								}
+								dati.put("minuto", minuto);
+								reti.put(parseZDTGoal, dati);
+							}
+						}
+					});
+					sb.append(k + "\t" + risultato + "\n\t" + tag + " " + (val.equals("N/A")?"":val) + "\n" );
 
+					reti.forEach((minuto,dati) -> {
+						sb.append("\t" + 
+								//							dati.get("goalTimestamp") + " -- " +
+								dati.get("minuto") + " " + dati.get("squadra") + " " + dati.get("tipo") + " " + dati.get("giocatore") + "\n");
+					});
+
+					sb.append("\n");
+
+				}
 			}
 		});
 		ret.put("testo", sb.toString());

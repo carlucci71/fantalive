@@ -37,12 +37,12 @@ live - risultati live ultima giornata
 				String text = update.getMessage().getText();
 				if(update.getMessage().hasText()){
 					if(text.equals("/risultati")){
-						Map<String, Object> oldSnapPartite = Main.getOldSnapPartite(false);
+						Map<String, Object> oldSnapPartite = Main.getOldSnapPartite(false, null);
 						String testoCallback = (String) oldSnapPartite.get("testo");
 						execute(creaSendMessage(chatId, testoCallback , false, (List<String>) oldSnapPartite.get("squadre")));
 					}
 					else if(text.equals("/live")){
-						Map<String, Object> oldSnapPartite = Main.getOldSnapPartite(true);
+						Map<String, Object> oldSnapPartite = Main.getOldSnapPartite(true, null);
 						List<String> listSq = (List<String>) oldSnapPartite.get("squadre");
 						if (listSq.size()>0) {
 							String testoCallback = (String) oldSnapPartite.get("testo");
@@ -161,7 +161,7 @@ live - risultati live ultima giornata
 			e.printStackTrace(System.out);
 		}
 		Main.init(null,null,c, false);
-		String testoCallback = (String) Main.getOldSnapPartite(true).get("testo");
+		String testoCallback = (String) Main.getOldSnapPartite(true, null).get("testo");
 		System.out.println(testoCallback);
 		System.err.println("FINE");
 	}
