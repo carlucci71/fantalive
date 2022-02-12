@@ -1,4 +1,14 @@
+modificatore difesa e attacco di FS da calcolare e non recuperare
 url in constant
+voti FS --> modificatori
+pulsante simulazioni FS in html
 in test fare preparaSquadre
 log4j
 Whatsapp verso Telegram 
+
+
+cmd come admin
+cd C:\Program Files\Eclipse Adoptium\jdk-8.0.312.7-hotspot\jre\lib\security
+keytool -list -v -keystore cacerts  > C:\1\jc.txt   (password changeit)
+download /1/fs.cer
+keytool -import -alias fs -keystore  cacerts -file /1/fs.cer

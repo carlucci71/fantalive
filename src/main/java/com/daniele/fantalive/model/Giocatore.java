@@ -99,7 +99,8 @@ public class Giocatore {
 				+ " esce=" + esce
 				+ " modificatori=" + modificatori  
 				+ " modificatore=" + modificatore + ", FM=" + (modificatore + voto)
-				+ " orario=" + orario + " cambio=" + cambio + " idGioc=" + idGioc; 
+				+ " orario=" + orario + " cambio=" + cambio + " idGioc=" + idGioc
+				+ " numGol=" + numGol ;
 	}
 	public boolean isSquadraGioca() {
 		return squadraGioca;

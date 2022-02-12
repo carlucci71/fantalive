@@ -26,9 +26,8 @@ import com.daniele.fantalive.repository.SalvaRepository;
 
 public class CalcolaPartita {
 	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 150;
-	private static final boolean RICARICA_FROM_FS=false;
+	private static final boolean RECUPERA_FROM_DB=true;
 	private static final boolean USA_SPRING=false;
-	private static final int ICASA=2;
 	private static final String PARTITE = "Partite";
 	private static final String PUNTEGGI = "Punteggi";
 	private static final String PUNTI = "Punti";
@@ -56,7 +55,7 @@ public class CalcolaPartita {
 			Iterator<Integer> iterator = Main.sq.keySet().iterator();
 			while (iterator.hasNext()) {
 				Integer integer = (Integer) iterator.next();
-				String sqFromLive = (String) Main.callHTTP("GET", "application/json; charset=UTF-8", "https://www.fantacalcio.it/api/live/" + integer + "?g=" + i + "&i=" + Constant.I_LIVE_FANTACALCIO, null).get("response");
+				String sqFromLive = (String) Main.callHTTP("GET", "application/json; charset=UTF-8", String.format(Constant.URL_LIVE_FG,integer, i, Constant.I_LIVE_FANTACALCIO), null).get("response");
 				List<Map<String, Object>> jsonToList = Main.jsonToList(sqFromLive);
 				for (Map<String, Object> map : jsonToList) {
 					nomiFG.add(map.get("nome") + "@" + Main.sq.get(integer));
@@ -73,30 +72,12 @@ public class CalcolaPartita {
 		System.out.println("-------------------------");
 		for (String nome : nomiFS) {
 			String[] split = nome.split("@");
-			String nomeFromFG = getNomeFromFG(split[0], nomiFG);
+			String nomeFromFG = Main.getNomeFromFG(split[0], nomiFG);
 			System.out.println(nome + "@" + nomeFromFG);
 		}
 		System.out.println("-------------------------");
 	}
 	
-	private String getNomeFromFG(String nomeFS, Set<String> nomiFG) {
-		if (nomeFS.equalsIgnoreCase("Spinazzola "))
-		{
-//			System.out.println();
-		}
-		String ret=null;
-		for (String nomeFG : nomiFG) {
-			String[] split = nomeFG.split("@");
-//			System.out.println(split[0].substring(0,split[0].lastIndexOf(" ")).replaceAll(" ", "")); //.equalsIgnoreCase(nomeGiocatoreLive.replaceAll(" ", "")))	
-			String nomeFindFS = nomeFS.substring(0,nomeFS.lastIndexOf(" ")).replaceAll(" ", "");
-			String nomeFindFG = split[0].replaceAll(" ", "");
-			if (nomeFindFS.equalsIgnoreCase(nomeFindFG))
-			{
-				ret = nomeFG;
-			}
-		}
-		return ret;
-	}
 	
 	private static boolean ePari(int numero) {
 		if ((numero % 2) == 0) {
@@ -194,38 +175,22 @@ public class CalcolaPartita {
 
 				//			System.err.println("***************:" + ggDaCalcolare);
 				String tokenNomeFile = "STORICO_" + ggDaCalcolare  + "_";
-				if (RICARICA_FROM_FS) {
+				if (!RECUPERA_FROM_DB) {
 					Main.scaricaBe(ggDaCalcolare + Constant.DELTA_FS,tokenNomeFile);
 				}
 				List<Squadra> squadre = Main.getSquadreFromFS(tokenNomeFile,false, true);
 				for (Squadra squadra : squadre) {
-					List<Giocatore> titolari = squadra.getTitolari();
 					List<Giocatore> riserve = squadra.getRiserve();
-					List<Giocatore> nuoviTitolari = new ArrayList<>();
+					List<Giocatore> titolari = squadra.getTitolari();
 					for (Giocatore titolare : titolari) {
 						nomiFS.add(titolare.getNome() + "@" + titolare.getSquadra());
-						if (titolare.isEsce()) {
-							Giocatore r = null;
-							for (Giocatore riserva : riserve) {
-								nomiFS.add(riserva.getNome() + "@" + riserva.getSquadra());
-								if (riserva.isEntra() && titolare.getRuolo().equalsIgnoreCase(riserva.getRuolo())) {
-									if (r==null)  {
-										nuoviTitolari.add(riserva);
-										r=riserva;
-									}
-								}
-							}
-							if (r != null) {
-								riserve.remove(r);
-								riserve.add(titolare);
-							}
-						} else {
-							nuoviTitolari.add(titolare);
-						}
 					}
-					squadra.setTitolariOriginali(titolari);
-					squadra.setTitolari(nuoviTitolari);
+					for (Giocatore riserva : riserve) {
+						nomiFS.add(riserva.getNome() + "@" + riserva.getSquadra());
+					}
+					
 				}
+				Main.applicaCambi(squadre);
 				//			System.err.println("*********************");
 				//			System.err.println(squadre);
 				//			System.err.println("*********************");
@@ -250,73 +215,10 @@ public class CalcolaPartita {
 							if (!hs.contains(k)) continue;
 						}
 						if (!nome1.equals(nome2)){
-							if (nome1.startsWith("Jonny") && nome2.startsWith("C.") && ggDaCalcolare==2) {
-								//							System.out.println();
-							}
-							squadra1.setModificatoreDifesa(squadra2.getModificatoreDifesaDaAssegnare());
-							squadra2.setModificatoreDifesa(squadra1.getModificatoreDifesaDaAssegnare());
-							calcolaModificatoreCentrocampo(squadra1, squadra2);
-							int iGolCasa = getGol(squadra1.getTotale()+ICASA);
-							int iGolTrasferta = getGol(squadra2.getTotale());
-							if (iGolCasa > 0 && iGolCasa == iGolTrasferta && ( Math.abs(squadra1.getTotale() +ICASA - squadra2.getTotale()) >= 4))//FIXME BUG
-							{
-								/*
-						Scarto stessa fascia 4
-						Il valore numerico di questo fattore � pari a 4 punti. Si applica nella seguente maniera: se i punteggi delle due squadre si trovano nella stessa fascia di gol,
-						 affinch� chi ha totalizzato il punteggio pi� alto vinca la partita � necessario che lo scarto tra i punteggi sia maggiore o uguale allo "scarto stessa fascia". In tal caso viene assegnato un gol in pi� alla squadra con punteggio pi� alto. In caso contrario la partita finisce in pareggio.
-						Esempi:
-						66 - 71. Entrambe i punteggi ricadono nella fascia di 1 gol. Con le fasce rigide la partita finirebbe 1-1. Utilizzando il fattore in questione, poich� lo scarto dei punteggi � pari a 5 >= 4 (scarto stessa fascia), la partita finisce 1-2.
-						67 - 70. Entrambe i punteggi ricadono nella fascia di 1 gol. Con le fasce rigide la partita finirebbe 1-1. Anche utilizzando il fattore in questione, poich� lo scarto dei punteggi � pari a 3 <= 4 (scarto stessa fascia), la partita finisce 1-1.
-								 */		
-								if (squadra1.getTotale() + ICASA > squadra2.getTotale())
-								{
-									iGolCasa++;
-								}
-								else
-								{
-									iGolTrasferta++;
-								}
-							}
-
-							if (iGolCasa != iGolTrasferta && ( Math.abs(squadra1.getTotale() + ICASA - squadra2.getTotale()) <= 1))
-							{
-								/*
-						Scarto fasce diverse 1
-						Il valore numerico di questo fattore � pari a 3 punti. Si applica nella seguente maniera: se i punteggi delle due squadre si trovano in fasce diverse di gol, 
-						affinch� chi ha totalizzato il punteggio pi� alto vinca la partita � necessario che lo scarto tra i punteggi sia maggiore o uguale allo "scarto fasce diverse". 
-						Se � minore la partita finisce in pareggio assegnando un gol in pi� alla squadra con punteggio pi� basso.
-						Esempi:
-						71 - 73. Il primo punteggio ricade nella fascia di 1 gol. Il secondo ricade nella fascia dei 2 gol. Con le fasce rigide la partita finirebbe 1-2. Utilizzando il fattore in questione, poich� lo scarto dei punteggi � pari solo a 2 <= 3 (scarto fasce diverse), la partita finisce 2-2.
-						70 - 73. Il primo punteggio ricade nella fascia di 1 gol. Il secondo ricade nella fascia dei 2 gol. Con le fasce rigide la partita finirebbe 1-2. Anche utilizzando il fattore in questione, poich� lo scarto dei punteggi � pari solo a 3 >= 3 (scarto fasce diverse), la partita finisce comunque 1-2.		 
-								 */
-								if (squadra1.getTotale() + ICASA < squadra2.getTotale())
-								{
-									iGolCasa++;
-								}
-								else
-								{
-									iGolTrasferta++;
-								}
-							}
-							/*
-						System.err.println(
-								"Giornata: " + ggDaCalcolare + "\n"
-								+ nome1 + " --> " + iGolCasa + "\n"
-//								+ "\tTot: " + new BigDecimal(squadra1.getTotale(), MathContext.DECIMAL128).setScale(2,BigDecimal.ROUND_HALF_UP).add(new BigDecimal(ICASA)) + "\n" 
-//								+ "\tMod Difesa: " + squadra1.getModificatoreDifesa() + "\n" 
-//								+ "\tMod Centrocampo: " + squadra1.getModificatoreCentrocampo() + "\n" 
-//								+ "\tMod Attacco: " + squadra1.getModificatoreAttacco() + "\n" 
-//								+ "\tMalus formazione automatica: " + squadra1.getMalusFormazioneAutomatica() + "\n" 
-								+ nome2 + " --> " + iGolTrasferta + "\n"
-//								+ "\tTot: " + new BigDecimal(squadra2.getTotale(), MathContext.DECIMAL128).setScale(2,BigDecimal.ROUND_HALF_UP).add(new BigDecimal("0")) + "\n"
-//								+ "\tMod Difesa: " + squadra2.getModificatoreDifesa() + "\n" 
-//								+ "\tMod Centrocampo: " + squadra2.getModificatoreCentrocampo() + "\n" 
-//								+ "\tMod Attacco: " + squadra2.getModificatoreAttacco() + "\n" 
-//								+ "\tMalus formazione automatica: " + squadra2.getMalusFormazioneAutomatica() + "\n" 
-								);
-						;
-							 */
-							System.err.println(k+"\t" + iGolCasa +"\t" + iGolTrasferta );
+							Main.calcolaScontro(squadra1,squadra2, ggDaCalcolare);
+							int iGolCasa=squadra1.getGolSimulazione();
+							int iGolTrasferta=squadra2.getGolSimulazione();
+							System.err.println(Integer.toString(ggDaCalcolare) + "\t" + nome1 + "\t" + nome2+"\t" + iGolCasa +"\t" + iGolTrasferta );
 							if (iGolCasa>iGolTrasferta) {
 								Integer tot = (Integer) totaliBR.get(nome1);
 								if (tot==null) {
@@ -348,7 +250,7 @@ public class CalcolaPartita {
 									iScontri1.put(GIOCATE, ((Integer)iScontri1.get(GIOCATE))+1);
 									iScontri1.put(PUNTI, ((Integer)iScontri1.get(PUNTI))+3);
 									iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + iGolCasa + "-" + iGolTrasferta));
-									iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + squadra1.getTotale()+ICASA + "-" + squadra2.getTotale()));
+									iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + squadra1.getTotale()+Constant.ICASA + "-" + squadra2.getTotale()));
 									mapScontri1.put(nome2, iScontri1);
 									totaliScontri.put(nome1, mapScontri1);
 									//add2
@@ -374,7 +276,7 @@ public class CalcolaPartita {
 									iScontri2.put(GIOCATE, ((Integer)iScontri2.get(GIOCATE))+1);
 									iScontri2.put(PUNTI, ((Integer)iScontri2.get(PUNTI))+0);
 									iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + iGolTrasferta + "-" + iGolCasa));
-									iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + squadra2.getTotale() + "-" + squadra1.getTotale()+ICASA));
+									iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + squadra2.getTotale() + "-" + squadra1.getTotale()+Constant.ICASA));
 									mapScontri2.put(nome1, iScontri2);
 									totaliScontri.put(nome2, mapScontri2);
 								}
@@ -410,7 +312,7 @@ public class CalcolaPartita {
 									iScontri1.put(GIOCATE, ((Integer)iScontri1.get(GIOCATE))+1);
 									iScontri1.put(PUNTI, ((Integer)iScontri1.get(PUNTI))+0);
 									iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + iGolCasa + "-" + iGolTrasferta));
-									iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + squadra1.getTotale()+ICASA + "-" + squadra2.getTotale()));
+									iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + squadra1.getTotale()+Constant.ICASA + "-" + squadra2.getTotale()));
 									mapScontri1.put(nome2, iScontri1);
 									totaliScontri.put(nome1, mapScontri1);
 									//add2
@@ -436,7 +338,7 @@ public class CalcolaPartita {
 									iScontri2.put(GIOCATE, ((Integer)iScontri2.get(GIOCATE))+1);
 									iScontri2.put(PUNTI, ((Integer)iScontri2.get(PUNTI))+3);
 									iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + iGolTrasferta + "-" + iGolCasa));
-									iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + squadra2.getTotale() + "-" + squadra1.getTotale()+ICASA));
+									iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + squadra2.getTotale() + "-" + squadra1.getTotale()+Constant.ICASA));
 									mapScontri2.put(nome1, iScontri2);
 									totaliScontri.put(nome2, mapScontri2);
 								}
@@ -477,7 +379,7 @@ public class CalcolaPartita {
 									iScontri1.put(GIOCATE, ((Integer)iScontri1.get(GIOCATE))+1);
 									iScontri1.put(PUNTI, ((Integer)iScontri1.get(PUNTI))+1);
 									iScontri1.put(PARTITE, ((String)iScontri1.get(PARTITE) + iGolCasa + "-" + iGolTrasferta));
-									iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + squadra1.getTotale()+ICASA + "-" + squadra2.getTotale()));
+									iScontri1.put(PUNTEGGI, ((String)iScontri1.get(PUNTEGGI) + squadra1.getTotale()+Constant.ICASA + "-" + squadra2.getTotale()));
 									mapScontri1.put(nome2, iScontri1);
 									totaliScontri.put(nome1, mapScontri1);
 									//add2
@@ -503,7 +405,7 @@ public class CalcolaPartita {
 									iScontri2.put(PUNTI, ((Integer)iScontri2.get(PUNTI))+1);
 									iScontri2.put(GIOCATE, ((Integer)iScontri2.get(GIOCATE))+1);
 									iScontri2.put(PARTITE, ((String)iScontri2.get(PARTITE) + iGolTrasferta + "-" + iGolCasa));
-									iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + squadra2.getTotale() + "-" + squadra1.getTotale()+ICASA));
+									iScontri2.put(PUNTEGGI, ((String)iScontri2.get(PUNTEGGI) + squadra2.getTotale() + "-" + squadra1.getTotale()+Constant.ICASA));
 									mapScontri2.put(nome1, iScontri2);
 									totaliScontri.put(nome2, mapScontri2);
 								}
@@ -603,126 +505,6 @@ public class CalcolaPartita {
 			t=t+f1.get(iContaPosizioni);
 			totaliFormula1BIS.put(squadra.getNome(), t);
 		}
-
-
-	}
-
-
-	private static int getGol(double elabora) {
-		int iGolCasa = 0;
-		if (elabora<66)
-		{
-			iGolCasa=0;
-		}
-		else if (elabora<72)
-		{
-			iGolCasa=1;
-		}
-		else if (elabora<78)
-		{
-			iGolCasa=2;
-		}
-		else if (elabora<84)
-		{
-			iGolCasa=3;
-		}
-		else if (elabora<90)
-		{
-			iGolCasa=4;
-		}
-		else if (elabora<96)
-		{
-			iGolCasa=5;
-		}
-		else if (elabora<102)
-		{
-			iGolCasa=6;
-		}
-		else if (elabora<108)
-		{
-			iGolCasa=7;
-		}
-		else 
-		{
-			iGolCasa=8;
-		}
-		return iGolCasa;
-	}
-
-
-	private void calcolaModificatoreCentrocampo(Squadra squadra1, Squadra squadra2) {
-		BigDecimal sommaC1 = generaCentrocampisti(squadra1);
-		BigDecimal sommaC2 = generaCentrocampisti(squadra2);
-		applicaModificatoreCentrocampo(squadra1, sommaC1, sommaC2);
-		applicaModificatoreCentrocampo(squadra2, sommaC2, sommaC1);
-
-	}
-
-	private void applicaModificatoreCentrocampo(Squadra squadra, BigDecimal sommaC1, BigDecimal sommaC2) {
-		if (sommaC1.compareTo(sommaC2)>0)
-		{
-			BigDecimal subtract = sommaC1.subtract(sommaC2);
-			if (subtract.compareTo(new BigDecimal("1"))<0)
-			{
-				squadra.setModificatoreCentrocampo(0);
-			}
-			else if (subtract.compareTo(new BigDecimal("2"))<0)
-			{
-				squadra.setModificatoreCentrocampo(0.5);
-			}
-			else if (subtract.compareTo(new BigDecimal("3"))<0)
-			{
-				squadra.setModificatoreCentrocampo(1);
-			}
-			else if (subtract.compareTo(new BigDecimal("4"))<0)
-			{
-				squadra.setModificatoreCentrocampo(1.5);
-			}
-			else if (subtract.compareTo(new BigDecimal("5"))<0)
-			{
-				squadra.setModificatoreCentrocampo(2);
-			}
-			else if (subtract.compareTo(new BigDecimal("6"))<0)
-			{
-				squadra.setModificatoreCentrocampo(2.5);
-			}
-			else if (subtract.compareTo(new BigDecimal("7"))<0)
-			{
-				squadra.setModificatoreCentrocampo(3);
-			}
-			else if (subtract.compareTo(new BigDecimal("8"))<0)
-			{
-				squadra.setModificatoreCentrocampo(3.5);
-			}
-			else 
-			{
-				squadra.setModificatoreCentrocampo(4);
-			}
-		}
-		else
-		{
-			squadra.setModificatoreCentrocampo(0);
-		}
-	}
-
-	private BigDecimal generaCentrocampisti(Squadra squadra) {
-		BigDecimal ret=new BigDecimal("0");
-		List<Giocatore> titolari = squadra.getTitolari();
-		for (Giocatore giocatore : titolari) {
-			if (giocatore.getRuolo().equalsIgnoreCase("C")) {
-				ret=ret.add(new BigDecimal(Double.toString(giocatore.getVoto())));
-			}
-		}
-		int iContaTitolariOriginali=0;//FIXME BUG
-		for(Giocatore giocatore : squadra.getTitolariOriginali()) {
-			if (giocatore.getRuolo().equalsIgnoreCase("C")) {
-				iContaTitolariOriginali++;
-			}
-		}
-		for (int i=iContaTitolariOriginali;i<5;i++) {
-			ret=ret.add(new BigDecimal("5"));
-		}
-		return ret;
 	}
 
 }

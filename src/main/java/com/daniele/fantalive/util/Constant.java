@@ -4,6 +4,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import com.daniele.fantalive.repository.SalvaRepository;
+
 public class Constant {
 	public static enum Campionati {BE, FANTAVIVA, LUCCICAR, JB}
 	public static final String URL_NOTIFICA_NAS = "http://192.168.1.105:7080/fantalive-0.0.1-SNAPSHOT/";
@@ -23,6 +25,7 @@ public class Constant {
 	public static final String I_LIVE_FANTACALCIO = "16";
 
 	public static Integer GIORNATA;
+	public static Integer GIORNATA_FORZATA=null;
 	public static String instanza;
 	public static Long CHAT_ID_FANTALIVE;
 	public static String TOKEN_BOT_FANTALIVE;
@@ -116,4 +119,18 @@ public class Constant {
 	public static final String R20 = "\u24FE";
 	public static final String PAUSA = "\uD83D\uDD14";
 	public static final String FINE_PARTITA = "\uD83C\uDFC1";
+	public static final String URL_LOGIN_FG = "https://leghe.fantacalcio.it/api/v1/v1_utente/login?alias_lega=login";
+	public static final String URL_FORMAZIONI_FG = "https://leghe.fantacalcio.it/%s/formazioni/%d?id=%s";
+	public static final String URL_PROIEZIONI_FG = "https://appleghe.fantacalcio.it/api/v1/V2_LegaFormazioni/Proiezione?id_comp=%s&giornata=%s";
+	public static final String URL_LOGIN_FS = "https://www.fanta.soccer/it/login/";
+	public static final String URL_CALENDARIO = "https://www.goal.com/it/notizie/calendario-serie-a-2021-2022-completo/161ug15ioiflh19whgevwxviur";
+	public static final String URL_LOGIN_APP_FG = "https://appleghe.fantacalcio.it/api/v1/v1_utente/login";
+	public static final String URL_KEEP_ALIVE_HERO = "https://fantalive71.herokuapp.com/fantalive/index.html";
+	public static final String URL_API_GAZZETTA = "https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=1&competitionId=%d";
+	public static final String URL_KEEP_ALIVE_HEROKU = "https://fantalive71.herokuapp.com/fantalive/index.html";
+	public static final String URL_LIVE_FG = "https://www.fantacalcio.it/api/live/%d?g=%d&i=%s";
+	public static final int ICASA=2;
+
+
+	
 }

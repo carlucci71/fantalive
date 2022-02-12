@@ -14,10 +14,10 @@ public Squadra() {
 String nome;
 private Boolean casaProiezione=false;
 private int prog=0;
+private int golSimulazione=0;
 private Boolean evidenza=false;
 private double modificatoreDifesa=0;
 private double modificatoreCentrocampo=0;
-private double modificatoreDifesaDaAssegnare=0;
 private double modificatoreAttacco=0;
 private double malusFormazioneAutomatica=0;
 private List<Giocatore> titolari=new ArrayList<Giocatore>();
@@ -63,7 +63,6 @@ public String toString() {
 	sb.append("\n" + getTotaleRiserve()/getContaRiserve());
 	sb.append(" media votati");
 	sb.append("\n\n Proiezione: " + getProiezione());
-	sb.append("\n\n Modificatore Difesa Da Assegnare: " + getModificatoreDifesaDaAssegnare());
 	sb.append("\n\n Modificatore Difesa: " + getModificatoreDifesa());
 	sb.append("\n\n Modificatore Centrocampo: " + getModificatoreCentrocampo());
 	sb.append("\n\n Modificatore Attacco: " + getModificatoreAttacco());
@@ -209,12 +208,6 @@ public double getModificatoreDifesa() {
 public void setModificatoreDifesa(double modificatoreDifesa) {
 	this.modificatoreDifesa = modificatoreDifesa;
 }
-public double getModificatoreDifesaDaAssegnare() {
-	return modificatoreDifesaDaAssegnare;
-}
-public void setModificatoreDifesaDaAssegnare(double modificatoreDifesaDaAssegnare) {
-	this.modificatoreDifesaDaAssegnare = modificatoreDifesaDaAssegnare;
-}
 public double getModificatoreAttacco() {
 	return modificatoreAttacco;
 }
@@ -282,7 +275,6 @@ public Squadra clonaSquadra () throws Exception {
 	}
 	/*
 	squadra.setModificatoreDifesa(getModificatoreDifesa());
-	squadra.setModificatoreDifesaDaAssegnare(getModificatoreDifesaDaAssegnare());
 	squadra.setModificatoreCentrocampo(getModificatoreCentrocampo());
 	squadra.setModificatoreAttacco(getModificatoreAttacco());
 	squadra.setMalusFormazioneAutomatica(getMalusFormazioneAutomatica());
@@ -307,6 +299,12 @@ public String getCapitano() {
 }
 public void setCapitano(String capitano) {
 	this.capitano = capitano;
+}
+public int getGolSimulazione() {
+	return golSimulazione;
+}
+public void setGolSimulazione(int golSimulazione) {
+	this.golSimulazione = golSimulazione;
 }
 
 
