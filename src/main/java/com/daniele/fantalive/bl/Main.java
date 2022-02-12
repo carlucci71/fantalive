@@ -3451,8 +3451,9 @@ public class Main {
 							.append(Main.getUrlNotifica());
 						}
 
-						logger.error(sq.getNome() + "-" + sq.getTitolari() + "-" + sq.getModificatoreDifesa()  + "-" + sq.getModificatoreCentrocampo()  + "-" + 
-								sq.getModificatoreAttacco()  + "-" + sq.getMalusFormazioneAutomatica() + "-" + sq.getProiezione() + "-" + casa);
+						logger.error("@getDettaglio " + "@nome: " + sq.getNome() + "@titolari: " + sq.getTitolari() + "@TT: " + sq.getTotaleTitolari()
+						+ "@MD:" + sq.getModificatoreDifesa()  + "@MC: " + sq.getModificatoreCentrocampo()  + "@MA: " +  sq.getModificatoreAttacco()  
+						+ "@MAL: " + sq.getMalusFormazioneAutomatica() + "@PR: " + sq.getProiezione() + "@Casa: " + casa);
 
 						//					System.err.println(testo.toString());
 						return testo.toString(); 
@@ -3475,6 +3476,9 @@ public class Main {
 			for (Giocatore giocatore : squadra.getTitolari()) {
 				if (giocatore.isSquadraGioca() && giocatore.getVoto() == 0) {
 					giocatore.setEsce(true);
+				}
+				if (giocatore.isEsce()) {
+				
 					if (giocatore.getRuolo().equals("P")) {
 						P_daCambiare.add(giocatore);
 					}
@@ -3828,8 +3832,9 @@ public class Main {
 			.append("</i></b>\n\n");
 		}
 		
-		logger.error(squadra.getNome() + "-" + squadra.getTitolari() + "-" + squadra.getModificatoreDifesa()  + "-" + squadra.getModificatoreCentrocampo()  + "-" + 
-		squadra.getModificatoreAttacco()  + "-" + squadra.getMalusFormazioneAutomatica() + "-" + squadra.getProiezione() + "-" + iCasa);
+		logger.error("@proiezioneSquadra " + "@nome: " + squadra.getNome() + "@titolari: " + squadra.getTitolari() + "@TT: " + squadra.getTotaleTitolari()
+		+ "@MD:" + squadra.getModificatoreDifesa()  + "@MC: " + squadra.getModificatoreCentrocampo()  + "@MA: " +  squadra.getModificatoreAttacco()  
+		+ "@MAL: " + squadra.getMalusFormazioneAutomatica() + "@PR: " + squadra.getProiezione() + "@Casa: " + iCasa);
 		
 		return sb;
 	}
