@@ -49,6 +49,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
@@ -115,7 +116,11 @@ public class Main {
 	static Set<String > giocJB;	
 	public static Map<String, String> keyFG=null;
 	public static int timeRefresh = 0;
-
+	
+	public static Logger logger = Logger.getLogger(Main.class);
+	
+	
+	
 	public static void init(SalvaRepository salvaRepositorySpring, SocketHandlerFantalive socketHandlerSpring, Constant constantSpring, boolean valorizzaBMFG) throws Exception {
 		executor = Executors.newSingleThreadScheduledExecutor();	
 		salvaRepository=salvaRepositorySpring;
@@ -3446,6 +3451,8 @@ public class Main {
 							.append(Main.getUrlNotifica());
 						}
 
+						logger.error(sq.getNome() + "-" + sq.getTitolari() + "-" + sq.getModificatoreDifesa()  + "-" + sq.getModificatoreCentrocampo()  + "-" + 
+								sq.getModificatoreAttacco()  + "-" + sq.getMalusFormazioneAutomatica() + "-" + sq.getProiezione() + "-" + casa);
 
 						//					System.err.println(testo.toString());
 						return testo.toString(); 
@@ -3820,6 +3827,10 @@ public class Main {
 			.append(squadra.getProiezione()+iCasa)
 			.append("</i></b>\n\n");
 		}
+		
+		logger.error(squadra.getNome() + "-" + squadra.getTitolari() + "-" + squadra.getModificatoreDifesa()  + "-" + squadra.getModificatoreCentrocampo()  + "-" + 
+		squadra.getModificatoreAttacco()  + "-" + squadra.getMalusFormazioneAutomatica() + "-" + squadra.getProiezione() + "-" + iCasa);
+		
 		return sb;
 	}
 	public static Map<String, Object> getOldSnapPartite(boolean live) throws Exception {
