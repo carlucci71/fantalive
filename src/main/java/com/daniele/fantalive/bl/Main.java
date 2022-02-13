@@ -3428,7 +3428,10 @@ public class Main {
 						.append("Ancora da giocare: ")
 						.append(sq.getContaSquadraRiserveNonGioca())
 						.append("\n\n");
-						if (nomePartitaSimulata != null) {
+						if (nomePartitaSimulata != null && !nomePartitaSimulata.equals("-")) {
+							testo.append("Cambi simulati: ")
+							.append(sq.getContaCambioSimulato())
+							.append("\n");
 							testo.append("Modificatore Difesa: ")
 							.append(sq.getModificatoreDifesa())
 							.append("\n");
@@ -3455,11 +3458,10 @@ public class Main {
 							.append(Main.getUrlNotifica());
 						}
 
-						logger.error("@getDettaglio " + "@nome: " + sq.getNome() + "@titolari: " + sq.getTitolari() + "@TT: " + sq.getTotaleTitolari()
-						+ "@MD:" + sq.getModificatoreDifesa()  + "@MC: " + sq.getModificatoreCentrocampo()  + "@MA: " +  sq.getModificatoreAttacco()  
-						+ "@MAL: " + sq.getMalusFormazioneAutomatica() + "@PR: " + sq.getProiezione() + "@Casa: " + casa);
+//						logger.error("@getDettaglio " + "@nome: " + sq.getNome() + "@titolari: " + sq.getTitolari() + "@TT: " + sq.getTotaleTitolari()
+//						+ "@MD:" + sq.getModificatoreDifesa()  + "@MC: " + sq.getModificatoreCentrocampo()  + "@MA: " +  sq.getModificatoreAttacco()  
+//						+ "@MAL: " + sq.getMalusFormazioneAutomatica() + "@PR: " + sq.getProiezione() + "@Casa: " + casa);
 
-						//					System.err.println(testo.toString());
 						return testo.toString(); 
 					}
 				}
@@ -3499,6 +3501,7 @@ public class Main {
 				if (!giocatore.isSquadraGioca() && giocatore.getVoto() == 0) {
 					giocatore.setVoto(6);
 					giocatore.setNumGol(0);
+					giocatore.setCambioSimulato(true);
 				}
 			}
 			for (Giocatore giocatore : squadra.getRiserve()) {
@@ -3815,6 +3818,9 @@ public class Main {
 		.append(squadra.getContaSquadraRiserveNonGioca())
 		.append("\n\n");
 		if (conModificatori) {
+			sb.append("Cambi simulati: ")
+			.append(squadra.getContaCambioSimulato())
+			.append("\n");
 			sb.append("Modificatore Difesa: ")
 			.append(squadra.getModificatoreDifesa())
 			.append("\n");
@@ -3830,15 +3836,16 @@ public class Main {
 			sb.append("Totale --> <b><i>")
 			.append(squadra.getTotale()+iCasa)
 			.append("</i></b>\n\n");
+			
 		}else {
 			sb.append("Proiezione --> <b><i>")
 			.append(squadra.getProiezione()+iCasa)
 			.append("</i></b>\n\n");
 		}
 		
-		logger.error("@proiezioneSquadra " + "@nome: " + squadra.getNome() + "@titolari: " + squadra.getTitolari() + "@TT: " + squadra.getTotaleTitolari()
-		+ "@MD:" + squadra.getModificatoreDifesa()  + "@MC: " + squadra.getModificatoreCentrocampo()  + "@MA: " +  squadra.getModificatoreAttacco()  
-		+ "@MAL: " + squadra.getMalusFormazioneAutomatica() + "@PR: " + squadra.getProiezione() + "@Casa: " + iCasa);
+//		logger.error("@proiezioneSquadra " + "@nome: " + squadra.getNome() + "@titolari: " + squadra.getTitolari() + "@TT: " + squadra.getTotaleTitolari()
+//		+ "@MD:" + squadra.getModificatoreDifesa()  + "@MC: " + squadra.getModificatoreCentrocampo()  + "@MA: " +  squadra.getModificatoreAttacco()  
+//		+ "@MAL: " + squadra.getMalusFormazioneAutomatica() + "@PR: " + squadra.getProiezione() + "@Casa: " + iCasa);
 		
 		return sb;
 	}

@@ -96,6 +96,13 @@ public int getContaTitolari() {
 	}
 	return conta;
 }
+public int getContaCambioSimulato() {
+	int conta=0;
+	for (Giocatore giocatore : titolari) {
+		if (giocatore != null && giocatore.isCambioSimulato()) conta++;
+	}
+	return conta;
+}
 public int getContaNonCambiabili() {
 	int conta=0;
 	for (Giocatore giocatore : titolari) {

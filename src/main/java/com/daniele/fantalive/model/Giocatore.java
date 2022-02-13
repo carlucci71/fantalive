@@ -18,6 +18,7 @@ public class Giocatore {
 	private String ruoloLive;
 	private double voto=0;
 	private boolean squadraGioca;
+	private boolean cambioSimulato=false;
 	private String evento="";
 	private double modificatore=0;
 	private String squadra;
@@ -209,6 +210,12 @@ public class Giocatore {
 	}
 	public void setViceCapitano(boolean viceCapitano) {
 		this.viceCapitano = viceCapitano;
+	}
+	public boolean isCambioSimulato() {
+		return cambioSimulato;
+	}
+	public void setCambioSimulato(boolean cambioSimulato) {
+		this.cambioSimulato = cambioSimulato;
 	}
 
 }
