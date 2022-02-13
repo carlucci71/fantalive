@@ -3163,7 +3163,7 @@ public class Main {
 		for (String campionato : go.keySet()) {
 			Return return1 = go.get(campionato);
 			List<Squadra> squadre = return1.getSquadre();
-			if (return1.getTipo().equalsIgnoreCase("FANTASERVICE")) {
+			if (return1.getTipo().equalsIgnoreCase("FANTASERVICE") && nomePartitaSimulata.startsWith("B")) {
 				overrideFS(squadre);
 				for (Squadra squadraTmp : squadre) {
 					List<PartitaSimulata> partiteSimulate = squadraTmp.getPartiteSimulate();
@@ -3174,9 +3174,11 @@ public class Main {
 						
 					}
 				}
-				defaultGiocatoriNonAncoraVotoFS(sqFS);
-				applicaCambi(sqFS);
-				calcolaScontro(sqFS.get(0), sqFS.get(1), 1);
+				if (sqFS.size()>0) {
+					defaultGiocatoriNonAncoraVotoFS(sqFS);
+					applicaCambi(sqFS);
+					calcolaScontro(sqFS.get(0), sqFS.get(1), 1);
+				}
 			}
 			for (Squadra squadra : squadre) {
 				List<PartitaSimulata> partiteSimulate = squadra.getPartiteSimulate();
@@ -3367,7 +3369,7 @@ public class Main {
 			StringBuilder testo = new StringBuilder();
 			List<Squadra> squadre = return1.getSquadre();
 			List<Squadra> sqFS=new ArrayList<>();
-			if (return1.getTipo().equalsIgnoreCase("FANTASERVICE") && !nomePartitaSimulata.equals("-")) {
+			if (return1.getTipo().equalsIgnoreCase("FANTASERVICE") &&  nomePartitaSimulata.startsWith("B")) {
 				overrideFS(squadre);
 				for (Squadra squadraTmp : squadre) {
 					List<PartitaSimulata> partiteSimulate = squadraTmp.getPartiteSimulate();
@@ -3378,9 +3380,11 @@ public class Main {
 						
 					}
 				}
-				defaultGiocatoriNonAncoraVotoFS(sqFS);
-				applicaCambi(sqFS);
-				calcolaScontro(sqFS.get(0), sqFS.get(1), 1);
+				if (sqFS.size()>0) {
+					defaultGiocatoriNonAncoraVotoFS(sqFS);
+					applicaCambi(sqFS);
+					calcolaScontro(sqFS.get(0), sqFS.get(1), 1);
+				}
 			}
 			if (return1.getTipo().equalsIgnoreCase("FANTAGAZZETTA") && !nomePartitaSimulata.equals("-")) {
 				Map<String, Object> partitaSimulata = getPartitaSimulata(chatId,nomePartitaSimulata,squadra);
