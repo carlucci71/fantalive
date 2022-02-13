@@ -55,8 +55,8 @@ public class MyController {
 		Main.init(salvaRepository,socketHandlerFantalive,constant, true);
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
-			Main.fantaCronacaLiveBot = FantaCronacaLiveBOT.inizializza();
-			Main.risultatiConRitardoBOT = RisultatiConRitardoBOT.inizializza();
+			Main.fantaCronacaLiveBot = FantaCronacaLiveBOT.inizializza("WEBAPP");
+			Main.risultatiConRitardoBOT = RisultatiConRitardoBOT.inizializza("WEBAPP");
 			Main.inviaCronacaNotifica("server riavviato: " + Main.MIO_IP,null);
 		}
 	}

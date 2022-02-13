@@ -121,8 +121,8 @@ public class FantaLiveTest {
     public void testTelegram() throws Exception{
     	if (Main.fantaLiveBot==null) {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
-			Main.fantaCronacaLiveBot = FantaCronacaLiveBOT.inizializza();
-			Main.risultatiConRitardoBOT = RisultatiConRitardoBOT.inizializza();
+			Main.fantaCronacaLiveBot = FantaCronacaLiveBOT.inizializza("WEBAPP");
+			Main.risultatiConRitardoBOT = RisultatiConRitardoBOT.inizializza("WEBAPP");
 			constant.DISABILITA_NOTIFICA_TELEGRAM=false;
     	}
 		boolean runningOLD = Main.fantaLiveBot.isRunning();

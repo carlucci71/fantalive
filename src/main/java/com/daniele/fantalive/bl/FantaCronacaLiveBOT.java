@@ -1,6 +1,7 @@
 package com.daniele.fantalive.bl;
 
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -20,6 +21,20 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 
 	@Override
 	public void onUpdateReceived(Update update) {
+		if(update.hasMessage()){
+			Long chatId = update.getMessage().getChatId();
+			String text = update.getMessage().getText();
+			if(update.getMessage().hasText()){
+				try {
+					execute(creaSendMessage(chatId,text, true));
+				} catch (TelegramApiException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}//REPLY
+			}
+			
+		}
+		
 	}
 
 	@Override
@@ -37,7 +52,7 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 		Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
-		FantaCronacaLiveBOT bot = inizializza();
+		FantaCronacaLiveBOT bot = inizializza("WEBAPP");
 		try {
 			bot.inviaMessaggio(c.CHAT_ID_FANTALIVE, "Status:STARTED");
 		}
@@ -47,10 +62,12 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 		System.err.println("FINE");
 	}
 
-	public static FantaCronacaLiveBOT inizializza() throws Exception {
+	public static FantaCronacaLiveBOT inizializza(String chi) throws Exception {
 		TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 		FantaCronacaLiveBOT fantaCronacaLiveBOT = new FantaCronacaLiveBOT();
 		registerBot=telegramBotsApi.registerBot(fantaCronacaLiveBOT);
+		CHI=chi;
+		Main.MIO_IP = InetAddress.getLocalHost().getHostAddress();
 		return fantaCronacaLiveBOT;
 	}
 	public void inviaMessaggio(long chatId,String msg) throws TelegramApiException {
@@ -103,12 +120,36 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 		
 	}
 	private SendMessage creaSendMessage(long chatId,String msg) {
+		return creaSendMessage(chatId, msg,false);
+	}
+
+	private SendMessage creaSendMessage(long chatId,String msg, boolean bReply) {
 		SendMessage sendMessage = new SendMessage();
 		sendMessage.enableHtml(true);
 		sendMessage.setParseMode("html");
 		sendMessage.setChatId(Long.toString(chatId));
 		String messaggio="";
+		String rep=" ";
+		if (bReply) {
+			for(int i=0;i<msg.length();i++) {
+				rep = rep + "\\u" + Integer.toHexString(msg.charAt(i)).toUpperCase();
+			}
+			rep=rep+" ";
+
+			rep = rep + " --> ";
+			byte[] bytes = msg.getBytes();
+			for (int i = 0; i < bytes.length; i++) {
+				rep = rep + bytes[i] + ",";
+			}
+			messaggio="<b>sono il bot reply</b> per  " + chatId;
+		}
 		messaggio = messaggio + "\n" + msg;
+		if(bReply) {
+			messaggio = messaggio + "\n" + rep;
+		}
+		if (chatId == Constant.CHAT_ID_FANTALIVE) {
+			messaggio = messaggio + "\n\n<i>" + CHI + " " + Main.MIO_IP + "</i>";
+		}
 		sendMessage.setText(messaggio);
 		return sendMessage;
 	}
