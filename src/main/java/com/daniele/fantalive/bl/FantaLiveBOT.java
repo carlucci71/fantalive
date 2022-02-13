@@ -32,6 +32,7 @@ public class FantaLiveBOT extends TelegramLongPollingBot{
 	private static BotSession registerBot;
 	private static String CHI;
 	private Set<Long> ricercheGiocatori=new HashSet<>();
+	private static FantaLiveBOT fantaLiveBOT;
 
 	
 	/*
@@ -138,7 +139,11 @@ switchkeepalive - switch keep alive
 						if (ricercheGiocatori.contains(chatId)) {
 							execute(setButtonsGiocatori(chatId,text));
 							ricercheGiocatori.remove(chatId);
-						}else {
+						}
+						else if (text.equals("killMe")) {
+							fantaLiveBOT.stopBot();
+						}
+						else {
 							execute(creaSendMessage(chatId,text, true));//REPLY
 						}
 					}
@@ -222,7 +227,7 @@ switchkeepalive - switch keep alive
 
 	public static FantaLiveBOT inizializza(String chi) throws Exception {
 		TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-		FantaLiveBOT fantaLiveBOT = new FantaLiveBOT();
+		fantaLiveBOT = new FantaLiveBOT();
 		registerBot=telegramBotsApi.registerBot(fantaLiveBOT);
 		CHI=chi;
 		Main.MIO_IP = InetAddress.getLocalHost().getHostAddress();

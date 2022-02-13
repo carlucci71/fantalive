@@ -31,7 +31,9 @@ live - risultati live ultima giornata
 	 */
 	private static BotSession registerBot;
 	private static String CHI;
-
+	private static RisultatiConRitardoBOT risultatiConRitardoBOT;
+;
+	
 	@Override
 	public void onUpdateReceived(Update update) {
 		try {
@@ -54,13 +56,11 @@ live - risultati live ultima giornata
 							execute(creaSendMessage(chatId, "nessuna partita live" , false, null));
 						}
 					}
+					else if (text.equals("killMe")) {
+						risultatiConRitardoBOT.stopBot();
+					}
 					else {
-						try {
 							execute(creaSendMessage(chatId,text, true));
-						} catch (TelegramApiException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
 					}
 				}
 			}
@@ -164,7 +164,7 @@ live - risultati live ultima giornata
 		Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
-		RisultatiConRitardoBOT bot = inizializza("WEBAPP");
+		RisultatiConRitardoBOT bot = inizializza("MAIN");
 		try {
 			bot.inviaMessaggio(c.CHAT_ID_FANTALIVE, "PROVA... Status:STARTED");
 		}
@@ -179,7 +179,7 @@ live - risultati live ultima giornata
 
 	public static RisultatiConRitardoBOT inizializza(String chi) throws Exception {
 		TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-		RisultatiConRitardoBOT risultatiConRitardoBOT = new RisultatiConRitardoBOT();
+		risultatiConRitardoBOT = new RisultatiConRitardoBOT();
 		registerBot=telegramBotsApi.registerBot(risultatiConRitardoBOT);
 		CHI=chi;
 		Main.MIO_IP = InetAddress.getLocalHost().getHostAddress();
