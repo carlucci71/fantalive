@@ -109,6 +109,7 @@ public class Main {
 	static Map<String , String> getIconaIDGioc;	
 	static Map<String , Integer> statusMatch;	
 	static Map<String , String> nickPlayer;	
+	static Map<String , String> reverseNickPlayer;	
 	static Map<Integer, String > reverseStatusMatch;	
 	public static Map<Integer , ZonedDateTime> calendario;	
 	public static Map<Integer , ZonedDateTime> calendarioInizioGiornata;	
@@ -245,6 +246,10 @@ public class Main {
 				put("BE-tavolino","IO");
 				put("BE-Canosa di Puglia...","New");
 			}};
+			reverseNickPlayer = new HashMap();
+			for(Map.Entry<String, String> entry : nickPlayer.entrySet()){
+				reverseNickPlayer.put(entry.getValue(), entry.getKey());
+			}		
 		}
 		if (statusMatch==null) {
 			statusMatch = new HashMap() {{
@@ -3362,6 +3367,82 @@ public class Main {
 			}
 		}
 	}
+	public static Map<String, Object> proiezione_FS(String campionato, String nomePartitaSimulata) throws Exception{
+		Map<String, Return> go = Main.go(true, null, null);
+		Return return1 = go.get(campionato);
+		StringBuilder testo = new StringBuilder();
+		List<Squadra> squadre = return1.getSquadre();
+		List<Squadra> sqFS=new ArrayList<>();
+		if (return1.getTipo().equalsIgnoreCase("FANTASERVICE") &&  nomePartitaSimulata.startsWith("B")) {
+			overrideFS(squadre);
+			for (Squadra squadraTmp : squadre) {
+				List<PartitaSimulata> partiteSimulate = squadraTmp.getPartiteSimulate();
+				for (PartitaSimulata partitaSimulata : partiteSimulate) {
+					if (partitaSimulata.getNome().equalsIgnoreCase(nomePartitaSimulata)) {
+						sqFS.add(squadraTmp);
+					}
+				}
+			}
+			if (sqFS.size()>0) {
+				defaultGiocatoriNonAncoraVotoFS(sqFS);
+				applicaCambi(sqFS);
+				calcolaScontro(sqFS.get(0), sqFS.get(1), 1);
+			}
+		}
+		Map<String, Object> ret = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
+		map.put("ris", sqFS.get(0).getGolSimulazione() + "-" + sqFS.get(1).getGolSimulazione());
+		ret.put("data", map);
+		List<Map<String, Object>> teams = new ArrayList<>();
+		String nomeSquadraCasa = reverseNickPlayer.get(nomePartitaSimulata.substring(2,nomePartitaSimulata.indexOf(" ",2))).substring(3);
+		for (Squadra squadra : sqFS) {
+			Map<String, Object> team = new HashMap<>();
+			team.put("nome",squadra.getNome());
+			team.put("total",squadra.getTotale());
+			team.put("bmd",squadra.getModificatoreDifesa());
+			team.put("bmc",squadra.getModificatoreCentrocampo());
+			team.put("bma",squadra.getModificatoreAttacco());
+			if (squadra.getNome().equals(nomeSquadraCasa)) {
+				team.put("fattore",2);
+			}
+			List<Map<String, Object>> players = new ArrayList<>();
+			for (Giocatore giocatore : squadra.getTitolari()) {
+				Map<String, Object> player = new HashMap<>();
+				player.put("nome", giocatore.getNome() + " (" + giocatore.getRuolo() + ")");
+//				player.put("rank","");
+				player.put("played", true);
+				player.put("malus", 0.0);
+				player.put("totBM", 0.0);
+				player.put("bm", giocatore.getCodEventi());
+				player.put("voto", giocatore.getVoto());
+				player.put("capitano", false);
+				player.put("viceCapitano", false);
+				player.put("fantavoto", giocatore.getVoto() + giocatore.getModificatore());
+				player.put("squadraGioca", giocatore.isSquadraGioca());
+				players.add(player);
+			}
+			for (Giocatore giocatore : squadra.getRiserve()) {
+				Map<String, Object> player = new HashMap<>();
+				player.put("nome", giocatore.getNome() + " (" + giocatore.getRuolo() + ")");
+//				player.put("rank","");
+				player.put("played", false);
+				player.put("malus", 0.0);
+				player.put("totBM", 0.0);
+				player.put("bm", giocatore.getCodEventi());
+				player.put("voto", giocatore.getVoto());
+				player.put("capitano", false);
+				player.put("viceCapitano", false);
+				player.put("fantavoto", giocatore.getVoto() + giocatore.getModificatore());
+				player.put("squadraGioca", giocatore.isSquadraGioca());
+				players.add(player);
+			}
+			team.put("players", players);
+			teams.add(team);
+		}
+		map.put("teams", teams);
+		return ret;
+	}
+	
 	public static String getDettaglio(Long chatId, String campionato, String squadra, String casa, String nomePartitaSimulata) throws Exception{
 		try {
 			Map<String, Return> go = Main.go(true, null, null);

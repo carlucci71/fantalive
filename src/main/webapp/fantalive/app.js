@@ -395,6 +395,36 @@ app.run(
 						alert("Errore-3-3: " + angular.toJson(error));
 				});
 			}
+			$rootScope.callProiezione= function(r, i){
+                if (r.tipo == 'FANTAGAZZETTA'){
+                	$rootScope.proiezioneFG(r,i);
+                } else {
+                	$rootScope.proiezioneFS(r,i);
+                }
+			}
+			$rootScope.proiezioneFS=function(r, i){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				var cc=i.squadre[0].campionato;
+
+				$resource('./proiezioneFS/' + cc+ "/" + i.squadre[0].nome,{}).save().$promise.then(function(data) {
+					console.log(data);
+					$rootScope.open(data.data);
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+				}).catch(function(error) {
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+					if (error && error.data && error.data.message)
+						alert("Errore-4-1: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore-4-2: " + error.data);
+					else 
+						alert("Errore-4-3: " + angular.toJson(error));
+				});
+				
+			}
 			$rootScope.proiezioneFG=function(r, i){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";

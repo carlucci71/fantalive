@@ -59,10 +59,8 @@
 			<br>
 			<table>
 			<tr style="vertical-align:top">
-				<img ng-click="proiezioneFG(
-						getResultMyCampionato(partiteLive[visPartitaLive].squadre[0].campionato),partiteLive[visPartitaLive]
-					)" 
-					ng-show="getResultMyCampionato(partiteLive[visPartitaLive].squadre[0].campionato).tipo=='FANTAGAZZETTA'" 
+				<img 
+				ng-click="callProiezione(getResultMyCampionato(partiteLive[visPartitaLive].squadre[0].campionato),partiteLive[visPartitaLive])" 
 					style="width: 20px; cursor: pointer;" title="proiezione" src="./ico/proiezione.png">
 				</img>
 				<br><td ng-repeat="squadralive in partiteLive[visPartitaLive].squadre">

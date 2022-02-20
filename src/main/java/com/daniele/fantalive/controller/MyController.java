@@ -279,6 +279,11 @@ public class MyController {
 		return Main.proiezione_FG(Main.aliasCampionati.get(lega), sq, sfide, null);
 	}
 	
+	@PostMapping("/proiezioneFS/{lega}/{nomePartitaSimulata}")
+	public Map<String, Object> proiezioneFS(@PathVariable String lega,@PathVariable String nomePartitaSimulata) throws Exception {
+		return Main.proiezione_FS(lega, nomePartitaSimulata);
+	}
+	
 	@PostMapping("/simulaCambiMantra/{lega}")
 	public Squadra simulaCambiMantra(@PathVariable String lega,@RequestBody Map<String,Squadra> body) throws Exception  {
 		List<String> assenti=new ArrayList<>();

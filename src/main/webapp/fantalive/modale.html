@@ -18,6 +18,14 @@
 			<td ng-repeat="team in pc.data.teams">{{team.bmd}}</td>
 		</tr>
 		<tr align=center>
+			<td>modificatore centrocampo</td>
+			<td ng-repeat="team in pc.data.teams">{{team.bmc}}</td>
+		</tr>
+		<tr align=center>
+			<td>modificatore attacco</td>
+			<td ng-repeat="team in pc.data.teams">{{team.bma}}</td>
+		</tr>
+		<tr align=center>
 			<td>fair play</td>
 			<td ng-repeat="team in pc.data.teams">{{team.bmfp}}</td>
 		</tr>
@@ -50,7 +58,7 @@
 					<img style="width: 20px;" ng-src="./ico/capitano.png" ng-show="pl.capitano"></img>
 					<img style="width: 20px;" ng-src="./ico/vicecapitano.jpg" ng-show="pl.viceCapitano"></img>
 					<span ng-show="pl.played">
-						{{pl.fantavoto}} 
+						{{pl.voto}} - {{pl.fantavoto}} 
 						<span ng-hide="pl.squadraGioca">*</span> 
 						<span ng-repeat="bonusmalus in pl.bm track by $index"> 
 							<img style="width: 20px;" ng-src="./ico/{{bonusmalus}}.png" />
