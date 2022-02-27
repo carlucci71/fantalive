@@ -1641,7 +1641,7 @@ public class Main {
 			}
 			bfOutputResponse.close();
 			String stringResponse = sfResponse.toString();
-			throw new RuntimeException(verbo + " NOT WORKED ".concat(url).concat(" -> ").concat(body).concat("STACK:")
+			throw new RuntimeException(verbo + " NOT WORKED ".concat(url).concat(" -> ").concat((body==null?"":body)).concat("STACK:")
 					.concat(stringResponse));
 		}
 		ret.put("response", response.toString());
@@ -3398,13 +3398,15 @@ public class Main {
 		for (Squadra squadra : sqFS) {
 			Map<String, Object> team = new HashMap<>();
 			team.put("nome",squadra.getNome());
-			team.put("total",squadra.getTotale());
+			int tot=squadra.getTotale();
 			team.put("bmd",squadra.getModificatoreDifesa());
 			team.put("bmc",squadra.getModificatoreCentrocampo());
 			team.put("bma",squadra.getModificatoreAttacco());
 			if (squadra.getNome().equals(nomeSquadraCasa)) {
 				team.put("fattore",2);
+				tot=tot+2;
 			}
+			team.put("total",tot);
 			List<Map<String, Object>> players = new ArrayList<>();
 			for (Giocatore giocatore : squadra.getTitolari()) {
 				Map<String, Object> player = new HashMap<>();
