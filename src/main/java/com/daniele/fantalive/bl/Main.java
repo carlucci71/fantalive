@@ -3398,7 +3398,7 @@ public class Main {
 		for (Squadra squadra : sqFS) {
 			Map<String, Object> team = new HashMap<>();
 			team.put("nome",squadra.getNome());
-			int tot=squadra.getTotale();
+			double tot=squadra.getTotale();
 			team.put("bmd",squadra.getModificatoreDifesa());
 			team.put("bmc",squadra.getModificatoreCentrocampo());
 			team.put("bma",squadra.getModificatoreAttacco());
