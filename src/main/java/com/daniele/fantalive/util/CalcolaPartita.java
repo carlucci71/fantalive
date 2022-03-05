@@ -25,7 +25,7 @@ import com.daniele.fantalive.repository.SalvaRepository;
 
 
 public class CalcolaPartita {
-	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 150;
+	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 20;
 	private static final boolean RECUPERA_FROM_DB=true;
 	private static final boolean USA_SPRING=false;
 	private static final String PARTITE = "Partite";
@@ -38,8 +38,9 @@ public class CalcolaPartita {
 
 	public static void main(String[] args) throws Exception {
 		CalcolaPartita cp = new CalcolaPartita();
+//		cp.bu();
 		cp.go(args);
-		cp.printNomi();
+//		cp.printNomi();
 		if (USA_SPRING) {
 			if (false) {
 				ctx.stop();
@@ -47,6 +48,27 @@ public class CalcolaPartita {
 			}
 		}
 		System.exit(0);
+	}
+	private void bu() {
+		Map<String, Object> totaliF1=new HashMap<>(); 
+		int i = 128;
+		totaliF1.put("a",i);
+		totaliF1.put("b",i);
+		
+		
+		Map<String, Object> map = new TreeMap(new ReverseOrderTreemap(totaliF1));
+		Set<String> keySet = totaliF1.keySet();
+		for (String k : keySet) {
+			map.put(k, totaliF1.get(k));
+		}
+//		map.putAll(totaliF1);
+		
+		
+
+		
+		
+		System.out.println(map.keySet().size());
+		
 	}
 	private void printNomi() throws Exception {
 		System.out.println("-------------------------");
@@ -97,10 +119,18 @@ public class CalcolaPartita {
 				return 1;
 			else
 				if (map.get(o2) instanceof Integer) {
-					return ((Integer) map.get(o2)).compareTo((Integer) map.get(o1));
+					int compareTo = ((Integer) map.get(o2)).compareTo((Integer) map.get(o1));
+					if (compareTo==0) {
+						compareTo=1;
+					}
+					return compareTo;
 				}
 				else if (map.get(o2) instanceof Double) {
-					return ((Double) map.get(o2)).compareTo((Double) map.get(o1));
+					int compareTo = ((Double) map.get(o2)).compareTo((Double) map.get(o1));
+					if (compareTo==0) {
+						compareTo=1;
+					}
+					return compareTo;
 				} else {
 					throw new RuntimeException("Tipo non gestito");
 				}
@@ -139,6 +169,21 @@ public class CalcolaPartita {
 		hs.add("8"+ "\t" + "Atletico Mikatanto"+ "\t" + "Jonny Fighters");
 		hs.add("10"+ "\t" + "Atletico Mikatanto"+ "\t" + "C. H. MOLLE");
 		hs.add("10"+ "\t" + "Jonny Fighters"+ "\t" + "tavolino");
+		hs.add("12"+ "\t" + "tavolino"+ "\t" + "Atletico Mikatanto");
+		hs.add("12"+ "\t" + "C. H. MOLLE"+ "\t" + "Jonny Fighters");
+		hs.add("14"+ "\t" + "Jonny Fighters"+ "\t" + "C. H. MOLLE");
+		hs.add("14"+ "\t" + "Atletico Mikatanto"+ "\t" + "tavolino");
+		hs.add("16"+ "\t" + "C. H. MOLLE"+ "\t" + "Atletico Mikatanto");
+		hs.add("16"+ "\t" + "tavolino"+ "\t" + "Jonny Fighters");
+		hs.add("18"+ "\t" + "Jonny Fighters"+ "\t" + "Atletico Mikatanto");
+		hs.add("18"+ "\t" + "C. H. MOLLE"+ "\t" + "tavolino");
+		hs.add("20"+ "\t" + "tavolino"+ "\t" + "C. H. MOLLE");
+		hs.add("20"+ "\t" + "Atletico Mikatanto"+ "\t" + "Jonny Fighters");
+		hs.add("22"+ "\t" + "Atletico Mikatanto"+ "\t" + "C. H. MOLLE");
+		hs.add("22"+ "\t" + "Jonny Fighters"+ "\t" + "tavolino");
+		hs.add("24"+ "\t" + "tavolino"+ "\t" + "Atletico Mikatanto");
+		hs.add("24"+ "\t" + "C. H. MOLLE"+ "\t" + "Jonny Fighters");
+		
 		hs.add("2"+ "\t" + "Universal"+ "\t" + "VincereAManiBasse");
 		hs.add("2"+ "\t" + "Canosa di Puglia..."+ "\t" + "Atletico Conc");
 		hs.add("4"+ "\t" + "VincereAManiBasse"+ "\t" + "Canosa di Puglia...");
@@ -149,7 +194,21 @@ public class CalcolaPartita {
 		hs.add("8"+ "\t" + "Canosa di Puglia..."+ "\t" + "Universal");
 		hs.add("10"+ "\t" + "Canosa di Puglia..."+ "\t" + "VincereAManiBasse");
 		hs.add("10"+ "\t" + "Universal"+ "\t" + "Atletico Conc");
-
+		hs.add("12"+ "\t" + "Atletico Conc"+ "\t" + "Canosa di Puglia...");
+		hs.add("12"+ "\t" + "VincereAManiBasse"+ "\t" + "Universal");
+		hs.add("14"+ "\t" + "Universal"+ "\t" + "VincereAManiBasse");
+		hs.add("14"+ "\t" + "Canosa di Puglia..."+ "\t" + "Atletico Conc");
+		hs.add("16"+ "\t" + "VincereAManiBasse"+ "\t" + "Canosa di Puglia...");
+		hs.add("16"+ "\t" + "Atletico Conc"+ "\t" + "Universal");
+		hs.add("18"+ "\t" + "Universal"+ "\t" + "Canosa di Puglia...");
+		hs.add("18"+ "\t" + "VincereAManiBasse"+ "\t" + "Atletico Conc");
+		hs.add("20"+ "\t" + "Atletico Conc"+ "\t" + "VincereAManiBasse");
+		hs.add("20"+ "\t" + "Canosa di Puglia..."+ "\t" + "Universal");
+		hs.add("22"+ "\t" + "Canosa di Puglia..."+ "\t" + "VincereAManiBasse");
+		hs.add("22"+ "\t" + "Universal"+ "\t" + "Atletico Conc");
+		hs.add("24"+ "\t" + "Atletico Conc"+ "\t" + "Canosa di Puglia...");
+		hs.add("24"+ "\t" + "VincereAManiBasse"+ "\t" + "Universal");
+		
 		HashMap<Integer, Integer> f1=new HashMap<>();
 		f1.put(1, 25);
 		f1.put(2, 18);
@@ -211,7 +270,7 @@ public class CalcolaPartita {
 						Squadra squadra2=squadre.get(i2);
 						String nome2 = squadra2.getNome();
 						String k = Integer.toString(ggDaCalcolare) + "\t" + nome1 + "\t" + nome2;
-						if (false) {//solo coppa
+						if (true) {//solo coppa
 							if (!hs.contains(k)) continue;
 						}
 						if (!nome1.equals(nome2)){

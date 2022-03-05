@@ -38,6 +38,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -1620,7 +1622,15 @@ public class Main {
 				throw new RuntimeException("Per le chiamate con verbo GET non valorizzare il body");
 			}
 		}
-		int responseCode = connectionHTTP.getResponseCode();
+		int responseCode=0;
+		try
+		{
+			responseCode = connectionHTTP.getResponseCode();
+		}
+		catch (SSLHandshakeException e)
+		{
+			throw new RuntimeException("Aggiornare i certificati per: " + url);
+		}
 		StringBuffer response = new StringBuffer();
 		if (responseCode == HttpURLConnection.HTTP_OK) {
 			Map<String, List<String>> headerFields = connectionHTTP.getHeaderFields();
@@ -3373,6 +3383,7 @@ public class Main {
 		StringBuilder testo = new StringBuilder();
 		List<Squadra> squadre = return1.getSquadre();
 		List<Squadra> sqFS=new ArrayList<>();
+		String nomeSquadraCasa = reverseNickPlayer.get(nomePartitaSimulata.substring(2,nomePartitaSimulata.indexOf(" ",2))).substring(3);
 		if (return1.getTipo().equalsIgnoreCase("FANTASERVICE") &&  nomePartitaSimulata.startsWith("B")) {
 			overrideFS(squadre);
 			for (Squadra squadraTmp : squadre) {
@@ -3386,7 +3397,11 @@ public class Main {
 			if (sqFS.size()>0) {
 				defaultGiocatoriNonAncoraVotoFS(sqFS);
 				applicaCambi(sqFS);
-				calcolaScontro(sqFS.get(0), sqFS.get(1), 1);
+				if (sqFS.get(1).getNome().equals(nomeSquadraCasa)) {
+					calcolaScontro(sqFS.get(1), sqFS.get(0), 1);
+				} else {
+					calcolaScontro(sqFS.get(0), sqFS.get(1), 1);
+				}
 			}
 		}
 		Map<String, Object> ret = new HashMap<>();
@@ -3394,7 +3409,6 @@ public class Main {
 		map.put("ris", sqFS.get(0).getGolSimulazione() + "-" + sqFS.get(1).getGolSimulazione());
 		ret.put("data", map);
 		List<Map<String, Object>> teams = new ArrayList<>();
-		String nomeSquadraCasa = reverseNickPlayer.get(nomePartitaSimulata.substring(2,nomePartitaSimulata.indexOf(" ",2))).substring(3);
 		for (Squadra squadra : sqFS) {
 			Map<String, Object> team = new HashMap<>();
 			team.put("nome",squadra.getNome());
