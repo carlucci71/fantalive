@@ -95,7 +95,7 @@ public class FantaLiveTest {
 				List<String> squadreCasa = (List<String>) proiezioni.get("squadreCasa");
 				String testo = (String) proiezioni.get("testo");
 				assertTrue(testo.indexOf("tavolino")>0);
-				String dett = Main.getDettaglio(constant.CHAT_ID_FANTALIVE,Campionati.BE.name(), squadre.get(0).substring(squadre.get(0).indexOf("-")+1), (squadre.contains(squadreCasa.get(0))?"S":"N"), partitaSimulata);
+				String dett = Main.getDettaglio(constant.CHAT_ID_FANTALIVE,Campionati.BE.name(), squadre.get(0).substring(squadre.get(0).indexOf("-")+1), (squadre.contains(squadreCasa.get(0))?"S":"N"), partitaSimulata, false);
 				assertTrue(dett.indexOf("Raspadori")>0);
 			}
 		}
@@ -111,7 +111,7 @@ public class FantaLiveTest {
 				List<String> squadreCasa = (List<String>) proiezioni.get("squadreCasa");
 				String testo = (String) proiezioni.get("testo");
 				assertTrue(testo.indexOf("Tavolino")>0);
-				String dett = Main.getDettaglio(constant.CHAT_ID_FANTALIVE,Campionati.FANTAVIVA.name(), squadre.get(0).substring(squadre.get(0).indexOf("-")+1), (squadre.contains(squadreCasa.get(0))?"S":"N"), partitaSimulata);
+				String dett = Main.getDettaglio(constant.CHAT_ID_FANTALIVE,Campionati.FANTAVIVA.name(), squadre.get(0).substring(squadre.get(0).indexOf("-")+1), (squadre.contains(squadreCasa.get(0))?"S":"N"), partitaSimulata, false);
 				assertTrue(dett.indexOf("Patricio")>0);
 			}
 		}

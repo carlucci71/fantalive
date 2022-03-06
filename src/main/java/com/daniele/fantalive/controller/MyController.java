@@ -169,7 +169,7 @@ public class MyController {
 	@PostMapping("/verificaNotifica")
 	public Map<String, String>  verificaNotifica(@RequestBody Map<String,String> body) throws Exception {
 		Map<String, String>  ret=new HashMap<>();
-		Main.inviaNotifica(Main.getDettaglio(Constant.CHAT_ID_FANTALIVE,body.get("campionato"),body.get("squadra"),"N", null));
+		Main.inviaNotifica(Main.getDettaglio(Constant.CHAT_ID_FANTALIVE,body.get("campionato"),body.get("squadra"),"N", null, false));
 		return ret;
 	}
 	@PostMapping("/caricaFileFromDataByName")

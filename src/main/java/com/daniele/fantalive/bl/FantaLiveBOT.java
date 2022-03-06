@@ -168,7 +168,12 @@ switchkeepalive - switch keep alive
 				else if (testoCallback.startsWith("dettaglio")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
 					String[] split = testoCallback.split("#");
-					inviaMessaggio(chatId,Main.getDettaglio(chatId,split[0],split[1],split[2],split[3]), false);
+					inviaMessaggio(chatId,Main.getDettaglio(chatId,split[0],split[1],split[2],split[3], false), false);
+				}
+				else if (testoCallback.startsWith("live")) {
+					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
+					String[] split = testoCallback.split("#");
+					inviaMessaggio(chatId,Main.getDettaglio(chatId,split[0],split[1],split[2],split[3], true), false);
 				}
 				else if (testoCallback.startsWith("filtro")) {
 					testoCallback =testoCallback.substring(testoCallback.indexOf(" ")+1);
@@ -301,14 +306,10 @@ switchkeepalive - switch keep alive
 			}
 			for (String attCamp : campionati) {
 				Return return1 = go.get(attCamp);
-				List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
+				List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
 				List<Squadra> squadre = return1.getSquadre();
 				for (Squadra squadra : squadre) {
 					if (squadrePuntuali == null || squadrePuntuali.contains(attCamp + "-" + squadra.getNome())) {
-						if (keyboardButtonsRow1.size()>2) {
-							rowList.add(keyboardButtonsRow1);
-							keyboardButtonsRow1 = new ArrayList<>();
-						}
 						String casa;
 						if (simulazioneListaCasa==null) {
 							if (squadra.isCasaProiezione()) {
@@ -324,12 +325,19 @@ switchkeepalive - switch keep alive
 							}
 						}
 						InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+						keyboardButtonsRow = new ArrayList<>();
 						inlineKeyboardButton.setText(squadra.getNome());
 						inlineKeyboardButton.setCallbackData("dettaglio " + attCamp + "#"+ squadra.getNome()+ "#"+ casa+"#"+ (nomePartitaSimulata==null?"-":nomePartitaSimulata));
-						keyboardButtonsRow1.add(inlineKeyboardButton);
+						keyboardButtonsRow.add(inlineKeyboardButton);
+						rowList.add(keyboardButtonsRow);
+						inlineKeyboardButton = new InlineKeyboardButton();
+						keyboardButtonsRow = new ArrayList<>();
+						inlineKeyboardButton.setText("live " + squadra.getNome());
+						inlineKeyboardButton.setCallbackData("live " + attCamp + "#"+ squadra.getNome()+ "#"+ casa+"#"+ (nomePartitaSimulata==null?"-":nomePartitaSimulata));
+						keyboardButtonsRow.add(inlineKeyboardButton);
+						rowList.add(keyboardButtonsRow);
 					}
 				}
-				rowList.add(keyboardButtonsRow1);
 			}
 			return rowList;
 		}

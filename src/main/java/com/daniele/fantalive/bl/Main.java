@@ -119,11 +119,11 @@ public class Main {
 	static Set<String > giocJB;	
 	public static Map<String, String> keyFG=null;
 	public static int timeRefresh = 0;
-	
+
 	public static Logger logger = Logger.getLogger(Main.class);
-	
-	
-	
+
+
+
 	public static void init(SalvaRepository salvaRepositorySpring, SocketHandlerFantalive socketHandlerSpring, Constant constantSpring, boolean valorizzaBMFG) throws Exception {
 		executor = Executors.newSingleThreadScheduledExecutor();	
 		salvaRepository=salvaRepositorySpring;
@@ -786,16 +786,16 @@ public class Main {
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
 		init(null, null, c, false);
-//		Map<Integer, Float> votiAlvin = getVotiAlvin(24);
-//		System.out.println(votiAlvin);
+		//		Map<Integer, Float> votiAlvin = getVotiAlvin(24);
+		//		System.out.println(votiAlvin);
 		System.out.println(getVotiFS(24, false));
-	
+
 	}
 	public static  String getNomeFromFG(String nomeFS, Set<String> nomiFG) {
 		String ret=null;
 		for (String nomeFG : nomiFG) {
 			String[] split = nomeFG.split("@");
-//			System.out.println(split[0].substring(0,split[0].lastIndexOf(" ")).replaceAll(" ", "")); //.equalsIgnoreCase(nomeGiocatoreLive.replaceAll(" ", "")))	
+			//			System.out.println(split[0].substring(0,split[0].lastIndexOf(" ")).replaceAll(" ", "")); //.equalsIgnoreCase(nomeGiocatoreLive.replaceAll(" ", "")))	
 			String nomeFindFS = nomeFS.substring(0,nomeFS.lastIndexOf(" ")).replaceAll(" ", "");
 			String nomeFindFG = split[0].replaceAll(" ", "");
 			if (nomeFindFS.equalsIgnoreCase(nomeFindFG))
@@ -821,7 +821,7 @@ public class Main {
 				idFG.put(nome,  (Integer) map.get("id"));
 			}
 		}
-		*/
+		 */
 		String tokenNomeFile = "LIVE_" + giornata  + "_";
 		if (rileggi) {
 			Main.scaricaBe(giornata,tokenNomeFile);
@@ -843,9 +843,9 @@ public class Main {
 			}
 		}
 		return ret;
-		*/
+		 */
 		return squadre;
-/*
+		/*
 		Map<Integer, Float> votiAlvin = getVotiAlvin(Constant.GIORNATA);
 		for (Squadra squadra : squadre) {
 			for (Giocatore giocatore : squadra.getTitolari()) {
@@ -861,9 +861,9 @@ public class Main {
 				}
 			}
 		}
-*/	
-	
-	
+		 */	
+
+
 	}
 
 	private static Map<Integer, Float> getVotiAlvin(int giornata) throws Exception {
@@ -919,7 +919,7 @@ public class Main {
 		return ret;
 	}
 	public static void main(String[] args) throws Exception {
-//				mainSpring(args);
+		//				mainSpring(args);
 		mainBatch(args);
 
 
@@ -3044,9 +3044,9 @@ public class Main {
 		}
 	}
 	public static <T> T fromJson(String json, Class<T> clazz) throws Exception{
-        return mapper.readValue(json, clazz);
-    }
-	
+		return mapper.readValue(json, clazz);
+	}
+
 	public static Map<String, Object> jsonToMap(String json)
 	{
 		try
@@ -3186,7 +3186,7 @@ public class Main {
 						if (partitaSimulata.getNome().equalsIgnoreCase(nomePartitaSimulata)) {
 							sqFS.add(squadraTmp);
 						}
-						
+
 					}
 				}
 				if (sqFS.size()>0) {
@@ -3259,30 +3259,30 @@ public class Main {
 						if (squadraSimulata != null) {
 							int index=0;
 							for (Map<String, Object> map2 : players) {
-									index++;
-//									sb.append(index + " ");
-									if ((Boolean)map2.get("played")) {
-										sb.append("<b>");
-									}
-									sb.append((String)map2.get("nome"));
-									sb.append(" ");
-									if ((Boolean)map2.get("played")) {
-										sb.append("</b>");
-										sb.append(map2.get("fantavoto"));
-									}
-									if ((boolean)map2.get("squadraGioca") == false) {
-										sb.append("*");
-									}
-									sb.append(" ");
-									List<Integer> bm=(List<Integer>) map2.get("bm");
-									for (Integer integer : bm) {
-										sb.append( desEvento(integer, campionatoFG) + " ");
+								index++;
+								//									sb.append(index + " ");
+								if ((Boolean)map2.get("played")) {
+									sb.append("<b>");
+								}
+								sb.append((String)map2.get("nome"));
+								sb.append(" ");
+								if ((Boolean)map2.get("played")) {
+									sb.append("</b>");
+									sb.append(map2.get("fantavoto"));
+								}
+								if ((boolean)map2.get("squadraGioca") == false) {
+									sb.append("*");
+								}
+								sb.append(" ");
+								List<Integer> bm=(List<Integer>) map2.get("bm");
+								for (Integer integer : bm) {
+									sb.append( desEvento(integer, campionatoFG) + " ");
 
-									}
-									if ((double)map2.get("malus") != 0) {
-										sb.append(" MALUS: " + map2.get("malus"));
-									}
-									sb.append("\n");
+								}
+								if ((double)map2.get("malus") != 0) {
+									sb.append(" MALUS: " + map2.get("malus"));
+								}
+								sb.append("\n");
 							}
 							sb.append("\n");
 						}
@@ -3425,7 +3425,7 @@ public class Main {
 			for (Giocatore giocatore : squadra.getTitolari()) {
 				Map<String, Object> player = new HashMap<>();
 				player.put("nome", giocatore.getNome() + " (" + giocatore.getRuolo() + ")");
-//				player.put("rank","");
+				//				player.put("rank","");
 				player.put("played", true);
 				player.put("malus", 0.0);
 				player.put("totBM", 0.0);
@@ -3440,7 +3440,7 @@ public class Main {
 			for (Giocatore giocatore : squadra.getRiserve()) {
 				Map<String, Object> player = new HashMap<>();
 				player.put("nome", giocatore.getNome() + " (" + giocatore.getRuolo() + ")");
-//				player.put("rank","");
+				//				player.put("rank","");
 				player.put("played", false);
 				player.put("malus", 0.0);
 				player.put("totBM", 0.0);
@@ -3458,8 +3458,8 @@ public class Main {
 		map.put("teams", teams);
 		return ret;
 	}
-	
-	public static String getDettaglio(Long chatId, String campionato, String squadra, String casa, String nomePartitaSimulata) throws Exception{
+
+	public static String getDettaglio(Long chatId, String campionato, String squadra, String casa, String nomePartitaSimulata, boolean soloLive) throws Exception{
 		try {
 			Map<String, Return> go = Main.go(true, null, null);
 			Return return1 = go.get(campionato);
@@ -3474,7 +3474,7 @@ public class Main {
 						if (partitaSimulata.getNome().equalsIgnoreCase(nomePartitaSimulata)) {
 							sqFS.add(squadraTmp);
 						}
-						
+
 					}
 				}
 				if (sqFS.size()>0) {
@@ -3496,7 +3496,7 @@ public class Main {
 						.append(sq.getNome())
 						.append("</b>\n");
 						for (Giocatore giocatore : sq.getTitolari()) {
-							dettaglioTestoGiocatore(testo, giocatore,campionato);
+							dettaglioTestoGiocatore(testo, giocatore,campionato, soloLive);
 						}
 						testo
 						.append("\n")
@@ -3515,7 +3515,7 @@ public class Main {
 						.append("\n");
 
 						for (Giocatore giocatore : sq.getRiserve()) {
-							dettaglioTestoGiocatore(testo, giocatore,campionato);
+							dettaglioTestoGiocatore(testo, giocatore,campionato, soloLive);
 						}
 						testo
 						.append("\n")
@@ -3555,9 +3555,9 @@ public class Main {
 							.append(Main.getUrlNotifica());
 						}
 
-//						logger.error("@getDettaglio " + "@nome: " + sq.getNome() + "@titolari: " + sq.getTitolari() + "@TT: " + sq.getTotaleTitolari()
-//						+ "@MD:" + sq.getModificatoreDifesa()  + "@MC: " + sq.getModificatoreCentrocampo()  + "@MA: " +  sq.getModificatoreAttacco()  
-//						+ "@MAL: " + sq.getMalusFormazioneAutomatica() + "@PR: " + sq.getProiezione() + "@Casa: " + casa);
+						//						logger.error("@getDettaglio " + "@nome: " + sq.getNome() + "@titolari: " + sq.getTitolari() + "@TT: " + sq.getTotaleTitolari()
+						//						+ "@MD:" + sq.getModificatoreDifesa()  + "@MC: " + sq.getModificatoreCentrocampo()  + "@MA: " +  sq.getModificatoreAttacco()  
+						//						+ "@MAL: " + sq.getMalusFormazioneAutomatica() + "@PR: " + sq.getProiezione() + "@Casa: " + casa);
 
 						return testo.toString(); 
 					}
@@ -3581,7 +3581,7 @@ public class Main {
 					giocatore.setEsce(true);
 				}
 				if (giocatore.isEsce()) {
-				
+
 					if (giocatore.getRuolo().equals("P")) {
 						P_daCambiare.add(giocatore);
 					}
@@ -3623,7 +3623,7 @@ public class Main {
 						giocatore.setEntra(true);
 						A_daCambiare.remove(0);
 					}
-					
+
 				}
 			}
 		}
@@ -3642,48 +3642,60 @@ public class Main {
 		}
 		return testo;
 	}
-	private static void dettaglioTestoGiocatore(StringBuilder testo, Giocatore giocatore, String campionato) {
-		testo
-		//		.append("\uD83C\uDC06")
-		//		.append(" ")
-		.append(getIconaIDGioc.get(giocatore.getIdGioc()))
-		.append(" ")
-		.append(conVoto(giocatore))
-		.append("  ")
-		.append(getDesRuolo(campionato, giocatore.getRuolo()))
-		.append("  ")
-		.append("<b>")
-		.append(giocatore.getNome())
-		.append("</b>")
-		.append("  ")
-		.append(giocatore.getSquadra())
-		.append("  ")
-		.append(getVoto(giocatore))
-		.append("  ")
-		.append("<b>")
-		.append(getFantaVoto(giocatore))
-		.append("</b>");
-		if (giocatore.isCambiato()) {
-			testo.append("(*)");
-		}
-		testo
-		//		.append("\n")
-		.append(getOrario(giocatore.getOrario()))
-		.append("\n");
-
-		if (giocatore.isNonGioca()) {
-			testo
-			.append(" NON GIOCA ")
-			.append("  ");
-		}else {
-			for (Integer evento : giocatore.getCodEventi()) {
-				testo
-				.append(desEvento(evento,campionato))
-				.append("  ");
+	private static void dettaglioTestoGiocatore(StringBuilder testo, Giocatore giocatore, String campionato, boolean soloLive) {
+		boolean visGioc=true;
+		if (soloLive) {
+			if (giocatore.getOrario().get("tag").equalsIgnoreCase("Postponed") || giocatore.getOrario().get("tag").equalsIgnoreCase("FullTime") 
+					|| giocatore.getOrario().get("tag").equalsIgnoreCase("PreMatch")) {
+				visGioc=false;
+			}
+			if (giocatore.getCodEventi().contains(14)) {
+				visGioc=false;
 			}
 		}
-		testo
-		.append("\n");
+		if (visGioc) {
+			testo
+			//		.append("\uD83C\uDC06")
+			//		.append(" ")
+			.append(getIconaIDGioc.get(giocatore.getIdGioc()))
+			.append(" ")
+			.append(conVoto(giocatore))
+			.append("  ")
+			.append(getDesRuolo(campionato, giocatore.getRuolo()))
+			.append("  ")
+			.append("<b>")
+			.append(giocatore.getNome())
+			.append("</b>")
+			.append("  ")
+			.append(giocatore.getSquadra())
+			.append("  ")
+			.append(getVoto(giocatore))
+			.append("  ")
+			.append("<b>")
+			.append(getFantaVoto(giocatore))
+			.append("</b>");
+			if (giocatore.isCambiato()) {
+				testo.append("(*)");
+			}
+			testo
+			//		.append("\n")
+			.append(getOrario(giocatore.getOrario()))
+			.append("\n");
+
+			if (giocatore.isNonGioca()) {
+				testo
+				.append(" NON GIOCA ")
+				.append("  ");
+			}else {
+				for (Integer evento : giocatore.getCodEventi()) {
+					testo
+					.append(desEvento(evento,campionato))
+					.append("  ");
+				}
+			}
+			testo
+			.append("\n");
+		}
 	}
 	private static String getVoto(Giocatore g) {
 		if (!g.isSquadraGioca()) return " ";
@@ -3933,17 +3945,17 @@ public class Main {
 			sb.append("Totale --> <b><i>")
 			.append(squadra.getTotale()+iCasa)
 			.append("</i></b>\n\n");
-			
+
 		}else {
 			sb.append("Proiezione --> <b><i>")
 			.append(squadra.getProiezione()+iCasa)
 			.append("</i></b>\n\n");
 		}
-		
-//		logger.error("@proiezioneSquadra " + "@nome: " + squadra.getNome() + "@titolari: " + squadra.getTitolari() + "@TT: " + squadra.getTotaleTitolari()
-//		+ "@MD:" + squadra.getModificatoreDifesa()  + "@MC: " + squadra.getModificatoreCentrocampo()  + "@MA: " +  squadra.getModificatoreAttacco()  
-//		+ "@MAL: " + squadra.getMalusFormazioneAutomatica() + "@PR: " + squadra.getProiezione() + "@Casa: " + iCasa);
-		
+
+		//		logger.error("@proiezioneSquadra " + "@nome: " + squadra.getNome() + "@titolari: " + squadra.getTitolari() + "@TT: " + squadra.getTotaleTitolari()
+		//		+ "@MD:" + squadra.getModificatoreDifesa()  + "@MC: " + squadra.getModificatoreCentrocampo()  + "@MA: " +  squadra.getModificatoreAttacco()  
+		//		+ "@MAL: " + squadra.getMalusFormazioneAutomatica() + "@PR: " + squadra.getProiezione() + "@Casa: " + iCasa);
+
 		return sb;
 	}
 	public static Map<String, Object> getOldSnapPartite(boolean live) throws Exception {
@@ -4060,7 +4072,7 @@ public class Main {
 		calcolaModificatoreCentrocampo(squadra1, squadra2);
 		calcolaModificatoreAttacco(squadra1);
 		calcolaModificatoreAttacco(squadra2);
-		
+
 		int iGolCasa = getGol(squadra1.getTotale()+Constant.ICASA);
 		int iGolTrasferta = getGol(squadra2.getTotale());
 		if (iGolCasa > 0 && iGolCasa == iGolTrasferta && ( Math.abs(squadra1.getTotale() +Constant.ICASA - squadra2.getTotale()) >= 4))//FIXME BUG
@@ -4158,7 +4170,7 @@ public class Main {
 		//Voto < 5 =2
 		//ogni 0,25 = -0.5 
 		//Difesa a 3 = +0.5 - Difesa a 5 = -0.5
-		
+
 		BigDecimal ret=new BigDecimal("0");
 		List<Giocatore> titolari = squadra1.getTitolari();
 		for (Giocatore giocatore : titolari) {
@@ -4166,18 +4178,18 @@ public class Main {
 				ret=ret.add(new BigDecimal(Double.toString(giocatore.getVoto())));
 			}
 		}
-		
+
 		int iContaTitolariOriginali=0;
 		for(Giocatore giocatore : squadra1.getTitolariOriginali()) {
 			if (giocatore.getRuolo().equalsIgnoreCase("P") || giocatore.getRuolo().equalsIgnoreCase("D")) {
 				iContaTitolariOriginali++;
 			}
 		}
-		
+
 		BigDecimal media = ret.divide(new BigDecimal(iContaTitolariOriginali), 2, RoundingMode.HALF_UP);
 		BigDecimal cap=new BigDecimal(5);
 		BigDecimal voto=new BigDecimal(2);
-		
+
 		while (media.compareTo(cap)>=0) {
 			cap=cap.add(new BigDecimal(0.25));
 			voto=voto.add(new BigDecimal(-0.5));
@@ -4325,5 +4337,5 @@ public class Main {
 			squadra.setTitolari(nuoviTitolari);
 		}
 	}
-	
+
 }
