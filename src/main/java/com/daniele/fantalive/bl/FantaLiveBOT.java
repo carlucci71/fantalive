@@ -331,7 +331,7 @@ switchkeepalive - switch keep alive
 						keyboardButtonsRow.add(inlineKeyboardButton);
 						rowList.add(keyboardButtonsRow);
 						inlineKeyboardButton = new InlineKeyboardButton();
-						keyboardButtonsRow = new ArrayList<>();
+//						keyboardButtonsRow = new ArrayList<>();
 						inlineKeyboardButton.setText("live " + squadra.getNome());
 						inlineKeyboardButton.setCallbackData("live " + attCamp + "#"+ squadra.getNome()+ "#"+ casa+"#"+ (nomePartitaSimulata==null?"-":nomePartitaSimulata));
 						keyboardButtonsRow.add(inlineKeyboardButton);
