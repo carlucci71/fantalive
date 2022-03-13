@@ -3384,7 +3384,7 @@ public class Main {
 		List<Squadra> squadre = return1.getSquadre();
 		List<Squadra> sqFS=new ArrayList<>();
 		String nomeSquadraCasa = reverseNickPlayer.get(nomePartitaSimulata.substring(2,nomePartitaSimulata.indexOf(" ",2))).substring(3);
-		if (return1.getTipo().equalsIgnoreCase("FANTASERVICE") &&  nomePartitaSimulata.startsWith("B")) {
+		if (return1.getTipo().equalsIgnoreCase("FANTASERVICE")) {// &&  nomePartitaSimulata.startsWith("B")
 			overrideFS(squadre);
 			for (Squadra squadraTmp : squadre) {
 				List<PartitaSimulata> partiteSimulate = squadraTmp.getPartiteSimulate();
