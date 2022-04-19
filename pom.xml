@@ -12,6 +12,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<properties>
+	
 		<!-- <maven.test.skip>false</maven.test.skip> -->
 		<start-class>com.daniele.MainClass</start-class>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
