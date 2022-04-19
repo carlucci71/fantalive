@@ -3226,16 +3226,17 @@ public class Main {
 				}
 			}
 		}
+		Map<String, Object> proiezioneFG=null;
 		if (nomePartitaSimulata.startsWith("B")) {
 			proiezioneFS("BE", nomePartitaSimulata);
 		} else
 		{
-			proiezioneFG(aliasCampionati.get(campionatoFG), squadreFG, sfideFG, squadraSimulata);
+				proiezioneFG = proiezioneFG(aliasCampionati.get(campionatoFG), squadreFG, sfideFG, squadraSimulata);
 		}
 		
 		List<Map<String, Object>> l=new ArrayList<>();
 		if (sfideFG != null) {
-			Map<String, Object> p = (Map<String, Object>) proiezioneFG(aliasCampionati.get(campionatoFG), squadreFG, sfideFG, squadraSimulata).get("data");
+			Map<String, Object> p = (Map<String, Object>) proiezioneFG.get("data");
 			l = (List<Map<String, Object>>) p.get("teams");
 			List<String> nomi=new ArrayList<>();
 			List<Double> modDif=new ArrayList<>();
