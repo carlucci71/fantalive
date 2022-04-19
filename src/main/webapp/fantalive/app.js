@@ -402,20 +402,39 @@ app.run(
                 	$rootScope.proiezioneFS(r,i);
                 }
 			}
+
+			$rootScope.selectNomeProiezioni=function(ind){
+				$rootScope.aggiornaProiezioni(ind);
+			}
 			$rootScope.proiezioneFS=function(r, i){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
 				var cc=i.squadre[0].campionato;
-
+				$rootScope.listaNomiProiezioni=[];
 				$resource('./proiezioneFS/' + cc+ "/" + i.squadre[0].nome,{}).save().$promise.then(function(data) {
-					console.log(data);
-					$rootScope.open(data.data);
-					$rootScope.loading=false;
-					$rootScope.fine=new Date();
+					$resource('./proiezioneFS_name/' + cc+ "/" + i.squadre[0].nome,{}).save().$promise.then(function(data2) {
+						$rootScope.listaNomiProiezioni=data2.lista;
+						$rootScope.datiProiezioni={};
+						$rootScope.datiProiezioni.data=data.data;
+						$rootScope.open(data.data);
+						$rootScope.loading=false;
+						$rootScope.fine=new Date();
+					}).catch(function(error) {
+						console.log(error);
+						$rootScope.loading=false;
+						$rootScope.fine=new Date();
+						if (error && error.data && error.data.message)
+							alert("Errore-4.1-1: " + error.data.message);
+						else if (error && error.data)
+							alert("Errore-4.1-2: " + error.data);
+						else 
+							alert("Errore-4.1-3: " + angular.toJson(error));
+					});
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
+					console.log(error);
 					if (error && error.data && error.data.message)
 						alert("Errore-4-1: " + error.data.message);
 					else if (error && error.data)
@@ -437,14 +456,30 @@ app.run(
 						sq.push($rootScope.getSquadraByCampionatoAndName(cc,v.squadra));
 	                });
                 });
-				
+				$rootScope.listaNomiProiezioni=[];
 				$resource('./proiezioneFG/' + cc + "/" + r.sfide,{}).save(sq).$promise.then(function(data) {
-					$rootScope.open(data.data);
-					$rootScope.loading=false;
-					$rootScope.fine=new Date();
+					$resource('./proiezioneFG_name/' + cc + "/" + r.sfide,{}).save(sq).$promise.then(function(data2) {
+						$rootScope.listaNomiProiezioni=data2.lista;
+						$rootScope.datiProiezioni={};
+						$rootScope.datiProiezioni.data=data.data;
+						$rootScope.open(data.data);
+						$rootScope.loading=false;
+						$rootScope.fine=new Date();
+					}).catch(function(error) {
+						console.log(error);
+						$rootScope.loading=false;
+						$rootScope.fine=new Date();
+						if (error && error.data && error.data.message)
+							alert("Errore-4.1-1: " + error.data.message);
+						else if (error && error.data)
+							alert("Errore-4.1-2: " + error.data);
+						else 
+							alert("Errore-4.1-3: " + angular.toJson(error));
+					});
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
+					console.log(error);
 					if (error && error.data && error.data.message)
 						alert("Errore-4-1: " + error.data.message);
 					else if (error && error.data)
@@ -464,6 +499,7 @@ app.run(
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
+					console.log(error);
 					if (error && error.data && error.data.message)
 						alert("Errore-4-1: " + error.data.message);
 					else if (error && error.data)
@@ -556,6 +592,7 @@ app.run(
 				}).catch(function(error) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
+					console.log(error);
 					if (error && error.data && error.data.message)
 						alert("Errore-4-1: " + error.data.message);
 					else if (error && error.data)
@@ -944,9 +981,29 @@ app.directive("visualizzasquadra", function() {
 		}
 	};
 });
-app.controller('ModalDemoCtrl', function ($uibModal, $log, $rootScope) {
+app.controller('ModalDemoCtrl', function ($uibModal, $log, $rootScope, $resource) {
 	var pc = this;
-	pc.data = "..."; 
+
+	$rootScope.aggiornaProiezioni = function (ind) {
+		$rootScope.datiProiezioni.data.teams="";
+		$rootScope.inizio=new Date();
+		$rootScope.fine="";
+		$rootScope.loading=true;
+		$resource('./proiezioneStorica/' + btoa(ind)).save().$promise.then(function(data) {
+			$rootScope.datiProiezioni.data.teams=data.data.teams;
+			$rootScope.loading=false;
+			$rootScope.fine=new Date();
+		}).catch(function(error) {
+			$rootScope.loading=false;
+			$rootScope.fine=new Date();
+			if (error && error.data && error.data.message)
+				alert("Errore-4.2-1: " + error.data.message);
+			else if (error && error.data)
+				alert("Errore-4.2-2: " + error.data);
+			else 
+				alert("Errore-4.2-3: " + angular.toJson(error));
+		});
+	};
 
 	$rootScope.open = function (txt) {
 		var modalInstance = $uibModal.open({
@@ -958,9 +1015,10 @@ app.controller('ModalDemoCtrl', function ($uibModal, $log, $rootScope) {
 			controller: 'ModalInstanceCtrl',
 			controllerAs: 'pc',
 			windowClass: 'app-modal-window',
+			scope: $rootScope,			
 			resolve: {
 				data: function () {
-					return txt;
+					return $rootScope.datiProiezioni.data;
 				}
 			}
 		});

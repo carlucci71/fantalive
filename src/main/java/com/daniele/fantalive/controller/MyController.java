@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -38,7 +39,6 @@ import com.daniele.fantalive.model.Return;
 import com.daniele.fantalive.model.Squadra;
 import com.daniele.fantalive.repository.SalvaRepository;
 import com.daniele.fantalive.util.Constant;
-import com.daniele.fantalive.util.Constant.Campionati;
 
 @Component
 @RestController
@@ -52,6 +52,8 @@ public class MyController {
 
 	@PostConstruct
 	private void post() throws Exception {
+//		Main.callHTTP("GET", "application/json; charset=UTF-8","https://api.trello.com/1/boards/" + "6167e3833928958cd1024162" + "/lists" + "?key=" + "caef54fff1dba5d19f329fd2ff89e89b" + "&token=" + "0f117287a8092a509cf387ffb67ba5eceb4125323b152a245608a04ad95345e5",null);
+		
 		Main.init(salvaRepository,socketHandlerFantalive,constant, true);
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
@@ -274,14 +276,53 @@ public class MyController {
 		return test(true);
 	}
 	
+	@PostMapping("/proiezioneStorica/{ind}")
+	public Map<String, Object> proiezioneFGStorica(@PathVariable String ind) throws Exception {
+		String nomeFile=new String(Base64.getDecoder().decode(ind));
+		Salva findOne = salvaRepository.findOne(nomeFile);
+		Map fromJson = Main.fromJson(findOne.getTesto(), Map.class);
+		/*
+		List<Map> l = (List<Map>) ((Map)fromJson.get("data")).get("teams");
+		for (Map m : l) {
+			m.put("nome", m.get("nome") +"-"+ nomeFile.substring(0,23));
+			m.put("total", 23);
+		}
+		*/
+		return fromJson;
+	}
+
 	@PostMapping("/proiezioneFG/{lega}/{sfide}")
 	public Map<String, Object> proiezioneFG(@PathVariable String lega,@PathVariable String sfide,@RequestBody List<Squadra> sq) throws Exception {
-		return Main.proiezione_FG(Main.aliasCampionati.get(lega), sq, sfide, null);
+		return Main.proiezioneFG(Main.aliasCampionati.get(lega), sq, sfide, null);
+	}
+
+	@PostMapping("/proiezioneFG_name/{lega}/{sfide}")
+	public Map<String, Object>  proiezioneFG_name(@PathVariable String lega,@PathVariable String sfide,@RequestBody List<Squadra> sq) throws Exception {
+		List<Salva> ls =  Main.proiezioneFG_name(Main.aliasCampionati.get(lega), sq, sfide, null);
+		List<String> ret=new ArrayList<>();
+		ls.forEach((salva) -> {
+			ret.add(salva.getNome());
+		});
+		Map m = new HashMap<>();
+		m.put("lista", ret);
+		return m;
 	}
 	
 	@PostMapping("/proiezioneFS/{lega}/{nomePartitaSimulata}")
 	public Map<String, Object> proiezioneFS(@PathVariable String lega,@PathVariable String nomePartitaSimulata) throws Exception {
-		return Main.proiezione_FS(lega, nomePartitaSimulata);
+		return Main.proiezioneFS(lega, nomePartitaSimulata);
+	}
+	
+	@PostMapping("/proiezioneFS_name/{lega}/{nomePartitaSimulata}")
+	public Map<String, Object> proiezioneFS_name(@PathVariable String lega,@PathVariable String nomePartitaSimulata) throws Exception {
+		List<Salva> ls =  Main.proiezioneFS_name(Main.aliasCampionati.get(lega), nomePartitaSimulata);
+		List<String> ret=new ArrayList<>();
+		ls.forEach((salva) -> {
+			ret.add(salva.getNome());
+		});
+		Map m = new HashMap<>();
+		m.put("lista", ret);
+		return m;
 	}
 	
 	@PostMapping("/simulaCambiMantra/{lega}")

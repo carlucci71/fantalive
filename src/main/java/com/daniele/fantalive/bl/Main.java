@@ -935,8 +935,7 @@ public class Main {
 		 */
 	}
 
-	public static Map<String, Object> proiezione_FG(String lega, List<Squadra> squadre, String sfide, String squadraSimulata) throws Exception{
-
+	public static Map<String, Object> proiezioneFG(String lega, List<Squadra> squadre, String sfide, String squadraSimulata) throws Exception{
 		Map<String, Object> jsonToMap;
 		Map bodyMap = new HashMap<>();
 		bodyMap.put("username", constant.UTENTE_FG);
@@ -1027,9 +1026,29 @@ public class Main {
 			}
 		}
 		//System.out.println(toJson(ret));
+		Instant instant = Instant.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
+		ZoneId zoneId = ZoneId.of( "Europe/Rome" );
+		ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
+		String time=zdt.format(formatter);
+		String sq="";
+		for (Squadra squadra : squadre) {
+			sq=sq+";" + squadra.getNome();
+		}
+		String x="-" + "simulaFG" + "-" + sfide + "-" + lega + "-" + sq + "-" + (squadraSimulata==null?"":squadraSimulata);
+		upsertSalva(time + x, toJson(ret));
 		return ret;
 	}
-
+	
+	public static List<Salva> proiezioneFG_name(String lega, List<Squadra> squadre, String sfide, String squadraSimulata) throws Exception{
+		String sq="";
+		for (Squadra squadra : squadre) {
+			sq=sq+";" + squadra.getNome();
+		}
+		String x="%-" + "simulaFG" + "-" + sfide + "-" + lega + "-" + sq + "-" + (squadraSimulata==null?"":squadraSimulata);
+		List<Salva>  ret =salvaRepository.findSimulazioniName(x);
+		return ret;
+	}
 	private static Map<String, Object> callProiezioneFG(List<Squadra> squadre, String user_token, String lega_token, String idComp, String squadraSimulata)
 			throws Exception {
 		Map<String, String> headers;
@@ -3218,7 +3237,7 @@ public class Main {
 		}
 		List<Map<String, Object>> l=new ArrayList<>();
 		if (sfideFG != null) {
-			Map<String, Object> p = (Map<String, Object>) proiezione_FG(aliasCampionati.get(campionatoFG), squadreFG, sfideFG, squadraSimulata).get("data");
+			Map<String, Object> p = (Map<String, Object>) proiezioneFG(aliasCampionati.get(campionatoFG), squadreFG, sfideFG, squadraSimulata).get("data");
 			l = (List<Map<String, Object>>) p.get("teams");
 			List<String> nomi=new ArrayList<>();
 			List<Double> modDif=new ArrayList<>();
@@ -3290,12 +3309,13 @@ public class Main {
 						sb.append("\n");
 						sb.append("Giocatori con voto: ");
 						sb.append(squadra.getContaTitolari());
+						sb.append(" (da giocare: " + squadra.getContaSquadraTitolariNonGioca() + ")");
 						sb.append("\n");
 						sb.append("Media votati: ");
 						sb.append(squadra.getMediaTitolari());
-						sb.append("\n");
-						sb.append("Ancora da giocare: ");
-						sb.append(squadra.getContaSquadraTitolariNonGioca());
+//						sb.append("\n");
+//						sb.append("Ancora da giocare: ");
+//						sb.append(squadra.getContaSquadraTitolariNonGioca());
 						sb.append("\n");
 						sb.append("Totale: ");
 						sb.append(squadra.getTotaleTitolari());
@@ -3305,9 +3325,10 @@ public class Main {
 						sb.append("\n");
 						sb.append("Giocatori con voto: ");
 						sb.append(squadra.getContaRiserve());
-						sb.append("\n");
-						sb.append("Ancora da giocare: ");
-						sb.append(squadra.getContaSquadraRiserveNonGioca());
+						sb.append(" (da giocare: " + squadra.getContaSquadraRiserveNonGioca() + ")");
+//						sb.append("\n");
+//						sb.append("Ancora da giocare: ");
+//						sb.append(squadra.getContaSquadraRiserveNonGioca());
 						sb.append("\n\n");
 						sb.append("Proiezione --> <b><i>");
 						sb.append(totali.get(i));
@@ -3377,7 +3398,7 @@ public class Main {
 			}
 		}
 	}
-	public static Map<String, Object> proiezione_FS(String campionato, String nomePartitaSimulata) throws Exception{
+	public static Map<String, Object> proiezioneFS(String campionato, String nomePartitaSimulata) throws Exception{
 		Map<String, Return> go = Main.go(true, null, null);
 		Return return1 = go.get(campionato);
 		StringBuilder testo = new StringBuilder();
@@ -3456,6 +3477,18 @@ public class Main {
 			teams.add(team);
 		}
 		map.put("teams", teams);
+		Instant instant = Instant.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
+		ZoneId zoneId = ZoneId.of( "Europe/Rome" );
+		ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
+		String time=zdt.format(formatter);
+		upsertSalva(time + "-" + "simulaFS" + "-" + campionato + "-" + nomePartitaSimulata, toJson(ret));
+		return ret;
+	}
+
+	public static List<Salva> proiezioneFS_name(String campionato, String nomePartitaSimulata) {
+		String x="%-" + "simulaFS" + "-" + campionato + "-" + nomePartitaSimulata;
+		List<Salva>  ret =salvaRepository.findSimulazioniName(x);
 		return ret;
 	}
 
@@ -3907,12 +3940,13 @@ public class Main {
 		.append("\n")
 		.append("Giocatori con voto: ")
 		.append(squadra.getContaTitolari())
+		.append(" (da giocare: " + squadra.getContaSquadraTitolariNonGioca() + ")")
 		.append("\n")
 		.append("Media votati: ")
 		.append(squadra.getMediaTitolari())
-		.append("\n")
-		.append("Ancora da giocare: ")
-		.append(squadra.getContaSquadraTitolariNonGioca())
+//		.append("\n")
+//		.append("Ancora da giocare: ")
+//		.append(squadra.getContaSquadraTitolariNonGioca())
 		.append("\n")
 		.append("Totale: ")
 		.append(squadra.getTotaleTitolari())
@@ -3922,9 +3956,10 @@ public class Main {
 		.append("\n")
 		.append("Giocatori con voto: ")
 		.append(squadra.getContaRiserve())
-		.append("\n")
-		.append("Ancora da giocare: ")
-		.append(squadra.getContaSquadraRiserveNonGioca())
+		.append(" (da giocare: " + squadra.getContaSquadraRiserveNonGioca() + ")")
+//		.append("\n")
+//		.append("Ancora da giocare: ")
+//		.append(squadra.getContaSquadraRiserveNonGioca())
 		.append("\n\n");
 		if (conModificatori) {
 			sb.append("Cambi simulati: ")

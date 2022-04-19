@@ -134,3 +134,8 @@ Se la chiave APPEND sarà indicata a true, verranno accodate le istruzioni per o
 In caso di crash dell'applicazione è possibile recuperare questo file, salvarlo in un altro path, ad es. c:\restoreAs.txt e, una volta riavviata l'applicazione, ripristinare questa fotografia di database con il comando:
 `curl -X POST "http://localhost:8081/restore" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"PATH\": \"C:\\restoreAs.txt\"}"`
 
+cmd come admin
+cd C:\Program Files\Eclipse Adoptium\jdk-8.0.312.7-hotspot\jre\lib\security
+keytool -list -v -keystore cacerts  > C:\1\jc.txt   (password changeit)
+download /1/fs.cer (da chrome scarica il certificato come file)
+keytool -import -alias fs -keystore  cacerts -file /1/fs.cer
