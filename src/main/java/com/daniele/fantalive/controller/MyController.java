@@ -52,8 +52,6 @@ public class MyController {
 
 	@PostConstruct
 	private void post() throws Exception {
-//		Main.callHTTP("GET", "application/json; charset=UTF-8","https://api.trello.com/1/boards/" + "6167e3833928958cd1024162" + "/lists" + "?key=" + "caef54fff1dba5d19f329fd2ff89e89b" + "&token=" + "0f117287a8092a509cf387ffb67ba5eceb4125323b152a245608a04ad95345e5",null);
-		
 		Main.init(salvaRepository,socketHandlerFantalive,constant, true);
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
