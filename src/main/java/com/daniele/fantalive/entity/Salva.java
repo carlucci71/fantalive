@@ -13,7 +13,7 @@ public class Salva {
 	private String nome;
 	@Lob
 	@Type(type = "text")
-	@Column(columnDefinition="TEXT", name = "testo")
+//	@Column(columnDefinition="TEXT", name = "testo")
 	private String testo;
 
 	public Salva() {
