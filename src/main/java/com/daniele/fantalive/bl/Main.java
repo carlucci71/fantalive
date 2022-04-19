@@ -39,7 +39,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLHandshakeException;
-import javax.transaction.Transactional;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
@@ -1041,16 +1040,6 @@ public class Main {
 		return ret;
 	}
 	
-//	@Transactional 
-	public static List<Salva> proiezioneFG_name(String lega, List<Squadra> squadre, String sfide, String squadraSimulata) throws Exception{
-		String sq="";
-		for (Squadra squadra : squadre) {
-			sq=sq+";" + squadra.getNome();
-		}
-		String x="%-" + "simulaFG" + "-" + sfide + "-" + lega + "-" + sq + "-" + (squadraSimulata==null?"":squadraSimulata);
-		List<Salva>  ret =salvaRepository.findSimulazioniName(x);
-		return ret;
-	}
 	private static Map<String, Object> callProiezioneFG(List<Squadra> squadre, String user_token, String lega_token, String idComp, String squadraSimulata)
 			throws Exception {
 		Map<String, String> headers;
@@ -3237,6 +3226,13 @@ public class Main {
 				}
 			}
 		}
+		if (nomePartitaSimulata.startsWith("B")) {
+			proiezioneFS("BE", nomePartitaSimulata);
+		} else
+		{
+			proiezioneFG(aliasCampionati.get(campionatoFG), squadreFG, sfideFG, squadraSimulata);
+		}
+		
 		List<Map<String, Object>> l=new ArrayList<>();
 		if (sfideFG != null) {
 			Map<String, Object> p = (Map<String, Object>) proiezioneFG(aliasCampionati.get(campionatoFG), squadreFG, sfideFG, squadraSimulata).get("data");
@@ -3488,7 +3484,16 @@ public class Main {
 		return ret;
 	}
 
-//	@Transactional 
+	public static List<Salva> proiezioneFG_name(String lega, List<Squadra> squadre, String sfide, String squadraSimulata) throws Exception{
+		String sq="";
+		for (Squadra squadra : squadre) {
+			sq=sq+";" + squadra.getNome();
+		}
+		String x="%-" + "simulaFG" + "-" + sfide + "-" + lega + "-" + sq + "-" + (squadraSimulata==null?"":squadraSimulata);
+		List<Salva>  ret =salvaRepository.findSimulazioniName(x);
+		return ret;
+	}
+
 	public static List<Salva> proiezioneFS_name(String campionato, String nomePartitaSimulata) {
 		String x="%-" + "simulaFS" + "-" + campionato + "-" + nomePartitaSimulata;
 		List<Salva>  ret =salvaRepository.findSimulazioniName(x);
