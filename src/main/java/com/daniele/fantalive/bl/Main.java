@@ -39,6 +39,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLHandshakeException;
+import javax.transaction.Transactional;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
@@ -1040,6 +1041,7 @@ public class Main {
 		return ret;
 	}
 	
+	@Transactional 
 	public static List<Salva> proiezioneFG_name(String lega, List<Squadra> squadre, String sfide, String squadraSimulata) throws Exception{
 		String sq="";
 		for (Squadra squadra : squadre) {
@@ -3486,6 +3488,7 @@ public class Main {
 		return ret;
 	}
 
+	@Transactional 
 	public static List<Salva> proiezioneFS_name(String campionato, String nomePartitaSimulata) {
 		String x="%-" + "simulaFS" + "-" + campionato + "-" + nomePartitaSimulata;
 		List<Salva>  ret =salvaRepository.findSimulazioniName(x);
