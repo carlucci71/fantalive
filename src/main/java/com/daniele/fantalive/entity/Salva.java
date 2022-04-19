@@ -4,11 +4,14 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 
+import org.hibernate.annotations.Type;
+
 @Entity
 public class Salva {
 	@Id
 	private String nome;
 	@Lob
+	@Type(type = "org.hibernate.type.ImageType")
 	private String testo;
 
 	public Salva() {
