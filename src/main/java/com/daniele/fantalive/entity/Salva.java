@@ -1,5 +1,6 @@
 package com.daniele.fantalive.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
@@ -11,6 +12,8 @@ public class Salva {
 	@Id
 	private String nome;
 	@Lob
+	@Type(type = "text")
+	@Column(columnDefinition="TEXT", name = "testo")
 	private String testo;
 
 	public Salva() {
