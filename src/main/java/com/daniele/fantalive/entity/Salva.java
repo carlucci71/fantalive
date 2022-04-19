@@ -11,7 +11,6 @@ public class Salva {
 	@Id
 	private String nome;
 	@Lob
-	@Type(type = "org.hibernate.type.ImageType")
 	private String testo;
 
 	public Salva() {
