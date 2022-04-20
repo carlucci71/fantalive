@@ -665,7 +665,11 @@ app.run(
 				$rootScope.loading=true;
 				$rootScope.configura=false;
 				$rootScope.result={};
-				$resource('./preparaSquadre',{}).save({}).$promise.then(function(data) {
+				var clearDB="S";
+				if (!$rootScope.clearDB) {
+					clearDB="N";
+				}
+				$resource('./preparaSquadre',{}).save({'clearDB':clearDB}).$promise.then(function(data) {
 					$rootScope.loading=false;
 					$rootScope.fine=new Date();
 					$rootScope.ricaricaIndex();

@@ -717,11 +717,16 @@ public class MyController {
 		constant.AUTH_FS=body.get("body");
 	}
 	@PostMapping("/preparaSquadre")
-	public void preparaSquadre(@RequestBody Map<String,Integer> body) throws Exception {
+	public void preparaSquadre(@RequestBody Map<String,Object> body) throws Exception {
 		try
 		{
 			Main.aggKeyFG();
-			Main.cancellaSquadre();
+			String clearDB=(String) body.get("clearDB");
+			if (clearDB.equalsIgnoreCase("S")) {
+				Main.clearDB();
+			}else {
+				Main.cancellaSquadre();
+			}
 			Main.getSquadreFromFG(Constant.Campionati.LUCCICAR.name());
 			Main.getSquadreFromFG(Constant.Campionati.JB.name());
 			Main.getSquadreFromFG(Constant.Campionati.FANTAVIVA.name());

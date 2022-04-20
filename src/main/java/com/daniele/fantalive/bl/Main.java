@@ -2162,6 +2162,9 @@ public class Main {
 			return new ArrayList<Squadra>();
 		}
 	}
+	public static void clearDB() throws Exception {
+		salvaRepository.deleteAll();
+	}
 
 	public static void cancellaSquadre() throws Exception {
 		cancellaSalva(Constant.FORMAZIONE + Constant.Campionati.JB.name());
@@ -2172,8 +2175,8 @@ public class Main {
 			cancellaSalva(Constant.Campionati.BE.name() + i + ".html");
 		}
 		inizializzaSqDaEv();
-
 	}
+
 	private static void inizializzaSqDaEv() {
 		sqDaEv= new ArrayList<String>();
 		sqDaEv.add("tavolino");
