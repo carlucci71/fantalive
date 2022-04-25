@@ -2744,7 +2744,7 @@ public class Main {
 					String votoLive=g.get("voto").toString();
 					String eventoLive=g.get("evento").toString();
 					if (nomeGiocatoreLive.toUpperCase().indexOf("APAT")>-1 && giocatore.getNome().toUpperCase().indexOf("APAT")>-1 && tipo.equalsIgnoreCase("FANTASERVICE")) {
-						System.out.println();
+//						System.out.println();
 					}
 					if (tipo.equals("FANTAGAZZETTA") && 
 							giocatore.getNomeTrim().equalsIgnoreCase(nomeGiocatoreLive.replaceAll(" ", "")
