@@ -26,9 +26,9 @@ import com.daniele.fantalive.repository.SalvaRepository;
 
 public class CalcolaPartita {
 	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 50;
-	private static final boolean RECUPERA_FROM_DB=true;
+	private static final boolean RECUPERA_FROM_DB=false;
 	private static final boolean USA_SPRING=false;
-	private static final boolean SOLO_COPPA_CAMPIONI=true;
+	private static final boolean SOLO_COPPA_CAMPIONI=false;
 	private static final boolean SOLO_COPPA_ITALIA=false;
 	private static final boolean SOLO_CAMPIONATO=false;
 	private static final String PARTITE = "Partite";
