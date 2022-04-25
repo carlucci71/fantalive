@@ -25,9 +25,12 @@ import com.daniele.fantalive.repository.SalvaRepository;
 
 
 public class CalcolaPartita {
-	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 20;
+	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 50;
 	private static final boolean RECUPERA_FROM_DB=true;
 	private static final boolean USA_SPRING=false;
+	private static final boolean SOLO_COPPA_CAMPIONI=true;
+	private static final boolean SOLO_COPPA_ITALIA=false;
+	private static final boolean SOLO_CAMPIONATO=false;
 	private static final String PARTITE = "Partite";
 	private static final String PUNTEGGI = "Punteggi";
 	private static final String PUNTI = "Punti";
@@ -139,6 +142,13 @@ public class CalcolaPartita {
 	}
 
 	private void go(String[] args) throws Exception {
+		int contaCoppe=0;
+		if (SOLO_COPPA_CAMPIONI) contaCoppe++;
+		if (SOLO_COPPA_ITALIA) contaCoppe++;
+		if (SOLO_CAMPIONATO) contaCoppe++;
+		if (contaCoppe>1) {
+			throw new RuntimeException("SOLO_COPPA_ITALIA, SOLO_CAMPIONATO e SOLO_COPPA_CAMPIONI sono alternativi tra di loro");
+		}
 		if (USA_SPRING) {
 			ctx = new SpringApplicationBuilder(MainClass.class)
 					.profiles("DEV")
@@ -158,56 +168,85 @@ public class CalcolaPartita {
 			Main.init(null,null,c, false);
 		}
 
-		HashSet<String> hs=new HashSet<>();
-		hs.add("2"+ "\t" + "Jonny Fighters"+ "\t" + "C. H. MOLLE");
-		hs.add("2"+ "\t" + "Atletico Mikatanto"+ "\t" + "tavolino");
-		hs.add("4"+ "\t" + "C. H. MOLLE"+ "\t" + "Atletico Mikatanto");
-		hs.add("4"+ "\t" + "tavolino"+ "\t" + "Jonny Fighters");
-		hs.add("6"+ "\t" + "Jonny Fighters"+ "\t" + "Atletico Mikatanto");
-		hs.add("6"+ "\t" + "C. H. MOLLE"+ "\t" + "tavolino");
-		hs.add("8"+ "\t" + "tavolino"+ "\t" + "C. H. MOLLE");
-		hs.add("8"+ "\t" + "Atletico Mikatanto"+ "\t" + "Jonny Fighters");
-		hs.add("10"+ "\t" + "Atletico Mikatanto"+ "\t" + "C. H. MOLLE");
-		hs.add("10"+ "\t" + "Jonny Fighters"+ "\t" + "tavolino");
-		hs.add("12"+ "\t" + "tavolino"+ "\t" + "Atletico Mikatanto");
-		hs.add("12"+ "\t" + "C. H. MOLLE"+ "\t" + "Jonny Fighters");
-		hs.add("14"+ "\t" + "Jonny Fighters"+ "\t" + "C. H. MOLLE");
-		hs.add("14"+ "\t" + "Atletico Mikatanto"+ "\t" + "tavolino");
-		hs.add("16"+ "\t" + "C. H. MOLLE"+ "\t" + "Atletico Mikatanto");
-		hs.add("16"+ "\t" + "tavolino"+ "\t" + "Jonny Fighters");
-		hs.add("18"+ "\t" + "Jonny Fighters"+ "\t" + "Atletico Mikatanto");
-		hs.add("18"+ "\t" + "C. H. MOLLE"+ "\t" + "tavolino");
-		hs.add("20"+ "\t" + "tavolino"+ "\t" + "C. H. MOLLE");
-		hs.add("20"+ "\t" + "Atletico Mikatanto"+ "\t" + "Jonny Fighters");
-		hs.add("22"+ "\t" + "Atletico Mikatanto"+ "\t" + "C. H. MOLLE");
-		hs.add("22"+ "\t" + "Jonny Fighters"+ "\t" + "tavolino");
-		hs.add("24"+ "\t" + "tavolino"+ "\t" + "Atletico Mikatanto");
-		hs.add("24"+ "\t" + "C. H. MOLLE"+ "\t" + "Jonny Fighters");
+		HashSet<String> hsPartiteCoppaItalia=new HashSet<>();
+		hsPartiteCoppaItalia.add("25"+ "\t" + "C. H. MOLLE"+ "\t" + "tavolino");
+		hsPartiteCoppaItalia.add("25"+ "\t" + "Canosa di Puglia..."+ "\t" + "Atletico Mikatanto");
+		hsPartiteCoppaItalia.add("25"+ "\t" + "Universal"+ "\t" + "Atletico Conc");
+		hsPartiteCoppaItalia.add("25"+ "\t" + "VincereAManiBasse"+ "\t" + "Jonny Fighters");
 		
-		hs.add("2"+ "\t" + "Universal"+ "\t" + "VincereAManiBasse");
-		hs.add("2"+ "\t" + "Canosa di Puglia..."+ "\t" + "Atletico Conc");
-		hs.add("4"+ "\t" + "VincereAManiBasse"+ "\t" + "Canosa di Puglia...");
-		hs.add("4"+ "\t" + "Atletico Conc"+ "\t" + "Universal");
-		hs.add("6"+ "\t" + "Universal"+ "\t" + "Canosa di Puglia...");
-		hs.add("6"+ "\t" + "VincereAManiBasse"+ "\t" + "Atletico Conc");
-		hs.add("8"+ "\t" + "Atletico Conc"+ "\t" + "VincereAManiBasse");
-		hs.add("8"+ "\t" + "Canosa di Puglia..."+ "\t" + "Universal");
-		hs.add("10"+ "\t" + "Canosa di Puglia..."+ "\t" + "VincereAManiBasse");
-		hs.add("10"+ "\t" + "Universal"+ "\t" + "Atletico Conc");
-		hs.add("12"+ "\t" + "Atletico Conc"+ "\t" + "Canosa di Puglia...");
-		hs.add("12"+ "\t" + "VincereAManiBasse"+ "\t" + "Universal");
-		hs.add("14"+ "\t" + "Universal"+ "\t" + "VincereAManiBasse");
-		hs.add("14"+ "\t" + "Canosa di Puglia..."+ "\t" + "Atletico Conc");
-		hs.add("16"+ "\t" + "VincereAManiBasse"+ "\t" + "Canosa di Puglia...");
-		hs.add("16"+ "\t" + "Atletico Conc"+ "\t" + "Universal");
-		hs.add("18"+ "\t" + "Universal"+ "\t" + "Canosa di Puglia...");
-		hs.add("18"+ "\t" + "VincereAManiBasse"+ "\t" + "Atletico Conc");
-		hs.add("20"+ "\t" + "Atletico Conc"+ "\t" + "VincereAManiBasse");
-		hs.add("20"+ "\t" + "Canosa di Puglia..."+ "\t" + "Universal");
-		hs.add("22"+ "\t" + "Canosa di Puglia..."+ "\t" + "VincereAManiBasse");
-		hs.add("22"+ "\t" + "Universal"+ "\t" + "Atletico Conc");
-		hs.add("24"+ "\t" + "Atletico Conc"+ "\t" + "Canosa di Puglia...");
-		hs.add("24"+ "\t" + "VincereAManiBasse"+ "\t" + "Universal");
+		hsPartiteCoppaItalia.add("26"+ "\t" + "tavolino"+ "\t" + "C. H. MOLLE");
+		hsPartiteCoppaItalia.add("26"+ "\t" + "Atletico Mikatanto"+ "\t" + "Canosa di Puglia...");
+		hsPartiteCoppaItalia.add("26"+ "\t" + "Atletico Conc"+ "\t" + "Universal");
+		hsPartiteCoppaItalia.add("26"+ "\t" + "Jonny Fighters"+ "\t" + "VincereAManiBasse");
+
+		hsPartiteCoppaItalia.add("27"+ "\t" + "C. H. MOLLE"+ "\t" + "Atletico Mikatanto");
+		hsPartiteCoppaItalia.add("27"+ "\t" + "Jonny Fighters"+ "\t" + "Atletico Conc");
+
+		hsPartiteCoppaItalia.add("28"+ "\t" + "Atletico Mikatanto"+ "\t" + "C. H. MOLLE");
+		hsPartiteCoppaItalia.add("28"+ "\t" + "Atletico Conc"+ "\t" + "Jonny Fighters");
+
+		hsPartiteCoppaItalia.add("29"+ "\t" + "TBD"+ "\t" + "TBD");
+
+		hsPartiteCoppaItalia.add("30"+ "\t" + "TBD"+ "\t" + "TBD");
+
+		HashSet<String> hsPartiteCoppaCampioni=new HashSet<>();
+		hsPartiteCoppaCampioni.add("2"+ "\t" + "Jonny Fighters"+ "\t" + "C. H. MOLLE");
+		hsPartiteCoppaCampioni.add("2"+ "\t" + "Atletico Mikatanto"+ "\t" + "tavolino");
+		hsPartiteCoppaCampioni.add("4"+ "\t" + "C. H. MOLLE"+ "\t" + "Atletico Mikatanto");
+		hsPartiteCoppaCampioni.add("4"+ "\t" + "tavolino"+ "\t" + "Jonny Fighters");
+		hsPartiteCoppaCampioni.add("6"+ "\t" + "Jonny Fighters"+ "\t" + "Atletico Mikatanto");
+		hsPartiteCoppaCampioni.add("6"+ "\t" + "C. H. MOLLE"+ "\t" + "tavolino");
+		hsPartiteCoppaCampioni.add("8"+ "\t" + "tavolino"+ "\t" + "C. H. MOLLE");
+		hsPartiteCoppaCampioni.add("8"+ "\t" + "Atletico Mikatanto"+ "\t" + "Jonny Fighters");
+		hsPartiteCoppaCampioni.add("10"+ "\t" + "Atletico Mikatanto"+ "\t" + "C. H. MOLLE");
+		hsPartiteCoppaCampioni.add("10"+ "\t" + "Jonny Fighters"+ "\t" + "tavolino");
+		hsPartiteCoppaCampioni.add("12"+ "\t" + "tavolino"+ "\t" + "Atletico Mikatanto");
+		hsPartiteCoppaCampioni.add("12"+ "\t" + "C. H. MOLLE"+ "\t" + "Jonny Fighters");
+		hsPartiteCoppaCampioni.add("14"+ "\t" + "Jonny Fighters"+ "\t" + "C. H. MOLLE");
+		hsPartiteCoppaCampioni.add("14"+ "\t" + "Atletico Mikatanto"+ "\t" + "tavolino");
+		hsPartiteCoppaCampioni.add("16"+ "\t" + "C. H. MOLLE"+ "\t" + "Atletico Mikatanto");
+		hsPartiteCoppaCampioni.add("16"+ "\t" + "tavolino"+ "\t" + "Jonny Fighters");
+		hsPartiteCoppaCampioni.add("18"+ "\t" + "Jonny Fighters"+ "\t" + "Atletico Mikatanto");
+		hsPartiteCoppaCampioni.add("18"+ "\t" + "C. H. MOLLE"+ "\t" + "tavolino");
+		hsPartiteCoppaCampioni.add("20"+ "\t" + "tavolino"+ "\t" + "C. H. MOLLE");
+		hsPartiteCoppaCampioni.add("20"+ "\t" + "Atletico Mikatanto"+ "\t" + "Jonny Fighters");
+		hsPartiteCoppaCampioni.add("22"+ "\t" + "Atletico Mikatanto"+ "\t" + "C. H. MOLLE");
+		hsPartiteCoppaCampioni.add("22"+ "\t" + "Jonny Fighters"+ "\t" + "tavolino");
+		hsPartiteCoppaCampioni.add("24"+ "\t" + "tavolino"+ "\t" + "Atletico Mikatanto");
+		hsPartiteCoppaCampioni.add("24"+ "\t" + "C. H. MOLLE"+ "\t" + "Jonny Fighters");
+		
+		hsPartiteCoppaCampioni.add("2"+ "\t" + "Universal"+ "\t" + "VincereAManiBasse");
+		hsPartiteCoppaCampioni.add("2"+ "\t" + "Canosa di Puglia..."+ "\t" + "Atletico Conc");
+		hsPartiteCoppaCampioni.add("4"+ "\t" + "VincereAManiBasse"+ "\t" + "Canosa di Puglia...");
+		hsPartiteCoppaCampioni.add("4"+ "\t" + "Atletico Conc"+ "\t" + "Universal");
+		hsPartiteCoppaCampioni.add("6"+ "\t" + "Universal"+ "\t" + "Canosa di Puglia...");
+		hsPartiteCoppaCampioni.add("6"+ "\t" + "VincereAManiBasse"+ "\t" + "Atletico Conc");
+		hsPartiteCoppaCampioni.add("8"+ "\t" + "Atletico Conc"+ "\t" + "VincereAManiBasse");
+		hsPartiteCoppaCampioni.add("8"+ "\t" + "Canosa di Puglia..."+ "\t" + "Universal");
+		hsPartiteCoppaCampioni.add("10"+ "\t" + "Canosa di Puglia..."+ "\t" + "VincereAManiBasse");
+		hsPartiteCoppaCampioni.add("10"+ "\t" + "Universal"+ "\t" + "Atletico Conc");
+		hsPartiteCoppaCampioni.add("12"+ "\t" + "Atletico Conc"+ "\t" + "Canosa di Puglia...");
+		hsPartiteCoppaCampioni.add("12"+ "\t" + "VincereAManiBasse"+ "\t" + "Universal");
+		hsPartiteCoppaCampioni.add("14"+ "\t" + "Universal"+ "\t" + "VincereAManiBasse");
+		hsPartiteCoppaCampioni.add("14"+ "\t" + "Canosa di Puglia..."+ "\t" + "Atletico Conc");
+		hsPartiteCoppaCampioni.add("16"+ "\t" + "VincereAManiBasse"+ "\t" + "Canosa di Puglia...");
+		hsPartiteCoppaCampioni.add("16"+ "\t" + "Atletico Conc"+ "\t" + "Universal");
+		hsPartiteCoppaCampioni.add("18"+ "\t" + "Universal"+ "\t" + "Canosa di Puglia...");
+		hsPartiteCoppaCampioni.add("18"+ "\t" + "VincereAManiBasse"+ "\t" + "Atletico Conc");
+		hsPartiteCoppaCampioni.add("20"+ "\t" + "Atletico Conc"+ "\t" + "VincereAManiBasse");
+		hsPartiteCoppaCampioni.add("20"+ "\t" + "Canosa di Puglia..."+ "\t" + "Universal");
+		hsPartiteCoppaCampioni.add("22"+ "\t" + "Canosa di Puglia..."+ "\t" + "VincereAManiBasse");
+		hsPartiteCoppaCampioni.add("22"+ "\t" + "Universal"+ "\t" + "Atletico Conc");
+		hsPartiteCoppaCampioni.add("24"+ "\t" + "Atletico Conc"+ "\t" + "Canosa di Puglia...");
+		hsPartiteCoppaCampioni.add("24"+ "\t" + "VincereAManiBasse"+ "\t" + "Universal");
+
+		hsPartiteCoppaCampioni.add("26"+ "\t" + "Universal"+ "\t" + "tavolino");
+		hsPartiteCoppaCampioni.add("26"+ "\t" + "C. H. MOLLE"+ "\t" + "VincereAManiBasse");
+		
+		hsPartiteCoppaCampioni.add("28"+ "\t" + "tavolino"+ "\t" + "Universal");
+		hsPartiteCoppaCampioni.add("28"+ "\t" + "VincereAManiBasse"+ "\t" + "C. H. MOLLE");
+
+		hsPartiteCoppaCampioni.add("30"+ "\t" + "TBD"+ "\t" + "TBD");
 		
 		HashMap<Integer, Integer> f1=new HashMap<>();
 		f1.put(1, 25);
@@ -260,18 +299,29 @@ public class CalcolaPartita {
 					String nome1 = squadra1.getNome();
 					totaliF1.put(nome1, squadra1.getTotaleTitolari());					
 					for (int i2=0;i2<squadre.size();i2++) {
-						boolean isCampionato=false;
+						boolean calcolaGiornataCorrente=false;
 						if (i2-i1!=1 || ePari(i2)) {
-							if (false) continue;//campionato
+							if (SOLO_CAMPIONATO) continue;//campionato
 						}
 						else {
-							isCampionato=true;
+							calcolaGiornataCorrente=true;
 						}
 						Squadra squadra2=squadre.get(i2);
 						String nome2 = squadra2.getNome();
 						String k = Integer.toString(ggDaCalcolare) + "\t" + nome1 + "\t" + nome2;
-						if (true) {//solo coppa
-							if (!hs.contains(k)) continue;
+
+						if (ggDaCalcolare==6 && nome1.equalsIgnoreCase("Jonny Fighters") && nome2.equalsIgnoreCase("Atletico Mikatanto")) {
+							System.out.println();
+						}
+						
+						if (SOLO_COPPA_CAMPIONI) {
+							if (!hsPartiteCoppaCampioni.contains(k)) continue;
+							calcolaGiornataCorrente=true;
+						}
+
+						if (SOLO_COPPA_ITALIA) {
+							if (!hsPartiteCoppaItalia.contains(k)) continue;
+							calcolaGiornataCorrente=true;
 						}
 						if (!nome1.equals(nome2)){
 							Main.calcolaScontro(squadra1,squadra2, ggDaCalcolare);
@@ -285,7 +335,7 @@ public class CalcolaPartita {
 								}
 								tot=tot + 3;
 								totaliBR.put(nome1, tot);
-								if (isCampionato) {
+								if (calcolaGiornataCorrente) {
 									//add1
 									Map<String, Map<String,Object>> mapScontri1 = totaliScontri.get(nome1);
 									if (mapScontri1==null) {
@@ -347,7 +397,7 @@ public class CalcolaPartita {
 								}
 								tot=tot + 3;
 								totaliBR.put(nome2, tot);
-								if (isCampionato) {
+								if (calcolaGiornataCorrente) {
 									//add1
 									Map<String, Map<String,Object>> mapScontri1 = totaliScontri.get(nome1);
 									if (mapScontri1==null) {
@@ -414,7 +464,7 @@ public class CalcolaPartita {
 								}
 								tot2=tot2+1;
 								totaliBR.put(nome2, tot2);
-								if (isCampionato) {
+								if (calcolaGiornataCorrente) {
 									//add1
 									Map<String, Map<String,Object>> mapScontri1 = totaliScontri.get(nome1);
 									if (mapScontri1==null) {
@@ -487,6 +537,7 @@ public class CalcolaPartita {
 					if (!punti.equals(oldValue)) {
 						pos=conta;
 					}
+					oldValue=punti;
 					Integer puntiF1 = f1.get(pos);
 					String nome = entry.getKey();
 					Integer t = (Integer) totaliFormula1.get(nome);
