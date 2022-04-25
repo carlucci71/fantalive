@@ -2743,13 +2743,19 @@ public class Main {
 					}
 					String votoLive=g.get("voto").toString();
 					String eventoLive=g.get("evento").toString();
+					if (nomeGiocatoreLive.toUpperCase().indexOf("APAT")>-1 && giocatore.getNome().toUpperCase().indexOf("APAT")>-1 && tipo.equalsIgnoreCase("FANTASERVICE")) {
+						System.out.println();
+					}
 					if (tipo.equals("FANTAGAZZETTA") && 
 							giocatore.getNomeTrim().equalsIgnoreCase(nomeGiocatoreLive.replaceAll(" ", "")
 									)
 							|| 
 							(tipo.equals("FANTASERVICE") && 
 									giocatore.getNome().substring(0,giocatore.getNome().lastIndexOf(" ")).replaceAll(" ", "").equalsIgnoreCase(nomeGiocatoreLive.replaceAll(" ", "")))	
-							) {
+							||
+							(tipo.equals("FANTASERVICE") && 
+									giocatore.getNome().concat(" ").substring(0,giocatore.getNome().concat(" ").lastIndexOf(" ")).replaceAll(" ", "").equalsIgnoreCase(nomeGiocatoreLive.replaceAll(" ", "")))	
+							){
 						giocatore.setVoto(Double.parseDouble(votoLive));
 						giocatore.setEvento(eventodecodificato);
 						giocatore.setCodEventi(codEventi);
