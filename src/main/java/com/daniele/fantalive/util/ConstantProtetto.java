@@ -36,7 +36,9 @@ public class ConstantProtetto {
 		constant.UTENTE_FG = System.getenv("UTENTE_FG");
 		constant.PWD_FG = System.getenv("PWD_FG");
 		constant.NUM_SQUADRE_BE = Integer.valueOf(System.getenv("NUM_SQUADRE_BE"));
-		constant.GIORNATA_FORZATA = Integer.valueOf(System.getenv("GIORNATA_FORZATA"));
+		if (System.getenv("GIORNATA_FORZATA") != null) {
+			constant.GIORNATA_FORZATA = Integer.valueOf(System.getenv("GIORNATA_FORZATA"));
+		}
 		if (System.getenv("SCHEDULED_SNAP") != null) {
 			constant.SCHEDULED_SNAP=Integer.valueOf(System.getenv("SCHEDULED_SNAP"));
 		} else {
