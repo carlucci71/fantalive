@@ -8,7 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.daniele.fantalive.bl.Main;
 import com.daniele.fantalive.model.Giocatore;
@@ -36,11 +35,12 @@ public class RiallineaDB {
 		PreparedStatement prepareStatementINS = conMysql.prepareStatement("insert into salva (nome, testo) values (?,?)");
 		while(executeQuery.next()) {
 			String nome = executeQuery.getString("nome");
-			Clob testo = executeQuery.getClob("testo");
+			byte[] bytes = executeQuery.getBytes("TESTO");
+			String contenuto = new String(bytes);
 			System.out.println(nome);
 			/* */
 			if (nome.startsWith(Constant.FORMAZIONE)) {
-				String contenuto = testo.getSubString(1, (int) testo.length());
+//				String contenuto = testo.getSubString(1, (int) testo.length());
 				List<Squadra> squadre = Main.jsonToSquadre(contenuto);
 				for (Squadra squadra : squadre) {
 					for (Giocatore giocatore : squadra.getTitolari()) {
@@ -78,7 +78,9 @@ public class RiallineaDB {
 			}
 			/* */
 			prepareStatementINS.setString(1, nome);
-			prepareStatementINS.setClob(2, testo);
+			Clob clob = conMysql.createClob();
+			clob.setString(1, contenuto);
+			prepareStatementINS.setClob(2, clob);
 			prepareStatementINS.execute();
 		}
 	
@@ -86,6 +88,8 @@ public class RiallineaDB {
 		
 	}
 	
+//insert into salva (nome,testo) select 'snapPartite', testo from salva where nome like '2022/04/23 14:05%snapPartite'
+//insert into salva (nome,testo) 	select 'lives', testo from salva where nome like '2022/04/23 14:05%lives'
 	
 
 }

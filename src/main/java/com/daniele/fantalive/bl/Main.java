@@ -3425,7 +3425,11 @@ public class Main {
 		StringBuilder testo = new StringBuilder();
 		List<Squadra> squadre = return1.getSquadre();
 		List<Squadra> sqFS=new ArrayList<>();
-		String nomeSquadraCasa = reverseNickPlayer.get(nomePartitaSimulata.substring(2,nomePartitaSimulata.indexOf(" ",2))).substring(3);
+		String nomeSquadraCasa = reverseNickPlayer.get(nomePartitaSimulata.substring(2,nomePartitaSimulata.indexOf(" ",2)));
+		if (nomeSquadraCasa==null) {
+			throw new RuntimeException("errore nel nome partita simulata: " + nomePartitaSimulata);
+		}
+		nomeSquadraCasa = nomeSquadraCasa.substring(3);
 		if (return1.getTipo().equalsIgnoreCase("FANTASERVICE")) {// &&  nomePartitaSimulata.startsWith("B")
 			overrideFS(squadre);
 			for (Squadra squadraTmp : squadre) {
