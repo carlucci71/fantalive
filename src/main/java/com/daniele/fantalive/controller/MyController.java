@@ -760,7 +760,7 @@ public class MyController {
 				}
 				Main.upsertSalva(Constant.FORMAZIONE + Constant.Campionati.BE.name(), Main.toJson(squadre));
 			}
-			
+			Main.verificaOggiGioca();
 		}
 		catch (Exception e)
 		{

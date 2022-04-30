@@ -946,7 +946,7 @@ app.directive("visualizzasquadra", function() {
 					var ret="";
 					ret = ret + orario.val.substring(8,10);
 					ret = ret + "/" + orario.val.substring(5,7);
-					ret = ret + " " + (1+Number(orario.val.substring(11,13)));
+					ret = ret + " " + (Number(orario.val.substring(11,13)));
 					ret = ret + ":" + orario.val.substring(14,16);
 					return ret;
 				}

@@ -17,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.MessageFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -101,7 +102,7 @@ public class Main {
 	public static List<String> sqDaEv= null;
 	private static Map<String, Giocatore> oldSnapshot=null;
 	private static SalvaRepository salvaRepository=null;
-
+	private static Map<ZonedDateTime, List<Integer>> giorniGioca=new TreeMap<>();
 	private static SocketHandlerFantalive socketHandlerFantalive=null;
 	private static ScheduledExecutorService executor = null;	
 	private static Constant constant=null;
@@ -147,7 +148,7 @@ public class Main {
 				if (giornata.trim().equals("")) continue;
 				String ultimoGiorno="";
 				String ultimoMese="";
-				int iGiornata;
+				Integer iGiornata=null;
 				try {
 					iGiornata = Integer.parseInt(giornata.substring(0,giornata.indexOf("ª")));
 				}
@@ -156,20 +157,33 @@ public class Main {
 				}
 				String primoGiorno=null;
 				String primoMese=null;
+				String ultimoAnno="";
 				for (int ix=1;ix<elementsTR.size();ix++) {
 					Elements elementsTD = elementsTR.get(ix).getElementsByTag("TD");
 					if (elementsTD.size()<3) continue;
 					ultimoGiorno = elementsTD.get(0).text();
+					String ora = elementsTD.get(1).text().replace(".", ":");
+					if (ora.equals("-")) {
+						ora="15:00";
+					}
 					ultimoGiorno = lpad(ultimoGiorno.substring(0,ultimoGiorno.indexOf("/")),2,'0');
 					ultimoMese = elementsTD.get(0).text();
 					ultimoMese = lpad(ultimoMese.substring(ultimoMese.indexOf("/")+1),2,'0');
+					ultimoAnno="2021";
+					if (Integer.parseInt(ultimoMese)<8) ultimoAnno = "2022";
+					ZonedDateTime parseZDT = ZonedDateTime.parse(ultimoGiorno + "/" + ultimoMese + "/" + ultimoAnno + " - " + ora + ":00 +0000", dtf.withZone(ZoneId.of("Europe/Rome")));
+					List<Integer> list = giorniGioca.get(parseZDT);
+					if (list==null) {
+						list = new ArrayList<>();
+					}
+					list.add(iGiornata);
+					giorniGioca.put(parseZDT, list);
+//					System.out.println(iGiornata + ": " + ultimoGiorno + "-" + ultimoMese + "-" + ultimoAnno);
 					if (primoGiorno == null) {
 						primoGiorno=ultimoGiorno;
 						primoMese=ultimoMese;
 					}
 				}
-				String ultimoAnno="2021";
-				if (Integer.parseInt(ultimoMese)<8) ultimoAnno = "2022";
 				ZonedDateTime parseZDT = ZonedDateTime.parse(ultimoGiorno + "/" + ultimoMese + "/" + ultimoAnno + " - 23:59:00 +0000", dtf);
 				calendario.put(iGiornata, parseZDT);
 				String primoAnno="2021";
@@ -177,9 +191,7 @@ public class Main {
 				parseZDT = ZonedDateTime.parse(primoGiorno + "/" + primoMese + "/" + primoAnno + " - 23:59:00 +0000", dtf);
 				calendarioInizioGiornata.put(iGiornata, parseZDT);
 			}
-
 			ZonedDateTime now = ZonedDateTime.now();
-			//			now=now.withDayOfMonth(19);
 			Set<Integer> keySet = calendario.keySet();
 			for (Integer attG : keySet) {
 				ZonedDateTime zonedDateTime = calendario.get(attG);
@@ -190,6 +202,8 @@ public class Main {
 			if (constant.GIORNATA_FORZATA!=null) {
 				constant.GIORNATA=constant.GIORNATA_FORZATA;
 			}
+			ZonedDateTime zonedDateTime = calendario.get(constant.GIORNATA);
+			
 			//			System.out.println(Constant.GIORNATA);
 		}
 		Main.aggKeyFG();
@@ -410,8 +424,25 @@ public class Main {
 			configsCampionato.add(new ConfigCampionato(22,"FANTAGAZZETTA",Constant.Campionati.FANTAVIVA.name(),"MANTRA","PARTITE"));
 			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE",Constant.Campionati.BE.name(),"NOMANTRA","PARTITE"));
 		}
+		verificaOggiGioca();
 	}
 
+	public static void verificaOggiGioca(){
+		ZonedDateTime now = ZonedDateTime.now();
+		ZonedDateTime z=null;
+		Set<ZonedDateTime> keyGiorniGioca = giorniGioca.keySet();
+		for (ZonedDateTime giornoGioca : keyGiorniGioca) {
+			if (giorniGioca.get(giornoGioca).contains(constant.GIORNATA) && now.getYear()==giornoGioca.getYear() && now.getMonth()==giornoGioca.getMonth() && now.getDayOfMonth()==giornoGioca.getDayOfMonth()){
+				z=giornoGioca;
+			}
+		}
+		if (z!=null) {
+			constant.KEEP_ALIVE_END=z.plusHours(2);
+		} else {
+			constant.KEEP_ALIVE_END = ZonedDateTime.now();
+		}
+	}
+	
 	private static void overrideBM(Map<String, Object> bm, String[] valori, String kFg, int posizione) {
 		bm=(Map<String, Object>) bm.get("bonus_malus");
 		Double newval=null;
@@ -931,7 +962,7 @@ public class Main {
 	}
 	public static void main(String[] args) throws Exception {
 		//				mainSpring(args);
-		mainBatch(args);
+//		mainBatch(args);
 
 
 		/*
@@ -2359,6 +2390,10 @@ public class Main {
 				}
 				else if (s.getKey().equalsIgnoreCase("val")) {
 					val = (String) s.getValue();
+					if (tag.equalsIgnoreCase("PreMatch")) {
+						ZonedDateTime parse = ZonedDateTime.parse(val, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneId.of("UTC")));//2022-04-30T18:45:00Z
+						val=parse.format(DateTimeFormatter.ISO_DATE_TIME.withZone(ZoneId.of("Europe/Rome")));
+					}
 				}
 				else if (s.getKey().equalsIgnoreCase("first_half_stop")) {
 
