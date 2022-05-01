@@ -4088,10 +4088,10 @@ public class Main {
 		String val = (String) partita.get("val");
 		if (!visVal) {
 			if (tag.equalsIgnoreCase("FirstHalf") || tag.equalsIgnoreCase("SecondHalf")) {
-				tag="<Start> " + tag;
+				tag="START " + tag;
 				val="";
 			} else if (tag.equalsIgnoreCase("HalfTime") || tag.equalsIgnoreCase("FullTime")) {
-				tag="<Stop> " + tag;
+				tag="STOP " + tag;
 				val=" (" + val + ")";
 			}
 		}

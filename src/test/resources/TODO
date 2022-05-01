@@ -10,3 +10,12 @@ cd C:\Program Files\Eclipse Adoptium\jdk-8.0.312.7-hotspot\jre\lib\security
 keytool -list -v -keystore cacerts  > C:\1\jc.txt   (password changeit)
 download /1/fs.cer (da chrome scarica il certificato come file)
 keytool -import -alias fs -keystore  cacerts -file /1/fs.cer
+
+
+
+
+
+
+non ha funzioato il cambio tag
+dimensione text voto
+logga, ma come martello??

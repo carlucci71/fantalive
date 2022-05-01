@@ -5,7 +5,7 @@
       		{{nome.substr(0,nome.indexOf("-"))}}
    		</option>
 	</select>
-	<img ng-click="cancellaProiezione(nomiProiezioni)" style="width: 20px;" style="cursor:pointer" ng-src="./ico/cestino.png" ng-show="nomiProiezioni"></img>
+	<img ng-click="cancellaProiezione(nomiProiezioni)" style="width: 20px;cursor:pointer" ng-src="./ico/cestino.png" ng-show="nomiProiezioni"></img>
 </div>
 <div style="text-align:center" class="modal-body" id="modal-body">
 	<table style="widthXX: 850px;">
@@ -64,7 +64,11 @@
 					<img style="width: 20px;" ng-src="./ico/capitano.png" ng-show="pl.capitano"></img>
 					<img style="width: 20px;" ng-src="./ico/vicecapitano.jpg" ng-show="pl.viceCapitano"></img>
 					<span ng-show="pl.played">
-						{{pl.voto}} - {{pl.fantavoto}} 
+						{{pl.voto}}
+						<span  ng-show="!nomiProiezioni"> - {{pl.fantavoto}}</span> 
+						<span  ng-show="nomiProiezioni">
+							<input  style="width: 60px;'" type="number"  ng-model="pl.fantavoto"></input>
+						 </span> 
 						<span ng-hide="pl.squadraGioca">*</span> 
 						<span ng-repeat="bonusmalus in pl.bm track by $index"> 
 							<img style="width: 20px;" ng-src="./ico/{{bonusmalus}}.png" />
@@ -97,4 +101,5 @@
 	</div>
 	<div class="modal-footer">
 		<button class="btn btn-primary btnModale" ng-click="pc.ok()">OK</button>
+		<button class="btn btn-primary btnModale" ng-click="pc.salva()">SALVA</button>
 	</div>

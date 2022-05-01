@@ -1061,6 +1061,9 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, data, $rootScop
 	pc.ok = function () {
 		$uibModalInstance.dismiss('ok');
 	};
+	pc.salva = function () {
+		console.log($rootScope.datiProiezioni.data);
+	};
 });
 
 
