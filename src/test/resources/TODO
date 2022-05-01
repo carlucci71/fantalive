@@ -15,7 +15,7 @@ keytool -import -alias fs -keystore  cacerts -file /1/fs.cer
 
 
 
-
-non ha funzioato il cambio tag
+live simulazioni mantra non funziona
+bot getdettaglio ora sbagliata
 dimensione text voto
 logga, ma come martello??

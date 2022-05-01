@@ -59,11 +59,12 @@
 			<td></td>
 			<td ng-repeat="team in pc.data.teams" style="vertical-align:top">
 				<span ng-repeat="pl  in team.players "> 
-					<label ng-show="pl.played">{{pl.nome}}</label> 
+					<label style="background-color:yellow" ng-show="pl.played && pl.squadraGioca">{{pl.nome}}</label> 
+					<span style="background-color:limegreen" ng-show="pl.played && !pl.squadraGioca">{{pl.nome}}</span> 
 					<strike ng-show="!pl.played">{{pl.nome}}</strike> 
 					<img style="width: 20px;" ng-src="./ico/capitano.png" ng-show="pl.capitano"></img>
 					<img style="width: 20px;" ng-src="./ico/vicecapitano.jpg" ng-show="pl.viceCapitano"></img>
-					<span ng-show="pl.played">
+					<span ng-showX="pl.played">
 						{{pl.voto}}
 						<span  ng-show="!nomiProiezioni"> - {{pl.fantavoto}}</span> 
 						<span  ng-show="nomiProiezioni">

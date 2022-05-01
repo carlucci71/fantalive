@@ -157,6 +157,12 @@ public class MyController {
 		ret.put("file", Main.toJson(lives.get("lives")));
 		return ret;
 	}
+	@PostMapping("/simulaForzata")
+	public Map<String, String> simulaForzata(@RequestBody Map<String,String> body) throws Exception {
+		Map<String, String>  ret=new HashMap<>();
+		System.out.println(Main.toJson(body));
+		return ret;
+	}
 	@PostMapping("/getTestiFromData")
 	public Map<String, String> getTestiFromData(@RequestBody Map<String,String> body) throws Exception {
 		Map<String, String>  ret=new HashMap<>();

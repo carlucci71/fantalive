@@ -1061,8 +1061,30 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, data, $rootScop
 	pc.ok = function () {
 		$uibModalInstance.dismiss('ok');
 	};
+	$rootScope.simSfondoPl=function(){
+		return "yellow";
+	}
+
+	pc.simSfondoPl = function () {
+		return "yellow";
+	}
 	pc.salva = function () {
-		console.log($rootScope.datiProiezioni.data);
+		$rootScope.loading=true;
+		$rootScope.inizio=new Date();
+		$rootScope.fine="";
+		$resource('./simulaForzata',{}).save({'dati':angular.toJson($rootScope.datiProiezioni.data)}).$promise.then(function(data) {
+			$rootScope.loading=false;
+			$rootScope.fine=new Date();
+		}).catch(function(error) {
+			$rootScope.loading=false;
+			$rootScope.fine=new Date();
+			if (error && error.data && error.data.message)
+				alert("Errore-72-1: " + error.data.message);
+			else if (error && error.data)
+				alert("Errore-72-2: " + error.data);
+			else 
+				alert("Errore-72-3: " + angular.toJson(error));
+		});
 	};
 });
 
