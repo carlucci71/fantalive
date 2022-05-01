@@ -2461,7 +2461,7 @@ public class Main {
 				 */
 			}
 			if (cambioTag) {
-				String testoCallback = visSnapPartita(new ArrayList<>(), sqCasa + " vs " + sqFuori, partita);
+				String testoCallback = visSnapPartita(false, new ArrayList<>(), sqCasa + " vs " + sqFuori, partita);
 				messaggio=new StringBuilder(testoCallback);
 			} else {
 				Integer oldGolCasa = (Integer) ((Map)oldPartita.get(sqCasa)).get("gol");
@@ -4075,17 +4075,26 @@ public class Main {
 			String tag = (String) partita.get("tag");
 			Integer iTag = statusMatch.get(tag);
 			if (! live || (live && (iTag==1 || iTag==2 || iTag==3))) {
-				sb.append(visSnapPartita(sqRet, k, partita));
+				sb.append(visSnapPartita(true, sqRet, k, partita));
 			}
 		});
 		ret.put("testo", sb.toString());
 		ret.put("squadre", sqRet);
 		return ret;
 	}
-	private static String visSnapPartita(List<String> sqRet, String keyPartita, Map<String, Object> partita) {
+	private static String visSnapPartita(boolean visVal, List<String> sqRet, String keyPartita, Map<String, Object> partita) {
 		StringBuilder sb=new StringBuilder();
 		String tag = (String) partita.get("tag");
 		String val = (String) partita.get("val");
+		if (!visVal) {
+			if (tag.equalsIgnoreCase("FirstHalf") || tag.equalsIgnoreCase("SecondHalf")) {
+				tag="<Start> " + tag;
+				val="";
+			} else if (tag.equalsIgnoreCase("HalfTime") || tag.equalsIgnoreCase("FullTime")) {
+				tag="<Stop> " + tag;
+				val=" (" + val + ")";
+			}
+		}
 		if (tag.equalsIgnoreCase("PreMatch")) {
 			ZonedDateTime zoneDateTime = ZonedDateTime.parse(val, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC")));
 			val = zoneDateTime.format(DateTimeFormatter.ofPattern("E dd/MM/yyyy HH:mm").withZone(ZoneId.of("Europe/Rome")));
