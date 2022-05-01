@@ -1159,6 +1159,7 @@ public class Main {
 		Double rank=null;
 		String nome=null;
 		Boolean squadraGioca=null;
+		Map<String,String>  orario=new HashMap<>();
 		Boolean capitano=false;
 		Boolean viceCapitano=false;
 		for (Giocatore giocatore2 : sq.getTitolari()) {
@@ -1180,6 +1181,7 @@ public class Main {
 					voto=6d;
 				}
 				squadraGioca = giocatore2.isSquadraGioca();
+				orario = giocatore2.getOrario();
 			}
 		}
 		for (Giocatore giocatore2 : sq.getRiserve()) {
@@ -1201,6 +1203,7 @@ public class Main {
 					voto=6d;
 				}
 				squadraGioca = giocatore2.isSquadraGioca();
+				orario = giocatore2.getOrario();
 			}
 		}
 		map.put("bm",codEventi);
@@ -1212,6 +1215,7 @@ public class Main {
 		map.put("viceCapitano",viceCapitano);
 		map.put("fantavoto",fantavoto);
 		map.put("squadraGioca",squadraGioca);
+		map.put("orario",orario);
 	}
 
 
@@ -3540,6 +3544,7 @@ public class Main {
 				player.put("viceCapitano", false);
 				player.put("fantavoto", giocatore.getVoto() + giocatore.getModificatore());
 				player.put("squadraGioca", giocatore.isSquadraGioca());
+				player.put("orario", giocatore.getOrario());
 				players.add(player);
 			}
 			for (Giocatore giocatore : squadra.getRiserve()) {
@@ -3555,6 +3560,7 @@ public class Main {
 				player.put("viceCapitano", false);
 				player.put("fantavoto", giocatore.getVoto() + giocatore.getModificatore());
 				player.put("squadraGioca", giocatore.isSquadraGioca());
+				player.put("orario", giocatore.getOrario());
 				players.add(player);
 			}
 			team.put("players", players);

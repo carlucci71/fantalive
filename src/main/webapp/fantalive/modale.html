@@ -59,7 +59,9 @@
 			<td></td>
 			<td ng-repeat="team in pc.data.teams" style="vertical-align:top">
 				<span ng-repeat="pl  in team.players "> 
-					<label style="background-color:yellow" ng-show="pl.played && pl.squadraGioca">{{pl.nome}}</label> 
+				<!-- {{pl.orario.tag}}--{{pl.orario.val}}  -->
+					<label style="background-color:yellow" ng-show="pl.played && pl.squadraGioca && (pl.orario.tag=='FirstHalf' || pl.orario.tag=='HalfTime' || pl.orario.tag=='SecondHalf')">{{pl.nome}}</label> 
+					<label style="background-color:lightgray" ng-show="pl.played && pl.squadraGioca && (pl.orario.tag!='FirstHalf' && pl.orario.tag!='HalfTime' && pl.orario.tag!='SecondHalf')">{{pl.nome}}</label> 
 					<span style="background-color:limegreen" ng-show="pl.played && !pl.squadraGioca">{{pl.nome}}</span> 
 					<strike ng-show="!pl.played">{{pl.nome}}</strike> 
 					<img style="width: 20px;" ng-src="./ico/capitano.png" ng-show="pl.capitano"></img>
