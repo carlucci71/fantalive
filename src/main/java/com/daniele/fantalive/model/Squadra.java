@@ -314,5 +314,11 @@ public void setGolSimulazione(int golSimulazione) {
 	this.golSimulazione = golSimulazione;
 }
 
-
+public String dettCalcoli(boolean casa, BigDecimal sommaCentrocampisti) {
+	int c = (casa?2:0);
+	return getNome() + " : " + c + " / " + getProiezione() + " / " + getModificatoreDifesa() + " / " + getModificatoreCentrocampo() 
+	+ " ( " + sommaCentrocampisti + " ) "
+	+ " / " + getModificatoreAttacco() + " --> " + (getTotale() + c);
+	
+}
 }

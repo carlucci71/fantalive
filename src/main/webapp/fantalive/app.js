@@ -403,6 +403,27 @@ app.run(
                 }
 			}
 
+			$rootScope.cancellaProiezione=function(ind){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./cancellaProiezione/' + btoa(ind)).save().$promise.then(function(data) {
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+					$rootScope.datiProiezioni.data.teams="";
+					$rootScope.datiProiezioni.data.ris="";
+					$rootScope.listaNomiProiezioni=data.lista;
+				}).catch(function(error) {
+					$rootScope.loading=false;
+					$rootScope.fine=new Date();
+					if (error && error.data && error.data.message)
+						alert("Errore-24.2-1: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore-24.2-2: " + error.data);
+					else 
+						alert("Errore-24.2-3: " + angular.toJson(error));
+				});
+			}
 			$rootScope.selectNomeProiezioni=function(ind){
 				$rootScope.aggiornaProiezioni(ind);
 			}
@@ -989,24 +1010,28 @@ app.controller('ModalDemoCtrl', function ($uibModal, $log, $rootScope, $resource
 	var pc = this;
 
 	$rootScope.aggiornaProiezioni = function (ind) {
-		$rootScope.datiProiezioni.data.teams="";
-		$rootScope.inizio=new Date();
-		$rootScope.fine="";
-		$rootScope.loading=true;
-		$resource('./proiezioneStorica/' + btoa(ind)).save().$promise.then(function(data) {
-			$rootScope.datiProiezioni.data.teams=data.data.teams;
-			$rootScope.loading=false;
-			$rootScope.fine=new Date();
-		}).catch(function(error) {
-			$rootScope.loading=false;
-			$rootScope.fine=new Date();
-			if (error && error.data && error.data.message)
-				alert("Errore-4.2-1: " + error.data.message);
-			else if (error && error.data)
-				alert("Errore-4.2-2: " + error.data);
-			else 
-				alert("Errore-4.2-3: " + angular.toJson(error));
-		});
+		if (ind){
+			$rootScope.datiProiezioni.data.teams="";
+			$rootScope.datiProiezioni.data.ris="";
+			$rootScope.inizio=new Date();
+			$rootScope.fine="";
+			$rootScope.loading=true;
+			$resource('./proiezioneStorica/' + btoa(ind)).save().$promise.then(function(data) {
+				$rootScope.datiProiezioni.data.teams=data.data.teams;
+				$rootScope.datiProiezioni.data.ris=data.data.ris;
+				$rootScope.loading=false;
+				$rootScope.fine=new Date();
+			}).catch(function(error) {
+				$rootScope.loading=false;
+				$rootScope.fine=new Date();
+				if (error && error.data && error.data.message)
+					alert("Errore-4.2-1: " + error.data.message);
+				else if (error && error.data)
+					alert("Errore-4.2-2: " + error.data);
+				else 
+					alert("Errore-4.2-3: " + angular.toJson(error));
+			});
+		}
 	};
 
 	$rootScope.open = function (txt) {

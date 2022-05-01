@@ -1,11 +1,11 @@
 <div class="modal-header">
 	<h3 class="modal-title" id="modal-title">Proiezione</h3>
 	<select  ng-model="nomiProiezioni" ng-change="selectNomeProiezioni(nomiProiezioni)">
-   		<option ng-repeat="nome in listaNomiProiezioni" 
-         ng-selectedXXX="nomiProiezioni == nome" value="{{nome}}">
+   		<option ng-repeat="nome in listaNomiProiezioni" value="{{nome}}">
       		{{nome.substr(0,nome.indexOf("-"))}}
    		</option>
 	</select>
+	<img ng-click="cancellaProiezione(nomiProiezioni)" style="width: 20px;" style="cursor:pointer" ng-src="./ico/cestino.png" ng-show="nomiProiezioni"></img>
 </div>
 <div style="text-align:center" class="modal-body" id="modal-body">
 	<table style="widthXX: 850px;">

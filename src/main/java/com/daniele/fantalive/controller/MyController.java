@@ -274,6 +274,24 @@ public class MyController {
 		return test(true);
 	}
 	
+	
+	@PostMapping("/cancellaProiezione/{ind}")
+	public Map<String, Object>  cancellaProiezione(@PathVariable String ind) throws Exception {
+		String nomeFile=new String(Base64.getDecoder().decode(ind));
+		salvaRepository.delete(nomeFile);
+		List<String> ret=new ArrayList<>();
+		List<Salva>  ls =salvaRepository.findSimulazioniName("%" + nomeFile.substring(nomeFile.indexOf("-")));
+		ls.forEach((salva) -> {
+			ret.add(salva.getNome());
+		});
+		Map m = new HashMap<>();
+		m.put("lista", ret);
+		return m;
+	}
+	
+	
+	
+	
 	@PostMapping("/proiezioneStorica/{ind}")
 	public Map<String, Object> proiezioneFGStorica(@PathVariable String ind) throws Exception {
 		String nomeFile=new String(Base64.getDecoder().decode(ind));

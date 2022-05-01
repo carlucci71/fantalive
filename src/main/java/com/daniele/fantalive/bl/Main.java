@@ -4184,10 +4184,13 @@ public class Main {
 		}
 		calcolaModificatoreDifesa(squadra1,squadra2);
 		calcolaModificatoreDifesa(squadra2,squadra1);
-		calcolaModificatoreCentrocampo(squadra1, squadra2);
+		BigDecimal[] calcolaModificatoreCentrocampo = calcolaModificatoreCentrocampo(squadra1, squadra2);
 		calcolaModificatoreAttacco(squadra1);
 		calcolaModificatoreAttacco(squadra2);
 
+//		System.out.println(squadra1.dettCalcoli(true, calcolaModificatoreCentrocampo[0]));
+//		System.out.println(squadra2.dettCalcoli(false, calcolaModificatoreCentrocampo[1]));
+		
 		int iGolCasa = getGol(squadra1.getTotale()+Constant.ICASA);
 		int iGolTrasferta = getGol(squadra2.getTotale());
 		if (iGolCasa > 0 && iGolCasa == iGolTrasferta && ( Math.abs(squadra1.getTotale() +Constant.ICASA - squadra2.getTotale()) >= 4))//FIXME BUG
@@ -4251,12 +4254,12 @@ public class Main {
 		squadra1.setGolSimulazione(iGolCasa);
 		squadra2.setGolSimulazione(iGolTrasferta);
 	}
-	private static void calcolaModificatoreCentrocampo(Squadra squadra1, Squadra squadra2) {
+	private static BigDecimal[] calcolaModificatoreCentrocampo(Squadra squadra1, Squadra squadra2) {
 		BigDecimal sommaC1 = generaCentrocampisti(squadra1);
 		BigDecimal sommaC2 = generaCentrocampisti(squadra2);
 		applicaModificatoreCentrocampo(squadra1, sommaC1, sommaC2);
 		applicaModificatoreCentrocampo(squadra2, sommaC2, sommaC1);
-
+		return new BigDecimal[] {sommaC1, sommaC2};
 	}
 	private static void calcolaModificatoreAttacco(Squadra squadra) {
 		//A no goal

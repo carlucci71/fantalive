@@ -26,9 +26,10 @@ import com.daniele.fantalive.repository.SalvaRepository;
 
 public class CalcolaPartita {
 	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 50;
-	private static final boolean RECUPERA_FROM_DB=false;
+	private static final boolean RECUPERA_FROM_DB=true;
 	private static final boolean USA_SPRING=false;
 	private static final boolean SOLO_COPPA_CAMPIONI=false;
+	private static final boolean SOLO_SINGOLA=false;
 	private static final boolean SOLO_COPPA_ITALIA=false;
 	private static final boolean SOLO_CAMPIONATO=false;
 	private static final String PARTITE = "Partite";
@@ -143,11 +144,12 @@ public class CalcolaPartita {
 
 	private void go(String[] args) throws Exception {
 		int contaCoppe=0;
+		if (SOLO_SINGOLA) contaCoppe++;
 		if (SOLO_COPPA_CAMPIONI) contaCoppe++;
 		if (SOLO_COPPA_ITALIA) contaCoppe++;
 		if (SOLO_CAMPIONATO) contaCoppe++;
 		if (contaCoppe>1) {
-			throw new RuntimeException("SOLO_COPPA_ITALIA, SOLO_CAMPIONATO e SOLO_COPPA_CAMPIONI sono alternativi tra di loro");
+			throw new RuntimeException("SOLO_SINGOLA, SOLO_COPPA_ITALIA, SOLO_CAMPIONATO e SOLO_COPPA_CAMPIONI sono alternativi tra di loro");
 		}
 		if (USA_SPRING) {
 			ctx = new SpringApplicationBuilder(MainClass.class)
@@ -189,6 +191,10 @@ public class CalcolaPartita {
 
 		hsPartiteCoppaItalia.add("30"+ "\t" + "TBD"+ "\t" + "TBD");
 
+		HashSet<String> hsPartitaSingola=new HashSet<>();
+		hsPartitaSingola.add("26"+ "\t" + "Universal"+ "\t" + "tavolino");
+		
+		
 		HashSet<String> hsPartiteCoppaCampioni=new HashSet<>();
 		hsPartiteCoppaCampioni.add("2"+ "\t" + "Jonny Fighters"+ "\t" + "C. H. MOLLE");
 		hsPartiteCoppaCampioni.add("2"+ "\t" + "Atletico Mikatanto"+ "\t" + "tavolino");
@@ -309,13 +315,18 @@ public class CalcolaPartita {
 						Squadra squadra2=squadre.get(i2);
 						String nome2 = squadra2.getNome();
 						String k = Integer.toString(ggDaCalcolare) + "\t" + nome1 + "\t" + nome2;
-
-						if (ggDaCalcolare==6 && nome1.equalsIgnoreCase("Jonny Fighters") && nome2.equalsIgnoreCase("Atletico Mikatanto")) {
-							System.out.println();
+//						System.err.println(k);
+						if (ggDaCalcolare==26 && nome1.equalsIgnoreCase("Universal") && nome2.equalsIgnoreCase("tavolino")) {
+//							System.out.println();
 						}
 						
 						if (SOLO_COPPA_CAMPIONI) {
 							if (!hsPartiteCoppaCampioni.contains(k)) continue;
+							calcolaGiornataCorrente=true;
+						}
+
+						if (SOLO_SINGOLA) {
+							if (!hsPartitaSingola.contains(k)) continue;
 							calcolaGiornataCorrente=true;
 						}
 
