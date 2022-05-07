@@ -88,8 +88,17 @@ public class RiallineaDB {
 		
 	}
 	
-//insert into salva (nome,testo) select 'snapPartite', testo from salva where nome like '2022/04/23 14:05%snapPartite'
-//insert into salva (nome,testo) 	select 'lives', testo from salva where nome like '2022/04/23 14:05%lives'
+/*
+delete from salva where nome = 'snapPartite';
+delete from salva where nome = 'lives';
+insert into salva (nome,testo) select 'snapPartite', testo from salva where nome like (select max(nome) from salva where nome like '%2022/05/02 22:38%-snapPartite');
+insert into salva (nome,testo) select 'lives'      , testo from salva where nome like (select max(nome) from salva where nome like '%2022/05/02 22:38%-lives');
+--insert into salva (nome,testo) select 'snapPartite', testo from salva where nome like (select max(nome) from salva where nome like '%-snapPartite');
+--insert into salva (nome,testo) select 'lives'      , testo from salva where nome like (select max(nome) from salva where nome like '%-lives');
+
+
+
+ */
 	
 
 }

@@ -12,8 +12,8 @@ download /1/fs.cer (da chrome scarica il certificato come file)
 keytool -import -alias fs -keystore  cacerts -file /1/fs.cer
 
 
-
-
+simulazione via telegram sbaglia gol (probablimente aggiustamento stessa fascia)
+simulazione se strike non colora
 ordine colonna simulazione
 live simulazioni mantra non funziona
 bot getdettaglio ora sbagliata
