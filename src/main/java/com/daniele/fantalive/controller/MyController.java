@@ -1,6 +1,7 @@
 package com.daniele.fantalive.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -13,9 +14,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -72,6 +75,101 @@ public class MyController {
 	public String getFile() throws Exception {
 		return keepAlive();
 	}
+	@GetMapping("/simulaF1")
+	public Map<String, Object> simulaF1() throws Exception {
+		Map<String, Object> ret=new HashMap<>();
+
+		List<Double> f1=new ArrayList<>();
+		f1.add(25d);
+		f1.add(18d);
+		f1.add(15d);
+		f1.add(12d);
+		f1.add(10d);
+		f1.add(8d);
+		f1.add(6d);
+		f1.add(4d);
+
+		HashMap<String, Double> classifica=new HashMap<>();
+		classifica.put("Atletico Mikatanto",23.0);
+		classifica.put("Universal",8.0);
+		classifica.put("C. H. MOLLE",24.0);
+		classifica.put("VincereAManiBasse",37.0);
+		classifica.put("Canosa di Puglia...",28.0);
+		classifica.put("Atletico Conc",25.0);
+		classifica.put("tavolino",31.0);
+		classifica.put("Jonny Fighters",20.0);		
+		
+		Map<String, Double> totale=new HashMap<>();
+		datiSingolaProiezione(Main.proiezioneFS("BE", "B IO Conc"),totale);
+		datiSingolaProiezione(Main.proiezioneFS("BE", "B Claudio New"),totale);
+		datiSingolaProiezione(Main.proiezioneFS("BE", "B Roby Fra"),totale);
+		datiSingolaProiezione(Main.proiezioneFS("BE", "B Dante Gio"),totale);
+		Map<String, Double> att = new TreeMap(new ReverseOrderTreemap(totale));
+		att.putAll(totale);
+		Set<String> keySet = att.keySet();
+		int pos=0;
+		for (String key : keySet) {
+			classifica.put(key, classifica.get(key)+f1.get(pos));
+			pos++;
+		}
+		//att.forEach((k,v)->System.err.println(k+"="+v));
+		ret.put("att", att);
+		Map<String, Double> cl = new TreeMap(new ReverseOrderTreemap(classifica));
+		cl.putAll(classifica);
+		//cl.forEach((k,v)->System.err.println(k+"="+v));
+		ret.put("classifica", cl);
+		return ret;
+	}
+
+	class ReverseOrderTreemap implements Comparator<String>  {
+		Map<String, Double> map;
+		public ReverseOrderTreemap(Map<String, Double> map) {
+			this.map = map;
+		}
+		public int compare(String o1, String o2) {
+			if (map.get(o2) == map.get(o1))
+				return 1;
+			else {
+				int compareTo = ((Double) map.get(o2)).compareTo((Double) map.get(o1));
+				if (compareTo==0) {
+					compareTo=1;
+				}
+				return compareTo;
+				
+			}
+
+		}
+	}
+
+
+	private void datiSingolaProiezione(Map<String, Object> proiezioneFS,Map<String, Double> totale) {
+		Set<String> keySet = proiezioneFS.keySet();
+		for (String key : keySet) {
+			Map<String, Object> map = (Map<String, Object>) proiezioneFS.get(key);
+			List<Map<String, Object>> teams = (List<Map<String, Object>>) map.get("teams");
+			for (Map<String,Object> team : teams) {
+				String nome = (String) team.get("nome");
+				BigDecimal bd=new BigDecimal(0);
+				System.out.println(team.get("nome"));
+				List<Map<String, Object>> players = (List<Map<String, Object>>) team.get("players");
+				for (Map<String,Object> player : players) {
+					if (player.get("played").equals(true)) {
+						System.out.println(
+										player.get("fantavoto") + " - " +
+										player.get("squadraGioca") + " - " +
+										player.get("nome") + " - " +
+										player.get("played") + " - " 
+								);
+						bd=bd.add(new BigDecimal((Double) player.get("fantavoto")));
+					}
+				}
+				totale.put(nome, bd.doubleValue());
+				System.out.println();
+			}
+		}
+	}
+
+	
 	private String keepAlive() throws Exception {
 		String ret="";
 		ZonedDateTime now = ZonedDateTime.now();

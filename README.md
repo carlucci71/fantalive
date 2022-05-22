@@ -139,3 +139,14 @@ cd C:\Program Files\Eclipse Adoptium\jdk-8.0.312.7-hotspot\jre\lib\security
 keytool -list -v -keystore cacerts  > C:\1\jc.txt   (password changeit)
 download /1/fs.cer (da chrome scarica il certificato come file)
 keytool -import -alias fs -keystore  cacerts -file /1/fs.cer
+
+
+https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=1&competitionId=21&day=36
+https://leghe.fantacalcio.it/fanta-viva/formazioni/34?id=319871
+https://www.goal.com/it/notizie/calendario-serie-a-2021-2022-completo/161ug15ioiflh19whgevwxviur
+https://www.fanta.soccer/it/login/
+
+keytool -import -alias ga1 -keystore cacerts -file c:\1\ga.cer
+keytool -import -alias fg1 -keystore cacerts -file c:\1\fg.cer
+keytool -import -alias fs1 -keystore cacerts -file c:\1\fs.cer
+keytool -import -alias goal1 -keystore cacerts -file c:\1\goal.cer
