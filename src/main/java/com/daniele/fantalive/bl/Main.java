@@ -117,8 +117,8 @@ public class Main {
 	static Map<Integer, String > reverseStatusMatch;	
 	public static Map<Integer , ZonedDateTime> calendario;	
 	public static Map<Integer , ZonedDateTime> calendarioInizioGiornata;	
-	static Set<String > sqJB;	
-	static Set<String > giocJB;	
+	static Set<String > sqRealFantacomix21;	
+	static Set<String > giocRealFantacomix21;	
 	public static Map<String, String> keyFG=null;
 	public static int timeRefresh = 0;
 
@@ -220,23 +220,14 @@ public class Main {
 			mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		}
-		if (sqJB==null) {
-			sqJB = new HashSet() {{
-				//				add("bebocar");
-				//				add("FC Cherwood");
-				//				add("Juventiboss"); 
+		if (sqRealFantacomix21==null) {
+			sqRealFantacomix21 = new HashSet() {{
+				add("il var uccide il calcio");
 
 			}};
 		}
-		if (giocJB==null) {
-			giocJB = new HashSet() {{
-				add("Michela_2000");
-				add("PeppePalmentieri");
-				add("Andrea_S94");
-				add("bebocar");
-				add("Zamplano");
-				add("Mambo Fc");
-				add("Il sigaro di Lippi");
+		if (giocRealFantacomix21==null) {
+			giocRealFantacomix21 = new HashSet() {{
 			}};
 		}
 		if (nickPlayer==null) {
@@ -342,7 +333,7 @@ public class Main {
 				FANTAVIVA
 				LUCCICAR
 				BE
-				JB
+				REALFANTACOMIX21
 				attivo
 				icona
 				des_FG
@@ -374,33 +365,30 @@ public class Main {
 			eventi.put(25, new String[] {"assist movimento livello alto","","","1","","S",Constant.ASSIST,""});
 			if (valorizzaBMFG) {
 				Map<String, Object> bmFantaviva = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.FANTAVIVA.name()));
-				Map<String, Object> bmJB = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.JB.name()));
+				Map<String, Object> bmRealFantacomix21 = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name()));
 				Map<String, Object> bmLuccicar = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.LUCCICAR.name()));
 				for (Integer key : eventi.keySet()) {
 					String[] valori = eventi.get(key);
 					String kFg=valori[7];
 					fontiVoti.put(aliasCampionati.get(Campionati.FANTAVIVA.name()), (Integer)((Map)bmFantaviva.get("fonte")).get("fonte_voti"));
 					fontiVoti.put(aliasCampionati.get(Campionati.LUCCICAR.name()), (Integer)((Map)bmLuccicar.get("fonte")).get("fonte_voti"));
-					fontiVoti.put(aliasCampionati.get(Campionati.JB.name()), (Integer)((Map)bmJB.get("fonte")).get("fonte_voti"));
+					fontiVoti.put(aliasCampionati.get(Campionati.REALFANTACOMIX21.name()), (Integer)((Map)bmRealFantacomix21.get("fonte")).get("fonte_voti"));
 
 					overrideBM(bmFantaviva, valori, kFg,1);
 					overrideBM(bmLuccicar, valori, kFg,2);
-					overrideBM(bmJB, valori, kFg,4);
+					overrideBM(bmRealFantacomix21, valori, kFg,4);
 				}
 				modificatori.put(Constant.Campionati.FANTAVIVA.name(), ((Map)bmFantaviva.get("modificatori")));
-				modificatori.put(Constant.Campionati.JB.name(), ((Map)bmJB.get("modificatori")));
+				modificatori.put(Constant.Campionati.REALFANTACOMIX21.name(), ((Map)bmRealFantacomix21.get("modificatori")));
 				modificatori.put(Constant.Campionati.LUCCICAR.name(), ((Map)bmLuccicar.get("modificatori")));
 			}
 		}
 		if (sq==null) {
 			sq = new LinkedHashMap<Integer, String>();
 			sq.put(1, "ATA");
-			sq.put(24, "BEN");
 			sq.put(2, "BOL");
 			sq.put(21, "CAG");
-			sq.put(22, "CRO");
 			sq.put(6, "FIO");
-			sq.put(8, "GEN");
 			sq.put(9, "INT");
 			sq.put(10, "JUV");
 			sq.put(11, "LAZ");
@@ -417,10 +405,13 @@ public class Main {
 			sq.put(5, "EMP");
 			sq.put(138, "VEN");
 			sq.put(137, "SAL");
+			sq.put(144, "CRE");
+			sq.put(119, "LEC");
+			sq.put(143, "MON");
 		}
 		if (configsCampionato==null) {
 			configsCampionato = new ArrayList<ConfigCampionato>();
-			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.JB.name(),"NOMANTRA","TUTTI"));
+			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.REALFANTACOMIX21.name(),"NOMANTRA","TUTTI"));
 			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.LUCCICAR.name(),"NOMANTRA","F1"));
 			configsCampionato.add(new ConfigCampionato(22,"FANTAGAZZETTA",Constant.Campionati.FANTAVIVA.name(),"MANTRA","PARTITE"));
 			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE",Constant.Campionati.BE.name(),"NOMANTRA","PARTITE"));
@@ -1026,8 +1017,8 @@ public class Main {
 		}
 
 		String idComp="";
-		if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.JB.name()))) {
-			idComp = Constant.COMP_JB_FG;
+		if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name()))) {
+			idComp = Constant.COMP_REALFANTACOMIX21_FG;
 		} else if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.FANTAVIVA.name()))) {
 			idComp = Constant.COMP_VIVA_FG;
 		} else if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.LUCCICAR.name()))) {
@@ -1280,7 +1271,7 @@ public class Main {
 		headers.put("app_key", constant.APPKEY_FG_MOBILE);
 		Map<String, Object> mapPutHTTP = callHTTP("PUT","application/json", String.format(Constant.URL_LOGIN_FG), toJson(bodyMap), headers);
 		List<String> listCookie = ((List<String>)((Map)mapPutHTTP.get("headerFields")).get("Set-Cookie"));
-		String cookieName = "LegheFG2_Leghe2021";
+		String cookieName = "LegheFG2_Leghe2022";
 		String cookieValue=null;
 		for (String cookie : listCookie) {
 			int indexOf = cookie.indexOf(cookieName);
@@ -1453,7 +1444,15 @@ public class Main {
 			String link = element.select("A").attr("href");
 			link=link.substring(link.lastIndexOf("=")+1);
 			//			System.out.println(squadra + ";" + giocatore);
-			if (!lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.JB.name())) || (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.JB.name())) && sqJB.contains(squadra)) || (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.JB.name())) && giocJB.contains(giocatore))){
+			if (false) {
+				if (!lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) || 
+						(lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) && 
+								sqRealFantacomix21.contains(squadra)) 
+						|| (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) && 
+								giocRealFantacomix21.contains(giocatore))){
+					ret.put(link,squadra);
+				}
+			} else {
 				ret.put(link,squadra);
 			}
 		}
@@ -1578,7 +1577,8 @@ public class Main {
 				Map homeTeam = (Map)map2.get("homeTeam");
 				String sqFuori = ((String)awayTeam.get("teamCode")).toUpperCase();
 				String sqCasa = ((String)homeTeam.get("teamCode")).toUpperCase();
-
+				if (sqFuori.equals("MONZ")) sqFuori="MON";
+				if (sqCasa.equals("MONZ")) sqCasa="MON";
 
 				Map<String, Object> partite = new LinkedHashMap();
 				Map timing = (Map)map2.get("timing");
@@ -1805,7 +1805,7 @@ public class Main {
 		int responseCode = postConnection.getResponseCode();
 		StringBuffer response = new StringBuffer();
 		if (responseCode == HttpURLConnection.HTTP_OK) {
-			postConnection.getHeaderField("LegheFG2_Leghe2021");
+			postConnection.getHeaderField("LegheFG2_Leghe2022");
 			Map<String, List<String>> headerFields = postConnection.getHeaderFields();
 			ret.put("headerFields", headerFields);
 			BufferedReader in = new BufferedReader(new InputStreamReader(postConnection.getInputStream()));
@@ -1885,14 +1885,14 @@ public class Main {
 		Main.keyFG=new HashMap<String, String>();
 		Main.keyFG.put(Constant.Campionati.FANTAVIVA.name(), "id_comp=" + Constant.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG)  + "&f=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.FANTAVIVA.name())) + ".json");
 		Main.keyFG.put(Constant.Campionati.LUCCICAR.name(), "id_comp=" + Constant.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.LUCCICAR.name())) + ".json");
-		Main.keyFG.put(Constant.Campionati.JB.name(), "id_comp=" + Constant.COMP_JB_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_JB_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_JB_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.JB.name())) + ".json");
+		Main.keyFG.put(Constant.Campionati.REALFANTACOMIX21.name(), "id_comp=" + Constant.COMP_REALFANTACOMIX21_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_REALFANTACOMIX21_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_REALFANTACOMIX21_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) + ".json");
 	}
 
 	public static final Map<String, String> aliasCampionati = new HashMap<>();
 	static {
 		aliasCampionati.put(Constant.Campionati.LUCCICAR.name(), Constant.Campionati.LUCCICAR.name());
 		aliasCampionati.put(Constant.Campionati.BE.name(), Constant.Campionati.BE.name());
-		aliasCampionati.put(Constant.Campionati.JB.name(), "jb-fanta");
+		aliasCampionati.put(Constant.Campionati.REALFANTACOMIX21.name(), "realfantacomix21");
 		aliasCampionati.put(Constant.Campionati.FANTAVIVA.name(), "fanta-viva");
 	}	
 
@@ -1902,7 +1902,7 @@ public class Main {
 		int giornata=0;
 		if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.FANTAVIVA.name()))) giornata=constant.GIORNATA-Constant.DELTA_VIVA_FG;
 		if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.LUCCICAR.name()))) giornata=constant.GIORNATA-Constant.DELTA_LUCCICAR_FG;
-		if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.JB.name()))) giornata=constant.GIORNATA-Constant.DELTA_JB_FG;
+		if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name()))) giornata=constant.GIORNATA-Constant.DELTA_REALFANTACOMIX21_FG;
 		String string = (String) Main.callHTTP("GET", "application/json; charset=UTF-8", String.format(Constant.URL_FORMAZIONI_FG, lega,giornata,  Constant.COMP_VIVA_FG), null).get("response");
 		//		System.out.println(string);
 		string = string.substring(string.indexOf(".s('tmp', ")+11);
@@ -1929,7 +1929,7 @@ public class Main {
 			int contaSq=0;
 			int progPartita=0;
 			for (Map<String, List<Map>> map : l) {
-				if (!lega.equalsIgnoreCase(Constant.Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Constant.Campionati.JB.name())) {
+				if (!lega.equalsIgnoreCase(Constant.Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Constant.Campionati.REALFANTACOMIX21.name())) {
 					progPartita++;
 				}
 				List<Map> list = map.get("sq");
@@ -1964,7 +1964,7 @@ public class Main {
 								List<PartitaSimulata> partiteSimulate=new ArrayList<>();
 								PartitaSimulata partitaSimulata=new PartitaSimulata();
 								partitaSimulata.setCampionato(lega);
-								if (!lega.equalsIgnoreCase(Constant.Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Constant.Campionati.JB.name()) && (contaSquadre == 1)) {
+								if (!lega.equalsIgnoreCase(Constant.Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Constant.Campionati.REALFANTACOMIX21.name()) && (contaSquadre == 1)) {
 									partitaSimulata.setCasa(true);
 								}
 								else {
@@ -1974,12 +1974,12 @@ public class Main {
 									partitaSimulata.setNome("  LUCCICAR");
 									squadra.setEvidenza(true);
 								} 
-								else if (lega.equalsIgnoreCase(Constant.Campionati.JB.name()) && squadra.getNome().equalsIgnoreCase("bebocar")) {
-									partitaSimulata.setNome("  JB");
+								else if (lega.equalsIgnoreCase(Constant.Campionati.REALFANTACOMIX21.name()) && squadra.getNome().equalsIgnoreCase("il var uccide il calcio")) {
+									partitaSimulata.setNome("  REALFANTACOMIX21");
 									squadra.setEvidenza(true);
 								} 
-								else if (lega.equalsIgnoreCase(Constant.Campionati.JB.name()) && !squadra.getNome().equalsIgnoreCase("bebocar")) {
-									partitaSimulata.setNome("  JB");
+								else if (lega.equalsIgnoreCase(Constant.Campionati.REALFANTACOMIX21.name()) && !squadra.getNome().equalsIgnoreCase("il var uccide il calcio")) {
+									partitaSimulata.setNome("  REALFANTACOMIX21");
 									squadra.setEvidenza(false);
 								} 
 								else {
@@ -2012,7 +2012,7 @@ public class Main {
 					}
 				}
 			}
-			if (!lega.equalsIgnoreCase(Constant.Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Constant.Campionati.JB.name())) {
+			if (!lega.equalsIgnoreCase(Constant.Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Constant.Campionati.REALFANTACOMIX21.name())) {
 				adattaNick(lega, squadre);
 				adattaNomePartitaSimulata(squadre, lega);
 				String nomePartitaSimulata=null;
@@ -2237,7 +2237,7 @@ public class Main {
 	}
 
 	public static void cancellaSquadre() throws Exception {
-		cancellaSalva(Constant.FORMAZIONE + Constant.Campionati.JB.name());
+		cancellaSalva(Constant.FORMAZIONE + Constant.Campionati.REALFANTACOMIX21.name());
 		cancellaSalva(Constant.FORMAZIONE + Constant.Campionati.LUCCICAR.name());
 		cancellaSalva(Constant.FORMAZIONE + Constant.Campionati.FANTAVIVA.name());
 		cancellaSalva(Constant.FORMAZIONE + Constant.Campionati.BE.name());
@@ -2382,8 +2382,8 @@ public class Main {
 			if (ret.get(Constant.Campionati.LUCCICAR.name()).getSquadre().size()>0) {
 				upsertSalva(Constant.FORMAZIONE + Constant.Campionati.LUCCICAR.name(), toJson(ret.get(Constant.Campionati.LUCCICAR.name()).getSquadre()));
 			}
-			if (ret.get(Constant.Campionati.JB.name()).getSquadre().size()>0) {
-				upsertSalva(Constant.FORMAZIONE + Constant.Campionati.JB.name(), toJson(ret.get(Constant.Campionati.JB.name()).getSquadre()));
+			if (ret.get(Constant.Campionati.REALFANTACOMIX21.name()).getSquadre().size()>0) {
+				upsertSalva(Constant.FORMAZIONE + Constant.Campionati.REALFANTACOMIX21.name(), toJson(ret.get(Constant.Campionati.REALFANTACOMIX21.name()).getSquadre()));
 			}
 			if (ret.get(Constant.Campionati.BE.name()).getSquadre().size()>0) {
 				if (ret.get(Constant.Campionati.BE.name()).getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate. PostGo");
@@ -2580,18 +2580,41 @@ public class Main {
 	}
 
 	private static List<Live> recuperaLives() throws Exception {
+
 		List<Live> lives = new ArrayList<Live>();
-		Iterator<Integer> iterator = sq.keySet().iterator();
-		while (iterator.hasNext()) {
-			Integer integer = (Integer) iterator.next();
-			//https://www.fantacalcio.it/api/live/10?g=23&i=16 g è la giornata
-			String sqFromLive = (String) callHTTP("GET", "application/json; charset=UTF-8", "https://www.fantacalcio.it/api/live/" + integer + "?g=" + constant.GIORNATA + "&i=" + Constant.I_LIVE_FANTACALCIO, null).get("response");
-			List<Map<String, Object>> getLiveFromFG = jsonToList(sqFromLive);
-			Live live = new Live();
-			live.setSquadra(sq.get(integer));
-			live.setGiocatori(getLiveFromFG);
-			lives.add(live);
+		//https://www.fantacalcio.it/api/live/10?g=23&i=16 g è la giornata
+		//https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/17/live_4.json			
+		//			String sqFromLive = (String) callHTTP("GET", "application/json; charset=UTF-8", "https://www.fantacalcio.it/api/live/" + integer + "?g=" + constant.GIORNATA + "&i=" + Constant.I_LIVE_FANTACALCIO, null).get("response");
+		int g = constant.GIORNATA;
+		String sqFromLive = "";
+		try{
+			sqFromLive = (String) callHTTP("GET", "application/json; charset=UTF-8", "https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/" + Constant.I_LIVE_FANTACALCIO + "/live_" + g + ".json", null).get("response");
+			Map<String, Object> jsonToMap = jsonToMap(sqFromLive);
+			List<Map<String, Object>> getLiveFromFG =(List<Map<String, Object>>) ((Map)jsonToMap.get("data")).get("pl");
+			for (Map<String, Object> map : getLiveFromFG) {
+				Integer idS = (Integer) map.get("id_s");
+				boolean trov=false;
+				for (Live live : lives) {
+					if (live.getSquadra().equals(sq.get(idS))) {
+						trov=true;
+						live.getGiocatori().add(map);
+					}
+				}
+				if (!trov) {
+					Live live = new Live();
+					live.setSquadra(sq.get(idS));
+					List<Map<String, Object>> lGioc=new ArrayList<>();
+					lGioc.add(map);
+					live.setGiocatori(lGioc);
+					lives.add(live);
+				}
+			}
 		}
+		catch (Exception e)
+		{
+
+		}
+
 		return lives;
 	}
 
@@ -2689,13 +2712,11 @@ public class Main {
 			for (Map<String, Object> gg : live.getGiocatori()) {
 				//				System.out.println(gg.get("nome") + ";" + gg.get("ruolo") + ";" + live.getSquadra());
 				double modificatore=0;
-				String evento = (String) gg.get("evento");
-				String ev="";
+				List<Integer> evento = (List<Integer>) gg.get("bm");
 				List<Integer> codEventi=new ArrayList<Integer>();
-				if (!evento.equals("")) {
-					String[] split = evento.split(",");
-					for (String eventoAtt : split) {
-						String[] eventiAtt = eventi.get(Integer.parseInt(eventoAtt));
+				String ev="";
+				for (Integer eventoAtt : evento) {
+						String[] eventiAtt = eventi.get(eventoAtt);
 						if (eventiAtt==null) {
 							throw new RuntimeException("Evento non censito: " + eventoAtt + " per " + gg.get("nome"));
 						}
@@ -2709,16 +2730,15 @@ public class Main {
 							if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.FANTAVIVA.name())) pos=1;
 							if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.LUCCICAR.name())) pos=2;
 							if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.BE.name())) pos=3;
-							if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.JB.name())) pos=4;
+							if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.REALFANTACOMIX21.name())) pos=4;
 							modificatore=modificatore+Double.parseDouble(eventiAtt[pos]);
 						}
-						codEventi.add(Integer.parseInt(eventoAtt));
+						codEventi.add(eventoAtt);
 					}
 					gg.put("eventodecodificato", ev);
 					gg.put("codEventi", codEventi);
 					gg.put("modificatore", modificatore);
 				}
-			}
 		}
 		for (Squadra squadra : squadre.get(campionato)) {
 			boolean isAmmonito=false;
@@ -2791,7 +2811,10 @@ public class Main {
 				}
 
 				for (Map<String, Object> g : giocatori) {
-					String nomeGiocatoreLive=g.get("nome").toString();
+					String nomeGiocatoreLive="";
+					if (g.get("nome") != null) {
+						nomeGiocatoreLive=g.get("nome").toString();
+					}
 					List<Integer> codEventi=new ArrayList<Integer>();
 					if (g.get("codEventi") != null) {
 						codEventi = (List<Integer>) g.get("codEventi");
@@ -2804,13 +2827,13 @@ public class Main {
 					if (g.get("modificatore") != null) {
 						modificatore = (Double) g.get("modificatore");
 					}
-					String votoLive=g.get("voto").toString();
-					String eventoLive=g.get("evento").toString();
+					String votoLive=g.get("v").toString();
+					List<Integer> eventoLive=(List<Integer>) g.get("bm");
 					if (nomeGiocatoreLive.toUpperCase().indexOf("APAT")>-1 && giocatore.getNome().toUpperCase().indexOf("APAT")>-1 && tipo.equalsIgnoreCase("FANTASERVICE")) {
 //						System.out.println();
 					}
 					if (tipo.equals("FANTAGAZZETTA") && 
-							giocatore.getNomeTrim().equalsIgnoreCase(nomeGiocatoreLive.replaceAll(" ", "")
+							giocatore.getId().equalsIgnoreCase(g.get("id").toString()
 									)
 							|| 
 							(tipo.equals("FANTASERVICE") && 
@@ -3894,7 +3917,7 @@ public class Main {
 		if (r.equals(Constant.Campionati.FANTAVIVA.name())) pos=1;
 		if (r.equals(Constant.Campionati.LUCCICAR.name())) pos=2;
 		if (r.equals(Constant.Campionati.BE.name())) pos=3;
-		if (r.equals(Constant.Campionati.JB.name())) pos=4;
+		if (r.equals(Constant.Campionati.REALFANTACOMIX21.name())) pos=4;
 		return Double.parseDouble(evento[pos]);
 	}
 

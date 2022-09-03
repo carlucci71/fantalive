@@ -990,7 +990,7 @@ app.directive("visualizzasquadra", function() {
 				if (r=="FANTAVIVA") pos=1;
 				if (r=="LUCCICAR") pos=2;
 				if (r=="BE") pos=3;
-				if (r=="JB") pos=4;
+				if (r=="REALFANTACOMIX21") pos=4;
 				return evento[pos];
 			}
 			$scope.weight=function(giocatore){
