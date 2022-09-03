@@ -1443,7 +1443,7 @@ public class Main {
 			Element element = select.get(i);
 			String link = element.select("A").attr("href");
 			link=link.substring(link.lastIndexOf("=")+1);
-			//			System.out.println(squadra + ";" + giocatore);
+			System.out.println(squadra + ";" + giocatore);
 			if (false) {
 				if (!lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) || 
 						(lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) && 
@@ -2447,7 +2447,7 @@ public class Main {
 		for (Live live : lives) {
 			List<Map<String, Object>> giocatori = live.getGiocatori();
 			for (Map<String,Object> giocatore : giocatori) {
-								System.out.println(giocatore.get("id") + "-" + giocatore.get("v") + "-");
+//								System.out.println(giocatore.get("id") + "-" + giocatore.get("v") + "-");
 				if (giocatore.get("v")!=null && Double.parseDouble(giocatore.get("v").toString())==55) {
 					giocatore.put("v", 0d);
 				}
