@@ -1,12 +1,9 @@
 package com.daniele.fantalive.bl;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
@@ -15,7 +12,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +33,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -51,9 +50,52 @@ public class ScaricaLista {
 	public static void main(String[] args) throws Exception {
 		Logger rootLogger = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 		rootLogger.setLevel(Level.INFO);
-		
+		/*
 		List<Map<String, Object>> go = go("realfantacomix21");
 		list2csv(go);
+		*/
+		Map<Integer, Object> getFantaValoreMercato = getFantaValoreMercato(true);
+		
+		Set<String> nomiFg=new HashSet<>();
+		
+		Set<Integer> keySet = getFantaValoreMercato.keySet();
+
+		Map<String, Map<String, Map<String, Object>>> attributiFGByNome=new HashMap<>();
+		
+		
+		for (Integer key : keySet) {
+			nomiFg.add(((Map)getFantaValoreMercato.get(key)).get("nome") + "@" + ((Map)getFantaValoreMercato.get(key)).get("squadra"));
+//			"ruolo", "value", "nome", "squadra"
+			Map value = (Map)getFantaValoreMercato.get(key);
+			value.put("codiceFG", key);
+			attributiFGByNome.put(((Map)getFantaValoreMercato.get(key)).get("nome").toString(), value);
+			
+		}
+		System.out.println("codiceFG@nomeFS_ORIGINALE@nomeFS@nomeFG@squadrafg@squadraFS@codiceFS@ruoloFS@quotazioneFS@ruoloFG@quotazioneFG@FVM");
+		
+		List<Map<String, Object>> leggiQuotazioniFS = leggiQuotazioniFS();
+		Map<Integer, Double> aggFVM=new HashMap<>();
+		for (Map<String,Object> quotazioniFS : leggiQuotazioniFS) {
+			String nOrig=quotazioniFS.get("cognome") + " " + quotazioniFS.get("nome");
+//			if (nOrig.equals("Mbala ")) 
+			{
+				String n=Main.cambiaNomi(nOrig, quotazioniFS.get("squadra").toString().substring(0,3));
+				String nomeFromFG = Main.getNomeFromFG(n, nomiFg);
+				Map<String, Object> map2 = new HashMap();
+				if (nomeFromFG!=null) {
+					Map<String, Map<String, Object>> map = attributiFGByNome.get(nomeFromFG.split("@")[0]);
+					Set<String> keySet2 = map.keySet();
+					for (String string : keySet2) {
+						map2.put(string, map.get(string));
+					}
+//					map2 = attributiFGByNome.get(nomeFromFG.split("@")[0]);
+				}
+				System.out.println(map2.get("codiceFG") + "@" + nOrig + "@" + n + "@" + (nomeFromFG==null?"@":nomeFromFG) + "@" + quotazioniFS.get("squadra")  + "@" + quotazioniFS.get("codice")  + "@" + quotazioniFS.get("ruolo") + "@" + quotazioniFS.get("quotazione")
+				+ "@" + map2.get("ruolo") + "@" + map2.get("qa")+ "@" + map2.get("value"));
+				aggFVM.put((Integer) quotazioniFS.get("codice"), (Double) map2.get("value"));
+			}
+		}
+		aggiornaQuotazioniFS(aggFVM);
 	}
 
 	private static void list2csv(List<Map<String, Object>> jsonToList) throws Exception {
@@ -182,15 +224,19 @@ public class ScaricaLista {
 		}
 		Map<String, Object> jsonToMap = Main.jsonToMap(responseBody);
 		List<Map<String, Object>> list = (List<Map<String, Object>>) jsonToMap.get("data");
-		Map<Integer, Double> getFantaValoreMercato = getFantaValoreMercato();
+		Map<Integer, Object> getFantaValoreMercato = getFantaValoreMercato(false);
 		for (Map<String, Object> map : list) {
-			map.put("FantaValoreMercato", getFantaValoreMercato.get(map.get("id")));
+			if (((Map)getFantaValoreMercato.get(map.get("id"))) != null) {
+				Double xx = (Double) ((Map)getFantaValoreMercato.get(map.get("id"))).get("value");
+				if (xx != null)
+					map.put("FantaValoreMercato", xx);
+			}
 		}
 		return list;
 	}	
 
-	private static Map<Integer, Double> getFantaValoreMercato() throws Exception {
-		Map<Integer, Double> m = new HashMap<>();
+	private static Map<Integer, Object> getFantaValoreMercato(boolean completo) throws Exception {
+		Map<Integer, Object> m = new HashMap<>();
 		CloseableHttpResponse  response;
 		BasicCookieStore cookieStore = new BasicCookieStore();
 		BasicClientCookie cookie;
@@ -230,7 +276,15 @@ public class ScaricaLista {
 						Row row = rowIterator.next();
 						if (riga >2) {
 							Integer k =((Double)row.getCell(0).getNumericCellValue()).intValue();
-							m.put(k, row.getCell(11).getNumericCellValue());
+							Map im=new HashMap<>();
+							im.put("value", row.getCell(11).getNumericCellValue());
+							m.put(k, im);
+							if (completo) {
+								im.put("qa", row.getCell(6).getNumericCellValue());
+								im.put("ruolo", row.getCell(2).getStringCellValue());
+								im.put("nome", row.getCell(3).getStringCellValue());
+								im.put("squadra", row.getCell(4).getStringCellValue());
+							}
 							/*
 							Iterator<Cell> cellIterator = row.cellIterator();
 							int colonna=0;
@@ -342,4 +396,77 @@ public class ScaricaLista {
 		ret.put("response", response.toString());
 		return ret; 
 	}
+	
+	private static List<Map<String, Object>> leggiQuotazioniFS() throws IOException {
+		int riga=0;
+		List<Map<String, Object>> lista=new ArrayList<>();
+		try (HSSFWorkbook myWorkBook= new HSSFWorkbook (new FileInputStream("/1/fs.xls"))) {
+			HSSFSheet mySheet = myWorkBook.getSheetAt(0);
+			Iterator<Row> rowIterator = mySheet.iterator(); 
+			while (rowIterator.hasNext()) {
+				riga++;
+				Row row = rowIterator.next();
+				if (riga >1) {
+					Map<String, Object> map = new HashMap<>();
+					map.put("codice", ((Double)row.getCell(0).getNumericCellValue()).intValue());
+					map.put("cognome", row.getCell(1).getStringCellValue());
+					map.put("nome", row.getCell(2).getStringCellValue());
+					map.put("squadra", row.getCell(3).getStringCellValue());
+					map.put("ruolo", row.getCell(4).getStringCellValue());
+					map.put("quotazione", row.getCell(6).getNumericCellValue());
+					lista.add(map);
+				}
+			}
+		}
+		return lista;
+	}
+
+	private static void aggiornaQuotazioniFS(Map<Integer, Double> aggFVM) throws IOException {
+		int riga=0;
+		List<Map<String, Object>> lista=new ArrayList<>();
+		try (HSSFWorkbook myWorkBook= new HSSFWorkbook (new FileInputStream("/1/fs.xls"))) {
+			HSSFSheet mySheet = myWorkBook.getSheetAt(0);
+			Iterator<Row> rowIterator = mySheet.iterator(); 
+			while (rowIterator.hasNext()) {
+				riga++;
+				Row row = rowIterator.next();
+				if (riga >1) {
+					Map<String, Object> map = new HashMap<>();
+					map.put("codice", ((Double)row.getCell(0).getNumericCellValue()).intValue());
+					map.put("cognome", row.getCell(1).getStringCellValue());
+					map.put("nome", row.getCell(2).getStringCellValue());
+					map.put("squadra", row.getCell(3).getStringCellValue());
+					map.put("ruolo", row.getCell(4).getStringCellValue());
+					map.put("quotazione", row.getCell(6).getNumericCellValue());
+					Double double1 = aggFVM.get(((Double)row.getCell(0).getNumericCellValue()).intValue());
+					if (double1==null) {
+						double1=new Double(0);
+					} else
+					{
+						double1=round(double1/2,0);
+					}
+					row.createCell(7).setCellValue(double1);
+					lista.add(map);
+				} else {
+					row.createCell(7).setCellValue("FVM");
+				}
+			}
+			 FileOutputStream fileOut = new FileOutputStream("/1/fs2.xls");
+			 myWorkBook.write(fileOut);
+
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.out);
+		}
+	}
+	
+	public static double round(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    long factor = (long) Math.pow(10, places);
+	    value = value * factor;
+	    long tmp = Math.round(value);
+	    return (double) tmp / factor;
+	}	
+	
 }

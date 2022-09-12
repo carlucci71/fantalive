@@ -189,6 +189,7 @@
 								 <input class="divInputCalciatore calcSize2" style="text-align:center" type=text ng-model=filterNome></input>
 								 <input class="divInputCalciatore calcSize3" style="text-align:center" type=text ng-model=filterSquadra></input>
 								 <input class="divInputCalciatore calcSize3" style="text-align:center" type=text ng-model=filterQuotazione></input>
+								 <input ng-if="visFmv" class="divInputCalciatore calcSize3" style="text-align:center" type=text ng-model=filterFvm></input>
 								 <i style="width:50px;text-align:center" title="preferito" ng-click="filterPreferito=!filterPreferito" ng-show="filterPreferito" class="fa fa-check-square"></i>
 								 <i style="width:50px;text-align:center" title="preferito" ng-click="filterPreferito=!filterPreferito" ng-show="!filterPreferito" class="fa fa-square"></i>
 						   		 <span style="width:100px;text-align:center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span ng-show="isMantra">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
@@ -202,12 +203,13 @@
 								 <label class="divCalciatore calcSize2" style="text-align:center;cursor:pointer">{{calciatore.nome}}</label>
 								 <label class="divCalciatore calcSize3" style="text-align:center;cursor:pointer">{{calciatore.squadra.substr(0,3)}}</label>
 								 <label class="divCalciatore calcSize3" style="text-align:center;cursor:pointer">{{calciatore.quotazione}}</label>
+								 <label  ng-if="visFmv"  class="divCalciatore calcSize3" style="text-align:center;cursor:pointer">{{calciatore.fvm}}</label>
 								 <i style="width:50px;text-align:center" ng-show="!calciatore.preferito" class="fa fa-star-o" aria-hidden="true"></i>			
 								 <i style="width:50px;text-align:center" ng-show="calciatore.preferito" class="fa fa-star" aria-hidden="true"></i>			
 						   		 <span style="width:100px;text-align:center">
 <!-- ng-attr-title="{{dettaglio(calciatore.id)}}"  -->
-									<i class="fa fa-info-circle" style="cursor:pointer" ng-click="urlDettaglio(calciatore.nome,calciatore.id, false)"></i>
-							   		 <span ng-show="isMantra">&nbsp;&nbsp;<i title="dettaglio old" class="fa fa-info-circle" style="cursor:pointer;color:red" ng-click="urlDettaglio(calciatore.nome,calciatore.id, true)"></i></span>
+									<i class="fa fa-info-circle" style="cursor:pointer" ng-click="urlDettaglio(calciatore.nome,calciatore.id, false,calciatore.fvm)"></i>
+							   		 <span ng-show="isMantra">&nbsp;&nbsp;<i title="dettaglio old" class="fa fa-info-circle" style="cursor:pointer;color:red" ng-click="urlDettaglio(calciatore.nome,calciatore.id, true,calciatore.fvm)"></i></span>
 							         <span ng-show="isMantra && calciatore.under23=='SI'">*</span>
 							         <span ng-show="!isMantra || calciatore.under23!='SI'">&nbsp;</span>
 						         </span>
@@ -322,7 +324,7 @@
 								<label class="nextOperation" ng-show="offertaVincente.nomegiocatore!=nomegiocatoreOperaCome">Puoi rilanciare per {{nomegiocatoreOperaCome}} (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)}})</label>
 							</span>
 							<label class="nextOperation" ng-show="offertaVincente.offerta>=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)">{{nomegiocatoreOperaCome}} non ha crediti sufficienti per rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)}})</label>
-							<label class="nextOperation" ng-show="avviabili.indexOf(nomegiocatoreOperaCome)<0">{{nomegiocatoreOperaCome}} non può acquistare altri giocatore in quel ruolo </label>
+							<label class="nextOperation" ng-show="avviabili.indexOf(nomegiocatoreOperaCome)<0">{{nomegiocatoreOperaCome}} non puï¿½ acquistare altri giocatore in quel ruolo </label>
 						</span>
 					</div> <!-- OPERACOME -->
 				</div>
@@ -358,8 +360,8 @@
 			</div>
 			<input ng-show="isAdmin" type="button" value="azzera tempo" ng-click="azzeraTempo()"></input>
 			<input ng-show="isAdmin" type="button" value="azzera offerta" ng-click="azzeraOfferta()"></input>
-   		 	<i title="dettaglio" class="fa fa-info-circle" style="cursor:pointer" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id, false)"></i>
-   		 	<i title="dettaglio old" class="fa fa-info-circle" style="cursor:pointer;color:red" ng-show="isMantra" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id, true)"></i>
+   		 	<i title="dettaglio" class="fa fa-info-circle" style="cursor:pointer" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id, false,offertaVincente.giocatore.fvm)"></i>
+   		 	<i title="dettaglio old" class="fa fa-info-circle" style="cursor:pointer;color:red" ng-show="isMantra" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id, true,offertaVincente.giocatore.fvm)"></i>
             <span ng-show="isMantra && selCalciatoreUnder23=='SI'">*</span>
             <span ng-show="!isMantra || selCalciatoreUnder23!='SI'">&nbsp;</span>
 			</div> <!-- RILANCIA -->  
@@ -397,8 +399,8 @@
 						<label ng-show="timeStart==3 && !isAdmin" class="nextOperation">Asta da confermare</label>
 						<span ng-show="timeStart==3 && isAdmin">
 						
-							<i ng-attr-title="{{dettaglio(offertaVincente.giocatore.id)}}"  style="cursor:pointer" class="fa fa-info-circle" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id,false)"></i>
-							<span ng-show="isMantra">&nbsp;&nbsp;<i title="dettaglio old" style="cursor:pointer;color:red" class="fa fa-info-circle" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id,true)"></i></span>
+							<i ng-attr-title="{{dettaglio(offertaVincente.giocatore.id)}}"  style="cursor:pointer" class="fa fa-info-circle" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id,false,offertaVincente.giocatore.fvm)"></i>
+							<span ng-show="isMantra">&nbsp;&nbsp;<i title="dettaglio old" style="cursor:pointer;color:red" class="fa fa-info-circle" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id,true,offertaVincente.giocatore.fvm)"></i></span>
 
 							<img ng-show="!abilitaForza"  style="cursor:pointer" title="abilita forzatura" src='./forza.png' ng-click="forzaOfferta=offertaVincente.offerta;forzaAllenatore=offertaVincente.idgiocatore;abilitaForza=true"/>
 							<span ng-show="abilitaForza">

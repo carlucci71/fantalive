@@ -513,6 +513,7 @@ public class MyControllerAsta {
 							giocatori.setRuolo(currentRow.getCell(4).getStringCellValue());
 							giocatori.setMacroRuolo(currentRow.getCell(4).getStringCellValue());
 							giocatori.setQuotazione(new Double(currentRow.getCell(6).getNumericCellValue()).intValue());
+							giocatori.setFvm(currentRow.getCell(7).getNumericCellValue());
 							giocatoriRepository.save(giocatori);
 						}
 						bPrima=false;
@@ -1128,6 +1129,7 @@ public class MyControllerAsta {
 			m.put("ruolo",  row[3]);
 			m.put("macroRuolo",  row[4]);
 			m.put("quotazione",  row[5]);
+			m.put("fvm",  row[7]);
 			if(row[6] != null) {
 				Calendar c = (Calendar) row[6];
 				if (c.get(Calendar.YEAR)<2020 && c.after(calUnder23)) m.put("under23", "SI");

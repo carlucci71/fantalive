@@ -18,6 +18,12 @@ public class Giocatori {
 	private String macroRuolo;
 	private Integer quotazione;
 	private Calendar dataNascita;
+	private Double fvm;
+	@Override
+	public String toString() {
+		return "Giocatori [id=" + id + ", squadra=" + squadra + ", nome=" + nome + ", ruolo=" + ruolo + ", macroRuolo="
+				+ macroRuolo + ", quotazione=" + quotazione + ", dataNascita=" + dataNascita + ", fvm=" + fvm + "]";
+	}
 	public Integer getId() {
 		return id;
 	}
@@ -60,11 +66,11 @@ public class Giocatori {
 	public void setDataNascita(Calendar dataNascita) {
 		this.dataNascita = dataNascita;
 	}
-	
-	
-	@Override
-	public String toString() {
-		return "Giocatori [id=" + id + ", squadra=" + squadra + ", nome=" + nome + ", ruolo=" + ruolo + ", macroRuolo="
-				+ macroRuolo + ", quotazione=" + quotazione + ", dataNascita=" + dataNascita + "]";
+	public Double getFvm() {
+		return fvm;
 	}
+	public void setFvm(Double fvm) {
+		this.fvm = fvm;
+	}
+	
 }

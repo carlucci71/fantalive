@@ -23,6 +23,7 @@ app.run(
 			$rootScope.tokenDispositiva=-1;
 			$rootScope.isATurni=true;
 			$rootScope.isSingle=false;
+			$rootScope.visFmv=false;
 			$rootScope.autoAllinea=false;
 			$rootScope.autoAllineaOC=false;
 			$rootScope.isMantra=true;
@@ -85,17 +86,18 @@ app.run(
 		        }
 				$rootScope.calcolaIsAdmin();
 			}
-			$rootScope.urlDettaglio=function(cNome,cId, old){
+			$rootScope.urlDettaglio=function(cNome,cId, old, fvm){
 				var url;
 				if ($rootScope.isMantra){
 					url= "https://www.fantacalcio.it/squadre/giocatore/" + cNome + "/" + cId;
 					if (old) url=url+"/3/2020-21";
 				}
 				else {
-					var id=(""+cId).substring(2,10);
+					var id=(""+cId).substring(1,10);
+
 					var nome="" + cNome;
 					nome=nome.substring(0,nome.indexOf(" ")).toLowerCase();
-					url = "https://www.fanta.soccer/it/seriea/" + id + "/calciatore/" + nome + "/";
+					url = "https://www.fanta.soccer/it/seriea/" + id + "/calciatore/" + nome + "/" + fvm;
 				}
 				window.open(url,'_blank' );
 			}
@@ -554,6 +556,7 @@ app.run(
 			$rootScope.dettaglio=function(cId){
 				return myMap.get(cId);
 			}
+			
 			$rootScope.caricaFile = function(tipoFile){
 				$rootScope.caricamentoInCorso=true;
 				var f = document.getElementById('file').files[0], r = new FileReader();
@@ -1217,6 +1220,7 @@ app.run(
 //				$rootScope.filterMacroRuolo="";
 				$rootScope.filterNome="";
 				$rootScope.filterSquadra="";
+				$rootScope.filterFvm="";
 				$rootScope.filterQuotazione="";
 				$rootScope.filterPreferito=false;
 				$rootScope.selCalciatore="";
@@ -1488,7 +1492,13 @@ app.filter('myTableFilter', function($rootScope){
 	            	  var tmp=-$rootScope.filterQuotazione;
 	            	  termInQuotazione = item.quotazione <= tmp;
 	              }
-	              return termInRuolo && termInMacroRuolo && termInNome && termInSquadra && termInPreferito && termInQuotazione;
+	              var termInFvm=true;
+	              if($rootScope.filterFvm >0) termInFvm = item.fvm >= $rootScope.filterFvm;
+	              if($rootScope.filterFvm <0){
+	            	  var tmp=-$rootScope.filterFvm;
+	            	  termInFvm = item.fvm <= tmp;
+	              }
+	              return termInRuolo && termInMacroRuolo && termInNome && termInSquadra && termInPreferito && termInQuotazione && termInFvm;
 	              
 	              
 	           });

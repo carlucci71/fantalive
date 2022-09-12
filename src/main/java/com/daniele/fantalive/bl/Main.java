@@ -825,6 +825,7 @@ public class Main {
 
 	private static String cercaNomeFs(String nomeFS, Set<String> nomiFG, String ret) {
 		for (String nomeFG : nomiFG) {
+//			System.out.println(nomeFG);
 			String[] split = nomeFG.split("@");
 			//			System.out.println(split[0].substring(0,split[0].lastIndexOf(" ")).replaceAll(" ", "")); //.equalsIgnoreCase(nomeGiocatoreLive.replaceAll(" ", "")))	
 			String nomeFindFS = nomeFS.substring(0,nomeFS.lastIndexOf(" ")).replaceAll(" ", "");
@@ -978,7 +979,11 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		//				mainSpring(args);
 		mainBatch(args);
-		liveForzato();
+		String nome="Acerbi F.";
+		Set<String> nomiFg=new HashSet<>();
+		nomiFg.add("Acerbi" + "@" + "INT");
+		getNomeFromFG(nome, nomiFg);
+//		liveForzato();
 
 		/*
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
@@ -1443,7 +1448,7 @@ public class Main {
 			Element element = select.get(i);
 			String link = element.select("A").attr("href");
 			link=link.substring(link.lastIndexOf("=")+1);
-//			System.out.println(squadra + ";" + giocatore);
+			System.out.println(squadra + ";" + giocatore);
 			if (false) {
 				if (!lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) || 
 						(lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) && 
@@ -2957,6 +2962,99 @@ public class Main {
 		return lega.substring(0,1) + (1+progPartita);
 	}
 
+	public static String cambiaNomi(String nomeG, String squadra) {
+		if (nomeG.equalsIgnoreCase("Fabian Ruiz .")) nomeG="Ruiz .";
+		else if (nomeG.equalsIgnoreCase("Leao R.")) nomeG="Rafael Leao ";
+		else if (nomeG.equalsIgnoreCase("Samu Castillejo .")) nomeG="Castillejo ";
+		else if (nomeG.equalsIgnoreCase("Joao Pedro Galvao .")) nomeG="Joao Pedro ";
+		else if (nomeG.equalsIgnoreCase("Kessie F.")) nomeG="Kessie' ";
+		else if (nomeG.equalsIgnoreCase("Rafael Toloi .")) nomeG="Toloi ";
+		else if (nomeG.equalsIgnoreCase("Pezzella G.")) nomeG="Pezzella Giu. ";
+		else if (nomeG.equalsIgnoreCase("Gerard Deulofeu .")) nomeG="Deulofeu ";
+		else if (nomeG.equalsIgnoreCase("Brahim Diaz .")) nomeG="Diaz B. ";
+		else if (nomeG.equalsIgnoreCase("Roger Ibanez .")) nomeG="Ibanez ";
+		else if (nomeG.equalsIgnoreCase("Gonzalo Villar .")) nomeG="Villar ";
+		else if (nomeG.equalsIgnoreCase("Kouame C.")) nomeG="Kouame' ";
+		else if (nomeG.equalsIgnoreCase("Montipo L.")) nomeG="Montipo' ";
+		else if (nomeG.equalsIgnoreCase("Nkoulou N.")) nomeG="N'Koulou ";
+		else if (nomeG.equalsIgnoreCase("Jose Callejon .")) nomeG="Callejon ";
+		else if (nomeG.equalsIgnoreCase("Pellegrini L.")) nomeG="Pellegrini Lo. ";
+		else if (nomeG.equalsIgnoreCase("Balde K.")) nomeG="Keita B. ";
+		else if (nomeG.equalsIgnoreCase("Alex Sandro .")) nomeG="Alex Sandro ";
+		else if (nomeG.equalsIgnoreCase("Junior Messias ."))  nomeG="Messias ";
+		else if (nomeG.equalsIgnoreCase("Borja Mayoral .")) nomeG="Mayoral ";
+		else if (nomeG.equalsIgnoreCase("N'Zola M.")) nomeG="Nzola ";
+		else if (nomeG.equalsIgnoreCase("Molina N.") && squadra.equalsIgnoreCase("UDI")) nomeG="Molina N. ";
+		else if (nomeG.equalsIgnoreCase("Danilo .") && squadra.equalsIgnoreCase("BOL")) nomeG="Danilo LAR. ";
+		else if (nomeG.equalsIgnoreCase("Bastoni A.")) nomeG="Bastoni ";
+		else if (nomeG.equalsIgnoreCase("Fares M.")) nomeG="Fares ";
+		else if (nomeG.equalsIgnoreCase("Simeone G.")) nomeG="Simeone ";
+		else if (nomeG.equalsIgnoreCase("Martinez L.") && squadra.equalsIgnoreCase("FIO")) nomeG="Martinez Quarta ";
+		else if (nomeG.equalsIgnoreCase("Martinez L.") && squadra.equalsIgnoreCase("INT")) nomeG="Martinez L. ";
+		else if (nomeG.equalsIgnoreCase("Pepe Reina .")) nomeG="Reina ";
+		else if (nomeG.equalsIgnoreCase("Sergio Oliveira .")) nomeG="Oliveira ";
+		else if (nomeG.equalsIgnoreCase("Ikone J.")) nomeG="Ikone' ";
+		else if (nomeG.equalsIgnoreCase("Cordaz A.")) nomeG="Cordaz ";
+		else if (nomeG.equalsIgnoreCase("Daniel Fuzato .")) nomeG="Fuzato ";
+		else if (nomeG.equalsIgnoreCase("Alvaro Odriozola .")) nomeG="Odriozola ";
+		else if (nomeG.equalsIgnoreCase("Spinazzola L.")) nomeG="Spinazzola ";
+		else if (nomeG.equalsIgnoreCase("Traore H.")) nomeG="Traore' Hj. ";
+		else if (nomeG.equalsIgnoreCase("Nwankwo S.")) nomeG="Simy ";
+		else if (nomeG.equalsIgnoreCase("Arthur Cabral .")) nomeG="Cabral ";
+		else if (nomeG.equalsIgnoreCase("Contini Baranovsky N.")) nomeG="Contini ";
+		else if (nomeG.equalsIgnoreCase("Rafael Toloi ")) nomeG="Toloi ";
+		else if (nomeG.equalsIgnoreCase("Ederson ")) nomeG="Ederson D.s.";
+		else if (nomeG.equalsIgnoreCase("Højlund R.")) nomeG="Hojlund ";
+		else if (nomeG.equalsIgnoreCase("Lucumi J.")) nomeG="Lucumi' ";
+		else if (nomeG.equalsIgnoreCase("Emanuel Vignato ")) nomeG="Vignato ";
+		else if (nomeG.equalsIgnoreCase("Jerdy Schouten ")) nomeG="Schouten ";
+		else if (nomeG.equalsIgnoreCase("Paolo Ghiglione ")) nomeG="Ghiglione ";
+		else if (nomeG.equalsIgnoreCase("Meite S.")) nomeG="Meite' ";
+		else if (nomeG.equalsIgnoreCase("Dodô ")) nomeG="Dodo' ";
+		else if (nomeG.equalsIgnoreCase("Arthur Cabral ")) nomeG="Cabral ";
+		else if (nomeG.equalsIgnoreCase("Soule M.")) nomeG="Soule' ";
+		else if (nomeG.equalsIgnoreCase("Mario Gila ")) nomeG="Gila ";
+		else if (nomeG.equalsIgnoreCase("Marcos Antônio ")) nomeG="Marcos Antonio ";
+		else if (nomeG.equalsIgnoreCase("Romero ")) nomeG="Romero L.";
+		else if (nomeG.equalsIgnoreCase("Pablo Rodriguez ")) nomeG="Rodriguez P.";
+		else if (nomeG.equalsIgnoreCase("Ballo-Toure F.")) nomeG="Ballo-Toure' ";
+		else if (nomeG.equalsIgnoreCase("Brahim Diaz ")) nomeG="Diaz B.";
+		else if (nomeG.equalsIgnoreCase("Junior Messias ")) nomeG="Messias ";
+		else if (nomeG.equalsIgnoreCase("Carlos ")) nomeG="Carlos Augusto ";
+		else if (nomeG.equalsIgnoreCase("Pablo Mari ")) nomeG="Mari' ";
+		else if (nomeG.equalsIgnoreCase("Dany Mota ")) nomeG="Mota ";
+		else if (nomeG.equalsIgnoreCase("Kim Minjae ")) nomeG="Kim ";
+		else if (nomeG.equalsIgnoreCase("Østigård L.")) nomeG="Ostigard ";
+		else if (nomeG.equalsIgnoreCase("Ndombele T.")) nomeG="Ndombele' ";
+		else if (nomeG.equalsIgnoreCase("Roger Ibanez ")) nomeG="Ibanez ";
+		else if (nomeG.equalsIgnoreCase("Mohamed Mady Camara ")) nomeG="Camara Ma. ";
+		else if (nomeG.equalsIgnoreCase("Gerard Yepes ")) nomeG="Yepes ";
+		else if (nomeG.equalsIgnoreCase("Gonzalo Villar ")) nomeG="Villar ";
+		else if (nomeG.equalsIgnoreCase("Ronaldo Vieira ")) nomeG="Vieira ";
+		else if (nomeG.equalsIgnoreCase("Kiriakopoulos G.")) nomeG="Kyriakopoulos ";
+		else if (nomeG.equalsIgnoreCase("Pedro Obiang ")) nomeG="Obiang ";
+		else if (nomeG.equalsIgnoreCase("Alvarez Wallace A.")) nomeG="Alvarez A.";
+		else if (nomeG.equalsIgnoreCase("Lauriente A.")) nomeG="Lauriente' ";
+		else if (nomeG.equalsIgnoreCase("Amian Adou K.")) nomeG="Amian ";
+		else if (nomeG.equalsIgnoreCase("Salvador Ferrer ")) nomeG="Ferrer ";
+		else if (nomeG.equalsIgnoreCase("Leonardo Buta ")) nomeG="Buta ";
+		else if (nomeG.equalsIgnoreCase("Gerard Deulofeu ")) nomeG="Deulofeu ";
+		else if (nomeG.equalsIgnoreCase("Alessandro Cortinovis ")) nomeG="Cortinovis ";
+		else if (nomeG.equalsIgnoreCase("Berardi A.") && squadra.equalsIgnoreCase("VER")) nomeG="Berardi A. ";
+		else if (nomeG.equalsIgnoreCase("Chiesa M.") && squadra.equalsIgnoreCase("VER")) nomeG="Chiesa M. ";
+		else if (nomeG.equalsIgnoreCase("Milinkovic-Savic V.") && squadra.equalsIgnoreCase("TOR")) nomeG="Milinkovic-Savic V. ";
+		else if (nomeG.equalsIgnoreCase("Radu I.") && squadra.equalsIgnoreCase("CRE")) nomeG="Radu I. ";
+		else if (nomeG.equalsIgnoreCase("Bastoni S.") && squadra.equalsIgnoreCase("SPE")) nomeG="Bastoni S. ";
+		else if (nomeG.equalsIgnoreCase("Cortinovis F.") && squadra.equalsIgnoreCase("INT")) nomeG="TBD ";
+		else if (nomeG.equalsIgnoreCase("Terracciano F.") && squadra.equalsIgnoreCase("VER")) nomeG="Terracciano F. ";
+		else if (nomeG.equalsIgnoreCase("Vignato S.") && squadra.equalsIgnoreCase("MON")) nomeG="Vignato S. ";
+		else if (nomeG.equalsIgnoreCase("Pepin ") && squadra.equalsIgnoreCase("MON")) nomeG="Machin ";
+		else if (nomeG.equalsIgnoreCase("Mbala ") && squadra.equalsIgnoreCase("SPE")) nomeG="NZola ";
+		
+
+		return nomeG;
+	}
+	
 	private static Giocatore estraiGiocatoreFromFS(Document doc, int i, String dove, String ruolo, boolean conVoto) {
 
 		Element first = doc.select("#MainContent_wuc_DettagliPartita1_rpt" + ruolo + dove + "_lblNome_" + i).first();
@@ -2968,61 +3066,7 @@ public class Main {
 			if(!text.equalsIgnoreCase("-")) {
 				//				String squadra = first.childNodes().get(1).toString().substring(2,5);
 				String nomeG=text.substring(0,text.indexOf("(")-1);
-				if (nomeG.equalsIgnoreCase("Fabian Ruiz .")) nomeG="Ruiz .";
-				else if (nomeG.equalsIgnoreCase("Leao R.")) nomeG="Rafael Leao ";
-				else if (nomeG.equalsIgnoreCase("Samu Castillejo .")) nomeG="Castillejo ";
-				else if (nomeG.equalsIgnoreCase("Joao Pedro Galvao .")) nomeG="Joao Pedro ";
-				else if (nomeG.equalsIgnoreCase("Kessie F.")) nomeG="Kessie' ";
-				else if (nomeG.equalsIgnoreCase("Rafael Toloi .")) nomeG="Toloi ";
-				else if (nomeG.equalsIgnoreCase("Pezzella G.")) nomeG="Pezzella Giu. ";
-				else if (nomeG.equalsIgnoreCase("Gerard Deulofeu .")) nomeG="Deulofeu ";
-				else if (nomeG.equalsIgnoreCase("Brahim Diaz .")) nomeG="Diaz B. ";
-				else if (nomeG.equalsIgnoreCase("Roger Ibanez .")) nomeG="Ibanez ";
-				else if (nomeG.equalsIgnoreCase("Gonzalo Villar .")) nomeG="Villar ";
-				else if (nomeG.equalsIgnoreCase("Kouame C.")) nomeG="Kouame' ";
-				else if (nomeG.equalsIgnoreCase("Montipo L.")) nomeG="Montipo' ";
-				else if (nomeG.equalsIgnoreCase("Nkoulou N.")) nomeG="N'Koulou ";
-				else if (nomeG.equalsIgnoreCase("Jose Callejon .")) nomeG="Callejon ";
-				else if (nomeG.equalsIgnoreCase("Pellegrini L.")) nomeG="Pellegrini Lo. ";
-				else if (nomeG.equalsIgnoreCase("Balde K.")) nomeG="Keita B. ";
-				else if (nomeG.equalsIgnoreCase("Alex Sandro .")) nomeG="Alex Sandro ";
-				else if (nomeG.equalsIgnoreCase("Junior Messias ."))  nomeG="Messias ";
-				else if (nomeG.equalsIgnoreCase("Borja Mayoral .")) nomeG="Mayoral ";
-				else if (nomeG.equalsIgnoreCase("N'Zola M.")) nomeG="Nzola ";
-				else if (nomeG.equalsIgnoreCase("Molina N.") && squadra.equalsIgnoreCase("UDI")) nomeG="Molina N. ";
-				else if (nomeG.equalsIgnoreCase("Danilo .") && squadra.equalsIgnoreCase("BOL")) nomeG="Danilo LAR. ";
-				else if (nomeG.equalsIgnoreCase("Bastoni A.")) nomeG="Bastoni ";
-				else if (nomeG.equalsIgnoreCase("Fares M.")) nomeG="Fares ";
-				else if (nomeG.equalsIgnoreCase("Simeone G.")) nomeG="Simeone ";
-				else if (nomeG.equalsIgnoreCase("Martinez L.") && squadra.equalsIgnoreCase("FIO")) nomeG="Martinez Quarta ";
-				else if (nomeG.equalsIgnoreCase("Martinez L.") && squadra.equalsIgnoreCase("INT")) nomeG="Martinez L. ";
-				else if (nomeG.equalsIgnoreCase("Pepe Reina .")) nomeG="Reina ";
-				else if (nomeG.equalsIgnoreCase("Sergio Oliveira .")) nomeG="Oliveira ";
-				else if (nomeG.equalsIgnoreCase("Ikone J.")) nomeG="Ikone' ";
-				else if (nomeG.equalsIgnoreCase("Cordaz A.")) nomeG="Cordaz ";
-				else if (nomeG.equalsIgnoreCase("Daniel Fuzato .")) nomeG="Fuzato ";
-				else if (nomeG.equalsIgnoreCase("Alvaro Odriozola .")) nomeG="Odriozola ";
-				else if (nomeG.equalsIgnoreCase("Spinazzola L.")) nomeG="Spinazzola ";
-				else if (nomeG.equalsIgnoreCase("Traore H.")) nomeG="Traore' Hj. ";
-				else if (nomeG.equalsIgnoreCase("Nwankwo S.")) nomeG="Simy ";
-				else if (nomeG.equalsIgnoreCase("Arthur Cabral .")) nomeG="Cabral ";
-				
-				
-/*				
-				if (nomeG.equalsIgnoreCase("Zapata D.")) nomeG="Zapata D. ";
-				if (nomeG.equalsIgnoreCase("Ricci M.")) nomeG="Ricci M. ";
-				if (nomeG.equalsIgnoreCase("Hernandez T.")) nomeG="Hernandez T. ";
-				if (nomeG.equalsIgnoreCase("Lopez M.")) nomeG="Lopez M. ";
-				if (nomeG.equalsIgnoreCase("Ferrari G.")) nomeG="Ferrari G. ";
-				if (nomeG.equalsIgnoreCase("Rodriguez R.")) nomeG="Rodriguez R. ";
-				if (nomeG.equalsIgnoreCase("Bastoni S.")) nomeG="Bastoni S. ";
-				if (nomeG.equalsIgnoreCase("Milinkovic-Savic V.")) nomeG="Milinkovic-Savic V. ";
-				if (nomeG.equalsIgnoreCase("Radu I.")) nomeG="Radu I. ";
-				if (nomeG.equalsIgnoreCase("Ricci S.")) nomeG="Ricci S. ";
-				if (nomeG.equalsIgnoreCase("Gonzalez N.")) nomeG="Gonzalez N. ";
-				if (nomeG.equalsIgnoreCase("Coulibaly M.")) nomeG="Coulibaly M. ";
-				if (nomeG.equalsIgnoreCase("Henderson L.")) nomeG="Henderson L. ";
-*/	
+				nomeG=cambiaNomi(nomeG, squadra);
 				/*
 				if (nomeG.contains("alvao")) {
 					System.out.println();

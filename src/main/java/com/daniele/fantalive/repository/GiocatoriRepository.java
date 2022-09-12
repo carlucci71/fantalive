@@ -15,7 +15,7 @@ import com.daniele.fantalive.entity.Giocatori;
 
 public interface GiocatoriRepository extends CrudRepository<Giocatori, Integer> {
 	
-	String query = "select id,squadra,nome,ruolo,macroRuolo,quotazione, dataNascita from Giocatori g where not exists (select 1 from Fantarose f where g.id=f.idGiocatore)";
+	String query = "select id,squadra,nome,ruolo,macroRuolo,quotazione, dataNascita, fvm from Giocatori g where not exists (select 1 from Fantarose f where g.id=f.idGiocatore)";
 	
 	@Query(query)
 	List<Object[]> getGiocatoriLiberi();

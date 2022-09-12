@@ -40,6 +40,10 @@
  		        <span class="sortorder" ng-show="sort.column === 'quotazione'" ng-class="{reverse: sort.descending}"></span>
  		        <span ng-hide="sort.column === 'quotazione'"><i class="fa fa-sort"></i></span>
             </th>
+            <th  ng-if="visFmv" style="cursor: pointer" ng:class="selectedCls('fvm')" ng:click="changeSorting('fvm')">
+ 		        <span class="sortorder" ng-show="sort.column === 'fvm'" ng-class="{reverse: sort.descending}"></span>
+ 		        <span ng-hide="sort.column === 'fvm'"><i class="fa fa-sort"></i></span>
+            </th>
             <th ng-show="nomegiocatore" style="width:30px;text-align:center;cursor: pointer" ng:class="selectedCls('preferito')" ng:click="changeSorting('preferito')">
  		        <span class="sortorder" ng-show="sort.column === 'preferito'" ng-class="{reverse: sort.descending}"></span>
  		        <span ng-hide="sort.column === 'preferito'"><i class="fa fa-sort"></i></span>
@@ -52,6 +56,7 @@
             <th><input class="divCalciatore"style="width:400px;text-align:center" type=text ng-model="filterNome"></input></th>
             <th><input class="divCalciatore"style="width:100px;text-align:center" type=text ng-model="filterSquadra"></input></th>
             <th><input class="divCalciatore"style="width:100px;text-align:center" type=number ng-model="filterQuotazione"></input></th>
+            <th  ng-if="visFmv" ><input class="divCalciatore"style="width:100px;text-align:center" type=number ng-model="filterFvm"></input></th>
             <th ng-show="nomegiocatore" >
 				<i title="preferito" style="width:30px;text-align:center"  ng-click="filterPreferito=!filterPreferito" ng-show="filterPreferito" class="fa fa-check-square"></i>
 				<i title="preferito" style="width:30px;text-align:center"  ng-click="filterPreferito=!filterPreferito" ng-show="!filterPreferito" class="fa fa-square"></i>
@@ -66,13 +71,14 @@
         <td class="divCalciatore">{{calciatore.nome}}</td>
       	<td class="divCalciatore">{{calciatore.squadra.substr(0,3)}}</td>
       	<td class="divCalciatore">{{calciatore.quotazione}}</td>
+      	<td  ng-if="visFmv" class="divCalciatore">{{calciatore.fvm}}</td>
       	<td ng-show="nomegiocatore" XXclass="divCalciatore" style="width:30px;text-align:center;cursor:pointer">
 			<i ng-show="!calciatore.preferito"  ng-click="addFav(calciatore,true)"  class="fa fa-star-o" ></i>			
 			<i ng-show="calciatore.preferito" ng-click="addFav(calciatore,false)" class="fa fa-star" ></i>			
       	</td>
 		<td>
-			<i ng-attr-title="{{dettaglio(calciatore.id)}}"  style="cursor:pointer" class="fa fa-info-circle" ng-click="urlDettaglio(calciatore.nome,calciatore.id,false)"></i>
-			<span ng-show="isMantra">&nbsp;&nbsp;<i title="dettaglio old" style="cursor:pointer;color:red" class="fa fa-info-circle" ng-click="urlDettaglio(calciatore.nome,calciatore.id,true)"></i></span>
+			<i ng-attr-title="{{dettaglio(calciatore.id)}}"  style="cursor:pointer" class="fa fa-info-circle" ng-click="urlDettaglio(calciatore.nome,calciatore.id,false,calciatore.fvm)"></i>
+			<span ng-show="isMantra">&nbsp;&nbsp;<i title="dettaglio old" style="cursor:pointer;color:red" class="fa fa-info-circle" ng-click="urlDettaglio(calciatore.nome,calciatore.id,true,calciatore.fvm)"></i></span>
             <span ng-show="isMantra && calciatore.under23=='SI'">*</span>
             <span ng-show="!isMantra || calciatore.under23!='SI'">&nbsp;</span>
 		</td>
