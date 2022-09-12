@@ -538,6 +538,13 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
 		invia(toJson(m));
 	}
 
+	public void visFmv() throws IOException {
+		Map<String, Object> m = new HashMap<>();
+		m.put("visFmv", "X");
+		invia(toJson(m));
+	}
+
+	
 	public void notificaCaricaFile(String indirizzo) throws IOException {
 		Map<String, Object> m = new HashMap<>();
 		creaMessaggio(indirizzo, "Giocatori caricati", EnumCategoria.Alert);

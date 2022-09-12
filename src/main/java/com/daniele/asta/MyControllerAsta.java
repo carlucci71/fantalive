@@ -118,6 +118,10 @@ public class MyControllerAsta {
 	
 	@Autowired HttpSessionConfig httpSessionConfig;
 	
+	@RequestMapping("/visFvm")
+	public void visFmv() throws Exception {
+		socketHandler.visFmv();
+	}
 	
 	@RequestMapping("/aggiornaDataNascita")
 	public List<Giocatori> aggiornaDataNascita() throws Exception {

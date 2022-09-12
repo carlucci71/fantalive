@@ -1005,6 +1005,11 @@ app.run(
 						});
 					}
 					}
+					if (msg.visFmv){
+						if ($rootScope.nomegiocatore=="Daniele"){
+							$rootScope.visFmv=!$rootScope.visFmv;
+						}
+					}
 					if (msg.isATurni){
 						if (msg.isATurni=="S")
 							$rootScope.isATurni=true;
