@@ -47,6 +47,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -54,6 +55,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
@@ -1448,7 +1452,7 @@ public class Main {
 			Element element = select.get(i);
 			String link = element.select("A").attr("href");
 			link=link.substring(link.lastIndexOf("=")+1);
-			System.out.println(squadra + ";" + giocatore);
+//			System.out.println(squadra + ";" + giocatore);
 			if (false) {
 				if (!lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) || 
 						(lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) && 
@@ -2837,6 +2841,12 @@ public class Main {
 					if (nomeGiocatoreLive.toUpperCase().indexOf("APAT")>-1 && giocatore.getNome().toUpperCase().indexOf("APAT")>-1 && tipo.equalsIgnoreCase("FANTASERVICE")) {
 //						System.out.println();
 					}
+					
+					nomeGiocatoreLive = constant.listaFG.get(Integer.parseInt(g.get("id").toString()));
+					if (nomeGiocatoreLive==null) {
+						nomeGiocatoreLive="";
+					}
+					
 					if (tipo.equals("FANTAGAZZETTA") && 
 							giocatore.getId().equalsIgnoreCase(g.get("id").toString()
 									)
@@ -2859,6 +2869,108 @@ public class Main {
 
 	}
 
+	public static Map<Integer, Object> getFantaValoreMercato(boolean completo) throws Exception {
+		Map<Integer, Object> m = new HashMap<>();
+		CloseableHttpResponse  response;
+		BasicCookieStore cookieStore = new BasicCookieStore();
+		BasicClientCookie cookie;
+
+		cookie = new BasicClientCookie("fantacalcio.it", "0xec8mnTOhuVhCb%2BeZFHYya4Co99jgjtI0NmVJLkvh2dVE%2F7%2FwAS6QzGHGR3J0bGgKTVqhnwZMECJsOS%2F6iO7cIh8hsipePZOwBDGIp2nVLt9tmRSLtKCI7VOcafKIdgi%2FWzBrPfTWomI1RrTSRGAjqMu9jNaSHg07K8StogKv8k1peTaXfY2aJQNf7bRJ9HicrGsS0q4XkidfpOhqGzmL0XeIKFiLr6QzRqLSsXZkoCVduynfnDyeP%2FNwxlZEQNB7J8qOtYRAoexWKtWOW4PnMq1zTPeWzz3MpmqCEWKqdc5hopDD%2FzWr8u25xIRqgqQqrfLhl3DnJOiZOM58Q%2BNo52CUcir0eBAEKnOhCwNs7zC61hStg5u25LXD%2FPGRonUC%2B6cWXEVbr%2FCcJDwQtc8gqYgTBWOD2zivWlKPfwBXrLlmwtZCqaKH127WntcnrKX%2B2fos0T6%2FOR5jBMEaHdVXEDggvBr6kM");
+		cookie.setDomain("www.fantacalcio.it");
+		cookie.setPath("/");
+		cookieStore.addCookie(cookie);
+		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+		try {
+			String uri = "https://www.fantacalcio.it/api/v1/Excel/prices/17/1";
+			HttpGet httpget = new HttpGet(uri);
+
+			new ResponseHandler<String>() {
+				@Override
+				public String handleResponse(
+						final HttpResponse response) throws ClientProtocolException, IOException {
+					int status = response.getStatusLine().getStatusCode();
+					if (status >= 200 && status < 300) {
+						HttpEntity entity = response.getEntity();
+						return entity != null ? EntityUtils.toString(entity) : null;
+					} else {
+						throw new ClientProtocolException("Unexpected response status: " + status);
+					}
+				}
+
+			};
+			response = httpclient.execute(httpget);
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				int riga = 0;
+				try (XSSFWorkbook myWorkBook= new XSSFWorkbook (entity.getContent())) {
+					XSSFSheet mySheet = myWorkBook.getSheetAt(0);
+					Iterator<Row> rowIterator = mySheet.iterator(); 
+					while (rowIterator.hasNext()) {
+						riga++;
+						Row row = rowIterator.next();
+						if (riga >2) {
+							Integer k =((Double)row.getCell(0).getNumericCellValue()).intValue();
+							Map im=new HashMap<>();
+							im.put("value", row.getCell(11).getNumericCellValue());
+							m.put(k, im);
+							if (completo) {
+								im.put("qa", row.getCell(6).getNumericCellValue());
+								im.put("ruolo", row.getCell(2).getStringCellValue());
+								im.put("nome", row.getCell(3).getStringCellValue());
+								im.put("squadra", row.getCell(4).getStringCellValue());
+							}
+							/*
+							Iterator<Cell> cellIterator = row.cellIterator();
+							int colonna=0;
+							while (cellIterator.hasNext()) {
+								colonna++;
+								Cell cell = cellIterator.next();
+								if (colonna == 1 || colonna == 12) {
+									if (cell.getCellType().equals(CellType.STRING)) {
+//										System.out.print(cell.getStringCellValue() + "\t");
+									}
+									else if (cell.getCellType().equals(CellType.NUMERIC)) {
+										if (k==null) {
+//											System.out.print(cell.getNumericCellValue() + "\t");
+										} else {
+											m.put(k, cell.getNumericCellValue());
+										}
+//										System.out.print(cell.getNumericCellValue() + "\t");
+									}
+									else if (cell.getCellType().equals(CellType.BLANK)) {
+//										System.out.print(" " + "\t");
+									}
+									else {
+										throw new RuntimeException("Tipo non gestito");
+									}
+								}
+							}
+//							System.out.println(); 
+							*/
+						}
+					}
+				}
+			}
+//			System.out.println();
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.out);
+			throw e;
+		}
+		finally {
+			httpclient.close();
+		}
+//		System.out.println(response);
+		//	Map<String, Object> jsonToMap = Main.jsonToMap(responseBody);
+
+
+		//	h.put("fantacalcio.it", "0xec8mnTOhuVhCb%2BeZFHYya4Co99jgjtI0NmVJLkvh2dVE%2F7%2FwAS6QzGHGR3J0bGgKTVqhnwZMECJsOS%2F6iO7cIh8hsipePZOwBDGIp2nVLt9tmRSLtKCI7VOcafKIdgi%2FWzBrPfTWomI1RrTSRGAjqMu9jNaSHg07K8StogKv8k1peTaXfY2aJQNf7bRJ9HicrGsS0q4XkidfpOhqGzmL0XeIKFiLr6QzRqLSsXZkoCVduynfnDyeP%2FNwxlZEQNB7J8qOtYRAoexWKtWOW4PnMq1zTPeWzz3MpmqCEWKqdc5hopDD%2FzWr8u25xIRqgqQqrfLhl3DnJOiZOM58Q%2BNo52CUcir0eBAEKnOhCwNs7zC61hStg5u25LXD%2FPGRonUC%2B6cWXEVbr%2FCcJDwQtc8gqYgTBWOD2zivWlKPfwBXrLlmwtZCqaKH127WntcnrKX%2B2fos0T6%2FOR5jBMEaHdVXEDggvBr6kM");
+		return m;
+
+	}
+
+	
+	
 	private static List<Squadra> valorizzaSquadre(String nomefile, int numGiocatori, String tipo) throws Exception {
 		List<Squadra> squadre=new ArrayList<Squadra>();
 		squadre.addAll(deserializzaSquadraFG(nomefile));
@@ -3057,7 +3169,9 @@ public class Main {
 	
 	private static Giocatore estraiGiocatoreFromFS(Document doc, int i, String dove, String ruolo, boolean conVoto) {
 
-		Element first = doc.select("#MainContent_wuc_DettagliPartita1_rpt" + ruolo + dove + "_lblNome_" + i).first();
+		String string = "#MainContent_wuc_DettagliPartita1_rpt";
+		string = "#MainContent_ctl00_rpt";
+		Element first = doc.select(string + ruolo + dove + "_lblNome_" + i).first();
 		Giocatore giocatore = null;
 		if (first != null) {
 			giocatore = new Giocatore();
@@ -3076,17 +3190,17 @@ public class Main {
 				giocatore.setNomeTrim(nomeG.replaceAll(" ", ""));
 				giocatore.setSquadra(squadra);
 				if (conVoto) {
-					String textVoto = doc.select("#MainContent_wuc_DettagliPartita1_rpt" + ruolo + dove + "_lblVoto_" + i).first().text();
+					String textVoto = doc.select(string + ruolo + dove + "_lblVoto_" + i).first().text();
 					if (!textVoto.equals("-") && !textVoto.equals("s.v.")) {
 						giocatore.setVoto(Double.parseDouble(textVoto.replace(",", ".")));
 					}
-					Elements elementsByTag = doc.select("#MainContent_wuc_DettagliPartita1_rpt" + ruolo + dove + "_lblBM_" + i).first().getElementsByTag("IMG");
+					Elements elementsByTag = doc.select(string + ruolo + dove + "_lblBM_" + i).first().getElementsByTag("IMG");
 					for (int ix=0;ix<elementsByTag.size();ix++) {
 						Element element = elementsByTag.get(ix);
 						String tipoBM = element.attr("data-original-title");
 						addBM(tipoBM,giocatore);
 					}
-					Elements iconaEntreEsce = doc.select("#MainContent_wuc_DettagliPartita1_rpt" +  ruolo + dove +  "_imgIcona_" + i);
+					Elements iconaEntreEsce = doc.select(string +  ruolo + dove +  "_imgIcona_" + i);
 					int size = iconaEntreEsce.size();
 					if (size > 0) {
 						if ("Entra".equalsIgnoreCase(iconaEntreEsce.first().attr("data-original-title"))) {
@@ -3098,7 +3212,7 @@ public class Main {
 					}
 
 				}
-				first = doc.select("#MainContent_wuc_DettagliPartita1_rpt" + ruolo + dove + "_lblRuolo_" + i).first();
+				first = doc.select(string + ruolo + dove + "_lblRuolo_" + i).first();
 				giocatore.setRuolo(first.text());
 			}
 		}
@@ -3315,7 +3429,12 @@ public class Main {
 				findOne.setNome(nome);
 			}
 			findOne.setTesto(testo);
+			try {
 			salvaRepository.save(findOne);
+			} catch (Exception e)
+			{
+				
+			}
 		}
 	}
 	public static boolean esisteSalva(String nome) {

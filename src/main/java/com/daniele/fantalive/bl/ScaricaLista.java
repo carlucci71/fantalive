@@ -54,7 +54,7 @@ public class ScaricaLista {
 		List<Map<String, Object>> go = go("realfantacomix21");
 		list2csv(go);
 		*/
-		Map<Integer, Object> getFantaValoreMercato = getFantaValoreMercato(true);
+		Map<Integer, Object> getFantaValoreMercato = Main.getFantaValoreMercato(true);
 		
 		Set<String> nomiFg=new HashSet<>();
 		
@@ -224,7 +224,7 @@ public class ScaricaLista {
 		}
 		Map<String, Object> jsonToMap = Main.jsonToMap(responseBody);
 		List<Map<String, Object>> list = (List<Map<String, Object>>) jsonToMap.get("data");
-		Map<Integer, Object> getFantaValoreMercato = getFantaValoreMercato(false);
+		Map<Integer, Object> getFantaValoreMercato = Main.getFantaValoreMercato(false);
 		for (Map<String, Object> map : list) {
 			if (((Map)getFantaValoreMercato.get(map.get("id"))) != null) {
 				Double xx = (Double) ((Map)getFantaValoreMercato.get(map.get("id"))).get("value");
@@ -234,106 +234,6 @@ public class ScaricaLista {
 		}
 		return list;
 	}	
-
-	private static Map<Integer, Object> getFantaValoreMercato(boolean completo) throws Exception {
-		Map<Integer, Object> m = new HashMap<>();
-		CloseableHttpResponse  response;
-		BasicCookieStore cookieStore = new BasicCookieStore();
-		BasicClientCookie cookie;
-
-		cookie = new BasicClientCookie("fantacalcio.it", "0xec8mnTOhuVhCb%2BeZFHYya4Co99jgjtI0NmVJLkvh2dVE%2F7%2FwAS6QzGHGR3J0bGgKTVqhnwZMECJsOS%2F6iO7cIh8hsipePZOwBDGIp2nVLt9tmRSLtKCI7VOcafKIdgi%2FWzBrPfTWomI1RrTSRGAjqMu9jNaSHg07K8StogKv8k1peTaXfY2aJQNf7bRJ9HicrGsS0q4XkidfpOhqGzmL0XeIKFiLr6QzRqLSsXZkoCVduynfnDyeP%2FNwxlZEQNB7J8qOtYRAoexWKtWOW4PnMq1zTPeWzz3MpmqCEWKqdc5hopDD%2FzWr8u25xIRqgqQqrfLhl3DnJOiZOM58Q%2BNo52CUcir0eBAEKnOhCwNs7zC61hStg5u25LXD%2FPGRonUC%2B6cWXEVbr%2FCcJDwQtc8gqYgTBWOD2zivWlKPfwBXrLlmwtZCqaKH127WntcnrKX%2B2fos0T6%2FOR5jBMEaHdVXEDggvBr6kM");
-		cookie.setDomain("www.fantacalcio.it");
-		cookie.setPath("/");
-		cookieStore.addCookie(cookie);
-		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
-		try {
-			String uri = "https://www.fantacalcio.it/api/v1/Excel/prices/17/1";
-			HttpGet httpget = new HttpGet(uri);
-
-			new ResponseHandler<String>() {
-				@Override
-				public String handleResponse(
-						final HttpResponse response) throws ClientProtocolException, IOException {
-					int status = response.getStatusLine().getStatusCode();
-					if (status >= 200 && status < 300) {
-						HttpEntity entity = response.getEntity();
-						return entity != null ? EntityUtils.toString(entity) : null;
-					} else {
-						throw new ClientProtocolException("Unexpected response status: " + status);
-					}
-				}
-
-			};
-			response = httpclient.execute(httpget);
-			HttpEntity entity = response.getEntity();
-			if (entity != null) {
-				int riga = 0;
-				try (XSSFWorkbook myWorkBook= new XSSFWorkbook (entity.getContent())) {
-					XSSFSheet mySheet = myWorkBook.getSheetAt(0);
-					Iterator<Row> rowIterator = mySheet.iterator(); 
-					while (rowIterator.hasNext()) {
-						riga++;
-						Row row = rowIterator.next();
-						if (riga >2) {
-							Integer k =((Double)row.getCell(0).getNumericCellValue()).intValue();
-							Map im=new HashMap<>();
-							im.put("value", row.getCell(11).getNumericCellValue());
-							m.put(k, im);
-							if (completo) {
-								im.put("qa", row.getCell(6).getNumericCellValue());
-								im.put("ruolo", row.getCell(2).getStringCellValue());
-								im.put("nome", row.getCell(3).getStringCellValue());
-								im.put("squadra", row.getCell(4).getStringCellValue());
-							}
-							/*
-							Iterator<Cell> cellIterator = row.cellIterator();
-							int colonna=0;
-							while (cellIterator.hasNext()) {
-								colonna++;
-								Cell cell = cellIterator.next();
-								if (colonna == 1 || colonna == 12) {
-									if (cell.getCellType().equals(CellType.STRING)) {
-//										System.out.print(cell.getStringCellValue() + "\t");
-									}
-									else if (cell.getCellType().equals(CellType.NUMERIC)) {
-										if (k==null) {
-//											System.out.print(cell.getNumericCellValue() + "\t");
-										} else {
-											m.put(k, cell.getNumericCellValue());
-										}
-//										System.out.print(cell.getNumericCellValue() + "\t");
-									}
-									else if (cell.getCellType().equals(CellType.BLANK)) {
-//										System.out.print(" " + "\t");
-									}
-									else {
-										throw new RuntimeException("Tipo non gestito");
-									}
-								}
-							}
-//							System.out.println(); 
-							*/
-						}
-					}
-				}
-			}
-//			System.out.println();
-		}
-		catch (Exception e) {
-			e.printStackTrace(System.out);
-			throw e;
-		}
-		finally {
-			httpclient.close();
-		}
-//		System.out.println(response);
-		//	Map<String, Object> jsonToMap = Main.jsonToMap(responseBody);
-
-
-		//	h.put("fantacalcio.it", "0xec8mnTOhuVhCb%2BeZFHYya4Co99jgjtI0NmVJLkvh2dVE%2F7%2FwAS6QzGHGR3J0bGgKTVqhnwZMECJsOS%2F6iO7cIh8hsipePZOwBDGIp2nVLt9tmRSLtKCI7VOcafKIdgi%2FWzBrPfTWomI1RrTSRGAjqMu9jNaSHg07K8StogKv8k1peTaXfY2aJQNf7bRJ9HicrGsS0q4XkidfpOhqGzmL0XeIKFiLr6QzRqLSsXZkoCVduynfnDyeP%2FNwxlZEQNB7J8qOtYRAoexWKtWOW4PnMq1zTPeWzz3MpmqCEWKqdc5hopDD%2FzWr8u25xIRqgqQqrfLhl3DnJOiZOM58Q%2BNo52CUcir0eBAEKnOhCwNs7zC61hStg5u25LXD%2FPGRonUC%2B6cWXEVbr%2FCcJDwQtc8gqYgTBWOD2zivWlKPfwBXrLlmwtZCqaKH127WntcnrKX%2B2fos0T6%2FOR5jBMEaHdVXEDggvBr6kM");
-		return m;
-
-	}
 
 	public static Map<String,Object> callHTTP(String verbo, String contentType, String url, String body,  Map<String, String>... headers) throws Exception {
 		//		System.out.println(verbo + " " + url + " " + printMap(headers));

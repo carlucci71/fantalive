@@ -62,6 +62,12 @@ public class MyController {
 			Main.risultatiConRitardoBOT = RisultatiConRitardoBOT.inizializza("WEBAPP");
 			Main.inviaCronacaNotifica("Server riavviato: " + Main.MIO_IP,null);
 		}
+		Map<Integer, Object> fantaValoreMercato = Main.getFantaValoreMercato(true);
+		fantaValoreMercato.forEach((k,v)-> { 
+//			System.out.println(k);
+//			System.out.println(v);
+			constant.listaFG.put(k, ((Map)v).get("nome").toString());
+		});
 	}
  
 

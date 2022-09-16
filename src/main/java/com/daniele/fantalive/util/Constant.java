@@ -3,6 +3,8 @@ package com.daniele.fantalive.util;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.daniele.fantalive.repository.SalvaRepository;
 
@@ -16,10 +18,10 @@ public class Constant {
 	public static final String COMP_VIVA_FG = "319871";
 	public static final String COMP_LUCCICAR_FG = "379529";
 	public static final String COMP_REALFANTACOMIX21_FG = "339736";
-	public static final int DELTA_FS=7;
+	public static final int DELTA_FS=6;
 	public static final int NUM_PARTITE_FS = 4;
-	public static final String COMP_FS = "135324";
-	public static final int PRIMA_GIORNATA_FS = 10716452;
+	public static final String COMP_FS = "137874";
+	public static final int PRIMA_GIORNATA_FS = 10640917;
 	public static final String SPORT_ID_LIVE_GAZZETTA = "1";
 	public static final String COMP_ID_LIVE_GAZZETTA = "21";
 	public static final String I_LIVE_FANTACALCIO = "17";
@@ -130,7 +132,5 @@ public class Constant {
 	public static final String URL_KEEP_ALIVE_HEROKU = "https://fantalive71.herokuapp.com/fantalive/index.html";
 	public static final String URL_LIVE_FG = "https://www.fantacalcio.it/api/live/%d?g=%d&i=%s";
 	public static final int ICASA=2;
-
-
-	
+	public static Map<Integer, String> listaFG=new HashMap<>();
 }
