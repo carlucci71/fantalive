@@ -570,7 +570,7 @@ public class Main {
 		long total_mem = rt.totalMemory();
 		long free_mem = rt.freeMemory();
 		long used_mem = total_mem - free_mem;
-		System.out.println("******************* Amount of used memory: " + used_mem + "-" + free_mem + "-" + total_mem);
+		System.out.println("*******************MEMORY used: " + used_mem + " free:" + free_mem + " total: " + total_mem);
 		
 		
 		timeRefresh=0;
@@ -2392,18 +2392,20 @@ public class Main {
 		}
 
 		if(conLive) {
-			if (ret.get(Constant.Campionati.FANTAVIVA.name()).getSquadre().size()>0) {
-				upsertSalva(Constant.FORMAZIONE + Constant.Campionati.FANTAVIVA.name(), toJson(ret.get(Constant.Campionati.FANTAVIVA.name()).getSquadre()));
-			}
-			if (ret.get(Constant.Campionati.LUCCICAR.name()).getSquadre().size()>0) {
-				upsertSalva(Constant.FORMAZIONE + Constant.Campionati.LUCCICAR.name(), toJson(ret.get(Constant.Campionati.LUCCICAR.name()).getSquadre()));
-			}
-			if (ret.get(Constant.Campionati.REALFANTACOMIX21.name()).getSquadre().size()>0) {
-				upsertSalva(Constant.FORMAZIONE + Constant.Campionati.REALFANTACOMIX21.name(), toJson(ret.get(Constant.Campionati.REALFANTACOMIX21.name()).getSquadre()));
-			}
-			if (ret.get(Constant.Campionati.BE.name()).getSquadre().size()>0) {
-				if (ret.get(Constant.Campionati.BE.name()).getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate. PostGo");
-				upsertSalva(Constant.FORMAZIONE + Constant.Campionati.BE.name(), toJson(ret.get(Constant.Campionati.BE.name()).getSquadre()));
+			if (true) {//FIXME
+				if (ret.get(Constant.Campionati.FANTAVIVA.name()).getSquadre().size()>0) {
+					upsertSalva(Constant.FORMAZIONE + Constant.Campionati.FANTAVIVA.name(), toJson(ret.get(Constant.Campionati.FANTAVIVA.name()).getSquadre()));
+				}
+				if (ret.get(Constant.Campionati.LUCCICAR.name()).getSquadre().size()>0) {
+					upsertSalva(Constant.FORMAZIONE + Constant.Campionati.LUCCICAR.name(), toJson(ret.get(Constant.Campionati.LUCCICAR.name()).getSquadre()));
+				}
+				if (ret.get(Constant.Campionati.REALFANTACOMIX21.name()).getSquadre().size()>0) {
+					upsertSalva(Constant.FORMAZIONE + Constant.Campionati.REALFANTACOMIX21.name(), toJson(ret.get(Constant.Campionati.REALFANTACOMIX21.name()).getSquadre()));
+				}
+				if (ret.get(Constant.Campionati.BE.name()).getSquadre().size()>0) {
+					if (ret.get(Constant.Campionati.BE.name()).getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate. PostGo");
+					upsertSalva(Constant.FORMAZIONE + Constant.Campionati.BE.name(), toJson(ret.get(Constant.Campionati.BE.name()).getSquadre()));
+				}
 			}
 		}
 
@@ -2463,9 +2465,9 @@ public class Main {
 		for (Live live : lives) {
 			List<Map<String, Object>> giocatori = live.getGiocatori();
 			for (Map<String,Object> giocatore : giocatori) {
-//								System.out.println(giocatore.get("id") + "-" + giocatore.get("v") + "-");
-				if (giocatore.get("v")!=null && Double.parseDouble(giocatore.get("v").toString())==55) {
-					giocatore.put("v", 0d);
+//								System.out.println(giocatore.get("id") + "-" + giocatore.get("voto") + "-");
+				if (giocatore.get("voto")!=null && Double.parseDouble(giocatore.get("voto").toString())==55) {
+					giocatore.put("voto", 0d);
 				}
 			}
 		}
@@ -2607,28 +2609,43 @@ public class Main {
 			sqFromLive = (String) callHTTP("GET", "application/json; charset=UTF-8", "https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/" + Constant.I_LIVE_FANTACALCIO + "/live_" + g + ".json", null).get("response");
 			Map<String, Object> jsonToMap = jsonToMap(sqFromLive);
 			List<Map<String, Object>> getLiveFromFG =(List<Map<String, Object>>) ((Map)jsonToMap.get("data")).get("pl");
+			List<Map<String, Object>> scarti=new ArrayList<>();
 			for (Map<String, Object> map : getLiveFromFG) {
-				Integer idS = (Integer) map.get("id_s");
-				boolean trov=false;
-				for (Live live : lives) {
-					if (live.getSquadra().equals(sq.get(idS))) {
-						trov=true;
-						live.getGiocatori().add(map);
+				Map<String, Object> newMap=new HashMap<>();
+				String nomeGiocatoreLive = constant.listaFG.get(Integer.parseInt(map.get("id").toString()));
+				if (nomeGiocatoreLive==null) {
+//					nomeGiocatoreLive=map.get("id").toString();
+					scarti.add(map);
+				}
+				else {
+					Integer idS = (Integer) map.get("id_s");
+					boolean trov=false;
+					newMap.put("nome", nomeGiocatoreLive);
+					newMap.put("voto", map.get("v"));
+					newMap.put("evento", map.get("bm"));
+					newMap.put("bm", map.get("bm"));
+					newMap.put("id", map.get("id"));
+					for (Live live : lives) {
+						if (live.getSquadra().equals(sq.get(idS))) {
+							trov=true;
+							live.getGiocatori().add(newMap);
+						}
+					}
+					if (!trov) {
+						Live live = new Live();
+						live.setSquadra(sq.get(idS));
+						List<Map<String, Object>> lGioc=new ArrayList<>();
+						lGioc.add(newMap);
+						live.setGiocatori(lGioc);
+						lives.add(live);
 					}
 				}
-				if (!trov) {
-					Live live = new Live();
-					live.setSquadra(sq.get(idS));
-					List<Map<String, Object>> lGioc=new ArrayList<>();
-					lGioc.add(map);
-					live.setGiocatori(lGioc);
-					lives.add(live);
-				}
 			}
+//			logger.info(scarti);
 		}
 		catch (Exception e)
 		{
-
+			logger.error("errore nel recupero del live!",e);
 		}
 
 		return lives;
@@ -2843,15 +2860,10 @@ public class Main {
 					if (g.get("modificatore") != null) {
 						modificatore = (Double) g.get("modificatore");
 					}
-					String votoLive=g.get("v").toString();
+					String votoLive=g.get("voto").toString();
 					List<Integer> eventoLive=(List<Integer>) g.get("bm");
 					if (nomeGiocatoreLive.toUpperCase().indexOf("APAT")>-1 && giocatore.getNome().toUpperCase().indexOf("APAT")>-1 && tipo.equalsIgnoreCase("FANTASERVICE")) {
 //						System.out.println();
-					}
-					
-					nomeGiocatoreLive = constant.listaFG.get(Integer.parseInt(g.get("id").toString()));
-					if (nomeGiocatoreLive==null) {
-						nomeGiocatoreLive="";
 					}
 					
 					if (tipo.equals("FANTAGAZZETTA") && 
@@ -3436,12 +3448,7 @@ public class Main {
 				findOne.setNome(nome);
 			}
 			findOne.setTesto(testo);
-			try {
 			salvaRepository.save(findOne);
-			} catch (Exception e)
-			{
-				
-			}
 		}
 	}
 	public static boolean esisteSalva(String nome) {
