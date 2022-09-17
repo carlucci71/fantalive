@@ -570,11 +570,7 @@ public class Main {
 		long total_mem = rt.totalMemory();
 		long free_mem = rt.freeMemory();
 		long used_mem = total_mem - free_mem;
-		System.out.println("******************* Amount of used memory: " + used_mem);
-		
-		System.out.println("******************* Memory allocated to agent X at line 120 ...");
-		System.out.println("******************* Memory allocated to this agent..." + 
-		(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+		System.out.println("******************* Amount of used memory: " + used_mem + "-" + free_mem + "-" + total_mem);
 		
 		
 		timeRefresh=0;
