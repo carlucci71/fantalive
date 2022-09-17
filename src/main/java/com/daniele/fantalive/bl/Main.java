@@ -18,7 +18,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.MessageFormat;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -566,6 +565,18 @@ public class Main {
 	}
 
 	public static void snapshot(boolean salva) throws Exception {
+		
+		Runtime rt = Runtime.getRuntime();
+		long total_mem = rt.totalMemory();
+		long free_mem = rt.freeMemory();
+		long used_mem = total_mem - free_mem;
+		System.out.println("******************* Amount of used memory: " + used_mem);
+		
+		System.out.println("******************* Memory allocated to agent X at line 120 ...");
+		System.out.println("******************* Memory allocated to this agent..." + 
+		(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+		
+		
 		timeRefresh=0;
 		Calendar c = Calendar.getInstance();
 		boolean snap=false;
