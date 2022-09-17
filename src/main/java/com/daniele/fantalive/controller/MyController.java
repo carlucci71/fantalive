@@ -856,9 +856,7 @@ public class MyController {
 				Main.cancellaSquadre();
 			}
 //			Main.getSquadreFromFG(Constant.Campionati.LUCCICAR.name());
-			if (true) {
-				Main.getSquadreFromFG(Constant.Campionati.REALFANTACOMIX21.name());
-			}
+			Main.getSquadreFromFG(Constant.Campionati.REALFANTACOMIX21.name());
 //			Main.getSquadreFromFG(Constant.Campionati.FANTAVIVA.name());
 			if (Constant.GIORNATA-Constant.DELTA_FS>0){
 				Main.scaricaBe(Constant.GIORNATA,"");

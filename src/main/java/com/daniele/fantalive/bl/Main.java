@@ -492,7 +492,7 @@ public class Main {
 							}
 							for (Map<String,Object> oldMap : oldLive.getGiocatori()) {
 								String oldGioc=(String) oldMap.get("nome");
-								if (snapGioc.equals(oldGioc)) {
+								if (snapGioc != null && snapGioc.equals(oldGioc)) {
 									liveGiocPresente=true;
 									Double oldVoto = 0d;
 									if (oldMap.get("voto") != null) {
