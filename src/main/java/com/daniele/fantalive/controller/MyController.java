@@ -66,9 +66,7 @@ public class MyController {
 		fantaValoreMercato.forEach((k,v)-> { 
 //			System.out.println(k);
 //			System.out.println(v);
-			/*
 			constant.listaFG.put(k, ((Map)v).get("nome").toString());
-			*/
 		});
 	}
  
@@ -858,7 +856,7 @@ public class MyController {
 				Main.cancellaSquadre();
 			}
 //			Main.getSquadreFromFG(Constant.Campionati.LUCCICAR.name());
-			Main.getSquadreFromFG(Constant.Campionati.REALFANTACOMIX21.name());
+//			Main.getSquadreFromFG(Constant.Campionati.REALFANTACOMIX21.name());
 //			Main.getSquadreFromFG(Constant.Campionati.FANTAVIVA.name());
 			if (Constant.GIORNATA-Constant.DELTA_FS>0){
 				Main.scaricaBe(Constant.GIORNATA,"");
