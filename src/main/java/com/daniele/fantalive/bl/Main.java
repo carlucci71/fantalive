@@ -1460,7 +1460,7 @@ public class Main {
 			String link = element.select("A").attr("href");
 			link=link.substring(link.lastIndexOf("=")+1);
 //			System.out.println(squadra + ";" + giocatore);
-			if (false) {
+			if (true) {//FIXME
 				if (!lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) || 
 						(lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) && 
 								sqRealFantacomix21.contains(squadra)) 
@@ -2392,7 +2392,7 @@ public class Main {
 		}
 
 		if(conLive) {
-			if (false) {//FIXME
+			if (true) {//FIXME
 				if (ret.get(Constant.Campionati.FANTAVIVA.name()).getSquadre().size()>0) {
 					upsertSalva(Constant.FORMAZIONE + Constant.Campionati.FANTAVIVA.name(), toJson(ret.get(Constant.Campionati.FANTAVIVA.name()).getSquadre()));
 				}
