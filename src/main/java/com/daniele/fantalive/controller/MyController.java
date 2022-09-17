@@ -66,7 +66,9 @@ public class MyController {
 		fantaValoreMercato.forEach((k,v)-> { 
 //			System.out.println(k);
 //			System.out.println(v);
+			/*
 			constant.listaFG.put(k, ((Map)v).get("nome").toString());
+			*/
 		});
 	}
  
