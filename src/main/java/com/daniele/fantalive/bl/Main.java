@@ -565,7 +565,7 @@ public class Main {
 	}
 
 	public static void snapshot(boolean salva) throws Exception {
-		
+		System.gc();
 		Runtime rt = Runtime.getRuntime();
 		long total_mem = rt.totalMemory();
 		long free_mem = rt.freeMemory();
