@@ -488,7 +488,7 @@ public class Main {
 							Double snapVoto = 0d;
 							if (snapMap.get("voto") != null) {
 								snapVoto=(Double) snapMap.get("voto");
-							}
+							} 
 							for (Map<String,Object> oldMap : oldLive.getGiocatori()) {
 								String oldGioc=(String) oldMap.get("nome");
 								if (snapGioc != null && snapGioc.equals(oldGioc)) {
