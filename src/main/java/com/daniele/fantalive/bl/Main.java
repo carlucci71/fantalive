@@ -138,6 +138,7 @@ public class Main {
 		if (calendario==null) {
 			calendario = new LinkedHashMap();
 			calendarioInizioGiornata = new LinkedHashMap<>();
+			/*FIXME
 			String http = (String) callHTTP("GET", "application/json; charset=UTF-8", String.format(Constant.URL_CALENDARIO), null).get("response");
 			//			System.out.println(http);
 			//			https://www.tomshw.it/culturapop/calendario-serie-a-2021-22-risultati-e-dove-vedere-le-partite/		
@@ -203,6 +204,7 @@ public class Main {
 					Constant.GIORNATA = attG +1;
 				}
 			}
+				FIXME*/
 			if (constant.GIORNATA_FORZATA!=null) {
 				constant.GIORNATA=constant.GIORNATA_FORZATA;
 			}
