@@ -506,7 +506,7 @@ public class Main {
 										String snapEvento = snapMap.get("evento").toString();
 										String[] splitSnapEvento = snapEvento.split(",");
 										for (String string : splitSnapEvento) {
-											if (!string.equals("")) {
+											if (!string.equals("")) {//java.lang.NumberFormatException: For input string: "[1]" deve essere 1,1,1 in "evento"
 												Integer attSnapEvento = Integer.parseInt(string);
 												desMiniNotifica.append(desEvento(attSnapEvento, Constant.Campionati.BE.name()) + " ");//FIXME CAMPIONATO FISSO
 											}
@@ -2622,7 +2622,15 @@ public class Main {
 					boolean trov=false;
 					newMap.put("nome", nomeGiocatoreLive);
 					newMap.put("voto", map.get("v"));
-					newMap.put("evento", map.get("bm"));
+					String evento = "";
+					List<Integer> bm=(List)map.get("bm");
+					for (Integer integer : bm) {
+						evento=evento + integer + ",";
+					}
+					if (!evento.equals("")) {
+						evento=evento.substring(0, evento.length()-1);
+					}
+					newMap.put("evento", evento);
 					newMap.put("bm", map.get("bm"));
 					newMap.put("id", map.get("id"));
 					for (Live live : lives) {
