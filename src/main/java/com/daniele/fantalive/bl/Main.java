@@ -2392,7 +2392,7 @@ public class Main {
 		}
 
 		if(conLive) {
-			if (false) {//FIXME
+			if (true) {//FIXME
 				if (ret.get(Constant.Campionati.FANTAVIVA.name()).getSquadre().size()>0) {
 					upsertSalva(Constant.FORMAZIONE + Constant.Campionati.FANTAVIVA.name(), toJson(ret.get(Constant.Campionati.FANTAVIVA.name()).getSquadre()));
 				}
