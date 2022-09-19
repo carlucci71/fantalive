@@ -12,7 +12,7 @@ GRANT ALL PRIVILEGES ON *.* TO 'asta'@'%' REQUIRE NONE WITH GRANT OPTION MAX_QUE
 CREATE DATABASE asta;
 ~~~~
 
-Nel file `application.properties` configurare opportunamente le seguenti chiavi (ci sono già dei valori di esempio da scommentare):
+Nel file `application.properties` configurare opportunamente le seguenti chiavi (ci sono già dei valori di esempio da scommentare): 
 ~~~~
 spring.datasource.url=
 spring.datasource.username=
