@@ -15,7 +15,7 @@ public class Constant {
 	public static final int DELTA_VIVA_FG=2;
 	public static final int DELTA_LUCCICAR_FG=2;
 	public static final int DELTA_REALFANTACOMIX21_FG=4;
-	public static final String COMP_VIVA_FG = "319871";
+	public static final String COMP_VIVA_FG = "512870";//cookie comp_fanta-viva_Leghe2022 di https://leghe.fantacalcio.it/servizi/V1_LegheMessaggi/.... 
 	public static final String COMP_LUCCICAR_FG = "379529";
 	public static final String COMP_REALFANTACOMIX21_FG = "339736";
 	public static final int DELTA_FS=6;
