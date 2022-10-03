@@ -240,7 +240,7 @@ public class Main {
 				put("LUCCICAR-daddy","IO");
 				put("LUCCICAR-Team Frank..10","fra");
 				put("LUCCICAR-Team Alberto..04","bebo");
-				put("FANTAVIVA-AFC Richmond","Angy");
+				put("FANTAVIVA-Va bene lo stessooo","Angy");
 				put("FANTAVIVA-Real Colizzati","Dum");
 				put("FANTAVIVA-Tavolino","IO");
 				put("FANTAVIVA-Reset Fc","Vale");
