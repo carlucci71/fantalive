@@ -63,6 +63,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.FormElement;
 import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -138,63 +139,55 @@ public class Main {
 		if (calendario==null) {
 			calendario = new LinkedHashMap();
 			calendarioInizioGiornata = new LinkedHashMap<>();
-			/*FIXME
 			String http = (String) callHTTP("GET", "application/json; charset=UTF-8", String.format(Constant.URL_CALENDARIO), null).get("response");
 			//			System.out.println(http);
 			//			https://www.tomshw.it/culturapop/calendario-serie-a-2021-22-risultati-e-dove-vedere-le-partite/		
 			//			System.out.println(http);
-			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");//13/08/2022 - 18:30:00 +0000
 			Document doc = Jsoup.parse(http);//, StandardCharsets.UTF_8.toString()
-			Elements elements = doc.getElementsByClass("table-container-scroll");
+			Elements elements = doc.getElementsByClass("table-wrapper");
 			for (int i=0;i<elements.size();i++) {
 				Element element = elements.get(i);
-				Elements elementsTR = element.getElementsByTag("TR");
-				String giornata = elementsTR.get(0).text();
-				if (giornata.trim().equals("")) continue;
-				String ultimoGiorno="";
-				String ultimoMese="";
-				Integer iGiornata=null;
-				try {
-					iGiornata = Integer.parseInt(giornata.substring(0,giornata.indexOf("ª")));
-				}
-				catch (Exception e ) {
-					iGiornata = Integer.parseInt(giornata.substring(0,giornata.indexOf("ª")-1));
-				}
-				String primoGiorno=null;
-				String primoMese=null;
-				String ultimoAnno="";
-				for (int ix=1;ix<elementsTR.size();ix++) {
-					Elements elementsTD = elementsTR.get(ix).getElementsByTag("TD");
-					if (elementsTD.size()<3) continue;
-					ultimoGiorno = elementsTD.get(0).text();
-					String ora = elementsTD.get(1).text().replace(".", ":");
+				Element first = element.getElementsByTag("tbody").first();
+				int	iGiornata = i+1;
+				String ultimaData=null;
+				String primaData=null;
+				List<Node> partiteDellaGiornata = first.childNodes();
+				for (int ix=1;ix<partiteDellaGiornata.size();ix++) {
+					if (i>20) continue;
+					if (partiteDellaGiornata.get(ix) instanceof TextNode) continue;
+					List<Node> partita = partiteDellaGiornata.get(ix).childNodes();
+					String giorno = partita.get(1).childNode(0).toString();
+					if (giorno.contains("strong")) continue;
+					String data = partita.get(3).childNode(0).toString();
+					if (data.length()==5 && !data.substring(3,5).equals("01")) data = data + "/2022";
+					if (data.length()==5 && data.substring(3,5).equals("01")) data = data + "/2023";
+					String ora = partita.get(5).childNode(0).toString();
+					ora=ora.replace(".", ":");
 					if (ora.equals("-")) {
 						ora="15:00";
 					}
-					ultimoGiorno = lpad(ultimoGiorno.substring(0,ultimoGiorno.indexOf("/")),2,'0');
-					ultimoMese = elementsTD.get(0).text();
-					ultimoMese = lpad(ultimoMese.substring(ultimoMese.indexOf("/")+1),2,'0');
-					ultimoAnno="2021";
-					if (Integer.parseInt(ultimoMese)<8) ultimoAnno = "2022";
-					ZonedDateTime parseZDT = ZonedDateTime.parse(ultimoGiorno + "/" + ultimoMese + "/" + ultimoAnno + " - " + ora + ":00 +0000", dtf.withZone(ZoneId.of("Europe/Rome")));
+					String squadre = partita.get(7).childNode(0).toString();
+//					System.out.println(iGiornata + "-" + giorno + "-" + data + "-" + ora + "-" + squadre);
+					ZonedDateTime parseZDT = ZonedDateTime.parse(data + " - " + ora + ":00 +0000", dtf.withZone(ZoneId.of("Europe/Rome")));
 					List<Integer> list = giorniGioca.get(parseZDT);
 					if (list==null) {
 						list = new ArrayList<>();
 					}
 					list.add(iGiornata);
 					giorniGioca.put(parseZDT, list);
+					ultimaData=data;
+					if (primaData==null) primaData=data;
 //					System.out.println(iGiornata + ": " + ultimoGiorno + "-" + ultimoMese + "-" + ultimoAnno);
-					if (primoGiorno == null) {
-						primoGiorno=ultimoGiorno;
-						primoMese=ultimoMese;
-					}
 				}
-				ZonedDateTime parseZDT = ZonedDateTime.parse(ultimoGiorno + "/" + ultimoMese + "/" + ultimoAnno + " - 23:59:00 +0000", dtf);
-				calendario.put(iGiornata, parseZDT);
-				String primoAnno="2021";
-				if (Integer.parseInt(primoMese)<8) primoAnno = "2022";
-				parseZDT = ZonedDateTime.parse(primoGiorno + "/" + primoMese + "/" + primoAnno + " - 23:59:00 +0000", dtf);
-				calendarioInizioGiornata.put(iGiornata, parseZDT);
+				if (ultimaData!=null) {
+					ZonedDateTime parseZDT = ZonedDateTime.parse(ultimaData + " - 23:59:00 +0000", dtf);
+					calendario.put(iGiornata, parseZDT);
+//					String primoAnno="2021";
+//					if (Integer.parseInt(primoMese)<8) primoAnno = "2022";
+					parseZDT = ZonedDateTime.parse(primaData + " - 23:59:00 +0000", dtf);
+					calendarioInizioGiornata.put(iGiornata, parseZDT);
+				}
 			}
 			ZonedDateTime now = ZonedDateTime.now();
 			Set<Integer> keySet = calendario.keySet();
@@ -204,7 +197,6 @@ public class Main {
 					Constant.GIORNATA = attG +1;
 				}
 			}
-				FIXME*/
 			if (constant.GIORNATA_FORZATA!=null) {
 				constant.GIORNATA=constant.GIORNATA_FORZATA;
 			}
@@ -3151,7 +3143,7 @@ public class Main {
 		else if (nomeG.equalsIgnoreCase("Jerdy Schouten ")) nomeG="Schouten ";
 		else if (nomeG.equalsIgnoreCase("Paolo Ghiglione ")) nomeG="Ghiglione ";
 		else if (nomeG.equalsIgnoreCase("Meite S.")) nomeG="Meite' ";
-		else if (nomeG.equalsIgnoreCase("Dodô ")) nomeG="Dodo' ";
+		else if (nomeG.startsWith("Dod") && squadra.equalsIgnoreCase("FIO")) nomeG="Dodo' ";
 		else if (nomeG.equalsIgnoreCase("Arthur Cabral ")) nomeG="Cabral ";
 		else if (nomeG.equalsIgnoreCase("Soule M.")) nomeG="Soule' ";
 		else if (nomeG.equalsIgnoreCase("Mario Gila ")) nomeG="Gila ";

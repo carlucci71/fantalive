@@ -125,7 +125,7 @@ public class Constant {
 	public static final String URL_FORMAZIONI_FG = "https://leghe.fantacalcio.it/%s/formazioni/%d?id=%s";
 	public static final String URL_PROIEZIONI_FG = "https://appleghe.fantacalcio.it/api/v1/V2_LegaFormazioni/Proiezione?id_comp=%s&giornata=%s";
 	public static final String URL_LOGIN_FS = "https://www.fanta.soccer/it/login/";
-	public static final String URL_CALENDARIO = "https://www.goal.com/it/notizie/calendario-serie-a-2021-2022-completo/161ug15ioiflh19whgevwxviur";
+	public static final String URL_CALENDARIO = "https://www.dazn.com/it-IT/news/serie-a/il-calendario-completo-della-serie-a-tim-2022-2023/b1n0ghgi7x0t1rj6zswxyho13";
 	public static final String URL_LOGIN_APP_FG = "https://appleghe.fantacalcio.it/api/v1/v1_utente/login";
 	public static final String URL_KEEP_ALIVE_HERO = "https://fantalive71.herokuapp.com/fantalive/index.html";
 	public static final String URL_API_GAZZETTA = "https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=1&competitionId=%d";
