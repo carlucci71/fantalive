@@ -139,6 +139,7 @@ public class Main {
 	public static Map<Integer , ZonedDateTime> calendario;	
 	public static Map<Integer , ZonedDateTime> calendarioInizioGiornata;	
 	static Set<String > sqRealFantacomix21;	
+	static Set<String > idRealFantacomix21;	
 	static Set<String > giocRealFantacomix21;	
 	public static Map<String, String> keyFG=null;
 	public static int timeRefresh = 0;
@@ -247,6 +248,12 @@ public class Main {
 		if (sqRealFantacomix21==null) {
 			sqRealFantacomix21 = new HashSet() {{
 				add("il var uccide il calcio");
+
+			}};
+		}
+		if (idRealFantacomix21==null) {
+			idRealFantacomix21 = new HashSet() {{
+				add("9280651");
 
 			}};
 		}
@@ -1011,6 +1018,28 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		//				mainSpring(args);
 		mainBatch(args);
+
+
+		String legaR = "realfantacomix21";
+		getNomiFG(legaR);
+		Map<String, Object> callHTTP = callHTTP("GET", "application/json; charset=UTF-8","https://leghe.fantacalcio.it/" + legaR + "/classifica",null);
+		String classificaString = callHTTP.get("response").toString();
+		classificaString=classificaString.substring(classificaString.indexOf("currentCompetition: ")+ "currentCompetition: ".length());
+		classificaString = classificaString.substring(0, classificaString.indexOf(",                        inCompetition"));
+		Map fromJson = fromJson(classificaString, Map.class);
+		List<Map> l = (List<Map>) fromJson.get("squadre");
+		List<Map<String, Object>>classifica=new ArrayList<>();
+		for (Map map : l) {
+			Map<String, Object> el=new HashMap<>();
+			el.put("id", map.get("id"));
+			el.put("punti", map.get("s_p"));
+			el.put("pos", map.get("pos"));
+//			el.put("squadra", allSquadreRealFantaComix21.get(map.get("id").toString()));
+			classifica.add(el);
+		}
+		System.out.println(classifica);
+		
+		/*
 		String nome="Acerbi F.";
 		Set<String> nomiFg=new HashSet<>();
 		nomiFg.add("Acerbi" + "@" + "INT");
@@ -1130,7 +1159,13 @@ public class Main {
 			sq=sq+";" + squadra.getNome();
 		}
 		String x="-" + "simulaFG" + "-" + sfide + "-" + lega + "-" + sq + "-" + (squadraSimulata==null?"":squadraSimulata);
-		upsertSalva(time + x, toJson(ret));
+		try {
+			upsertSalva(time + x, toJson(ret));
+		}
+		catch (Exception e)
+		{
+			System.err.println("Errore salvando la simulazione");
+		}
 		return ret;
 	}
 	
@@ -1526,8 +1561,30 @@ public class Main {
 		socketHandlerFantalive.invia(map);
 	}
 
-
+	private static Map<String, String> nuoviNomi=new HashMap<>();
+	
 	private static Map<String, String> getNomiFG(String lega) throws Exception {
+		List<Map<String, Object>>classifica=new ArrayList<>();
+		Set<String>idS=new HashSet<>();
+		if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name()))){ 
+			Map<String, Object> callHTTP = callHTTP("GET", "application/json; charset=UTF-8","https://leghe.fantacalcio.it/" + lega + "/classifica",null);
+			String classificaString = callHTTP.get("response").toString();
+			classificaString=classificaString.substring(classificaString.indexOf("currentCompetition: ")+ "currentCompetition: ".length());
+			classificaString = classificaString.substring(0, classificaString.indexOf(",                        inCompetition"));
+			Map fromJson = fromJson(classificaString, Map.class);
+			List<Map> l = (List<Map>) fromJson.get("squadre");
+			for (Map map : l) {
+				Map<String, Object> el=new HashMap<>();
+				el.put("id", map.get("id"));
+				el.put("punti", map.get("s_p"));
+				el.put("pos", map.get("pos"));
+				classifica.add(el);
+				if (((Integer)map.get("pos"))<=Constant.maxGGRealFantacomix || idRealFantacomix21.contains(map.get("id").toString())) {
+					idS.add(map.get("id").toString());
+				}
+			}
+		}
+		
 		Map<String, String> ret = new HashMap<String, String>();
 		String url = "https://leghe.fantacalcio.it/" + lega + "/area-gioco/rose?";
 		String response = (String) callHTTP("GET", "application/json; charset=UTF-8", url, null).get("response");
@@ -1542,17 +1599,25 @@ public class Main {
 			Element element = select.get(i);
 			String link = element.select("A").attr("href");
 			link=link.substring(link.lastIndexOf("=")+1);
-//			System.out.println(squadra + ";" + giocatore);
-			if (true) {//FIXME
-				if (!lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) || 
-						(lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) && 
-								sqRealFantacomix21.contains(squadra)) 
-						|| (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) && 
-								giocRealFantacomix21.contains(giocatore))){
+			//			System.out.println(squadra + ";" + giocatore);
+			if (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name()))){ 
+				if (idS.contains(link)) {
 					ret.put(link,squadra);
+					for (Map<String,Object> map : classifica) {
+						if (map.get("id").toString().equals(link)) {
+//							nickPlayer.put(lega.toUpperCase() + "-" + squadra,squadra + " @ " + map.get("pos") + " @ " + map.get("punti"));
+							nuoviNomi.put(squadra, squadra + "@ " + map.get("pos") + " @ " + map.get("punti"));
+						}
+					}
 				}
-			} else {
+			}
+			if (!lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) || 
+					(lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) && 
+							sqRealFantacomix21.contains(squadra)) 
+					|| (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) && 
+							giocRealFantacomix21.contains(giocatore))){
 				ret.put(link,squadra);
+				
 			}
 		}
 		return ret;
@@ -2112,6 +2177,9 @@ public class Main {
 					}
 				}
 			}
+			if (lega.equalsIgnoreCase(Constant.Campionati.REALFANTACOMIX21.name())) {
+				adattaNomiSquadre(lega, squadre);
+			}
 			if (!lega.equalsIgnoreCase(Constant.Campionati.LUCCICAR.name()) && !lega.equalsIgnoreCase(Constant.Campionati.REALFANTACOMIX21.name())) {
 				adattaNick(lega, squadre);
 				adattaNomePartitaSimulata(squadre, lega);
@@ -2163,6 +2231,15 @@ public class Main {
 		catch (Exception e)
 		{
 			e.printStackTrace(System.out);
+		}
+	}
+
+	private static void adattaNomiSquadre(String lega, List<Squadra> squadre) {
+		for (Squadra squadra : squadre) {
+			String nick = nuoviNomi.get(squadra.getNome());
+			if (nick != null) {
+				squadra.setNome(nick);
+			}
 		}
 	}
 

@@ -99,7 +99,11 @@ app.run(
 				var ret={};
                 angular.forEach($rootScope.result, function(value,camp) {
 	                angular.forEach(value.squadre, function(sq,chiave2) {
-	                	if (camp==camp && nomeSq==sq.nome){
+						var nomeAtt=sq.nome;
+						if (nomeAtt.indexOf("@")>-1){
+							nomeAtt=nomeAtt.substring(0,nomeAtt.indexOf("@")).trim();
+						}
+	                	if (camp==camp && nomeSq==nomeAtt){
 	                		ret=sq;
 	                	}
 	                });

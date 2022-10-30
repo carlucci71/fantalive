@@ -134,4 +134,5 @@ public class Constant {
 	public static final String URL_LIVE_FG = "https://www.fantacalcio.it/api/live/%d?g=%d&i=%s";
 	public static final int ICASA=2;
 	public static Map<Integer, String> listaFG=new HashMap<>();
+	public static Integer maxGGRealFantacomix=20;
 }
