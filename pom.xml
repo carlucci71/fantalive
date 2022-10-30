@@ -75,10 +75,11 @@
 			<artifactId>aspectjweaver</artifactId>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-		</dependency>
+<dependency>
+	<groupId>com.google.http-client</groupId>
+	<artifactId>google-http-client-apache-v2</artifactId>
+	<version>1.42.3</version>
+</dependency>
 		<dependency>
 			<groupId>org.telegram</groupId>
 			<artifactId>telegrambots</artifactId>

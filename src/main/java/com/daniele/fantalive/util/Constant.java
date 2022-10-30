@@ -50,6 +50,7 @@ public class Constant {
 	public static String UTENTE_FS;
 	public static String PWD_FG;
 	public static String UTENTE_FG;
+	public static boolean  disableCertificateValidation = false;
 	/*-------------------------------------------------------------------------------------------*/
 	public static DateTimeFormatter dateTimeFormatterIn = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneId.of("Europe/Rome"));
 	public static DateTimeFormatter dateTimeFormatterOut = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Rome"));

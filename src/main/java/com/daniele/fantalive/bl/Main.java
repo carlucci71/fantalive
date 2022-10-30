@@ -12,6 +12,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -39,19 +42,32 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Row;
@@ -90,6 +106,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 
 public class Main {
 
@@ -131,6 +148,9 @@ public class Main {
 
 
 	public static void init(SalvaRepository salvaRepositorySpring, SocketHandlerFantalive socketHandlerSpring, Constant constantSpring, boolean valorizzaBMFG) throws Exception {
+		if (Constant.disableCertificateValidation) {
+			disabilitaControlloCertificati();
+		}
 		executor = Executors.newSingleThreadScheduledExecutor();	
 		salvaRepository=salvaRepositorySpring;
 		socketHandlerFantalive=socketHandlerSpring;
@@ -160,8 +180,15 @@ public class Main {
 					String giorno = partita.get(1).childNode(0).toString();
 					if (giorno.contains("strong")) continue;
 					String data = partita.get(3).childNode(0).toString();
-					if (data.length()==5 && !data.substring(3,5).equals("01")) data = data + "/2022";
+					
+					
 					if (data.length()==5 && data.substring(3,5).equals("01")) data = data + "/2023";
+					else if (data.length()==5 && data.substring(3,5).equals("02")) data = data + "/2023";
+					else if (data.length()==5 && data.substring(3,5).equals("03")) data = data + "/2023";
+					else if (data.length()==5 && data.substring(3,5).equals("04")) data = data + "/2023";
+					else if (data.length()==5 && data.substring(3,5).equals("05")) data = data + "/2023";
+					else if (data.length()==5 && data.substring(3,5).equals("06")) data = data + "/2023";
+					else data = data + "/2022";
 					String ora = partita.get(5).childNode(0).toString();
 					ora=ora.replace(".", ":");
 					if (ora.equals("-")) {
@@ -1273,6 +1300,67 @@ public class Main {
 		return titolari;
 	}
 
+	
+	private static CloseableHttpClient getHttpClient(BasicCookieStore cookieStore ) throws Exception {
+		HttpClientBuilder builder = ApacheHttpTransport.newDefaultHttpClientBuilder();
+
+		HostnameVerifier hostnameVerifier =
+				Constant.disableCertificateValidation
+				? NoopHostnameVerifier.INSTANCE
+						: new DefaultHostnameVerifier();
+
+		SSLContextBuilder sslContextBuilder = SSLContextBuilder.create();
+		if (Constant.disableCertificateValidation) {
+			sslContextBuilder.loadTrustMaterial((TrustStrategy) (chain, authType) -> true);
+		}
+
+		SSLConnectionSocketFactory connectionSocketFactory =
+				new SSLConnectionSocketFactory(sslContextBuilder.build(), hostnameVerifier);
+		builder.setSSLSocketFactory(connectionSocketFactory);
+
+		builder.setMaxConnTotal(5);
+		builder.setDefaultCookieStore(cookieStore);
+		builder.setDefaultRequestConfig(
+				RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build());
+
+		return builder.build();
+	}
+
+	public static void disabilitaControlloCertificati() {
+		try {
+ 		   // Create a trust manager that does not validate certificate chains
+ 		   TrustManager[] trustAllCerts = new TrustManager[] {
+ 		      new X509TrustManager() {
+ 		       public X509Certificate[] getAcceptedIssuers() {
+ 		           return null;
+ 		       }
+ 		       public void checkClientTrusted(X509Certificate[] certs, String authType) {
+ 		       }
+ 		       public void checkServerTrusted(X509Certificate[] certs, String authType) {
+ 		       }
+ 		      }
+ 		   };
+
+ 		   // Install the all-trusting trust manager
+ 		   SSLContext sc = SSLContext.getInstance("SSL");
+ 		   sc.init(null, trustAllCerts, new java.security.SecureRandom());
+ 		   HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+ 		   // Create all-trusting host name verifier
+ 		   HostnameVerifier allHostsValid = new HostnameVerifier() {
+ 		       public boolean verify(String hostname, SSLSession session) {
+ 		           return true;
+ 		       }
+ 		   };
+
+ 		   // Install the all-trusting host verifier
+ 		   HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+ 		} catch (NoSuchAlgorithmException | KeyManagementException e) {
+ 		    e.printStackTrace();
+ 		}
+	}
+	
+
 	private static Map<String, Object> bm_FG(String lega) throws Exception {
 		Map bodyMap = new HashMap<>();
 		bodyMap.put("username", constant.UTENTE_FG);
@@ -1297,7 +1385,8 @@ public class Main {
 		cookie.setDomain("leghe.fantacalcio.it");
 		cookie.setPath("/");
 		cookieStore.addCookie(cookie);
-		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+//		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+		CloseableHttpClient httpclient = getHttpClient(cookieStore);
 		try {
 			String uri = "https://leghe.fantacalcio.it/" + lega + "/gestione-lega/opzioni-calcolo";
 			HttpGet httpget = new HttpGet(uri);
@@ -1497,7 +1586,8 @@ public class Main {
 		cookie.setDomain("www.fanta.soccer");
 		cookie.setPath("/");
 		cookieStore.addCookie(cookie);
-		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+//		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+		CloseableHttpClient httpclient = getHttpClient(cookieStore);
 		try {
 			for (int i=0;i<4;i++) {
 				String uri = "https://www.fanta.soccer/it/lega/privata/" + Constant.COMP_FS + "/dettaglipartita/" + String.valueOf(gg-Constant.DELTA_FS) + "/" + String.valueOf(i + Constant.PRIMA_GIORNATA_FS + (Constant.NUM_PARTITE_FS*(gg-Constant.DELTA_FS-1))) + "/";
@@ -2900,7 +2990,8 @@ public class Main {
 		cookie.setDomain("www.fantacalcio.it");
 		cookie.setPath("/");
 		cookieStore.addCookie(cookie);
-		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+//		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+		CloseableHttpClient httpclient = getHttpClient(cookieStore);
 		try {
 			String uri = "https://www.fantacalcio.it/api/v1/Excel/prices/17/1";
 			HttpGet httpget = new HttpGet(uri);
