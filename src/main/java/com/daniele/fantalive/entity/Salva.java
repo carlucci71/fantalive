@@ -45,5 +45,11 @@ public class Salva {
 		this.nome = nome;
 	}
 
+
+	@Override
+	public String toString() {
+		return "Salva [nome=" + nome + ", testo=" + testo + "]";
+	}
+
 	
 }

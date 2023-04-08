@@ -19,6 +19,7 @@ public class ConstantTest   {
 		constant = (Constant) method.invoke(constant);		
 		constant.instanza=ConstantTest.class.getCanonicalName();
 		constant.LIVE_FROM_FILE=true;
+		constant.PREPARA_SQUADRE_ON_LOAD=false;
 		constant.DISABILITA_NOTIFICA_TELEGRAM=true;
 		return constant;
 	}

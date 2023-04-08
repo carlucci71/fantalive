@@ -2,6 +2,8 @@ package com.daniele.fantalive.util;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -20,13 +23,14 @@ import org.springframework.context.ConfigurableApplicationContext;
 import com.daniele.MainClass;
 import com.daniele.fantalive.bl.Main;
 import com.daniele.fantalive.model.Giocatore;
+import com.daniele.fantalive.model.Live;
 import com.daniele.fantalive.model.Squadra;
 import com.daniele.fantalive.repository.SalvaRepository;
 
 
 public class CalcolaPartita {
-	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 28;
-	private static final boolean RECUPERA_FROM_DB=true;
+	private static final Integer MAX_GIORNATA_DA_CALCOLARE = 3;
+	private static final boolean RECUPERA_FROM_DB=false;
 	private static final boolean USA_SPRING=false;
 	private static final boolean SOLO_COPPA_CAMPIONI=false;
 	private static final boolean SOLO_SINGOLA=false;
@@ -42,9 +46,12 @@ public class CalcolaPartita {
 
 	public static void main(String[] args) throws Exception {
 		CalcolaPartita cp = new CalcolaPartita();
+		if (!USA_SPRING) {
+			cp.init();
+		}
 //		cp.bu();
 		cp.go(args);
-//		cp.printNomi();
+		cp.printNomi();
 		if (USA_SPRING) {
 			if (false) {
 				ctx.stop();
@@ -52,6 +59,11 @@ public class CalcolaPartita {
 			}
 		}
 		System.exit(0);
+	}
+	private void init() throws Exception {
+		Connection connectionNoSprig = Main.getConnectionNoSprig();
+		Statement createStatement = connectionNoSprig.createStatement();
+		createStatement.executeUpdate("create table salva (nome char(255),testo char(475835)) ");
 	}
 	private void bu() {
 		Map<String, Object> totaliF1=new HashMap<>(); 
@@ -78,14 +90,26 @@ public class CalcolaPartita {
 		System.out.println("-------------------------");
 		Set<String> nomiFG=new HashSet<>();
 		for (int i=1;i<iMaxGG;i++) {
-			Iterator<Integer> iterator = Main.sq.keySet().iterator();
-			while (iterator.hasNext()) {
-				Integer integer = (Integer) iterator.next();
-				String sqFromLive = (String) Main.callHTTP("GET", "application/json; charset=UTF-8", String.format(Constant.URL_LIVE_FG,integer, i, Constant.I_LIVE_FANTACALCIO), null).get("response");
-				List<Map<String, Object>> jsonToList = Main.jsonToList(sqFromLive);
-				for (Map<String, Object> map : jsonToList) {
-					nomiFG.add(map.get("nome") + "@" + Main.sq.get(integer));
-				}
+				String sqFromLive = (String) Main.callHTTP("GET", "application/json; charset=UTF-8", "https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/" + Constant.I_LIVE_FANTACALCIO + "/live_" + i + ".json", null).get("response");
+				Map<String, Object> jsonToMap = Main.jsonToMap(sqFromLive);
+				List<Map<String, Object>> getLiveFromFG =(List<Map<String, Object>>) ((Map)jsonToMap.get("data")).get("pl");
+				List<Map<String, Object>> incontri = (List<Map<String, Object>>) ((Map)jsonToMap.get("data")).get("inc");
+				Map<Object, Object> collect_a = incontri.stream().collect(Collectors.toMap(el -> el.get("id_a").toString(), el->el.get("n_a")));
+				Map<Object, Object> collect_b = incontri.stream().collect(Collectors.toMap(el -> el.get("id_b").toString(), el->el.get("n_b")));
+				for (Map<String, Object> map : getLiveFromFG) {
+					Map<String, Object> newMap=new HashMap<>();
+					String nomeGiocatoreLive = Constant.listaFG.get(Integer.parseInt(map.get("id").toString()));
+					String idSq = map.get("id_s").toString();
+//					incontri.get(idS);
+					nomiFG.add(nomeGiocatoreLive + "@" + (collect_a.get(idSq)==null?collect_b.get(idSq):collect_a.get(idSq)));
+
+
+				
+//				
+//				List<Map<String, Object>> jsonToList = Main.jsonToList(sqFromLive);
+//				for (Map<String, Object> map : jsonToList) {
+//					nomiFG.add(map.get("nome") + "@" + Main.sq.get(integer));
+//				}
 			}
 		}
 		
@@ -93,15 +117,21 @@ public class CalcolaPartita {
 		
 		
 		for (String nome : nomiFG) {
-			System.out.println(nome);
+			System.err.println(nome);
 		}
 		System.out.println("-------------------------");
+		List<String> daCorreggere=new ArrayList<>();
 		for (String nome : nomiFS) {
 			String[] split = nome.split("@");
 			String nomeFromFG = Main.getNomeFromFG(split[0], nomiFG);
 			System.out.println(nome + "@" + nomeFromFG);
+			if (nomeFromFG==null) {
+				daCorreggere.add(nome);
+			}
 		}
 		System.out.println("-------------------------");
+		daCorreggere.forEach(System.err::println);
+		
 	}
 	
 	

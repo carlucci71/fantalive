@@ -21,6 +21,7 @@ public class ConstantProtetto {
 			constant.KEEP_ALIVE_END = ZonedDateTime.now();
 		}
 		constant.DISABILITA_NOTIFICA_TELEGRAM = Boolean.valueOf(System.getenv("DISABILITA_NOTIFICA_TELEGRAM"));
+		constant.PREPARA_SQUADRE_ON_LOAD=true;
 		constant.LIVE_FROM_FILE = Boolean.valueOf(System.getenv("LIVE_FROM_FILE"));
 		constant.ABILITA_REFRESH = Boolean.valueOf(System.getenv("ABILITA_REFRESH"));
 		constant.CHAT_ID_FANTALIVE = Long.valueOf(System.getenv("CHAT_ID_FANTALIVE"));
@@ -36,6 +37,9 @@ public class ConstantProtetto {
 		constant.UTENTE_FG = System.getenv("UTENTE_FG");
 		constant.PWD_FG = System.getenv("PWD_FG");
 		constant.NUM_SQUADRE_BE = Integer.valueOf(System.getenv("NUM_SQUADRE_BE"));
+		if (System.getenv("RITARDO") != null) {
+			constant.RITARDO = Integer.valueOf(System.getenv("RITARDO"));
+		}
 		if (System.getenv("GIORNATA_FORZATA") != null) {
 			constant.GIORNATA_FORZATA = Integer.valueOf(System.getenv("GIORNATA_FORZATA"));
 		}

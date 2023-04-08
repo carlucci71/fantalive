@@ -175,10 +175,11 @@ public class Main {
 				String primaData=null;
 				List<Node> partiteDellaGiornata = first.childNodes();
 				for (int ix=1;ix<partiteDellaGiornata.size();ix++) {
-					if (i>20) continue;
+//					if (i>=32) continue;
 					if (partiteDellaGiornata.get(ix) instanceof TextNode) continue;
 					List<Node> partita = partiteDellaGiornata.get(ix).childNodes();
 					String giorno = partita.get(1).childNode(0).toString();
+					try {
 					if (giorno.contains("strong")) continue;
 					String data = partita.get(3).childNode(0).toString();
 					
@@ -207,6 +208,11 @@ public class Main {
 					ultimaData=data;
 					if (primaData==null) primaData=data;
 //					System.out.println(iGiornata + ": " + ultimoGiorno + "-" + ultimoMese + "-" + ultimoAnno);
+					}
+					catch (Exception e)
+					{
+						
+					}
 				}
 				if (ultimaData!=null) {
 					ZonedDateTime parseZDT = ZonedDateTime.parse(ultimaData + " - 23:59:00 +0000", dtf);
@@ -795,7 +801,7 @@ public class Main {
 						}
 					}
 					des.append("\n").append(getUrlNotifica());
-					Main.inviaCronacaNotifica(des.toString(), 15);
+					Main.inviaCronacaNotifica(des.toString(), Constant.RITARDO);
 					Main.inviaNotifica(des.toString());
 					Calendar c4 = Calendar.getInstance();
 					//					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));
@@ -808,7 +814,7 @@ public class Main {
 				map.put("res", go);
 				map.put("miniNotifica", Base64.getEncoder().encodeToString(desMiniNotifica.getBytes()));
 				socketHandlerFantalive.invia(map);
-				Main.inviaCronacaNotifica(desMiniNotifica.toString(),15);
+				Main.inviaCronacaNotifica(desMiniNotifica.toString(), Constant.RITARDO);
 			}
 			Calendar c4 = Calendar.getInstance();
 			//			System.out.println("ONLY WEB SOCKET:" + (c4.getTimeInMillis()-c3.getTimeInMillis()));
@@ -823,7 +829,7 @@ public class Main {
 			return "http://" + MIO_IP + Constant.URL_NOTIFICA_NAS;
 		}
 		else if (MIO_IP.startsWith("192"))
-			return "http://" + MIO_IP + ":7080/";
+			return "http://" + MIO_IP + ":8090/";
 		else
 			return Constant.URL_NOTIFICA_HEROKU;
 	}
@@ -3268,6 +3274,7 @@ public class Main {
 		else if (nomeG.equalsIgnoreCase("Leao R.")) nomeG="Rafael Leao ";
 		else if (nomeG.equalsIgnoreCase("Samu Castillejo .")) nomeG="Castillejo ";
 		else if (nomeG.equalsIgnoreCase("Joao Pedro Galvao .")) nomeG="Joao Pedro ";
+		else if (nomeG.equalsIgnoreCase("Joao Pedro Galvao .")) nomeG="Joao Pedro ";
 		else if (nomeG.equalsIgnoreCase("Kessie F.")) nomeG="Kessie' ";
 		else if (nomeG.equalsIgnoreCase("Rafael Toloi .")) nomeG="Toloi ";
 		else if (nomeG.equalsIgnoreCase("Pezzella G.")) nomeG="Pezzella Giu. ";
@@ -3324,7 +3331,7 @@ public class Main {
 		else if (nomeG.equalsIgnoreCase("Carlos ")) nomeG="Carlos Augusto ";
 		else if (nomeG.equalsIgnoreCase("Pablo Mari ")) nomeG="Mari' ";
 		else if (nomeG.equalsIgnoreCase("Dany Mota ")) nomeG="Mota ";
-		else if (nomeG.equalsIgnoreCase("Kim Minjae ")) nomeG="Kim ";
+		else if (nomeG.startsWith("Kim ")) nomeG="Kim ";
 		else if (nomeG.equalsIgnoreCase("Østigård L.")) nomeG="Ostigard ";
 		else if (nomeG.equalsIgnoreCase("Ndombele T.")) nomeG="Ndombele' ";
 		else if (nomeG.equalsIgnoreCase("Roger Ibanez ")) nomeG="Ibanez ";
@@ -3349,8 +3356,15 @@ public class Main {
 		else if (nomeG.equalsIgnoreCase("Cortinovis F.") && squadra.equalsIgnoreCase("INT")) nomeG="TBD ";
 		else if (nomeG.equalsIgnoreCase("Terracciano F.") && squadra.equalsIgnoreCase("VER")) nomeG="Terracciano F. ";
 		else if (nomeG.equalsIgnoreCase("Vignato S.") && squadra.equalsIgnoreCase("MON")) nomeG="Vignato S. ";
-		else if (nomeG.equalsIgnoreCase("Pepin ") && squadra.equalsIgnoreCase("MON")) nomeG="Machin ";
-		else if (nomeG.equalsIgnoreCase("Mbala ") && squadra.equalsIgnoreCase("SPE")) nomeG="NZola ";
+		else if (nomeG.equalsIgnoreCase("Mbala ."))  nomeG="Nzola ";
+		else if (nomeG.equalsIgnoreCase("Pepin .")) nomeG="Machin .";
+		else if (nomeG.equalsIgnoreCase("Ederson .")) nomeG="Ederson D.s.";
+		else if (nomeG.equalsIgnoreCase("Pablo Mari .")) nomeG="Mari' .";
+		else if (nomeG.equalsIgnoreCase("Berisha E.")) nomeG="Berisha ";
+		else if (nomeG.equalsIgnoreCase("Carlos ."))  nomeG="Carlos Augusto .";
+		else if (nomeG.equalsIgnoreCase("Romero ."))  nomeG="Romero L. ";
+		else if (nomeG.equalsIgnoreCase("Svilar M.")) nomeG="Svillar .";
+
 		
 
 		return nomeG;
@@ -3558,7 +3572,7 @@ public class Main {
 		return findOne.getTesto();
 	}
 	private static Connection connectionNoSpring=null;
-	private static synchronized Connection getConnectionNoSprig() throws Exception {
+	public static synchronized Connection getConnectionNoSprig() throws Exception {
 		if (connectionNoSpring == null) {
 			Properties prop = new Properties();
 			prop.load(new ClassPathResource("application-DEV.properties").getInputStream());
@@ -3575,7 +3589,13 @@ public class Main {
 		prepareStatement = connection.prepareStatement("insert into salva (nome,testo) values (?,?)");
 		prepareStatement.setString(1, salva.getNome());
 		prepareStatement.setString(2, salva.getTesto());
+		try {
 		prepareStatement.execute();
+		}
+		catch (Exception e) {
+			System.out.println(salva);
+			e.printStackTrace();
+		}
 	}
 	private static String getTestoNoSpring(String nome) throws Exception {
 		Connection connection = getConnectionNoSprig();
@@ -4691,6 +4711,9 @@ public class Main {
 		BigDecimal ret=new BigDecimal("0");
 		List<Giocatore> titolari = squadra1.getTitolari();
 		for (Giocatore giocatore : titolari) {
+			if (giocatore.getRuolo()==null) {
+				System.out.println();
+			}
 			if (giocatore.getRuolo().equalsIgnoreCase("P") || giocatore.getRuolo().equalsIgnoreCase("D")) {
 				ret=ret.add(new BigDecimal(Double.toString(giocatore.getVoto())));
 			}

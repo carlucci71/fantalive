@@ -68,6 +68,9 @@ public class MyController {
 //			System.out.println(v);
 			constant.listaFG.put(k, ((Map)v).get("nome").toString());
 		});
+		if (constant.PREPARA_SQUADRE_ON_LOAD) {
+			preparaSquadre(null);
+		}
 	}
  
 
@@ -849,11 +852,13 @@ public class MyController {
 		try
 		{
 			Main.aggKeyFG();
-			String clearDB=(String) body.get("clearDB");
-			if (clearDB.equalsIgnoreCase("S")) {
-				Main.clearDB();
-			}else {
-				Main.cancellaSquadre();
+			if (body!=null) {
+				String clearDB=(String) body.get("clearDB");
+				if (clearDB.equalsIgnoreCase("S")) {
+					Main.clearDB();
+				}else {
+					Main.cancellaSquadre();
+				}
 			}
 //			Main.getSquadreFromFG(Constant.Campionati.LUCCICAR.name());
 			Main.getSquadreFromFG(Constant.Campionati.REALFANTACOMIX21.name());

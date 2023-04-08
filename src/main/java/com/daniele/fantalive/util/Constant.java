@@ -26,6 +26,7 @@ public class Constant {
 	public static final String COMP_ID_LIVE_GAZZETTA = "21";
 	public static final String I_LIVE_FANTACALCIO = "17";
 
+	public static int RITARDO = 0;
 	public static Integer GIORNATA;
 	public static Integer GIORNATA_FORZATA=null;
 	public static String instanza;
@@ -38,6 +39,7 @@ public class Constant {
 	public static String APPKEY_FG_MOBILE;
 	public static String AUTH_FS;
 	public static boolean LIVE_FROM_FILE;
+	public static boolean PREPARA_SQUADRE_ON_LOAD=false;
 	public static boolean ABILITA_REFRESH;
 	public static boolean DISABILITA_NOTIFICA_TELEGRAM;
 	public static ZonedDateTime KEEP_ALIVE_END;
