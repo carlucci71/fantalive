@@ -407,13 +407,19 @@ public class Main {
 				for (Integer key : eventi.keySet()) {
 					String[] valori = eventi.get(key);
 					String kFg=valori[7];
-					fontiVoti.put(aliasCampionati.get(Campionati.FANTAVIVA.name()), (Integer)((Map)bmFantaviva.get("fonte")).get("fonte_voti"));
-					fontiVoti.put(aliasCampionati.get(Campionati.LUCCICAR.name()), (Integer)((Map)bmLuccicar.get("fonte")).get("fonte_voti"));
-					fontiVoti.put(aliasCampionati.get(Campionati.REALFANTACOMIX21.name()), (Integer)((Map)bmRealFantacomix21.get("fonte")).get("fonte_voti"));
+					try {
+						fontiVoti.put(aliasCampionati.get(Campionati.FANTAVIVA.name()), (Integer)((Map)bmFantaviva.get("fonte")).get("fonte_voti"));
+						fontiVoti.put(aliasCampionati.get(Campionati.LUCCICAR.name()), (Integer)((Map)bmLuccicar.get("fonte")).get("fonte_voti"));
+						fontiVoti.put(aliasCampionati.get(Campionati.REALFANTACOMIX21.name()), (Integer)((Map)bmRealFantacomix21.get("fonte")).get("fonte_voti"));
 
-					overrideBM(bmFantaviva, valori, kFg,1);
-					overrideBM(bmLuccicar, valori, kFg,2);
-					overrideBM(bmRealFantacomix21, valori, kFg,4);
+						overrideBM(bmFantaviva, valori, kFg,1);
+						overrideBM(bmLuccicar, valori, kFg,2);
+						overrideBM(bmRealFantacomix21, valori, kFg,4);
+					}
+					catch (Exception e)
+					{
+						System.out.println("Errore: " + e.getMessage());
+					}
 				}
 				modificatori.put(Constant.Campionati.FANTAVIVA.name(), ((Map)bmFantaviva.get("modificatori")));
 				modificatori.put(Constant.Campionati.REALFANTACOMIX21.name(), ((Map)bmRealFantacomix21.get("modificatori")));
@@ -1022,6 +1028,30 @@ public class Main {
 	
 	
 	public static void main(String[] args) throws Exception {
+		mainBatch(args);
+		for (int i=0;i<8;i++) {
+//			System.err.println(i);
+			String s = "https://programma.salonelibro.it/api/v1/bookable-program-items?include=authors,exhibitors&filter[after]=2023-05-08%2012:14&page[size]=100&page[number]=" + i;
+			Map<String, Object> callHTTP = callHTTP("GET", "application/json; charset=UTF-8", s, null);
+			String json=callHTTP.get("response").toString();
+			Map fromJson = fromJson(json, Map.class);
+			List<Map> l = (List<Map>) fromJson.get("data");
+			for (Map m : l) {
+				List<Map> au =  (List<Map>) m.get("authors");
+				System.out.print(m.get("date") + " " + m.get("time") +  " --> " );
+				if (au.size()>0) {
+					for (Map map : au) {
+						System.out.print(map.get("first_name") + " " + map.get("last_name") + " ");
+					}
+				} else {
+					System.out.print(m.get("title"));
+				}
+				System.out.println();
+			}
+		}
+	}
+	
+	public static void mainORIG(String[] args) throws Exception {
 		//				mainSpring(args);
 		mainBatch(args);
 
@@ -1446,15 +1476,22 @@ public class Main {
 
 			};
 			responseBody = httpclient.execute(httpget, responseHandler);
-		} finally {
+		} 
+		catch (Exception e) {
+			responseBody="";
+		}
+		finally {
 			httpclient.close();
 		}
 		String token = "__.s('lo', __.d('";
-		responseBody=responseBody.substring(responseBody.indexOf(token)+token.length());
-		responseBody=responseBody.substring(0,responseBody.indexOf("'));"));
-		byte[] decode = Base64.getDecoder().decode(responseBody.getBytes());
-		String ret = new String(decode);
-		Map<String, Object> jsonToMap = jsonToMap(ret);
+		Map<String, Object> jsonToMap=new HashMap<>();
+		if(!responseBody.equals("")) {
+			responseBody=responseBody.substring(responseBody.indexOf(token)+token.length());
+			responseBody=responseBody.substring(0,responseBody.indexOf("'));"));
+			byte[] decode = Base64.getDecoder().decode(responseBody.getBytes());
+			String ret = new String(decode);
+			jsonToMap = jsonToMap(ret);
+		}
 		return jsonToMap;
 	}	
 
