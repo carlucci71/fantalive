@@ -73,13 +73,14 @@ public class MyController {
 		}
 	}
  
-
+/*
 	@Scheduled(fixedRate = 60000)
 	public void scheduleKeepAlive() throws Exception {
 		if (constant.ABILITA_REFRESH) {
 			keepAlive();
 		}
 	}
+*/	
 	@GetMapping("/getMyFile")
 	public String getFile() throws Exception {
 		return keepAlive();

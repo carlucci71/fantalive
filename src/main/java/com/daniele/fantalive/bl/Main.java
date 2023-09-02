@@ -164,7 +164,6 @@ public class Main {
 			calendario = new LinkedHashMap();
 			calendarioInizioGiornata = new LinkedHashMap<>();
 			String http = (String) callHTTP("GET", "application/json; charset=UTF-8", String.format(Constant.URL_CALENDARIO), null).get("response");
-						System.out.println(http);
 			//			https://www.tomshw.it/culturapop/calendario-serie-a-2021-22-risultati-e-dove-vedere-le-partite/		
 			//			System.out.println(http);
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");//13/08/2022 - 18:30:00 +0000
