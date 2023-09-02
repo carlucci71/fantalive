@@ -596,7 +596,7 @@ public class MyControllerAsta {
 		if(isOkDispositiva(body)) {
 			Map<String, Object> mapOfferta = (Map)body.get("offerta");
 			Integer idGiocatore=(Integer) mapOfferta.get("idGiocatore");
-			fantaroseRepository.delete(idGiocatore);
+			fantaroseRepository.deleteById(idGiocatore);
 			socketHandler.notificaCancellaOfferta(mapOfferta,request.getRemoteAddr(),String.valueOf(idGiocatore));
 			ret.put("ret", elencoCronologiaOfferte());
 			ret.put("esitoDispositiva", "OK");
@@ -732,7 +732,7 @@ public class MyControllerAsta {
 			setIsSingle((Boolean) body.get("isSingle"));
 			List<Map<String, Object>> elencoAllenatori = (List<Map<String, Object>>) body.get("elencoAllenatori");
 			for (Map<String, Object> map : elencoAllenatori) {
-				Allenatori al = allenatoriRepository.findOne((Integer) map.get("id"));
+				Allenatori al = allenatoriRepository.findById((Integer) map.get("id")).get();
 				String nuovoNome = (String) map.get("nuovoNome");
 				String vecchioNome=al.getNome();
 				String giocatoreLoggato = (String) httpSession.getAttribute("nomeGiocatoreLoggato");
@@ -817,7 +817,7 @@ public class MyControllerAsta {
 		if(isOkDispositiva(body)) {
 			String idgiocatore =  ((Map)body.get("offerta")).get("idgiocatore").toString();
 			String idCalciatore = ((Map)body.get("offerta")).get("idCalciatore").toString();
-			Fantarose findOne = fantaroseRepository.findOne(Integer.parseInt(idCalciatore));
+			Fantarose findOne = fantaroseRepository.findById(Integer.parseInt(idCalciatore)).get();
 			if (findOne == null) {
 				Integer offerta = (Integer) ((Map)body.get("offerta")).get("offerta");
 				Calendar c = Calendar.getInstance();

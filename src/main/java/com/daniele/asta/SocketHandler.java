@@ -280,7 +280,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
 			sSemaforoAttivo = "N";
 			calInizioOfferta = Calendar.getInstance();
 			offertaVincente = new HashMap<>();
-			offertaVincente.put("giocatore", giocatoriRepository.findOne(Integer.parseInt(idCalciatore)));
+			offertaVincente.put("giocatore", giocatoriRepository.findById(Integer.parseInt(idCalciatore)));
 			offertaVincente.put("nomegiocatore", nomegiocatore);
 			offertaVincente.put("idgiocatore", idgiocatore);
 			offertaVincente.put("offerta", 1);
