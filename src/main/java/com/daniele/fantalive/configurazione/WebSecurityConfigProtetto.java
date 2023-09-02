@@ -23,7 +23,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 		auth
           .inMemoryAuthentication()
           .withUser(nomeLega)
-          .password("pwd")
+          .password("{noop}pwd")
           .roles("USER");
     }
 	
