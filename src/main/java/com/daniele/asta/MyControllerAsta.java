@@ -518,7 +518,9 @@ public class MyControllerAsta {
 							giocatori.setRuolo(currentRow.getCell(4).getStringCellValue());
 							giocatori.setMacroRuolo(currentRow.getCell(4).getStringCellValue());
 							giocatori.setQuotazione(new Double(currentRow.getCell(6).getNumericCellValue()).intValue());
-							giocatori.setFvm(currentRow.getCell(7).getNumericCellValue());
+							if (currentRow.getLastCellNum()>7) {
+								giocatori.setFvm(currentRow.getCell(7).getNumericCellValue());
+							}
 							giocatoriRepository.save(giocatori);
 						}
 						bPrima=false;
