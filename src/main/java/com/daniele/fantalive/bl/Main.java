@@ -41,6 +41,7 @@ import java.util.TreeSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -163,12 +164,12 @@ public class Main {
 			calendario = new LinkedHashMap();
 			calendarioInizioGiornata = new LinkedHashMap<>();
 			String http = (String) callHTTP("GET", "application/json; charset=UTF-8", String.format(Constant.URL_CALENDARIO), null).get("response");
-			//			System.out.println(http);
+						System.out.println(http);
 			//			https://www.tomshw.it/culturapop/calendario-serie-a-2021-22-risultati-e-dove-vedere-le-partite/		
 			//			System.out.println(http);
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");//13/08/2022 - 18:30:00 +0000
 			Document doc = Jsoup.parse(http);//, StandardCharsets.UTF_8.toString()
-			Elements elements = doc.getElementsByClass("table-wrapper");
+			Elements elements = doc.getElementsByClass("table-bordered");
 			for (int i=0;i<elements.size();i++) {
 				Element element = elements.get(i);
 				Element first = element.getElementsByTag("tbody").first();
@@ -182,38 +183,39 @@ public class Main {
 					List<Node> partita = partiteDellaGiornata.get(ix).childNodes();
 					String giorno = partita.get(1).childNode(0).toString();
 					try {
-					if (giorno.contains("strong")) continue;
-					String data = partita.get(3).childNode(0).toString();
-					
-					
-					if (data.length()==5 && data.substring(3,5).equals("01")) data = data + "/2023";
-					else if (data.length()==5 && data.substring(3,5).equals("02")) data = data + "/2023";
-					else if (data.length()==5 && data.substring(3,5).equals("03")) data = data + "/2023";
-					else if (data.length()==5 && data.substring(3,5).equals("04")) data = data + "/2023";
-					else if (data.length()==5 && data.substring(3,5).equals("05")) data = data + "/2023";
-					else if (data.length()==5 && data.substring(3,5).equals("06")) data = data + "/2023";
-					else data = data + "/2022";
-					String ora = partita.get(5).childNode(0).toString();
-					ora=ora.replace(".", ":");
-					if (ora.equals("-")) {
-						ora="15:00";
-					}
-					String squadre = partita.get(7).childNode(0).toString();
-//					System.out.println(iGiornata + "-" + giorno + "-" + data + "-" + ora + "-" + squadre);
-					ZonedDateTime parseZDT = ZonedDateTime.parse(data + " - " + ora + ":00 +0000", dtf.withZone(ZoneId.of("Europe/Rome")));
-					List<Integer> list = giorniGioca.get(parseZDT);
-					if (list==null) {
-						list = new ArrayList<>();
-					}
-					list.add(iGiornata);
-					giorniGioca.put(parseZDT, list);
-					ultimaData=data;
-					if (primaData==null) primaData=data;
-//					System.out.println(iGiornata + ": " + ultimoGiorno + "-" + ultimoMese + "-" + ultimoAnno);
+						if (giorno.contains("strong")) continue;
+						String data = partita.get(1).childNode(0).toString();
+
+						/*
+						if (data.length()==5 && data.substring(3,5).equals("01")) data = data + "/2023";
+						else if (data.length()==5 && data.substring(3,5).equals("02")) data = data + "/2023";
+						else if (data.length()==5 && data.substring(3,5).equals("03")) data = data + "/2023";
+						else if (data.length()==5 && data.substring(3,5).equals("04")) data = data + "/2023";
+						else if (data.length()==5 && data.substring(3,5).equals("05")) data = data + "/2023";
+						else if (data.length()==5 && data.substring(3,5).equals("06")) data = data + "/2023";
+						else data = data + "/2022";
+						 */
+						String ora = partita.get(2).childNode(0).toString();
+						ora=ora.replace(".", ":");
+						if (ora.equals("-") || ora.equals("&nbsp;")) {
+							ora="15:00";
+						}
+						String squadre = partita.get(3).childNode(0).toString();
+						//					System.out.println(iGiornata + "-" + giorno + "-" + data + "-" + ora + "-" + squadre);
+						ZonedDateTime parseZDT = ZonedDateTime.parse(data + " - " + ora + ":00 +0000", dtf.withZone(ZoneId.of("Europe/Rome")));
+						List<Integer> list = giorniGioca.get(parseZDT);
+						if (list==null) {
+							list = new ArrayList<>();
+						}
+						list.add(iGiornata);
+						giorniGioca.put(parseZDT, list);
+						ultimaData=data;
+						if (primaData==null) primaData=data;
+						//					System.out.println(iGiornata + ": " + ultimoGiorno + "-" + ultimoMese + "-" + ultimoAnno);
 					}
 					catch (Exception e)
 					{
-						
+						System.out.println();
 					}
 				}
 				if (ultimaData!=null) {
@@ -1895,7 +1897,7 @@ public class Main {
 		HttpURLConnection connectionHTTP = (HttpURLConnection) obj.openConnection();
 		connectionHTTP.setRequestMethod(verbo);
 		if (url.toUpperCase().indexOf("DAZN")>-1) {
-			connectionHTTP.setRequestProperty("accept-encoding", "gzip, deflate, br");
+			connectionHTTP.setRequestProperty("accept-encoding", "gzip");
 		}
 		if (headers!=null && headers.length>0) {
 			Iterator<String> iterator = headers[0].keySet().iterator();
@@ -1930,7 +1932,14 @@ public class Main {
 		if (responseCode == HttpURLConnection.HTTP_OK) {
 			Map<String, List<String>> headerFields = connectionHTTP.getHeaderFields();
 			ret.put("headerFields", headerFields);
-			BufferedReader in = new BufferedReader(new InputStreamReader(connectionHTTP.getInputStream()));
+			BufferedReader in;
+			 if ("gzip".equals(connectionHTTP.getContentEncoding())) {
+	                // Se la risposta è gzip compressa, decodificala
+	                in = new BufferedReader(new InputStreamReader(new GZIPInputStream(connectionHTTP.getInputStream())));
+	            } else {
+	                // Altrimenti, leggi la risposta senza decompressione
+	                in = new BufferedReader(new InputStreamReader(connectionHTTP.getInputStream()));
+	            }			
 			String inputLine;
 			while ((inputLine = in.readLine()) != null) {
 				response.append(inputLine);
