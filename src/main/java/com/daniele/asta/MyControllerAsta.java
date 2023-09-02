@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -817,8 +818,11 @@ public class MyControllerAsta {
 		if(isOkDispositiva(body)) {
 			String idgiocatore =  ((Map)body.get("offerta")).get("idgiocatore").toString();
 			String idCalciatore = ((Map)body.get("offerta")).get("idCalciatore").toString();
-			Fantarose findOne = fantaroseRepository.findById(Integer.parseInt(idCalciatore)).get();
-			if (findOne == null) {
+			Optional<Fantarose> findById = fantaroseRepository.findById(Integer.parseInt(idCalciatore));
+			if (findById.isPresent()) {
+				ret.put("insert", "KO");
+			}
+			else {
 				Integer offerta = (Integer) ((Map)body.get("offerta")).get("offerta");
 				Calendar c = Calendar.getInstance();
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
@@ -830,9 +834,6 @@ public class MyControllerAsta {
 				fantarosa.setSqlTime(stm);
 				fantaroseRepository.save(fantarosa);
 				ret.put("insert", "OK");
-			}
-			else {
-				ret.put("insert", "KO");
 			}
 			ret.put("esitoDispositiva", "OK");
 		}
