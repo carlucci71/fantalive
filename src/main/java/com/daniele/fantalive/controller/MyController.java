@@ -391,7 +391,7 @@ public class MyController {
 	@PostMapping("/cancellaProiezione/{ind}")
 	public Map<String, Object>  cancellaProiezione(@PathVariable String ind) throws Exception {
 		String nomeFile=new String(Base64.getDecoder().decode(ind));
-		salvaRepository.delete(nomeFile);
+		salvaRepository.deleteById(nomeFile);
 		List<String> ret=new ArrayList<>();
 		List<Salva>  ls =salvaRepository.findSimulazioniName("%" + nomeFile.substring(nomeFile.indexOf("-")));
 		ls.forEach((salva) -> {
@@ -408,7 +408,7 @@ public class MyController {
 	@PostMapping("/proiezioneStorica/{ind}")
 	public Map<String, Object> proiezioneFGStorica(@PathVariable String ind) throws Exception {
 		String nomeFile=new String(Base64.getDecoder().decode(ind));
-		Salva findOne = salvaRepository.findOne(nomeFile);
+		Salva findOne = salvaRepository.findById(nomeFile).get();
 		Map fromJson = Main.fromJson(findOne.getTesto(), Map.class);
 		/*
 		List<Map> l = (List<Map>) ((Map)fromJson.get("data")).get("teams");

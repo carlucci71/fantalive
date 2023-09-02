@@ -69,7 +69,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -81,6 +80,9 @@ import org.jsoup.nodes.FormElement;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -144,7 +146,7 @@ public class Main {
 	public static Map<String, String> keyFG=null;
 	public static int timeRefresh = 0;
 
-	public static Logger logger = Logger.getLogger(Main.class);
+	static Logger logger=LoggerFactory.getLogger(Main.class);
 
 
 
@@ -400,7 +402,7 @@ public class Main {
 			eventi.put(23, new String[] {"assist_gold","","","1","","S",Constant.ASSIST,"assist_gold"});
 			eventi.put(24, new String[] {"assist movimento livello medio","","","1","","S",Constant.ASSIST,"assistMovimentoLvMedio"});
 			eventi.put(25, new String[] {"assist movimento livello alto","","","1","","S",Constant.ASSIST,""});
-			if (valorizzaBMFG) {
+			if (valorizzaBMFG && false) {//TODO
 				Map<String, Object> bmFantaviva = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.FANTAVIVA.name()));
 				Map<String, Object> bmRealFantacomix21 = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name()));
 				Map<String, Object> bmLuccicar = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.LUCCICAR.name()));
@@ -454,10 +456,12 @@ public class Main {
 		}
 		if (configsCampionato==null) {
 			configsCampionato = new ArrayList<ConfigCampionato>();
+			/* FIXME
 			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.REALFANTACOMIX21.name(),"NOMANTRA","TUTTI"));
 			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.LUCCICAR.name(),"NOMANTRA","F1"));
 			configsCampionato.add(new ConfigCampionato(22,"FANTAGAZZETTA",Constant.Campionati.FANTAVIVA.name(),"MANTRA","PARTITE"));
 			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE",Constant.Campionati.BE.name(),"NOMANTRA","PARTITE"));
+			*/
 		}
 		verificaOggiGioca();
 	}
@@ -845,7 +849,7 @@ public class Main {
 		ConfigurableApplicationContext ctx;
 		ctx = new SpringApplicationBuilder(MainClass.class)
 				.profiles("DEV")
-				.web(true).run(args);
+				.web(WebApplicationType.NONE).run(args);
 		Main.init(ctx.getBean(SalvaRepository.class),null,ctx.getBean(Constant.class), false);
 		/*******/
 		//....
@@ -1890,6 +1894,9 @@ public class Main {
 		URL obj = new URL(url);
 		HttpURLConnection connectionHTTP = (HttpURLConnection) obj.openConnection();
 		connectionHTTP.setRequestMethod(verbo);
+		if (url.toUpperCase().indexOf("DAZN")>-1) {
+			connectionHTTP.setRequestProperty("accept-encoding", "gzip, deflate, br");
+		}
 		if (headers!=null && headers.length>0) {
 			Iterator<String> iterator = headers[0].keySet().iterator();
 			while (iterator.hasNext()) {
@@ -3604,7 +3611,7 @@ public class Main {
 		if (salvaRepository==null) {
 			return getTestoNoSpring(nome);
 		}
-		Salva findOne = salvaRepository.findOne(nome);
+		Salva findOne = salvaRepository.findById(nome).get();
 		if (findOne==null) return null;
 		return findOne.getTesto();
 	}
@@ -3669,7 +3676,7 @@ public class Main {
 			findOne.setTesto(testo);
 			putSalvaNoSprint(findOne);
 		} else {
-			Salva findOne = salvaRepository.findOne(nome);
+			Salva findOne = salvaRepository.findById(nome).get();
 			if (findOne==null) {
 				findOne=new Salva();
 				findOne.setNome(nome);
@@ -3679,12 +3686,12 @@ public class Main {
 		}
 	}
 	public static boolean esisteSalva(String nome) {
-		return salvaRepository.exists(nome);
+		return salvaRepository.existsById(nome);
 	}
 
 	public static void cancellaSalva(String nome) {
-		if (salvaRepository.exists(nome)) {
-			salvaRepository.delete(nome);
+		if (salvaRepository.existsById(nome)) {
+			salvaRepository.deleteById(nome);
 		}
 	}
 	public static Map<String, Object>  getPartitaSimulata(Long chatId, String nomePartitaSimulata, String squadraSimulata) throws Exception{

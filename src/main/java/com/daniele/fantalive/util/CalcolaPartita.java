@@ -17,6 +17,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -184,7 +185,7 @@ public class CalcolaPartita {
 		if (USA_SPRING) {
 			ctx = new SpringApplicationBuilder(MainClass.class)
 					.profiles("DEV")
-					.web(true).run(args);
+					.web(WebApplicationType.NONE).run(args);
 			Main.init(ctx.getBean(SalvaRepository.class),null,ctx.getBean(Constant.class), false);
 			if (false) {
 				if (Main.fantaLiveBot.isRunning()) {
