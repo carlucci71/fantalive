@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
@@ -3684,13 +3685,16 @@ public class Main {
 			findOne.setTesto(testo);
 			putSalvaNoSprint(findOne);
 		} else {
-			Salva findOne = salvaRepository.findById(nome).get();
-			if (findOne==null) {
-				findOne=new Salva();
-				findOne.setNome(nome);
+			Optional<Salva> findOne = salvaRepository.findById(nome);
+			Salva salva;
+			if (findOne.isPresent()) {
+				salva = new Salva();
+				salva.setNome(nome);
+			} else {
+				salva = findOne.get();
 			}
-			findOne.setTesto(testo);
-			salvaRepository.save(findOne);
+			salva.setTesto(testo);
+			salvaRepository.save(salva);
 		}
 	}
 	public static boolean esisteSalva(String nome) {
