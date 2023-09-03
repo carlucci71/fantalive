@@ -1,20 +1,16 @@
 package com.daniele.fantalive.configurazione;
 
-import javax.servlet.annotation.WebListener;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import org.springframework.context.ApplicationListener;
+import org.springframework.security.core.session.SessionDestroyedEvent;
+import org.springframework.stereotype.Component;
 
-@WebListener
-public class MyHttpSessionListener implements HttpSessionListener {
-
-    @Override
-    public void sessionCreated(HttpSessionEvent event) {
-        System.out.println("session created");
-        event.getSession().setMaxInactiveInterval(1);
-    }
+@Component
+public class MyHttpSessionListener implements ApplicationListener<SessionDestroyedEvent> {
 
     @Override
-    public void sessionDestroyed(HttpSessionEvent event) {
-       System.out.println("session destroyed");
+    public void onApplicationEvent(SessionDestroyedEvent event) {
+    	System.out.println("***********************");
+    	System.out.println(event);
+        // Gestisci l'evento di sessione distrutta qui
     }
 }
