@@ -39,7 +39,7 @@ app.run(
 				$rootScope.sendMsg(JSON.stringify({'operazione':'cancellaUtente', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
 				$rootScope.nomegiocatore='';
 			};
-	        setTimeout(function () {
+	        setInterval(function () {
 				$rootScope.keepAlive();
 	        }, 1000);
 			$rootScope.scegliMantra=function(){
