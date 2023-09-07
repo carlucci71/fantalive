@@ -123,6 +123,12 @@ public class MyControllerAsta {
 	public void visFmv() throws Exception {
 		socketHandler.visFmv();
 	}
+
+	@GetMapping("/keepAlive")
+	public void keepAlive() throws Exception {
+
+	}
+	
 	
 	@RequestMapping("/aggiornaDataNascita")
 	public List<Giocatori> aggiornaDataNascita() throws Exception {
