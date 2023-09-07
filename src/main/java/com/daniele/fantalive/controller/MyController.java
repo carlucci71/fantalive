@@ -57,8 +57,9 @@ public class MyController {
 
 	@GetMapping("/recuperaSession")
 	public void scheduleKeepAlive(HttpSession sess) throws Exception {
+		System.out.println("NON NECESSARIO REFRESH!!1!!" + sess.getMaxInactiveInterval());
 		sess.setMaxInactiveInterval(60);
-		System.out.println("NON NECESSARIO REFRESH!!" + sess.getMaxInactiveInterval());
+		System.out.println("NON NECESSARIO REFRESH!!2!!" + sess.getMaxInactiveInterval());
 	}
 	
 	
