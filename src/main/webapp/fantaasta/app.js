@@ -82,7 +82,16 @@ app.run(
 				}
 			}
 			$rootScope.keepAlive = function() {
-				console.log("KEEPALIVE");
+				const now = new Date();
+				const year = now.getFullYear();
+				const month = now.getMonth() + 1; // I mesi sono indicizzati da 0 a 11, quindi aggiungiamo 1 per ottenere il mese corretto
+				const day = now.getDate();
+				const hours = now.getHours();
+				const minutes = now.getMinutes();
+				const seconds = now.getSeconds();
+				const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+				console.log("KEEPALIVE: " + formattedTime);
 				$resource('./keepAlive',{}).query().$promise.then(function() {
 				console.log("OK");
 				});
