@@ -41,7 +41,7 @@ app.run(
 			};
 	        setInterval(function () {
 				$rootScope.keepAlive();
-	        }, 1000);
+	        }, 10000);
 			$rootScope.scegliMantra=function(){
 				$rootScope.isMantra=!$rootScope.isMantra;
 				if($rootScope.isMantra){
@@ -83,6 +83,9 @@ app.run(
 			}
 			$rootScope.keepAlive = function() {
 				console.log("KEEPALIVE");
+				$resource('./keepAlive',{}).query().$promise.then(function() {
+				console.log("OK");
+				});
 			}
 			$rootScope.doConnect = function() {
 //		        console.log('Connected');
