@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpSession;
 
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,14 @@ public class MyController {
 	@Autowired SocketHandlerFantalive socketHandlerFantalive;
 	@Autowired SalvaRepository salvaRepository;
 
+
+	@GetMapping("/recuperaSession")
+	public void scheduleKeepAlive(HttpSession sess) throws Exception {
+		sess.setMaxInactiveInterval(60);
+		System.out.println("NON NECESSARIO REFRESH!!" + sess.getMaxInactiveInterval());
+	}
+	
+	
 	@PostConstruct
 	private void post() throws Exception {
 		Main.init(salvaRepository,socketHandlerFantalive,constant, true);
