@@ -39,6 +39,9 @@ app.run(
 				$rootScope.sendMsg(JSON.stringify({'operazione':'cancellaUtente', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
 				$rootScope.nomegiocatore='';
 			};
+	        setTimeout(function () {
+				$rootScope.keepAlive();
+	        }, 1000);
 			$rootScope.scegliMantra=function(){
 				$rootScope.isMantra=!$rootScope.isMantra;
 				if($rootScope.isMantra){
@@ -77,6 +80,9 @@ app.run(
 					$rootScope.idgiocatore=id;
 					$rootScope.doConnect();
 				}
+			}
+			$rootScope.keepAlive = function() {
+				console.log("KEEPALIVE");
 			}
 			$rootScope.doConnect = function() {
 //		        console.log('Connected');
