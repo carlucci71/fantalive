@@ -54,15 +54,6 @@ public class MyController {
 	@Autowired SocketHandlerFantalive socketHandlerFantalive;
 	@Autowired SalvaRepository salvaRepository;
 
-
-	@GetMapping("/recuperaSession")
-	public void scheduleKeepAlive(HttpSession sess) throws Exception {
-		System.out.println("NON NECESSARIO REFRESH!!1!!" + sess.getMaxInactiveInterval());
-		sess.setMaxInactiveInterval(60);
-		System.out.println("NON NECESSARIO REFRESH!!2!!" + sess.getMaxInactiveInterval());
-	}
-	
-	
 	@PostConstruct
 	private void post() throws Exception {
 		Main.init(salvaRepository,socketHandlerFantalive,constant, true);
