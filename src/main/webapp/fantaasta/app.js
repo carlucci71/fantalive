@@ -1024,7 +1024,7 @@ app.run(
 					}
 					}
 					if (msg.visFmv){
-						if ($rootScope.nomegiocatore=="Daniele"){
+						if ($rootScope.nomegiocatore.toUpperCase()=="DANIELE"){
 							$rootScope.visFmv=!$rootScope.visFmv;
 						}
 					}
