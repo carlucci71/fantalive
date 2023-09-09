@@ -41,7 +41,7 @@ app.run(
 			};
 	        setInterval(function () {
 				$rootScope.keepAlive();
-	        }, 10000);
+	        }, 60000*10);
 			$rootScope.scegliMantra=function(){
 				$rootScope.isMantra=!$rootScope.isMantra;
 				if($rootScope.isMantra){
