@@ -96,6 +96,11 @@ app.run(
 				console.log("OK");
 				});
 			}
+			$rootScope.changeVisFvm = function() {
+				$resource('./visFvm',{}).query().$promise.then(function() {
+
+				});
+			}
 			$rootScope.doConnect = function() {
 //		        console.log('Connected');
 		        if ($rootScope.nomegiocatore!=''){
@@ -1024,9 +1029,7 @@ app.run(
 					}
 					}
 					if (msg.visFmv){
-						if ($rootScope.nomegiocatore.toUpperCase()=="DANIELE"){
-							$rootScope.visFmv=!$rootScope.visFmv;
-						}
+						$rootScope.visFmv=!$rootScope.visFmv;
 					}
 					if (msg.isATurni){
 						if (msg.isATurni=="S")
