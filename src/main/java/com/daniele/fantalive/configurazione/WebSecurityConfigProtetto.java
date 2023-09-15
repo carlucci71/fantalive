@@ -14,7 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Profile(value = "protetto")
 	public class WebSecurityConfigProtetto extends WebSecurityConfigurerAdapter {
 
-	/* 	
+	/* */ 	
 	@Value("${SECURITY_USER_NAME}")
 	private String nomeLega;
 
@@ -44,8 +44,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
           	  .csrf()
               .disable();             
     }	
-	 */
-	/* */
+	 /* */
+	/* 
 	  @Override
 	  protected void configure(HttpSecurity http) throws Exception {
 	    http
@@ -55,7 +55,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 	      .requiresSecure();
 	    
 	  }
-	/* */ 
+	 */ 
 	}
 
 
