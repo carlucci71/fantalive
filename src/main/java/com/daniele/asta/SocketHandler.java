@@ -81,6 +81,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
 	@Override
 	public void handleTextMessage(WebSocketSession session, TextMessage message)
 			throws InterruptedException, IOException {
+		try {
 		String indirizzo = session.getRemoteAddress().toString();
 		HttpSession httpSession = (HttpSession) session.getAttributes().get("HTTPSESSIONID");
 		String payload = message.getPayload();
@@ -435,6 +436,10 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
 			invia(toJson(m));
 		} else {
 			invia(payload);
+		}
+		}
+		catch (Exception e) {
+			System.out.println(e.getMessage());
 		}
 	}
 
