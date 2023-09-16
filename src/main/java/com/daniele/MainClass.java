@@ -12,6 +12,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 @EnableWebSocket
 @EnableAsync(proxyTargetClass = true) 
 @EnableCaching(proxyTargetClass = true) 
+//@EnableWebMvc
 
 public class MainClass  {
 	public static void main(String[] args) {
