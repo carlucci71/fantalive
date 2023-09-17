@@ -18,13 +18,13 @@ public class Constant {
 	public static final String COMP_VIVA_FG = "512870";//512870 champions F1 e 512874 la coppa;//cookie comp_fanta-viva_Leghe2022 di https://leghe.fantacalcio.it/servizi/V1_LegheMessaggi/.... 512843 campionato 
 	public static final String COMP_LUCCICAR_FG = "379529";
 	public static final String COMP_REALFANTACOMIX21_FG = "339736";
-	public static final int DELTA_FS=6;
+	public static final int DELTA_FS=3;
 	public static final int NUM_PARTITE_FS = 4;
-	public static final String COMP_FS = "137874";
-	public static final int PRIMA_GIORNATA_FS = 10640917;
+	public static final String COMP_FS = "144101";
+	public static final int PRIMA_GIORNATA_FS = 10569316;
 	public static final String SPORT_ID_LIVE_GAZZETTA = "1";
 	public static final String COMP_ID_LIVE_GAZZETTA = "21";
-	public static final String I_LIVE_FANTACALCIO = "17";
+	public static final String I_LIVE_FANTACALCIO = "18";//TODO AUMENTA CON L'ANNO
 
 	public static int RITARDO = 0;
 	public static Integer GIORNATA;

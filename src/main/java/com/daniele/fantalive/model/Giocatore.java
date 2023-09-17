@@ -34,6 +34,9 @@ public class Giocatore {
 	private boolean notificaLive;
 	private boolean capitano=false;
 	private boolean viceCapitano=false;
+	private String nomeFS;
+	private String nomeFSCambiato;
+	private String idFs;
 	public String getRuolo() {
 		return ruolo;
 	}
@@ -90,7 +93,7 @@ public class Giocatore {
 	}
 	@Override
 	public String toString() {
-		return nome + "(" + ruolo + ") " + squadra + " " + id + " " 
+		return nome + "(" + ruolo + ") " + squadra + " " + id + " " + idFs + " " + nomeFS + " " + nomeFSCambiato + " " 
 				+ (capitano?"C":"")
 				+ (viceCapitano?"VC":"")
 				+ (squadraGioca?"":"N/A") + " " + evento + codEventi   
@@ -216,6 +219,24 @@ public class Giocatore {
 	}
 	public void setCambioSimulato(boolean cambioSimulato) {
 		this.cambioSimulato = cambioSimulato;
+	}
+	public String getNomeFS() {
+		return nomeFS;
+	}
+	public void setNomeFS(String nomeFS) {
+		this.nomeFS = nomeFS;
+	}
+	public String getIdFs() {
+		return idFs;
+	}
+	public void setIdFs(String idFs) {
+		this.idFs = idFs;
+	}
+	public String getNomeFSCambiato() {
+		return nomeFSCambiato;
+	}
+	public void setNomeFSCambiato(String nomeFSCambiato) {
+		this.nomeFSCambiato = nomeFSCambiato;
 	}
 
 }
