@@ -357,14 +357,19 @@ switchkeepalive - switch keep alive
 			Constant.Campionati[] campionati = Constant.Campionati.values();
 			for (Constant.Campionati campionato : campionati) {
 				List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-				Set<String> getpartiteSimulate = Main.getpartiteSimulate(campionato.name());
-				for (String partitaSimulata : getpartiteSimulate) {
-					InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-					inlineKeyboardButton.setText(partitaSimulata.substring(2));
-					inlineKeyboardButton.setCallbackData(SIMULATA + " " + partitaSimulata);
-					keyboardButtonsRow1.add(inlineKeyboardButton);
+				try {
+					Set<String> getpartiteSimulate = Main.getpartiteSimulate(campionato.name());
+					for (String partitaSimulata : getpartiteSimulate) {
+						InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+						inlineKeyboardButton.setText(partitaSimulata.substring(2));
+						inlineKeyboardButton.setCallbackData(SIMULATA + " " + partitaSimulata);
+						keyboardButtonsRow1.add(inlineKeyboardButton);
+					}
+					rowList.add(keyboardButtonsRow1);
 				}
-				rowList.add(keyboardButtonsRow1);
+				catch (Exception e) {
+					
+				}
 			}
 			return rowList;
 		}
