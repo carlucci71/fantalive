@@ -671,8 +671,10 @@ public class Main {
 			ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
 			String time=zdt.format(formatter);
 			if (salva) {
-				upsertSalva(time + "-" + "snapPartite", toJson(getLives.get("snapPartite")));//snapOrari
-				upsertSalva(time + "-" + "lives", toJson(snapLives));
+				if (false) {//FIXME
+					upsertSalva(time + "-" + "snapPartite", toJson(getLives.get("snapPartite")));//snapOrari
+					upsertSalva(time + "-" + "lives", toJson(snapLives));
+				}
 			}
 			if (oldSnapshot!=null) {
 				Iterator<String> iterator = snapshot.keySet().iterator();
