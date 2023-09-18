@@ -185,7 +185,9 @@ public class Main {
 					try {
 						if (giorno.contains("strong")) continue;
 						String data = partita.get(1).childNode(0).toString();
-
+						if (data.equals("17/09/2023")) {//BUG DAZN
+							data = "18/09/2023";
+						}
 						/*
 						if (data.length()==5 && data.substring(3,5).equals("01")) data = data + "/2023";
 						else if (data.length()==5 && data.substring(3,5).equals("02")) data = data + "/2023";
@@ -3798,7 +3800,6 @@ public class Main {
 				salva = findOne.get();
 			}
 			salva.setTesto(testo);
-			System.err.println(salva);
 			salvaRepository.save(salva);
 		}
 	}
