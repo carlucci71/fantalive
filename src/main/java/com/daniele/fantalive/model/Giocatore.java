@@ -93,7 +93,7 @@ public class Giocatore {
 	}
 	@Override
 	public String toString() {
-		return nome + "(" + ruolo + ") " + squadra + " " + id + " " + idFs + " " + nomeFS + " " + nomeFSCambiato + " " 
+		return nome + "(" + ruolo + ") " + squadra + " " + id + " " + idFs + " " + "nomeFS" + " " + nomeFSCambiato + " " 
 				+ (capitano?"C":"")
 				+ (viceCapitano?"VC":"")
 				+ (squadraGioca?"":"N/A") + " " + evento + codEventi   

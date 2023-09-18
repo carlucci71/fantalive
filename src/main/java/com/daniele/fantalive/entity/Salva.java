@@ -48,7 +48,7 @@ public class Salva {
 
 	@Override
 	public String toString() {
-		return "Salva [nome=" + nome + ", testo=" + testo + "]";
+		return "Salva [nome=(" + nome.length() + ") " + nome + ", testo=(" + testo.length() + ") " + testo + "]";
 	}
 
 	
