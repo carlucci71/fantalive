@@ -178,7 +178,7 @@ public class Main {
 				String primaData=null;
 				List<Node> partiteDellaGiornata = first.childNodes();
 				for (int ix=1;ix<partiteDellaGiornata.size();ix++) {
-//					if (i>=32) continue;
+					//					if (i>=32) continue;
 					if (partiteDellaGiornata.get(ix) instanceof TextNode) continue;
 					List<Node> partita = partiteDellaGiornata.get(ix).childNodes();
 					String giorno = partita.get(1).childNode(0).toString();
@@ -223,8 +223,8 @@ public class Main {
 				if (ultimaData!=null) {
 					ZonedDateTime parseZDT = ZonedDateTime.parse(ultimaData + " - 23:59:00 +0000", dtf);
 					calendario.put(iGiornata, parseZDT);
-//					String primoAnno="2021";
-//					if (Integer.parseInt(primoMese)<8) primoAnno = "2022";
+					//					String primoAnno="2021";
+					//					if (Integer.parseInt(primoMese)<8) primoAnno = "2022";
 					parseZDT = ZonedDateTime.parse(primaData + " - 23:59:00 +0000", dtf);
 					calendarioInizioGiornata.put(iGiornata, parseZDT);
 				}
@@ -241,7 +241,7 @@ public class Main {
 				constant.GIORNATA=constant.GIORNATA_FORZATA;
 			}
 			ZonedDateTime zonedDateTime = calendario.get(constant.GIORNATA);
-			
+
 			//			System.out.println(Constant.GIORNATA);
 		}
 		Main.aggKeyFG();
@@ -466,7 +466,7 @@ public class Main {
 			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.REALFANTACOMIX21.name(),"NOMANTRA","TUTTI"));
 			configsCampionato.add(new ConfigCampionato(24,"FANTAGAZZETTA",Constant.Campionati.LUCCICAR.name(),"NOMANTRA","F1"));
 			configsCampionato.add(new ConfigCampionato(22,"FANTAGAZZETTA",Constant.Campionati.FANTAVIVA.name(),"MANTRA","PARTITE"));
-			*/
+			 */
 			configsCampionato.add(new ConfigCampionato(22,"FANTASERVICE",Constant.Campionati.BE.name(),"NOMANTRA","PARTITE"));
 		}
 		verificaOggiGioca();
@@ -487,7 +487,7 @@ public class Main {
 			constant.KEEP_ALIVE_END = ZonedDateTime.now();
 		}
 	}
-	
+
 	private static void overrideBM(Map<String, Object> bm, String[] valori, String kFg, int posizione) {
 		bm=(Map<String, Object>) bm.get("bonus_malus");
 		Double newval=null;
@@ -621,8 +621,8 @@ public class Main {
 		long free_mem = rt.freeMemory();
 		long used_mem = total_mem - free_mem;
 		System.out.println("*******************MEMORY used: " + used_mem + " free:" + free_mem + " total: " + total_mem);
-		
-		
+
+
 		timeRefresh=0;
 		Calendar c = Calendar.getInstance();
 		boolean snap=false;
@@ -671,10 +671,8 @@ public class Main {
 			ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
 			String time=zdt.format(formatter);
 			if (salva) {
-				if (false) {//FIXME
-					upsertSalva(time + "-" + "snapPartite", toJson(getLives.get("snapPartite")));//snapOrari
-					upsertSalva(time + "-" + "lives", toJson(snapLives));
-				}
+				upsertSalva(time + "-" + "snapPartite", toJson(getLives.get("snapPartite")));//snapOrari
+				upsertSalva(time + "-" + "lives", toJson(snapLives));
 			}
 			if (oldSnapshot!=null) {
 				Iterator<String> iterator = snapshot.keySet().iterator();
@@ -874,7 +872,7 @@ public class Main {
 		init(null, null, c, false);
 		//		Map<Integer, Float> votiAlvin = getVotiAlvin(24);
 		//		System.out.println(votiAlvin);
-//		System.out.println(getVotiFS(24, false));
+		//		System.out.println(getVotiFS(24, false));
 
 	}
 	public static  String getNomeFromFG(String nomeFS, Set<String> nomiFG) {
@@ -888,14 +886,14 @@ public class Main {
 
 	private static String cercaNomeFs(String nomeFS, Set<String> nomiFG, String ret) {
 		for (String nomeFG : nomiFG) {
-//			System.out.println(nomeFG);
+			//			System.out.println(nomeFG);
 			String[] split = nomeFG.split("@");
 			//			System.out.println(split[0].substring(0,split[0].lastIndexOf(" ")).replaceAll(" ", "")); //.equalsIgnoreCase(nomeGiocatoreLive.replaceAll(" ", "")))	
 			String nomeFindFS = nomeFS.substring(0,nomeFS.lastIndexOf(" ")).replaceAll(" ", "");
 			String nomeFindFG = split[0].replaceAll(" ", "");
-//			if (nomeFS.toUpperCase().indexOf("APAT")>-1 && nomeFindFG.toUpperCase().indexOf("APAT")>-1) {
-//				System.out.println();
-//			}
+			//			if (nomeFS.toUpperCase().indexOf("APAT")>-1 && nomeFindFG.toUpperCase().indexOf("APAT")>-1) {
+			//				System.out.println();
+			//			}
 			if (nomeFindFS.equalsIgnoreCase(nomeFindFG))
 			{
 				ret = nomeFG;
@@ -1016,7 +1014,7 @@ public class Main {
 		}
 		return ret;
 	}
-	
+
 	private static void liveForzato() throws Exception {
 		String sFG = "{\r\n" + 
 				"  \"dati\" : \"{\\\"teams\\\":[{\\\"id\\\":3072657,\\\"modulo\\\":\\\"3421\\\",\\\"moduloS\\\":\\\"4231\\\",\\\"fattore\\\":2,\\\"total\\\":77.5,\\\"cap\\\":\\\"\\\",\\\"players\\\":[{\\\"id\\\":1934,\\\"rank\\\":5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[4,4,4],\\\"voto\\\":5,\\\"nome\\\":\\\"Strakosha\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":2,\\\"squadraGioca\\\":true},{\\\"id\\\":288,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[15],\\\"voto\\\":0,\\\"nome\\\":\\\"Chiellini\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true},{\\\"id\\\":286,\\\"rank\\\":8,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[3,3],\\\"voto\\\":8,\\\"nome\\\":\\\"Bonucci\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":14,\\\"squadraGioca\\\":true},{\\\"id\\\":4428,\\\"rank\\\":7,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[22],\\\"voto\\\":7,\\\"nome\\\":\\\"De Ligt\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":8,\\\"squadraGioca\\\":true},{\\\"id\\\":2816,\\\"rank\\\":7,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[14,20],\\\"voto\\\":7,\\\"nome\\\":\\\"Di Lorenzo\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":7,\\\"squadraGioca\\\":true},{\\\"id\\\":2775,\\\"rank\\\":6.5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[22,14],\\\"voto\\\":6.5,\\\"nome\\\":\\\"Ruiz\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":7.5,\\\"squadraGioca\\\":true},{\\\"id\\\":4890,\\\"rank\\\":7,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[1],\\\"voto\\\":7,\\\"nome\\\":\\\"Tameze\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6.5,\\\"squadraGioca\\\":true},{\\\"id\\\":335,\\\"rank\\\":5.5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[14],\\\"voto\\\":5.5,\\\"nome\\\":\\\"Felipe Anderson\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":5.5,\\\"squadraGioca\\\":true},{\\\"id\\\":409,\\\"rank\\\":7,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[21,21],\\\"voto\\\":7,\\\"nome\\\":\\\"Insigne\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":8,\\\"squadraGioca\\\":true},{\\\"id\\\":1995,\\\"rank\\\":5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[14],\\\"voto\\\":5,\\\"nome\\\":\\\"Djuricic\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":5,\\\"squadraGioca\\\":true},{\\\"id\\\":2819,\\\"rank\\\":5.5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":5.5,\\\"nome\\\":\\\"Caputo\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":5.5,\\\"squadraGioca\\\":true},{\\\"id\\\":5786,\\\"rank\\\":6,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Cabral\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":472,\\\"rank\\\":6,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Destro\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":2167,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Orsolini\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":5007,\\\"rank\\\":6.5,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[20,14],\\\"voto\\\":6.5,\\\"nome\\\":\\\"Ilic\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6.5,\\\"squadraGioca\\\":true},{\\\"id\\\":4965,\\\"rank\\\":6,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[14],\\\"voto\\\":6,\\\"nome\\\":\\\"Marin\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":4869,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Dominguez\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":2289,\\\"rank\\\":5.5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":5.5,\\\"nome\\\":\\\"Dalbert\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":5.5,\\\"squadraGioca\\\":true},{\\\"id\\\":358,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":0,\\\"nome\\\":\\\"De Sciglio\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true},{\\\"id\\\":256,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":0,\\\"nome\\\":\\\"Juan Jesus\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true},{\\\"id\\\":5323,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":0,\\\"nome\\\":\\\"Martinez Quarta\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true},{\\\"id\\\":2860,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":0,\\\"nome\\\":\\\"Malcuit\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true},{\\\"id\\\":387,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":0,\\\"nome\\\":\\\"Reina\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true}],\\\"bmp\\\":0,\\\"bmd\\\":1,\\\"bmc\\\":0,\\\"bma\\\":0,\\\"bmfp\\\":0,\\\"bmr\\\":0,\\\"bmcap\\\":0,\\\"ru\\\":0,\\\"nome\\\":\\\"A.C. Avanti Cristo\\\"},{\\\"id\\\":3769554,\\\"modulo\\\":\\\"3412\\\",\\\"moduloS\\\":\\\"3412\\\",\\\"fattore\\\":0,\\\"total\\\":79,\\\"cap\\\":\\\"\\\",\\\"players\\\":[{\\\"id\\\":4270,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Rui Patricio\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":4245,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Smalling\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":2788,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Bremer\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":2296,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Mancini\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":5513,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Dumfries\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":645,\\\"rank\\\":7.5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[3],\\\"voto\\\":7.5,\\\"nome\\\":\\\"Milinkovic-Savic\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":10.5,\\\"squadraGioca\\\":true},{\\\"id\\\":2744,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Svanberg\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":581,\\\"rank\\\":6,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Faraoni\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":2172,\\\"rank\\\":7,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[3,1,14],\\\"voto\\\":7,\\\"nome\\\":\\\"Barak\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":9.5,\\\"squadraGioca\\\":true},{\\\"id\\\":4517,\\\"rank\\\":7,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[3,14],\\\"voto\\\":7,\\\"nome\\\":\\\"Lozano\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":10,\\\"squadraGioca\\\":true},{\\\"id\\\":2544,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Abraham\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":218,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":0,\\\"nome\\\":\\\"Perin\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true},{\\\"id\\\":2119,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Deulofeu\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":4179,\\\"rank\\\":6,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Gonzalez N.\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":505,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Bonazzoli\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":2719,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Barrow\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":2525,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Darmian\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":76,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Romagnoli S.\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":4404,\\\"rank\\\":6,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Thorsby\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":170,\\\"rank\\\":5,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":5,\\\"nome\\\":\\\"Badelj\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":5,\\\"squadraGioca\\\":true},{\\\"id\\\":5479,\\\"rank\\\":6,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Ceccaroni\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":5509,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Vina\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":4185,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Maitland-Niles\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false}],\\\"bmp\\\":0,\\\"bmd\\\":0,\\\"bmc\\\":0,\\\"bma\\\":0,\\\"bmfp\\\":0,\\\"bmr\\\":0,\\\"bmcap\\\":0,\\\"ru\\\":0,\\\"nome\\\":\\\"Tavolino\\\"}],\\\"ris\\\":\\\"2-2\\\",\\\"s\\\":\\\"2\\\",\\\"adv\\\":null,\\\"msg\\\":\\\"\\\"}\"\r\n" + 
@@ -1037,12 +1035,12 @@ public class Main {
 			}
 		}
 	}
-	
-	
+
+
 	public static void main(String[] args) throws Exception {
 		mainBatch(args);
 		for (int i=0;i<8;i++) {
-//			System.err.println(i);
+			//			System.err.println(i);
 			String s = "https://programma.salonelibro.it/api/v1/bookable-program-items?include=authors,exhibitors&filter[after]=2023-05-08%2012:14&page[size]=100&page[number]=" + i;
 			Map<String, Object> callHTTP = callHTTP("GET", "application/json; charset=UTF-8", s, null);
 			String json=callHTTP.get("response").toString();
@@ -1062,7 +1060,7 @@ public class Main {
 			}
 		}
 	}
-	
+
 	public static void mainORIG(String[] args) throws Exception {
 		//				mainSpring(args);
 		mainBatch(args);
@@ -1082,11 +1080,11 @@ public class Main {
 			el.put("id", map.get("id"));
 			el.put("punti", map.get("s_p"));
 			el.put("pos", map.get("pos"));
-//			el.put("squadra", allSquadreRealFantaComix21.get(map.get("id").toString()));
+			//			el.put("squadra", allSquadreRealFantaComix21.get(map.get("id").toString()));
 			classifica.add(el);
 		}
 		System.out.println(classifica);
-		
+
 		/*
 		String nome="Acerbi F.";
 		Set<String> nomiFg=new HashSet<>();
@@ -1216,7 +1214,7 @@ public class Main {
 		}
 		return ret;
 	}
-	
+
 	private static Map<String, Object> callProiezioneFG(List<Squadra> squadre, String user_token, String lega_token, String idComp, String squadraSimulata)
 			throws Exception {
 		Map<String, String> headers;
@@ -1383,7 +1381,7 @@ public class Main {
 		return titolari;
 	}
 
-	
+
 	private static CloseableHttpClient getHttpClient(BasicCookieStore cookieStore ) throws Exception {
 		HttpClientBuilder builder = ApacheHttpTransport.newDefaultHttpClientBuilder();
 
@@ -1411,38 +1409,38 @@ public class Main {
 
 	public static void disabilitaControlloCertificati() {
 		try {
- 		   // Create a trust manager that does not validate certificate chains
- 		   TrustManager[] trustAllCerts = new TrustManager[] {
- 		      new X509TrustManager() {
- 		       public X509Certificate[] getAcceptedIssuers() {
- 		           return null;
- 		       }
- 		       public void checkClientTrusted(X509Certificate[] certs, String authType) {
- 		       }
- 		       public void checkServerTrusted(X509Certificate[] certs, String authType) {
- 		       }
- 		      }
- 		   };
+			// Create a trust manager that does not validate certificate chains
+			TrustManager[] trustAllCerts = new TrustManager[] {
+					new X509TrustManager() {
+						public X509Certificate[] getAcceptedIssuers() {
+							return null;
+						}
+						public void checkClientTrusted(X509Certificate[] certs, String authType) {
+						}
+						public void checkServerTrusted(X509Certificate[] certs, String authType) {
+						}
+					}
+			};
 
- 		   // Install the all-trusting trust manager
- 		   SSLContext sc = SSLContext.getInstance("SSL");
- 		   sc.init(null, trustAllCerts, new java.security.SecureRandom());
- 		   HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			// Install the all-trusting trust manager
+			SSLContext sc = SSLContext.getInstance("SSL");
+			sc.init(null, trustAllCerts, new java.security.SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
- 		   // Create all-trusting host name verifier
- 		   HostnameVerifier allHostsValid = new HostnameVerifier() {
- 		       public boolean verify(String hostname, SSLSession session) {
- 		           return true;
- 		       }
- 		   };
+			// Create all-trusting host name verifier
+			HostnameVerifier allHostsValid = new HostnameVerifier() {
+				public boolean verify(String hostname, SSLSession session) {
+					return true;
+				}
+			};
 
- 		   // Install the all-trusting host verifier
- 		   HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
- 		} catch (NoSuchAlgorithmException | KeyManagementException e) {
- 		    e.printStackTrace();
- 		}
+			// Install the all-trusting host verifier
+			HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+		} catch (NoSuchAlgorithmException | KeyManagementException e) {
+			e.printStackTrace();
+		}
 	}
-	
+
 
 	private static Map<String, Object> bm_FG(String lega) throws Exception {
 		Map bodyMap = new HashMap<>();
@@ -1468,7 +1466,7 @@ public class Main {
 		cookie.setDomain("leghe.fantacalcio.it");
 		cookie.setPath("/");
 		cookieStore.addCookie(cookie);
-//		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+		//		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
 		CloseableHttpClient httpclient = getHttpClient(cookieStore);
 		try {
 			String uri = "https://leghe.fantacalcio.it/" + lega + "/gestione-lega/opzioni-calcolo";
@@ -1617,7 +1615,7 @@ public class Main {
 	}
 
 	private static Map<String, String> nuoviNomi=new HashMap<>();
-	
+
 	private static Map<String, String> getNomiFG(String lega) throws Exception {
 		List<Map<String, Object>>classifica=new ArrayList<>();
 		Set<String>idS=new HashSet<>();
@@ -1639,7 +1637,7 @@ public class Main {
 				}
 			}
 		}
-		
+
 		Map<String, String> ret = new HashMap<String, String>();
 		String url = "https://leghe.fantacalcio.it/" + lega + "/area-gioco/rose?";
 		String response = (String) callHTTP("GET", "application/json; charset=UTF-8", url, null).get("response");
@@ -1660,7 +1658,7 @@ public class Main {
 					ret.put(link,squadra);
 					for (Map<String,Object> map : classifica) {
 						if (map.get("id").toString().equals(link)) {
-//							nickPlayer.put(lega.toUpperCase() + "-" + squadra,squadra + " @ " + map.get("pos") + " @ " + map.get("punti"));
+							//							nickPlayer.put(lega.toUpperCase() + "-" + squadra,squadra + " @ " + map.get("pos") + " @ " + map.get("punti"));
 							nuoviNomi.put(squadra, squadra + "@ " + map.get("pos") + " @ " + map.get("punti"));
 						}
 					}
@@ -1672,7 +1670,7 @@ public class Main {
 					|| (lega.equalsIgnoreCase(aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) && 
 							giocRealFantacomix21.contains(giocatore))){
 				ret.put(link,squadra);
-				
+
 			}
 		}
 		return ret;
@@ -1706,7 +1704,7 @@ public class Main {
 		cookie.setDomain("www.fanta.soccer");
 		cookie.setPath("/");
 		cookieStore.addCookie(cookie);
-//		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+		//		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
 		CloseableHttpClient httpclient = getHttpClient(cookieStore);
 		try {
 			for (int i=0;i<4;i++) {
@@ -1939,13 +1937,13 @@ public class Main {
 			Map<String, List<String>> headerFields = connectionHTTP.getHeaderFields();
 			ret.put("headerFields", headerFields);
 			BufferedReader in;
-			 if ("gzip".equals(connectionHTTP.getContentEncoding())) {
-	                // Se la risposta è gzip compressa, decodificala
-	                in = new BufferedReader(new InputStreamReader(new GZIPInputStream(connectionHTTP.getInputStream())));
-	            } else {
-	                // Altrimenti, leggi la risposta senza decompressione
-	                in = new BufferedReader(new InputStreamReader(connectionHTTP.getInputStream()));
-	            }			
+			if ("gzip".equals(connectionHTTP.getContentEncoding())) {
+				// Se la risposta è gzip compressa, decodificala
+				in = new BufferedReader(new InputStreamReader(new GZIPInputStream(connectionHTTP.getInputStream())));
+			} else {
+				// Altrimenti, leggi la risposta senza decompressione
+				in = new BufferedReader(new InputStreamReader(connectionHTTP.getInputStream()));
+			}			
 			String inputLine;
 			while ((inputLine = in.readLine()) != null) {
 				response.append(inputLine);
@@ -2628,7 +2626,7 @@ public class Main {
 			if (ret.get(Constant.Campionati.REALFANTACOMIX21.name()).getSquadre().size()>0) {
 				upsertSalva(Constant.FORMAZIONE + Constant.Campionati.REALFANTACOMIX21.name(), toJson(ret.get(Constant.Campionati.REALFANTACOMIX21.name()).getSquadre()));
 			}
-			*/
+			 */
 			if (ret.get(Constant.Campionati.BE.name()).getSquadre().size()>0) {
 				if (ret.get(Constant.Campionati.BE.name()).getSquadre().size() <Constant.NUM_SQUADRE_BE) throw new RuntimeException("Squadre mangiate. PostGo");
 				try {
@@ -2696,7 +2694,7 @@ public class Main {
 		for (Live live : lives) {
 			List<Map<String, Object>> giocatori = live.getGiocatori();
 			for (Map<String,Object> giocatore : giocatori) {
-//								System.out.println(giocatore.get("id") + "-" + giocatore.get("voto") + "-");
+				//								System.out.println(giocatore.get("id") + "-" + giocatore.get("voto") + "-");
 				if (giocatore.get("voto")!=null && Double.parseDouble(giocatore.get("voto").toString())==55) {
 					giocatore.put("voto", 0d);
 				}
@@ -2845,7 +2843,7 @@ public class Main {
 				Map<String, Object> newMap=new HashMap<>();
 				String nomeGiocatoreLive = constant.listaFG.get(Integer.parseInt(map.get("id").toString()));
 				if (nomeGiocatoreLive==null) {
-//					nomeGiocatoreLive=map.get("id").toString();
+					//					nomeGiocatoreLive=map.get("id").toString();
 					scarti.add(map);
 				}
 				else {
@@ -2880,7 +2878,7 @@ public class Main {
 					}
 				}
 			}
-//			logger.info(scarti);
+			//			logger.info(scarti);
 		}
 		catch (Exception e)
 		{
@@ -2988,29 +2986,29 @@ public class Main {
 				List<Integer> codEventi=new ArrayList<Integer>();
 				String ev="";
 				for (Integer eventoAtt : evento) {
-						String[] eventiAtt = eventi.get(eventoAtt);
-						if (eventiAtt==null) {
-							throw new RuntimeException("Evento non censito: " + eventoAtt + " per " + gg.get("nome"));
-						}
-						if (eventiAtt[5].equals("N")) continue;
-						if (eventiAtt==null) {
-							ev = ev + "?" + "   ";
-							modificatore=modificatore-1000;
-						}else {
-							ev = ev + eventiAtt[0] + "   ";
-							int pos=1;
-							if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.FANTAVIVA.name())) pos=1;
-							if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.LUCCICAR.name())) pos=2;
-							if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.BE.name())) pos=3;
-							if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.REALFANTACOMIX21.name())) pos=4;
-							modificatore=modificatore+Double.parseDouble(eventiAtt[pos]);
-						}
-						codEventi.add(eventoAtt);
+					String[] eventiAtt = eventi.get(eventoAtt);
+					if (eventiAtt==null) {
+						throw new RuntimeException("Evento non censito: " + eventoAtt + " per " + gg.get("nome"));
 					}
-					gg.put("eventodecodificato", ev);
-					gg.put("codEventi", codEventi);
-					gg.put("modificatore", modificatore);
+					if (eventiAtt[5].equals("N")) continue;
+					if (eventiAtt==null) {
+						ev = ev + "?" + "   ";
+						modificatore=modificatore-1000;
+					}else {
+						ev = ev + eventiAtt[0] + "   ";
+						int pos=1;
+						if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.FANTAVIVA.name())) pos=1;
+						if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.LUCCICAR.name())) pos=2;
+						if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.BE.name())) pos=3;
+						if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.REALFANTACOMIX21.name())) pos=4;
+						modificatore=modificatore+Double.parseDouble(eventiAtt[pos]);
+					}
+					codEventi.add(eventoAtt);
 				}
+				gg.put("eventodecodificato", ev);
+				gg.put("codEventi", codEventi);
+				gg.put("modificatore", modificatore);
+			}
 		}
 		for (Squadra squadra : squadre.get(campionato)) {
 			boolean isAmmonito=false;
@@ -3104,7 +3102,7 @@ public class Main {
 					if (nomeGiocatoreLive.toUpperCase().indexOf("ESUS")>-1 && giocatore.getNome().toUpperCase().indexOf("ESUS")>-1 && tipo.equalsIgnoreCase("FANTASERVICE")) {
 						System.out.println();
 					}
-					
+
 					if (tipo.equals("FANTAGAZZETTA") && 
 							giocatore.getId().equalsIgnoreCase(g.get("id").toString()
 									)
@@ -3118,7 +3116,7 @@ public class Main {
 							||
 							(tipo.equals("FANTASERVICE") && 
 									giocatore.getNome().concat(" ").substring(0,giocatore.getNome().concat(" ").lastIndexOf(" ")).replaceAll(" ", "").equalsIgnoreCase(nomeGiocatoreLive.replaceAll(" ", "")))
-							*/	
+							 */	
 							){
 						giocatore.setVoto(Double.parseDouble(votoLive));
 						giocatore.setEvento(eventodecodificato);
@@ -3142,7 +3140,7 @@ public class Main {
 		cookie.setDomain("www.fantacalcio.it");
 		cookie.setPath("/");
 		cookieStore.addCookie(cookie);
-//		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+		//		CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
 		CloseableHttpClient httpclient = getHttpClient(cookieStore);
 		try {
 			String uri = "https://www.fantacalcio.it/api/v1/Excel/prices/" + Constant.I_LIVE_FANTACALCIO + "/1";
@@ -3210,12 +3208,12 @@ public class Main {
 								}
 							}
 //							System.out.println(); 
-							*/
+							 */
 						}
 					}
 				}
 			}
-//			System.out.println();
+			//			System.out.println();
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.out);
@@ -3224,7 +3222,7 @@ public class Main {
 		finally {
 			httpclient.close();
 		}
-//		System.out.println(response);
+		//		System.out.println(response);
 		//	Map<String, Object> jsonToMap = Main.jsonToMap(responseBody);
 
 
@@ -3233,8 +3231,8 @@ public class Main {
 
 	}
 
-	
-	
+
+
 	private static List<Squadra> valorizzaSquadre(String nomefile, int numGiocatori, String tipo) throws Exception {
 		List<Squadra> squadre=new ArrayList<Squadra>();
 		squadre.addAll(deserializzaSquadraFG(nomefile));
@@ -3421,7 +3419,7 @@ public class Main {
 		else if (giocatore.getSquadra().equalsIgnoreCase("Ver") && giocatore.getNomeFS().equalsIgnoreCase("Terracciano")) giocatore.setNomeFSCambiato("Terracciano F.");
 		else  giocatore.setNomeFSCambiato(giocatore.getNomeFS());
 	}
-	
+
 	public static String cambiaNomi(String nomeG, String squadra) {
 		if (nomeG.equalsIgnoreCase("Fabian Ruiz .")) nomeG="Ruiz .";
 		else if (nomeG.equalsIgnoreCase("Leao R.")) nomeG="Rafael Leao ";
@@ -3518,11 +3516,11 @@ public class Main {
 		else if (nomeG.equalsIgnoreCase("Romero ."))  nomeG="Romero L. ";
 		else if (nomeG.equalsIgnoreCase("Svilar M.")) nomeG="Svillar .";
 
-		
+
 
 		return nomeG;
 	}
-	
+
 	private static Giocatore estraiGiocatoreFromFS(Document doc, int i, String dove, String ruolo, boolean conVoto) {
 
 		String string = "#MainContent_wuc_DettagliPartita1_rpt";
@@ -3537,12 +3535,12 @@ public class Main {
 				//				String squadra = first.childNodes().get(1).toString().substring(2,5);
 				String nomeG=text.substring(0,text.indexOf("(")-1);
 				nomeG=cambiaNomi(nomeG, squadra);
-				
-				
+
+
 				String[] splitTagFromHref = first.getElementsByAttribute("href").attr("href").split("/");
 				giocatore.setIdFs(splitTagFromHref[3]);
 				giocatore.setNomeFS(splitTagFromHref[5].replace("_", " "));
-				
+
 				/*
 				if (nomeG.contains("alvao")) {
 					System.out.println();
@@ -3751,7 +3749,7 @@ public class Main {
 		prepareStatement.setString(1, salva.getNome());
 		prepareStatement.setString(2, salva.getTesto());
 		try {
-		prepareStatement.execute();
+			prepareStatement.execute();
 		}
 		catch (Exception e) {
 			System.out.println(salva);
@@ -3793,16 +3791,18 @@ public class Main {
 			findOne.setTesto(testo);
 			putSalvaNoSprint(findOne);
 		} else {
-			Optional<Salva> findOne = salvaRepository.findById(nome);
-			Salva salva;
-			if (!findOne.isPresent()) {
-				salva = new Salva();
-				salva.setNome(nome);
-			} else {
-				salva = findOne.get();
+			if (false) { //FIXME
+				Optional<Salva> findOne = salvaRepository.findById(nome);
+				Salva salva;
+				if (!findOne.isPresent()) {
+					salva = new Salva();
+					salva.setNome(nome);
+				} else {
+					salva = findOne.get();
+				}
+				salva.setTesto(testo);
+				salvaRepository.save(salva);
 			}
-			salva.setTesto(testo);
-			salvaRepository.save(salva);
 		}
 	}
 	public static boolean esisteSalva(String nome) {
@@ -3870,9 +3870,9 @@ public class Main {
 			proiezioneFS("BE", nomePartitaSimulata);
 		} else
 		{
-				proiezioneFG = proiezioneFG(aliasCampionati.get(campionatoFG), squadreFG, sfideFG, squadraSimulata);
+			proiezioneFG = proiezioneFG(aliasCampionati.get(campionatoFG), squadreFG, sfideFG, squadraSimulata);
 		}
-		
+
 		List<Map<String, Object>> l=new ArrayList<>();
 		if (sfideFG != null) {
 			Map<String, Object> p = (Map<String, Object>) proiezioneFG.get("data");
@@ -3951,9 +3951,9 @@ public class Main {
 						sb.append("\n");
 						sb.append("Media votati: ");
 						sb.append(squadra.getMediaTitolari());
-//						sb.append("\n");
-//						sb.append("Ancora da giocare: ");
-//						sb.append(squadra.getContaSquadraTitolariNonGioca());
+						//						sb.append("\n");
+						//						sb.append("Ancora da giocare: ");
+						//						sb.append(squadra.getContaSquadraTitolariNonGioca());
 						sb.append("\n");
 						sb.append("Totale: ");
 						sb.append(squadra.getTotaleTitolari());
@@ -3964,9 +3964,9 @@ public class Main {
 						sb.append("Giocatori con voto: ");
 						sb.append(squadra.getContaRiserve());
 						sb.append(" (da giocare: " + squadra.getContaSquadraRiserveNonGioca() + ")");
-//						sb.append("\n");
-//						sb.append("Ancora da giocare: ");
-//						sb.append(squadra.getContaSquadraRiserveNonGioca());
+						//						sb.append("\n");
+						//						sb.append("Ancora da giocare: ");
+						//						sb.append(squadra.getContaSquadraRiserveNonGioca());
 						sb.append("\n\n");
 						sb.append("Proiezione --> <b><i>");
 						sb.append(totali.get(i));
@@ -4598,9 +4598,9 @@ public class Main {
 		.append("\n")
 		.append("Media votati: ")
 		.append(squadra.getMediaTitolari())
-//		.append("\n")
-//		.append("Ancora da giocare: ")
-//		.append(squadra.getContaSquadraTitolariNonGioca())
+		//		.append("\n")
+		//		.append("Ancora da giocare: ")
+		//		.append(squadra.getContaSquadraTitolariNonGioca())
 		.append("\n")
 		.append("Totale: ")
 		.append(squadra.getTotaleTitolari())
@@ -4611,9 +4611,9 @@ public class Main {
 		.append("Giocatori con voto: ")
 		.append(squadra.getContaRiserve())
 		.append(" (da giocare: " + squadra.getContaSquadraRiserveNonGioca() + ")")
-//		.append("\n")
-//		.append("Ancora da giocare: ")
-//		.append(squadra.getContaSquadraRiserveNonGioca())
+		//		.append("\n")
+		//		.append("Ancora da giocare: ")
+		//		.append(squadra.getContaSquadraRiserveNonGioca())
 		.append("\n\n");
 		if (conModificatori) {
 			sb.append("Cambi simulati: ")
@@ -4771,9 +4771,9 @@ public class Main {
 		calcolaModificatoreAttacco(squadra1);
 		calcolaModificatoreAttacco(squadra2);
 
-//		System.out.println(squadra1.dettCalcoli(true, calcolaModificatoreCentrocampo[0]));
-//		System.out.println(squadra2.dettCalcoli(false, calcolaModificatoreCentrocampo[1]));
-		
+		//		System.out.println(squadra1.dettCalcoli(true, calcolaModificatoreCentrocampo[0]));
+		//		System.out.println(squadra2.dettCalcoli(false, calcolaModificatoreCentrocampo[1]));
+
 		int iGolCasa = getGol(squadra1.getTotale()+Constant.ICASA);
 		int iGolTrasferta = getGol(squadra2.getTotale());
 		if (iGolCasa > 0 && iGolCasa == iGolTrasferta && ( Math.abs(squadra1.getTotale() +Constant.ICASA - squadra2.getTotale()) >= 4))//FIXME BUG
