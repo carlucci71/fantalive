@@ -205,7 +205,7 @@ public class MyController {
 		}
 		return ret;
 	}
-	@Scheduled(fixedRate = 10000)
+	@Scheduled(fixedRate = 1000)
 	public void chckNotifica() throws Exception {
 		if (constant.ABILITA_REFRESH) {
 	
