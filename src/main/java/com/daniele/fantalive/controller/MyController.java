@@ -2,6 +2,7 @@ package com.daniele.fantalive.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -209,8 +210,11 @@ public class MyController {
 		if (constant.ABILITA_REFRESH) {
 	
 			Main.timeRefresh = (int) Main.toSocket.get("timeRefresh");
+			System.out.println(Instant.now() + " " +  Main.timeRefresh);
 			if (Main.timeRefresh==Constant.SCHEDULED_SNAP) {
+				System.out.println(Instant.now() + " " +  "PRIMA DI SNAPSHOT");
 				Main.snapshot(true);
+				System.out.println(Instant.now() + " " +  "DOPO SNAPSHOT");
 			}
 			Main.timeRefresh=Main.timeRefresh+5000;
 			Main.toSocket.put("timeRefresh", Main.timeRefresh);
