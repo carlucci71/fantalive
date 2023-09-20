@@ -624,7 +624,7 @@ public class Main {
 		System.out.println("*******************MEMORY used: " + used_mem + " free:" + free_mem + " total: " + total_mem);
 		 */
 
-		System.out.println("SNAP");
+//		System.out.println("SNAP");
 		
 		timeRefresh=0;
 		Calendar c = Calendar.getInstance();
