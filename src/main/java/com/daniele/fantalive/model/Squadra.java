@@ -273,7 +273,6 @@ public Squadra clonaSquadra () throws Exception {
 	Squadra squadra = new Squadra();
 	Field[] fields = this.getClass().getDeclaredFields();
 	for (Field field : fields) {
-		System.out.println(field.getName());
 		Method methodGet = squadra.getClass().getMethod((field.getType().equals(Boolean.class)?"is":"get") + field.getName().substring(0,1).toUpperCase() + field.getName().substring(1));
 		Method methodPut = squadra.getClass().getMethod("set" + field.getName().substring(0,1).toUpperCase() + field.getName().substring(1), field.getType());
 //		System.out.println(methodGet.invoke(this));
