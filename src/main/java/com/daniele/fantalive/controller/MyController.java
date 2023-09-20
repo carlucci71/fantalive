@@ -205,16 +205,13 @@ public class MyController {
 		}
 		return ret;
 	}
-	@Scheduled(fixedRate = 10000)
+	@Scheduled(fixedRate = 5000)
 	public void chckNotifica() throws Exception {
 		if (constant.ABILITA_REFRESH) {
 	
 			Main.timeRefresh = (int) Main.toSocket.get("timeRefresh");
-			System.out.println(Instant.now() + " " +  Main.timeRefresh);
 			if (Main.timeRefresh==Constant.SCHEDULED_SNAP) {
-				System.out.println(Instant.now() + " " +  "PRIMA DI SNAPSHOT");
 				Main.snapshot(true);
-				System.out.println(Instant.now() + " " +  "DOPO SNAPSHOT");
 			}
 			Main.timeRefresh=Main.timeRefresh+5000;
 			Main.toSocket.put("timeRefresh", Main.timeRefresh);

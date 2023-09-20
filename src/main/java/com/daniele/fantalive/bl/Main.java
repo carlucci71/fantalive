@@ -615,13 +615,14 @@ public class Main {
 	}
 
 	public static void snapshot(boolean salva) throws Exception {
+		/*
 		System.gc();
 		Runtime rt = Runtime.getRuntime();
 		long total_mem = rt.totalMemory();
 		long free_mem = rt.freeMemory();
 		long used_mem = total_mem - free_mem;
 		System.out.println("*******************MEMORY used: " + used_mem + " free:" + free_mem + " total: " + total_mem);
-
+		 */
 
 		timeRefresh=0;
 		Calendar c = Calendar.getInstance();
