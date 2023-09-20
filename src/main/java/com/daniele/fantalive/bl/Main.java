@@ -3103,7 +3103,7 @@ public class Main {
 					String votoLive=g.get("voto").toString();
 					List<Integer> eventoLive=(List<Integer>) g.get("bm");
 					if (nomeGiocatoreLive.toUpperCase().indexOf("ESUS")>-1 && giocatore.getNome().toUpperCase().indexOf("ESUS")>-1 && tipo.equalsIgnoreCase("FANTASERVICE")) {
-						System.out.println();
+						//System.out.println();
 					}
 
 					if (tipo.equals("FANTAGAZZETTA") && 
