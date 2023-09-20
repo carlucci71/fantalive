@@ -3636,7 +3636,7 @@ public class Main {
 		try
 		{
 			byte[] data = mapper.writeValueAsBytes(o);
-			return new String(data, Charsets.ISO_8859_1);
+			return new String(data, Charsets.UTF_8);
 		} catch (JsonProcessingException e)
 		{
 			throw new RuntimeException(e);
@@ -3791,18 +3791,16 @@ public class Main {
 			findOne.setTesto(testo);
 			putSalvaNoSprint(findOne);
 		} else {
-			if (false) { //FIXME
-				Optional<Salva> findOne = salvaRepository.findById(nome);
-				Salva salva;
-				if (!findOne.isPresent()) {
-					salva = new Salva();
-					salva.setNome(nome);
-				} else {
-					salva = findOne.get();
-				}
-				salva.setTesto(testo);
-				salvaRepository.save(salva);
+			Optional<Salva> findOne = salvaRepository.findById(nome);
+			Salva salva;
+			if (!findOne.isPresent()) {
+				salva = new Salva();
+				salva.setNome(nome);
+			} else {
+				salva = findOne.get();
 			}
+			salva.setTesto(testo);
+			salvaRepository.save(salva);
 		}
 	}
 	public static boolean esisteSalva(String nome) {
