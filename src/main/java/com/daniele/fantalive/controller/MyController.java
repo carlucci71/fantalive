@@ -57,7 +57,7 @@ public class MyController {
     @Value("${server.port}")
     String serverport;
 
-    @Value("${ip:}")
+    @Value("${IP:}")
     String ip;
     
 	@PostConstruct
