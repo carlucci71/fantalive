@@ -438,6 +438,7 @@ switchkeepalive - switch keep alive
 
 		if (chatId == Constant.CHAT_ID_FANTALIVE) {
 			messaggio = messaggio + "\n\n<i>" + CHI + " " + Main.MIO_IP + "</i>";
+			messaggio = messaggio + "\n\n<i>" + Main.getUrlNotifica() + "</i>";
 		}
 		
 		sendMessage.setText(messaggio);
