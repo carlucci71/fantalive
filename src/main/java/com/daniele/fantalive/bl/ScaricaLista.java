@@ -173,7 +173,7 @@ public class ScaricaLista {
 		Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
 		Method method = cl.getDeclaredMethod("constant");
 		constant = (Constant) method.invoke(constant);		
-		Main.init(null,null,constant, false);
+		Main.init(null,null,constant, false, "8080", null);
 		Main.aggKeyFG();
 		Map bodyMap = new HashMap<>();
 		bodyMap.put("username", constant.UTENTE_FG);

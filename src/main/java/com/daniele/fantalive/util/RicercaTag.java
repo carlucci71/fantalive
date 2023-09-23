@@ -7,7 +7,7 @@ import com.daniele.fantalive.bl.Main;
 
 public class RicercaTag {
 	public static void main(String[] args) throws Exception {
-		Main.init(null,null,null, false);
+		Main.init(null,null,null, false, "8080", null);
 		for (int i=1;i<2222;i++) {
 			try {
 				String http = (String) Main.callHTTP("GET", "application/json; charset=UTF-8",String.format(Constant.URL_API_GAZZETTA, i), null).get("response");

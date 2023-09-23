@@ -171,7 +171,7 @@ live - risultati live ultima giornata
 		catch (Exception e) {
 			e.printStackTrace(System.out);
 		}
-		Main.init(null,null,c, false);
+		Main.init(null,null,c, false, "8080", null);
 		String testoCallback = (String) Main.getOldSnapPartite(true).get("testo");
 		System.out.println(testoCallback);
 		System.err.println("FINE");
@@ -182,7 +182,6 @@ live - risultati live ultima giornata
 		risultatiConRitardoBOT = new RisultatiConRitardoBOT();
 		registerBot=telegramBotsApi.registerBot(risultatiConRitardoBOT);
 		CHI=chi;
-		Main.MIO_IP = InetAddress.getLocalHost().getHostAddress();
 		return risultatiConRitardoBOT;
 	}
 	public void inviaMessaggio(long chatId,String msg) throws TelegramApiException {

@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -114,6 +115,7 @@ import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 
 public class Main {
 
+	static String serverPort;
 	public static Map<String,Object> toSocket;
 	public static String MIO_IP;
 	public static FantaLiveBOT fantaLiveBot;
@@ -152,10 +154,15 @@ public class Main {
 
 
 
-	public static void init(SalvaRepository salvaRepositorySpring, SocketHandlerFantalive socketHandlerSpring, Constant constantSpring, boolean valorizzaBMFG) throws Exception {
+	public static void init(SalvaRepository salvaRepositorySpring, SocketHandlerFantalive socketHandlerSpring, Constant constantSpring, boolean valorizzaBMFG, String port, String ip) throws Exception {
 		if (Constant.disableCertificateValidation) {
 			disabilitaControlloCertificati();
 		}
+		Main.MIO_IP = InetAddress.getLocalHost().getHostAddress();
+		if (!ip.equals("")) {
+			Main.MIO_IP = ip;
+		}
+		serverPort=port;
 		executor = Executors.newSingleThreadScheduledExecutor();	
 		salvaRepository=salvaRepositorySpring;
 		socketHandlerFantalive=socketHandlerSpring;
@@ -842,7 +849,9 @@ public class Main {
 		//		System.out.println("FINE SNAPSHOT");
 	}
 
+	
 	public static String getUrlNotifica() {
+		/*
 		if (MIO_IP == null) return "";
 		if (MIO_IP.equals("192.168.1.83")) {
 			return "http://" + MIO_IP + Constant.URL_NOTIFICA_NAS;
@@ -851,6 +860,8 @@ public class Main {
 			return "http://" + MIO_IP + ":8090/";
 		else
 			return Constant.URL_NOTIFICA_HEROKU;
+			*/
+		return "http://" + MIO_IP + ":" + serverPort + "/fantalive/index.html";
 	}
 
 
@@ -859,7 +870,7 @@ public class Main {
 		ctx = new SpringApplicationBuilder(MainClass.class)
 				.profiles("DEV")
 				.web(WebApplicationType.NONE).run(args);
-		Main.init(ctx.getBean(SalvaRepository.class),null,ctx.getBean(Constant.class), false);
+		Main.init(ctx.getBean(SalvaRepository.class),null,ctx.getBean(Constant.class), false, "8080", null);
 		/*******/
 		//....
 		/*******/
@@ -872,7 +883,7 @@ public class Main {
 		Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
-		init(null, null, c, false);
+		init(null, null, c, false, "8080", null);
 		//		Map<Integer, Float> votiAlvin = getVotiAlvin(24);
 		//		System.out.println(votiAlvin);
 		//		System.out.println(getVotiFS(24, false));

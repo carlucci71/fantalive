@@ -2,7 +2,6 @@ package com.daniele.fantalive.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -18,10 +17,9 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpSession;
 
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,9 +53,16 @@ public class MyController {
 	@Autowired SocketHandlerFantalive socketHandlerFantalive;
 	@Autowired SalvaRepository salvaRepository;
 
+	
+    @Value("${server.port}")
+    String serverport;
+
+    @Value("${ip:}")
+    String ip;
+    
 	@PostConstruct
 	private void post() throws Exception {
-		Main.init(salvaRepository,socketHandlerFantalive,constant, true);
+		Main.init(salvaRepository,socketHandlerFantalive,constant, true, serverport, ip);
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 			Main.fantaCronacaLiveBot = FantaCronacaLiveBOT.inizializza("WEBAPP");

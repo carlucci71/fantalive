@@ -73,7 +73,6 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 		fantaCronacaLiveBOT = new FantaCronacaLiveBOT();
 		registerBot=telegramBotsApi.registerBot(fantaCronacaLiveBOT);
 		CHI=chi;
-		Main.MIO_IP = InetAddress.getLocalHost().getHostAddress();
 		return fantaCronacaLiveBOT;
 	}
 	public void inviaMessaggio(long chatId,String msg) throws TelegramApiException {

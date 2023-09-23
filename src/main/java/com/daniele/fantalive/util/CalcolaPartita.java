@@ -186,7 +186,7 @@ public class CalcolaPartita {
 			ctx = new SpringApplicationBuilder(MainClass.class)
 					.profiles("DEV")
 					.web(WebApplicationType.NONE).run(args);
-			Main.init(ctx.getBean(SalvaRepository.class),null,ctx.getBean(Constant.class), false);
+			Main.init(ctx.getBean(SalvaRepository.class),null,ctx.getBean(Constant.class), false, "8080", null);
 			if (false) {
 				if (Main.fantaLiveBot.isRunning()) {
 					Main.fantaLiveBot.stopBot();
@@ -198,7 +198,7 @@ public class CalcolaPartita {
 			Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
 			Method method = cl.getDeclaredMethod("constant");
 			c = (Constant) method.invoke(c);		
-			Main.init(null,null,c, false);
+			Main.init(null,null,c, false, "8080", null);
 		}
 
 		HashSet<String> hsPartiteCoppaItalia=new HashSet<>();

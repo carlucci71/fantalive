@@ -224,7 +224,7 @@ switchkeepalive - switch keep alive
 		Method method = cl.getDeclaredMethod("constant");
 		c = (Constant) method.invoke(c);		
 		
-		Main.init(null,null,c, false);
+		Main.init(null,null,c, false, "8080", null);
 		FantaLiveBOT bot = inizializza("MAIN");
 		
 		try {
@@ -241,7 +241,6 @@ switchkeepalive - switch keep alive
 		fantaLiveBOT = new FantaLiveBOT();
 		registerBot=telegramBotsApi.registerBot(fantaLiveBOT);
 		CHI=chi;
-		Main.MIO_IP = InetAddress.getLocalHost().getHostAddress();
 		return fantaLiveBOT;
 	}
 
