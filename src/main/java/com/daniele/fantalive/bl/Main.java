@@ -159,7 +159,7 @@ public class Main {
 			disabilitaControlloCertificati();
 		}
 		Main.MIO_IP = InetAddress.getLocalHost().getHostAddress();
-		if (!ip.equals("")) {
+		if (ip != null && !ip.equals("")) {
 			Main.MIO_IP = ip;
 		}
 		serverPort=port;
