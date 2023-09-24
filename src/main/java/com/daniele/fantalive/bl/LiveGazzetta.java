@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.daniele.fantalive.util.Constant;
+import com.daniele.fantalive.util.ConstantProtetto;
 
 public class LiveGazzetta {
 	public static void main(String[] args) throws Exception {
-		Constant constant=null;
-		Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantDevelop");
-		Method method = cl.getDeclaredMethod("constant");
-		constant = (Constant) method.invoke(constant);		
+		Constant constant=ConstantProtetto.constant();
+//		Class<?> cl = Class.forName("com.daniele.fantalive.util.ConstantProtetto");
+//		Method method = cl.getDeclaredMethod("constant");
+//		constant = (Constant) method.invoke(constant);		
 		Main.init(null,null,constant, false, "8080", null);
 		Map<String, Map<String, Object>> snapPartite=new LinkedHashMap();
 		Map<String, Object> jsonToMap;
