@@ -1820,6 +1820,7 @@ public class Main {
 					Instant instantLetto = instantLetti.get(sqCasa);
 					if (instantLetto==null || timeStampOpta.isAfter(instantLetto)) {
 						instantLetto=timeStampOpta;
+						instantLetti.put(sqCasa,instantLetto);
 						System.out.println("instantLetto" + " -> " + instantLetto.atZone(zoneId).format(formatter));
 					} else {
 						System.out.println("CONTINUE");
