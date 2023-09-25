@@ -1802,9 +1802,20 @@ public class Main {
 }		 */
 		jsonToMap = jsonToMap(callHTTP);
 		List<Map> l = (List<Map>) ((Map)jsonToMap.get("data")).get("games");
+        ZoneId zoneId = ZoneId.of("Europe/Rome");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(zoneId);
+        Instant instantLetto=Instant.now();
 		for (Map map : l) {
 			List<Map> lm = (List<Map>) map.get("matches");
 			for (Map map2 : lm) {
+				System.out.println("timeStampOpta" + " -> " + Instant.parse(map2.get("timeStampOpta").toString()).atZone(zoneId).format(formatter));
+				Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
+				if (timeStampOpta.isAfter(instantLetto)) {
+					instantLetto=timeStampOpta;
+				} else {
+					continue;
+				}
+				System.out.println("instantLetto" + " -> " + instantLetto.atZone(zoneId).format(formatter));
 				Map awayTeam = (Map)map2.get("awayTeam");
 				Map homeTeam = (Map)map2.get("homeTeam");
 				String sqFuori = ((String)awayTeam.get("teamCode")).toUpperCase();
