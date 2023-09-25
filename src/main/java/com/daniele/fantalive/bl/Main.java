@@ -1820,8 +1820,7 @@ public class Main {
 					Instant instantLetto = instantLetti.get(sqCasa);
 					if (instantLetto==null) {
 						System.out.println("NULL");
-					}
-					if (timeStampOpta.isAfter(instantLetto)) {
+					} else  if (timeStampOpta.isAfter(instantLetto)) {
 						System.out.println(timeStampOpta + " <-> " + instantLetto);
 					}
 					if (instantLetto==null || timeStampOpta.isAfter(instantLetto)) {
