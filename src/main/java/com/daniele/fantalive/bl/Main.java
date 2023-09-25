@@ -1808,6 +1808,7 @@ public class Main {
 		for (Map map : l) {
 			List<Map> lm = (List<Map>) map.get("matches");
 			for (Map map2 : lm) {
+				System.out.println(map2);
 				System.out.println("timeStampOpta" + " -> " + Instant.parse(map2.get("timeStampOpta").toString()).atZone(zoneId).format(formatter));
 				Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
 				if (timeStampOpta.isAfter(instantLetto)) {
