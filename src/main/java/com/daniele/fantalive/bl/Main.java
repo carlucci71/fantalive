@@ -1815,7 +1815,6 @@ public class Main {
 				if (sqFuori.equals("MONZ")) sqFuori="MON";
 				if (sqCasa.equals("MONZ")) sqCasa="MON";
 
-				System.out.println(map2);
 				if (map2.get("timeStampOpta") != null) {
 					Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
 					Instant instantLetto = instantLetti.get(sqCasa);
