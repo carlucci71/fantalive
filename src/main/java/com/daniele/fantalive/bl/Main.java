@@ -1818,6 +1818,12 @@ public class Main {
 				if (map2.get("timeStampOpta") != null) {
 					Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
 					Instant instantLetto = instantLetti.get(sqCasa);
+					if (instantLetto==null) {
+						System.out.println("NULL");
+					}
+					if (timeStampOpta.isAfter(instantLetto)) {
+						System.out.println(timeStampOpta + " <-> " + instantLetto);
+					}
 					if (instantLetto==null || timeStampOpta.isAfter(instantLetto)) {
 						instantLetto=timeStampOpta;
 						instantLetti.put(sqCasa,instantLetto);
