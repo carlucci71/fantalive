@@ -1825,7 +1825,7 @@ public class Main {
 					}
 					if (instantLetto==null || timeStampOpta.isAfter(instantLetto)) {
 						instantLetto=timeStampOpta;
-						instantLetti.put(sqCasa,instantLetto);
+						instantLetti.put(sqCasa,timeStampOpta);
 						System.out.println("instantLetto" + " -> " + instantLetto.atZone(zoneId).format(formatter));
 					} else {
 						System.out.println("CONTINUE");
