@@ -1817,7 +1817,6 @@ public class Main {
 
 				System.out.println(map2);
 				if (map2.get("timeStampOpta") != null) {
-					System.out.println("timeStampOpta" + " -> " + Instant.parse(map2.get("timeStampOpta").toString()).atZone(zoneId).format(formatter));
 					Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
 					Instant instantLetto = instantLetti.get(sqCasa);
 					if (instantLetto==null || timeStampOpta.isAfter(instantLetto)) {
