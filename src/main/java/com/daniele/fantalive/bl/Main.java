@@ -1899,6 +1899,7 @@ public class Main {
 				snapPartite.put(key, partite);
 			}
 		}
+		System.out.println(instantLetti);
 		return snapPartite;
 	}
 
