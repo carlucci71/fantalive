@@ -1748,6 +1748,7 @@ public class Main {
 	}
 
 	private static Map<String, Map<String, Object>> oldSnapPartite=new LinkedHashMap();
+    public static Map<String, Instant> instantLetti=new HashMap<>();
 
 	private static Map<String, Map<String, Object>> partiteLive() throws Exception {
 		Map<String, Map<String, Object>> snapPartite=new LinkedHashMap();
@@ -1805,7 +1806,6 @@ public class Main {
 		List<Map> l = (List<Map>) ((Map)jsonToMap.get("data")).get("games");
         ZoneId zoneId = ZoneId.of("Europe/Rome");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(zoneId);
-        Map<String, Instant> instantLetti=new HashMap<>();
 		for (Map map : l) {
 			List<Map> lm = (List<Map>) map.get("matches");
 			for (Map map2 : lm) {
