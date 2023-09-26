@@ -1819,17 +1819,20 @@ public class Main {
 				if (map2.get("timeStampOpta") != null) {
 					Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
 					Instant instantLetto = instantLetti.get(sqCasa);
-					System.out.println("1->" + instantLetto.atZone(zoneId).format(formatter));
+					if (instantLetto==null) {
+						System.out.println("1->" + null);
+					} else {
+						System.out.println("1->" + instantLetto.atZone(zoneId).format(formatter));
+					}
 					Instant instantVecchio = Instant.now().atZone(zoneId).toLocalDateTime().minus(1, ChronoUnit.YEARS).atZone(ZoneId.systemDefault()).toInstant();
 					if (instantLetto==null) {
-						System.out.println("2->" + instantLetto.atZone(zoneId).format(formatter));
 						instantLetto = instantVecchio;
-						System.out.println("3->" + instantLetto.atZone(zoneId).format(formatter));
+						System.out.println("2->" + instantLetto.atZone(zoneId).format(formatter));
 					} 
 					if (timeStampOpta==null) {
-						System.out.println("4->" + instantLetto.atZone(zoneId).format(formatter));
+						System.out.println("3->" + instantLetto.atZone(zoneId).format(formatter));
 						timeStampOpta = instantVecchio;
-						System.out.println("5->" + instantLetto.atZone(zoneId).format(formatter));
+						System.out.println("4->" + instantLetto.atZone(zoneId).format(formatter));
 					} 
 
 					System.out.println("instantLetto" + " -> " + instantLetto.atZone(zoneId).format(formatter));
