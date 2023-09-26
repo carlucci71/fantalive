@@ -1846,6 +1846,7 @@ public class Main {
 					}
 				}
 				
+				System.out.println(map2);
 				
 				Map<String, Object> partite = new LinkedHashMap();
 				Map timing = (Map)map2.get("timing");
