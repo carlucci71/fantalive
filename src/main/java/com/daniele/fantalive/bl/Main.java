@@ -1819,7 +1819,7 @@ public class Main {
 				if (map2.get("timeStampOpta") != null) {
 					Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
 					Instant instantLetto = instantLetti.get(sqCasa);
-					Instant instantVecchio = Instant.now().minus(1, ChronoUnit.YEARS);
+					Instant instantVecchio = Instant.now().atZone(zoneId).toLocalDateTime().minus(1, ChronoUnit.YEARS).atZone(ZoneId.systemDefault()).toInstant();
 					if (instantLetto==null) {
 						instantLetto = instantVecchio;
 					} 
