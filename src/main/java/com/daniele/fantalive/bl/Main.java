@@ -1821,6 +1821,7 @@ public class Main {
 				if (sqCasa.equals("TNO")) sqCasa="TOR";
 				
 
+				System.out.println(sqCasa);
 				if (map2.get("timeStampOpta") != null) {
 					Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
 					Instant instantLetto = instantLetti.get(sqCasa);
@@ -1839,7 +1840,8 @@ public class Main {
 						timeStampOpta = instantVecchio.plusSeconds(1);
 //						System.out.println("4->" + instantLetto.atZone(zoneId).format(formatter));
 					} 
-
+					
+					System.out.println("*********");
 					System.out.println("instantLetto" + " -> " + instantLetto.atZone(zoneId).format(formatter));
 					System.out.println("timeStampOpta" + " -> " + timeStampOpta.atZone(zoneId).format(formatter));
 					if (instantLetto.isBefore(timeStampOpta)) {
@@ -1849,7 +1851,10 @@ public class Main {
 						System.out.println("IGNORE");
 						continue;
 					}
+				} else {
+					System.out.println("timeStampOpta NULL");
 				}
+				System.out.println("*********");
 				
 				Map<String, Object> partite = new LinkedHashMap();
 				Map timing = (Map)map2.get("timing");
