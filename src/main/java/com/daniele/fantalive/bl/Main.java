@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
@@ -1818,18 +1819,22 @@ public class Main {
 				if (map2.get("timeStampOpta") != null) {
 					Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
 					Instant instantLetto = instantLetti.get(sqCasa);
+					Instant instantVecchio = Instant.now().minus(1, ChronoUnit.YEARS);
 					if (instantLetto==null) {
-						System.out.println("NULL");
-					} else  if (timeStampOpta.isAfter(instantLetto)) {
-						System.out.println(timeStampOpta + " <-> " + instantLetto);
-					}
-					if (instantLetto==null || timeStampOpta.isAfter(instantLetto)) {
-						instantLetto=timeStampOpta;
-						instantLetti.put(sqCasa,timeStampOpta);
-						System.out.println("instantLetto" + " -> " + instantLetto.atZone(zoneId).format(formatter));
-					} else {
-						System.out.println("CONTINUE");
+						instantLetto = instantVecchio;
+					} 
+					if (timeStampOpta==null) {
+						timeStampOpta = instantVecchio;
+					} 
+
+					System.out.println("instantLetto" + " -> " + instantLetto.atZone(zoneId).format(formatter));
+					System.out.println("timeStampOpta" + " -> " + timeStampOpta.atZone(zoneId).format(formatter));
+					if (timeStampOpta.isBefore(instantLetto)) {
+						System.out.println("IGNORE");
 						continue;
+					} else {
+						System.out.println("AGGIORNO");
+						instantLetti.put(sqCasa,timeStampOpta);
 					}
 				}
 				
