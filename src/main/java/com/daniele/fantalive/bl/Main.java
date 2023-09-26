@@ -2598,6 +2598,7 @@ public class Main {
 		if (conLive) {
 			Map<String, Object> getLives = getLives(constant.LIVE_FROM_FILE);
 			lives = (List<Live>) getLives.get("lives");
+			System.out.println(lives);
 			orari = (Map<String, Map<String, String>>) getLives.get("orari");
 
 		}
