@@ -1831,7 +1831,7 @@ public class Main {
 					} 
 					if (timeStampOpta==null) {
 						System.out.println("3->" + instantLetto.atZone(zoneId).format(formatter));
-						timeStampOpta = instantVecchio;
+						timeStampOpta = instantVecchio.plusSeconds(1);
 						System.out.println("4->" + instantLetto.atZone(zoneId).format(formatter));
 					} 
 
