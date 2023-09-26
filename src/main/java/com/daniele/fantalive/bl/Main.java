@@ -1815,6 +1815,11 @@ public class Main {
 				String sqCasa = ((String)homeTeam.get("teamCode")).toUpperCase();
 				if (sqFuori.equals("MONZ")) sqFuori="MON";
 				if (sqCasa.equals("MONZ")) sqCasa="MON";
+				if (sqFuori.equals("RMA")) sqFuori="ROM";
+				if (sqCasa.equals("RMA")) sqCasa="ROM";
+				if (sqFuori.equals("TNO")) sqFuori="TOR";
+				if (sqCasa.equals("TNO")) sqCasa="TOR";
+				
 
 				if (map2.get("timeStampOpta") != null) {
 					Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
@@ -2705,16 +2710,6 @@ public class Main {
 			lives=recuperaLives();
 		}
 		Map<String, Map<String, String>> orari=new HashMap<>();
-		
-		System.out.println("****************");
-		System.out.println("****************");
-		System.out.println("****************");
-		System.out.println(snapPartite);
-		System.out.println("****************");
-		System.out.println("****************");
-		System.out.println("****************");
-		
-		
 		for (String kkk : snapPartite.keySet()) {
 			Map<String, Object> partita = snapPartite.get(kkk);
 			String tag = "";
