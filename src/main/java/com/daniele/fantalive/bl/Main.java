@@ -1837,7 +1837,7 @@ public class Main {
 
 					System.out.println("instantLetto" + " -> " + instantLetto.atZone(zoneId).format(formatter));
 					System.out.println("timeStampOpta" + " -> " + timeStampOpta.atZone(zoneId).format(formatter));
-					if (instantLetto.isAfter(timeStampOpta)) {
+					if (instantLetto.isBefore(timeStampOpta)) {
 						System.out.println("AGGIORNO");
 						instantLetti.put(sqCasa,timeStampOpta);
 					} else {
