@@ -2598,7 +2598,6 @@ public class Main {
 		if (conLive) {
 			Map<String, Object> getLives = getLives(constant.LIVE_FROM_FILE);
 			lives = (List<Live>) getLives.get("lives");
-			System.out.println(lives);
 			orari = (Map<String, Map<String, String>>) getLives.get("orari");
 
 		}
@@ -2706,6 +2705,16 @@ public class Main {
 			lives=recuperaLives();
 		}
 		Map<String, Map<String, String>> orari=new HashMap<>();
+		
+		System.out.println("****************");
+		System.out.println("****************");
+		System.out.println("****************");
+		System.out.println(snapPartite);
+		System.out.println("****************");
+		System.out.println("****************");
+		System.out.println("****************");
+		
+		
 		for (String kkk : snapPartite.keySet()) {
 			Map<String, Object> partita = snapPartite.get(kkk);
 			String tag = "";
