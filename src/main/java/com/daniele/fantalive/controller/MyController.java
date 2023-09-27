@@ -703,7 +703,7 @@ public class MyController {
 		constant.GIORNATA=(Integer)body.get("giornata");
 		Main.oldSnapLives=null;
 		Main.oldSnapOrari=null;
-		Main.instantLetti=new HashMap<>();
+		Main.instantUsati=new HashMap<>();
 		Main.sqStatusMatch=new HashMap<>();
 
 		return ret;

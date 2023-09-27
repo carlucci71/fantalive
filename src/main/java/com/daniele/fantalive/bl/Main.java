@@ -1748,7 +1748,7 @@ public class Main {
 	}
 
 	private static Map<String, Map<String, Object>> oldSnapPartite=new LinkedHashMap();
-    public static Map<String, Instant> instantLetti=new HashMap<>();
+    public static Map<String, Instant> instantUsati=new HashMap<>();
 
 	private static Map<String, Map<String, Object>> partiteLive() throws Exception {
 		Map<String, Map<String, Object>> snapPartite=new LinkedHashMap();
@@ -1824,29 +1824,29 @@ public class Main {
 				System.out.print(sqCasa + ": ");
 				if (map2.get("timeStampOpta") != null) {
 					Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
-					Instant instantLetto = instantLetti.get(sqCasa);
-//					if (instantLetto==null) {
+					Instant instantUsato = instantUsati.get(sqCasa);
+//					if (instantUsato==null) {
 //						System.out.println("1->" + null);
 //					} else {
-//						System.out.println("1->" + instantLetto.atZone(zoneId).format(formatter));
+//						System.out.println("1->" + instantUsato.atZone(zoneId).format(formatter));
 //					}
 					Instant instantVecchio = Instant.now().atZone(zoneId).toLocalDateTime().minus(1, ChronoUnit.YEARS).atZone(ZoneId.systemDefault()).toInstant();
-					if (instantLetto==null) {
-						instantLetto = instantVecchio;
-//						System.out.println("2->" + instantLetto.atZone(zoneId).format(formatter));
+					if (instantUsato==null) {
+						instantUsato = instantVecchio;
+//						System.out.println("2->" + instantUsato.atZone(zoneId).format(formatter));
 					} 
 					if (timeStampOpta==null) {
-//						System.out.println("3->" + instantLetto.atZone(zoneId).format(formatter));
+//						System.out.println("3->" + instantUsato.atZone(zoneId).format(formatter));
 						timeStampOpta = instantVecchio.plusSeconds(1);
-//						System.out.println("4->" + instantLetto.atZone(zoneId).format(formatter));
+//						System.out.println("4->" + instantUsato.atZone(zoneId).format(formatter));
 					} 
 					
 					System.out.print("********* ");
-					System.out.print("instantLetto" + " -> " + instantLetto.atZone(zoneId).format(formatter) + "  ");
+					System.out.print("instantUsato" + " -> " + instantUsato.atZone(zoneId).format(formatter) + "  ");
 					System.out.print("timeStampOpta" + " -> " + timeStampOpta.atZone(zoneId).format(formatter) + "  ");
-					if (instantLetto.isBefore(timeStampOpta)) {
+					if (instantUsato.isBefore(timeStampOpta)) {
 						System.out.println("AGGIORNO");
-						instantLetti.put(sqCasa,timeStampOpta);
+						instantUsati.put(sqCasa,timeStampOpta);
 					} else {
 						System.out.println("IGNORE");
 						continue;
