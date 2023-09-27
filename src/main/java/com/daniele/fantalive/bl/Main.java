@@ -1821,7 +1821,7 @@ public class Main {
 				if (sqCasa.equals("TNO")) sqCasa="TOR";
 				
 
-				System.out.println(sqCasa);
+				System.out.print(sqCasa + ": ");
 				if (map2.get("timeStampOpta") != null) {
 					Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
 					Instant instantLetto = instantLetti.get(sqCasa);
@@ -1915,6 +1915,7 @@ public class Main {
 				snapPartite.put(key, partite);
 			}
 		}
+		System.out.println();
 		return snapPartite;
 	}
 
