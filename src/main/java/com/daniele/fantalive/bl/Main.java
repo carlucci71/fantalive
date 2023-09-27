@@ -1841,9 +1841,9 @@ public class Main {
 //						System.out.println("4->" + instantLetto.atZone(zoneId).format(formatter));
 					} 
 					
-					System.out.println("*********");
-					System.out.println("instantLetto" + " -> " + instantLetto.atZone(zoneId).format(formatter));
-					System.out.println("timeStampOpta" + " -> " + timeStampOpta.atZone(zoneId).format(formatter));
+					System.out.print("********* ");
+					System.out.print("instantLetto" + " -> " + instantLetto.atZone(zoneId).format(formatter) + "  ");
+					System.out.print("timeStampOpta" + " -> " + timeStampOpta.atZone(zoneId).format(formatter) + "  ");
 					if (instantLetto.isBefore(timeStampOpta)) {
 						System.out.println("AGGIORNO");
 						instantLetti.put(sqCasa,timeStampOpta);
@@ -1854,7 +1854,6 @@ public class Main {
 				} else {
 					System.out.println("timeStampOpta NULL");
 				}
-				System.out.println("*********");
 				
 				Map<String, Object> partite = new LinkedHashMap();
 				Map timing = (Map)map2.get("timing");
