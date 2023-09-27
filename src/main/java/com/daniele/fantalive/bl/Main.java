@@ -1749,6 +1749,7 @@ public class Main {
 
 	private static Map<String, Map<String, Object>> oldSnapPartite=new LinkedHashMap();
     public static Map<String, Instant> instantUsati=new HashMap<>();
+	private static Map<String, Map<String, Object>> cachedSnapPartite=new LinkedHashMap();
 
 	private static Map<String, Map<String, Object>> partiteLive() throws Exception {
 		Map<String, Map<String, Object>> snapPartite=new LinkedHashMap();
@@ -1819,12 +1820,13 @@ public class Main {
 				if (sqCasa.equals("RMA")) sqCasa="ROM";
 				if (sqFuori.equals("TNO")) sqFuori="TOR";
 				if (sqCasa.equals("TNO")) sqCasa="TOR";
+				String key = sqCasa + " vs " + sqFuori;
 				
 
-				System.out.print(sqCasa + ": ");
+				System.out.print(key + ": ");
 				if (map2.get("timeStampOpta") != null) {
 					Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
-					Instant instantUsato = instantUsati.get(sqCasa);
+					Instant instantUsato = instantUsati.get(key);
 //					if (instantUsato==null) {
 //						System.out.println("1->" + null);
 //					} else {
@@ -1846,9 +1848,10 @@ public class Main {
 					System.out.print("timeStampOpta" + " -> " + timeStampOpta.atZone(zoneId).format(formatter) + "  ");
 					if (instantUsato.isBefore(timeStampOpta)) {
 						System.out.println("AGGIORNO");
-						instantUsati.put(sqCasa,timeStampOpta);
+						instantUsati.put(key,timeStampOpta);
 					} else {
 						System.out.println("IGNORE");
+						snapPartite.put(key, cachedSnapPartite.get(key));
 						continue;
 					}
 				} else {
@@ -1911,11 +1914,10 @@ public class Main {
 				}
 				sq.put("RETI", reti);
 				partite.put(sqFuori, sq);
-				String key = sqCasa + " vs " + sqFuori;
 				snapPartite.put(key, partite);
+				cachedSnapPartite.put(key, partite);
 			}
 		}
-		System.out.println();
 		return snapPartite;
 	}
 
