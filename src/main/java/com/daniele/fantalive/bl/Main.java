@@ -1724,6 +1724,7 @@ public class Main {
 		try {
 			for (int i=0;i<4;i++) {
 				String uri = "https://www.fanta.soccer/it/lega/privata/" + Constant.COMP_FS + "/dettaglipartita/" + String.valueOf(gg-Constant.DELTA_FS) + "/" + String.valueOf(i + Constant.PRIMA_GIORNATA_FS + (Constant.NUM_PARTITE_FS*(gg-Constant.DELTA_FS-1))) + "/";
+				System.out.println(uri);
 				HttpGet httpget = new HttpGet(uri);
 				ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 					@Override
