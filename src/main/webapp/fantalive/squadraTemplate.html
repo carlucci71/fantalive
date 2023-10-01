@@ -2,7 +2,7 @@
 	<tr ng-repeat="giocatore in squadra.titolari | filtraGiocatore " ng-style="{'height':'30px','font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">
 		<td style="padding: 2px; widthX: 200px">{{giocatore.idGioc}}</td>
 		<td style="padding: 2px; widthX: 200px">{{giocatore.nome}}</td>
-		<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.squadra}}</td>
+		<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.partita}}</td>
 		<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.ruolo}}</td>
 		<td style="padding: 2px; widthX: 50px; text-align: center">{{getVoto(giocatore)}}</td>
 		<td style="padding: 2px; widthX: 200px; text-align: center">

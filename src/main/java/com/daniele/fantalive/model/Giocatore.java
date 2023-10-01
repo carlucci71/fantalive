@@ -11,6 +11,7 @@ public class Giocatore {
 	private List<String> modificatori=new ArrayList<String>();
 	private Map<String,String> orario=new HashMap<String,String>();
 	private String id;
+	private String partita;
 	private String ruolo;
 	private String nome;
 	private String nomeTrim;
@@ -238,5 +239,10 @@ public class Giocatore {
 	public void setNomeFSCambiato(String nomeFSCambiato) {
 		this.nomeFSCambiato = nomeFSCambiato;
 	}
-
+	public String getPartita() {
+		return partita;
+	}
+	public void setPartita(String partita) {
+		this.partita = partita;
+	}
 }

@@ -640,6 +640,7 @@ public class Main {
 		Map<String, Object> getLives = getLives(constant.LIVE_FROM_FILE);
 		List<Live> snapLives = (List<Live>) getLives.get("lives");
 		Map<String, Map<String, String>> snapOrari = (Map<String, Map<String, String>>) getLives.get("orari");
+		Map<String, Map<String, String>> snapPartite = (Map<String, Map<String, String>>) getLives.get("snapPartite");
 		String desMiniNotifica="";
 		if (oldSnapLives != null) {
 			desMiniNotifica= livesUguali(snapLives, snapOrari);
@@ -652,7 +653,7 @@ public class Main {
 		Calendar c2 = Calendar.getInstance();
 		//		System.out.println("GET LIVES:" + (c2.getTimeInMillis()-c.getTimeInMillis()));
 
-		Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari);
+		Map<String, Return> go = postGo(true, null, null,snapLives,snapOrari, snapPartite);
 		Iterator<String> campionati = go.keySet().iterator();
 		Map<String,Giocatore> snapshot = new HashMap<String, Giocatore>();
 		while (campionati.hasNext()) {
@@ -1824,40 +1825,25 @@ public class Main {
 				String key = sqCasa + " vs " + sqFuori;
 				
 
-				System.out.print(key + ": ");
 				if (map2.get("timeStampOpta") != null) {
 					Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
 					Instant instantUsato = instantUsati.get(key);
-//					if (instantUsato==null) {
-//						System.out.println("1->" + null);
-//					} else {
-//						System.out.println("1->" + instantUsato.atZone(zoneId).format(formatter));
-//					}
 					Instant instantVecchio = Instant.now().atZone(zoneId).toLocalDateTime().minus(1, ChronoUnit.YEARS).atZone(ZoneId.systemDefault()).toInstant();
 					if (instantUsato==null) {
 						instantUsato = instantVecchio;
-//						System.out.println("2->" + instantUsato.atZone(zoneId).format(formatter));
 					} 
 					if (timeStampOpta==null) {
-//						System.out.println("3->" + instantUsato.atZone(zoneId).format(formatter));
 						timeStampOpta = instantVecchio.plusSeconds(1);
-//						System.out.println("4->" + instantUsato.atZone(zoneId).format(formatter));
 					} 
 					
-					System.out.print("********* ");
-					System.out.print("instantUsato" + " -> " + instantUsato.atZone(zoneId).format(formatter) + "  ");
-					System.out.print("timeStampOpta" + " -> " + timeStampOpta.atZone(zoneId).format(formatter) + "  ");
 					if (instantUsato.isBefore(timeStampOpta)) {
-						System.out.println("AGGIORNO");
 						instantUsati.put(key,timeStampOpta);
 					} else {
-						System.out.println("IGNORE");
 						snapPartite.put(key, cachedSnapPartite.get(key));
 						continue;
 					}
-				} else {
-					System.out.println("timeStampOpta NULL");
-				}
+				} 
+
 				
 				Map<String, Object> partite = new LinkedHashMap();
 				Map timing = (Map)map2.get("timing");
@@ -2568,7 +2554,7 @@ public class Main {
 		if (ng != null) {
 			for (Integer codEvento : ng.getCodEventi()) {
 				if (og==null) {
-					System.out.println();
+//					System.out.println();
 				}
 
 				if (eventi.get(codEvento)[5].equalsIgnoreCase("S")) {
@@ -2605,19 +2591,21 @@ public class Main {
 	public synchronized static Map<String, Return> go(boolean conLive, String sqDaAddEvid, String sqDaDelEvid) throws Exception {
 		List<Live> lives=new ArrayList<Live>();
 		Map<String, Map<String, String>> orari=null;
+		Map<String, Map<String, String>> snap=null;
 		if (conLive) {
 			Map<String, Object> getLives = getLives(constant.LIVE_FROM_FILE);
 			lives = (List<Live>) getLives.get("lives");
 			orari = (Map<String, Map<String, String>>) getLives.get("orari");
+			snap = (Map<String, Map<String, String>>) getLives.get("snapPartite");
 
 		}
-		return postGo(conLive, sqDaAddEvid, sqDaDelEvid,lives,orari);
+		return postGo(conLive, sqDaAddEvid, sqDaDelEvid,lives,orari, snap);
 	}
 
-	private synchronized static Map<String, Return> postGo(boolean conLive, String sqDaAddEvid, String sqDaDelEvid,List<Live> lives,Map<String, Map<String, String>> orari) throws Exception {
+	private synchronized static Map<String, Return> postGo(boolean conLive, String sqDaAddEvid, String sqDaDelEvid,List<Live> lives,Map<String, Map<String, String>> orari,Map<String, Map<String, String>> snap) throws Exception {
 		List<Return> go = new ArrayList<Return>();
 		for (ConfigCampionato configCampionato : configsCampionato) {
-			Return r = getReturn(configCampionato, conLive, lives, orari, false);
+			Return r = getReturn(configCampionato, conLive, lives, orari, snap, false);
 			go.add(r);
 		}
 		Map<String, Return> ret =new TreeMap<String, Return>();
@@ -2967,7 +2955,7 @@ public class Main {
 		return tag;
 	}
 
-	private static Return getReturn(ConfigCampionato configCampionato, boolean conLive, List<Live> lives,Map<String, Map<String, String>> orari, boolean conVoto) throws Exception {
+	private static Return getReturn(ConfigCampionato configCampionato, boolean conLive, List<Live> lives,Map<String, Map<String, String>> orari,Map<String, Map<String, String>> snap, boolean conVoto) throws Exception {
 		Integer numGiocatori = configCampionato.getNumGiocatori();
 		String tipo = configCampionato.getTipo();
 		String campionato = configCampionato.getCampionato();
@@ -3084,6 +3072,7 @@ public class Main {
 				if (giocatore != null && giocatore.getSquadra()!=null) {
 					if (orari != null) {
 						giocatore.setOrario(orari.get(giocatore.getSquadra().toUpperCase()));
+						giocatore.setPartita(recuperaPartita(giocatore.getSquadra().toUpperCase(),snap.keySet()));
 					}
 				}
 				if (giocatore.getCodEventi().contains(1) || giocatore.getCodEventi().contains(2)) {
@@ -3120,6 +3109,16 @@ public class Main {
 		return r;
 	}
 
+	private static String recuperaPartita(String squadra, Set<String> keySet) {
+		for (String key : keySet) {
+			String casa = key.substring(0,3);
+			String fuori = key.substring(7,10);
+			if (squadra.equalsIgnoreCase(casa)) return casa.toUpperCase() + " - " + fuori.toLowerCase(); 
+			if (squadra.equalsIgnoreCase(fuori)) return casa.toLowerCase() + " - " + fuori.toUpperCase(); 
+		}
+		return "";
+	}
+	
 	private static void findGiocatoreInLives(Giocatore giocatore, List<Live> lives, String tipo, boolean conVoto) {
 		for (Iterator iterator = lives.iterator(); iterator.hasNext();) {
 			Live live = (Live) iterator.next();
@@ -3801,7 +3800,7 @@ public class Main {
 		}
 		return connectionNoSpring;
 	}
-	private static void putSalvaNoSprint(Salva salva) throws Exception {
+	private static void putSalvaNoSpring(Salva salva) throws Exception {
 		Connection connection = getConnectionNoSprig();
 		PreparedStatement prepareStatement = connection.prepareStatement("delete from salva where nome=?");
 		prepareStatement.setString(1, salva.getNome());
@@ -3850,7 +3849,7 @@ public class Main {
 				findOne.setNome(nome);
 			}
 			findOne.setTesto(testo);
-			putSalvaNoSprint(findOne);
+			putSalvaNoSpring(findOne);
 		} else {
 			Optional<Salva> findOne = salvaRepository.findById(nome);
 			Salva salva;
@@ -4935,7 +4934,7 @@ public class Main {
 		List<Giocatore> titolari = squadra1.getTitolari();
 		for (Giocatore giocatore : titolari) {
 			if (giocatore.getRuolo()==null) {
-				System.out.println();
+//				System.out.println();
 			}
 			if (giocatore.getRuolo().equalsIgnoreCase("P") || giocatore.getRuolo().equalsIgnoreCase("D")) {
 				ret=ret.add(new BigDecimal(Double.toString(giocatore.getVoto())));
