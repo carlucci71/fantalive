@@ -968,12 +968,16 @@ app.directive("visualizzasquadra", function() {
 			$scope.getOrario=function(orario){
 				if (orario.tag=='FullTime' || orario.tag=='Postponed' || orario.tag=='Cancelled' || orario.tag=='Walkover') return orario.tag;
 				if (orario.tag=='PreMatch'){
-					var ret="";
-					ret = ret + orario.val.substring(8,10);
-					ret = ret + "/" + orario.val.substring(5,7);
-					ret = ret + " " + (Number(orario.val.substring(11,13)));
-					ret = ret + ":" + orario.val.substring(14,16);
-					return ret;
+					if (orario.val.length>10){
+						var ret="";
+						ret = ret + orario.val.substring(8,10);
+						ret = ret + "/" + orario.val.substring(5,7);
+						ret = ret + " " + (Number(orario.val.substring(11,13)));
+						ret = ret + ":" + orario.val.substring(14,16);
+						return ret;
+					} else {
+						return orario.val;
+					}
 				}
 				return orario.val + "Min";
 			}

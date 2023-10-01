@@ -21,6 +21,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -30,11 +31,13 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -90,6 +93,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.format.datetime.DateFormatter;
 
 import com.daniele.MainClass;
 import com.daniele.fantalive.configurazione.SocketHandlerFantalive;
@@ -3071,7 +3075,7 @@ public class Main {
 				}
 				if (giocatore != null && giocatore.getSquadra()!=null) {
 					if (orari != null) {
-						giocatore.setOrario(orari.get(giocatore.getSquadra().toUpperCase()));
+						giocatore.setOrario(recuperaOrario(orari, giocatore.getSquadra().toUpperCase()));
 						giocatore.setPartita(recuperaPartita(giocatore.getSquadra().toUpperCase(),snap.keySet()));
 					}
 				}
@@ -3109,6 +3113,30 @@ public class Main {
 		return r;
 	}
 
+	
+	private static Map<String, String> recuperaOrario(Map<String, Map<String, String>> orari, String squadra) throws Exception {
+		String tag = orari.get(squadra).get("tag");
+		if (tag.equalsIgnoreCase("PreMatch")) {
+			String data=orari.get(squadra).get("val").substring(0,10);
+	        ZoneId zoneId = ZoneId.of("Europe/Rome");
+	        DateFormatter formatter = new DateFormatter("yyyy-MM-dd");
+	        Date parse = formatter.parse(data, Locale.ITALIAN);
+	        Calendar cparse=Calendar.getInstance();
+	        cparse.setTime(parse);
+	        Calendar oggi = Calendar.getInstance();
+	        if (oggi.get(Calendar.YEAR) == cparse.get(Calendar.YEAR) && oggi.get(Calendar.MONTH) == cparse.get(Calendar.MONTH) 
+	        		&& oggi.get(Calendar.DAY_OF_MONTH) == cparse.get(Calendar.DAY_OF_MONTH)) {
+	        	Map<String, String> ret = new HashMap<>();
+	        	ret.put("tag", tag);
+	        	ret.put("val", orari.get(squadra).get("val").substring(11,19));
+	        	return ret;
+	        }
+	        
+		}
+		return orari.get(squadra); 
+	}
+
+	
 	private static String recuperaPartita(String squadra, Set<String> keySet) {
 		for (String key : keySet) {
 			String casa = key.substring(0,3);
