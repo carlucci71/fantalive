@@ -762,6 +762,7 @@ app.run(
 				$rootScope.loading=true;
 				$resource('./setRitardoNotifica',{}).save({'ritardoNotifica':$rootScope.ritardoNotificaDaSettare}).$promise.then(function() {
 					$rootScope.fine=new Date();
+					$rootScope.ritardoNotifica=$rootScope.ritardoNotificaDaSettare;
 					$rootScope.loading=false;
 				}).catch(function(error) {
 					$rootScope.fine=new Date();
