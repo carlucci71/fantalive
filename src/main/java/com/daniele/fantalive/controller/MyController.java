@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -231,6 +232,7 @@ public class MyController {
 				visKeepAlive="S";
 			}
 			Main.toSocket.put("visKeepAlive", visKeepAlive);
+			Main.toSocket.put("ritardoNotifica", Constant.RITARDO);
 			
 			String runningBot="STOPPED";
 			if (Main.fantaLiveBot != null && Main.fantaLiveBot.isRunning()) {
@@ -700,13 +702,17 @@ public class MyController {
 	@PostMapping("/setGiornata")
 	public Map<String, Object> setGiornata(@RequestBody Map<String,Object> body)  {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		constant.GIORNATA=(Integer)body.get("giornata");
+		Constant.GIORNATA=(Integer)body.get("giornata");
 		Main.oldSnapLives=null;
 		Main.oldSnapOrari=null;
 		Main.instantUsati=new HashMap<>();
 		Main.sqStatusMatch=new HashMap<>();
 
 		return ret;
+	}
+	@PostMapping("/setRitardoNotifica")
+	public void setRitardoNotifica(@RequestBody Map<String,Object> body)  {
+		Constant.RITARDO=(Integer)body.get("ritardoNotifica");
 	}
 	@GetMapping("/testIcone")
 	public Map<String, Object>  testIcone() throws Exception {

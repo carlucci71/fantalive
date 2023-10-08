@@ -50,6 +50,9 @@
 	<!--  <label>Last keep alive: ??? </label>{{lastKeepAlive}} -->
 	<label>Fine keep alive: </label>{{keepAliveEnd}}
 </span>
+<br>
+<label>Ritardo notifica: </label>{{ritardoNotifica}}
+<br>
 <span ng-show="!loading && !disabilitaNotificaTelegram"><br>{{runningBot}} <button ng-click="startStopBot()">START/STOP BOT</button></span>
 <br>
  	<label ng-show="loading">CARICAMENTO IN CORSO</label>
@@ -150,6 +153,9 @@
 	<br>
 	
 	<span>Giornata <input type=number ng-model="giornata"> <button ng-click="setGiornata()">SET</button></span>
+	<br>
+	<span>Ritardo notifica <input type=number ng-model="ritardo"> <button ng-click="setRitardoNotifica()">SET</button></span>
+	<br>
  	<button ng-click="preparaSquadre()">Prepara squadre</button>
 	clear DB <input type=checkBox ng-model=clearDB></input>
 	<br><br>

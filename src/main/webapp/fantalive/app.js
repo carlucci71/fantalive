@@ -7,6 +7,7 @@ app.run(
 			$rootScope.getFree=false;
 			$rootScope.getLives=false;
 			$rootScope.contaNomiDati=-1;
+			$rootScope.ritardo=0;
 			$rootScope.notificaCampionato="BE";
 			$rootScope.notificaSquadra="Universal";
 			$rootScope.init=function(){
@@ -156,6 +157,9 @@ app.run(
 					}
 					if (msg.runningBot){
 						$rootScope.runningBot=msg.runningBot;
+					}
+					if (msg.ritardoNotifica){
+						$rootScope.ritardoNotifica=msg.ritardoNotifica;
 					}
 //					if (msg.lastKeepAlive){
 //						$rootScope.lastKeepAlive=msg.lastKeepAlive;
@@ -750,6 +754,28 @@ app.run(
 						alert("Errore-9-3: " + angular.toJson(error));
 				});
 			}
+			
+			
+			$rootScope.setRitardoNotifica = function(){
+				$rootScope.inizio=new Date();
+				$rootScope.fine="";
+				$rootScope.loading=true;
+				$resource('./setRitardoNotifica',{}).save({'ritardoNotifica':$rootScope.ritardo}).$promise.then(function() {
+					$rootScope.fine=new Date();
+					$rootScope.loading=false;
+				}).catch(function(error) {
+					$rootScope.fine=new Date();
+					$rootScope.loading=false;
+					if (error && error.data && error.data.message)
+						alert("Errore-9-1: " + error.data.message);
+					else if (error && error.data)
+						alert("Errore-9-2: " + error.data);
+					else 
+						alert("Errore-9-3: " + angular.toJson(error));
+				});
+			}
+			
+			
 			$rootScope.setGiornata = function(){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
