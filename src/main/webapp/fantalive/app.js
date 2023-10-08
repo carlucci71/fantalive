@@ -7,7 +7,7 @@ app.run(
 			$rootScope.getFree=false;
 			$rootScope.getLives=false;
 			$rootScope.contaNomiDati=-1;
-			$rootScope.ritardo=0;
+			$rootScope.ritardoNotificaDaSettare=0;
 			$rootScope.notificaCampionato="BE";
 			$rootScope.notificaSquadra="Universal";
 			$rootScope.init=function(){
@@ -760,7 +760,7 @@ app.run(
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";
 				$rootScope.loading=true;
-				$resource('./setRitardoNotifica',{}).save({'ritardoNotifica':$rootScope.ritardo}).$promise.then(function() {
+				$resource('./setRitardoNotifica',{}).save({'ritardoNotifica':$rootScope.ritardoNotificaDaSettare}).$promise.then(function() {
 					$rootScope.fine=new Date();
 					$rootScope.loading=false;
 				}).catch(function(error) {
