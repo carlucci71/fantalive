@@ -7,7 +7,7 @@ app.run(
 			$rootScope.getFree=false;
 			$rootScope.getLives=false;
 			$rootScope.contaNomiDati=-1;
-			$rootScope.ritardoNotificaDaSettare=0;
+			$rootScope.ritardoNotificaDaSettare=1;
 			$rootScope.notificaCampionato="BE";
 			$rootScope.notificaSquadra="Universal";
 			$rootScope.init=function(){

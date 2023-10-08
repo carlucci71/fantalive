@@ -833,7 +833,7 @@ public class Main {
 						}
 					}
 					des.append("\n").append(getUrlNotifica());
-					Main.inviaCronacaNotifica(des.toString(), Constant.RITARDO);
+					Main.inviaCronacaNotifica(des.toString());
 					Main.inviaNotifica(des.toString());
 					Calendar c4 = Calendar.getInstance();
 					//					System.out.println("ONLY INVIA NOTIFICA:" + (c4.getTimeInMillis()-cc.getTimeInMillis()));
@@ -846,7 +846,7 @@ public class Main {
 				map.put("res", go);
 				map.put("miniNotifica", Base64.getEncoder().encodeToString(desMiniNotifica.getBytes()));
 				socketHandlerFantalive.invia(map);
-				Main.inviaCronacaNotifica(desMiniNotifica.toString(), Constant.RITARDO);
+				Main.inviaCronacaNotifica(desMiniNotifica.toString());
 			}
 			Calendar c4 = Calendar.getInstance();
 			//			System.out.println("ONLY WEB SOCKET:" + (c4.getTimeInMillis()-c3.getTimeInMillis()));
@@ -1594,14 +1594,10 @@ public class Main {
 		return ret;
 	}
 
-	public static void inviaCronacaNotifica(String msg, Integer ritardo) throws Exception {
+	public static void inviaCronacaNotifica(String msg) throws Exception {
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
-			if (ritardo != null) {
-				ThreadSeparato threadSeparato = new ThreadSeparato(fantaCronacaLiveBot, constant.CHAT_ID_FANTALIVE,msg);
-				executor.schedule(threadSeparato, ritardo, TimeUnit.SECONDS);
-			} else {
-				fantaCronacaLiveBot.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg);
-			}
+			ThreadSeparato threadSeparato = new ThreadSeparato(fantaCronacaLiveBot, constant.CHAT_ID_FANTALIVE,msg);
+			executor.schedule(threadSeparato, Constant.RITARDO, TimeUnit.SECONDS);
 		}
 		else {
 			System.out.println("Notifica:\n" + msg);
@@ -1612,7 +1608,7 @@ public class Main {
 	public static void inviaRisultatiNotifica(String msg) throws Exception {
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			ThreadSeparato threadSeparato = new ThreadSeparato(risultatiConRitardoBOT, constant.CHAT_ID_FANTALIVE,msg);
-			executor.schedule(threadSeparato, 15, TimeUnit.SECONDS);
+			executor.schedule(threadSeparato, Constant.RITARDO, TimeUnit.SECONDS);
 		}
 		else {
 			System.out.println("Notifica:\n" + msg);
@@ -1623,7 +1619,7 @@ public class Main {
 	public static void inviaNotifica(String msg) throws Exception {
 		if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
 			ThreadSeparato threadSeparato = new ThreadSeparato(fantaLiveBot, constant.CHAT_ID_FANTALIVE,msg);
-			executor.schedule(threadSeparato, 15, TimeUnit.SECONDS);
+			executor.schedule(threadSeparato, Constant.RITARDO, TimeUnit.SECONDS);
 			//			fantaLiveBot.inviaMessaggio(constant.CHAT_ID_FANTALIVE,msg,false);
 		}
 		else {
