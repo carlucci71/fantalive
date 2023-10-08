@@ -133,8 +133,8 @@ public class FantaLiveTest {
 		} else {
 			Main.fantaLiveBot.startBot();
 			Main.fantaCronacaLiveBot.startBot();
-			Main.inviaCronacaNotifica("TEST", null);
-			Main.inviaCronacaNotifica("TEST Ritardato", 1);
+			Main.inviaCronacaNotifica("TEST");
+			Main.inviaCronacaNotifica("TEST Ritardato");
 			Main.risultatiConRitardoBOT.startBot();
 		}
 		boolean running = Main.fantaLiveBot.isRunning();
@@ -146,8 +146,8 @@ public class FantaLiveTest {
 		} else {
 			Main.fantaLiveBot.startBot();
 			Main.fantaCronacaLiveBot.startBot();
-			Main.inviaCronacaNotifica("TEST", null);
-			Main.inviaCronacaNotifica("TEST Ritardato", 1);
+			Main.inviaCronacaNotifica("TEST");
+			Main.inviaCronacaNotifica("TEST Ritardato");
 			Main.risultatiConRitardoBOT.startBot();
 		}
 		running = Main.fantaLiveBot.isRunning();
