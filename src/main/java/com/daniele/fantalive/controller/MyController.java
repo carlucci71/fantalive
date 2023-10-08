@@ -68,7 +68,7 @@ public class MyController {
 			Main.fantaLiveBot = FantaLiveBOT.inizializza("WEBAPP");
 			Main.fantaCronacaLiveBot = FantaCronacaLiveBOT.inizializza("WEBAPP");
 			Main.risultatiConRitardoBOT = RisultatiConRitardoBOT.inizializza("WEBAPP");
-			Main.inviaCronacaNotifica("Server riavviato: " + Main.MIO_IP,null);
+			Main.inviaCronacaNotifica("Server riavviato: " + Main.MIO_IP);
 		}
 		Map<Integer, Object> fantaValoreMercato = Main.getFantaValoreMercato(true);
 		fantaValoreMercato.forEach((k,v)-> { 
@@ -197,7 +197,7 @@ public class MyController {
 			if (between >25) {
 				String http = (String) Main.callHTTP("GET", "application/json; charset=UTF-8",String.format(Constant.URL_KEEP_ALIVE_HEROKU), null).get("response");
 				ret=Constant.KEEP_ALIVE + " Keep Alive!";
-				Main.inviaCronacaNotifica(ret, null);
+				Main.inviaCronacaNotifica(ret);
 				System.out.println("REFRESH!!");
 				Constant.LAST_REFRESH=ZonedDateTime.now();
 			}
