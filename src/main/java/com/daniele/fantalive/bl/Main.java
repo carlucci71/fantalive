@@ -1816,12 +1816,24 @@ public class Main {
 				Map homeTeam = (Map)map2.get("homeTeam");
 				String sqFuori = ((String)awayTeam.get("teamCode")).toUpperCase();
 				String sqCasa = ((String)homeTeam.get("teamCode")).toUpperCase();
-				if (sqFuori.equals("MONZ")) sqFuori="MON";
 				if (sqCasa.equals("MONZ")) sqCasa="MON";
-				if (sqFuori.equals("RMA")) sqFuori="ROM";
 				if (sqCasa.equals("RMA")) sqCasa="ROM";
-				if (sqFuori.equals("TNO")) sqFuori="TOR";
 				if (sqCasa.equals("TNO")) sqCasa="TOR";
+				if (sqCasa.equals("SASS")) sqCasa="SAS";
+				if (sqCasa.equals("INM")) sqCasa="INT";
+				if (sqCasa.equals("ACM")) sqCasa="MIL";
+				if (sqCasa.equals("FRI")) sqCasa="FRO";
+
+				if (sqFuori.equals("MONZ")) sqFuori="MON";
+				if (sqFuori.equals("RMA")) sqFuori="ROM";
+				if (sqFuori.equals("TNO")) sqFuori="TOR";
+				if (sqFuori.equals("SASS")) sqFuori="SAS";
+				if (sqFuori.equals("INM")) sqFuori="INT";
+				if (sqFuori.equals("ACM")) sqFuori="MIL";
+				if (sqFuori.equals("FRI")) sqFuori="FRO";
+
+				
+				
 				String key = sqCasa + " vs " + sqFuori;
 				
 
