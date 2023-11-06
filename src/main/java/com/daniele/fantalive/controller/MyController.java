@@ -258,7 +258,7 @@ public class MyController {
     public List<String> forzaInvio() throws Exception {
         Instant now = Instant.now();
         List<String> ret = new ArrayList<>();
-        for (Map.Entry<UUID, ThreadSeparato> entries : Main.threadSeparatiInAttesa.entrySet()) {
+        for (Map.Entry<String, ThreadSeparato> entries : Main.threadSeparatiInAttesa.entrySet()) {
             ret.add(entries.getKey().toString());
             entries.getValue().setOraInvio(now);
         }
