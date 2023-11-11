@@ -1600,9 +1600,12 @@ public class Main {
             if (operazione.equalsIgnoreCase("ANNULLA")){
                 System.out.println("ANNULLA");
                 for (Map.Entry<String, ThreadSeparato> inAttesa : threadSeparatiInAttesa.entrySet()) {
-                    System.out.println("CICLO IN ATTESA");
                     String[] split = inAttesa.getKey().split("#");
-
+                    System.out.print("CICLO IN ATTESA---> (" + split.length + ")");
+                    for (int i=0;i<split.length;i++){
+                        System.out.print(split[i] + " ");
+                    }
+                    System.out.println();
                     if (split.length>2){
                         if (split[1].equals(key)){
                             System.out.println("HO TROVATO IL RIFERIMENTO: " + inAttesa.getKey());
