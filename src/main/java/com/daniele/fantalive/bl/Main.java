@@ -113,7 +113,6 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 @SuppressWarnings("ALL")
@@ -1579,46 +1578,54 @@ public class Main {
         }
         return ret;
     }
-    public static Map<String,ThreadSeparato> threadSeparatiInAttesa=new HashMap<>();
+
+    public static Map<String, ThreadSeparato> threadSeparatiInAttesa = new HashMap<>();
 
     public static void inviaCronacaNotifica(String msg) throws Exception {
         if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
             String uuid = UUID.randomUUID().toString();
             ThreadSeparato threadSeparato = new ThreadSeparato(fantaCronacaLiveBot, constant.CHAT_ID_FANTALIVE, msg, Instant.now().plusSeconds(Constant.RITARDO), uuid);
             executor.execute(threadSeparato);
-            threadSeparatiInAttesa.put(uuid.toString(),threadSeparato);
+            threadSeparatiInAttesa.put(uuid.toString(), threadSeparato);
             //executor.schedule(threadSeparato, Constant.RITARDO, TimeUnit.SECONDS);
         } else {
             System.out.println("Notifica:\n" + msg);
         }
     }
+
     public static void inviaRisultatiNotifica(String msg, String key, String operazione) throws Exception {
         if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
             String uuid = UUID.randomUUID().toString();
-            uuid=uuid + "#" + key + "#" + operazione;
+            uuid = uuid + "#" + key + "#" + operazione;
             Instant instant = Instant.now().plusSeconds(Constant.RITARDO);
-            if (operazione.equalsIgnoreCase("ANNULLA")){
-                System.out.println("ANNULLA");
+            boolean trovato = false;
+            if (operazione.equalsIgnoreCase("ANNULLA")) {
+                System.out.println("ANNULLA -> (" + key + ")");
                 for (Map.Entry<String, ThreadSeparato> inAttesa : threadSeparatiInAttesa.entrySet()) {
                     String[] split = inAttesa.getKey().split("#");
                     System.out.print("CICLO IN ATTESA---> (" + split.length + ")");
-                    for (int i=0;i<split.length;i++){
+                    for (int i = 0; i < split.length; i++) {
                         System.out.print(split[i] + " ");
                     }
                     System.out.println();
-                    if (split.length>2){
-                        if (split[1].equals(key)){
+                    if (split.length > 2) {
+                        if (split[1].equals(key)) {
+                            trovato = true;
                             System.out.println("HO TROVATO IL RIFERIMENTO: " + inAttesa.getKey());
-                            instant= inAttesa.getValue().getOraInvio();
+                            instant = inAttesa.getValue().getOraInvio();
                         }
                     }
-
+                }
+                if (!trovato){
+                    //se non lo ho trovato, vuol dire che è già stato mandato
+                    System.out.println("NON TROVATO...");
+                    instant = Instant.now();
                 }
 
             }
             ThreadSeparato threadSeparato = new ThreadSeparato(risultatiConRitardoBOT, constant.CHAT_ID_FANTALIVE, msg, instant, uuid);
             executor.execute(threadSeparato);
-            threadSeparatiInAttesa.put(uuid,threadSeparato);
+            threadSeparatiInAttesa.put(uuid, threadSeparato);
             //executor.schedule(threadSeparato, Constant.RITARDO, TimeUnit.SECONDS);
         } else {
             System.out.println("Notifica:\n" + msg);
@@ -1631,7 +1638,7 @@ public class Main {
             String uuid = UUID.randomUUID().toString();
             ThreadSeparato threadSeparato = new ThreadSeparato(fantaLiveBot, constant.CHAT_ID_FANTALIVE, msg, Instant.now().plusSeconds(Constant.RITARDO), uuid);
             executor.execute(threadSeparato);
-            threadSeparatiInAttesa.put(uuid.toString(),threadSeparato);
+            threadSeparatiInAttesa.put(uuid.toString(), threadSeparato);
 //            executor.schedule(threadSeparato, Constant.RITARDO, TimeUnit.SECONDS);
         } else {
             System.out.println("Notifica:\n" + msg);
@@ -2780,8 +2787,8 @@ public class Main {
 
     private static void generaNotificheRisultati(Map<String, Object> partita, String tag, String sqCasa, String sqFuori) throws Exception {
         String key = sqCasa + " vs " + sqFuori;
-        String chiaveRisultato="";
-        String operazione="";
+        String chiaveRisultato = "";
+        String operazione = "";
         //confronta con oldSnapPartite
         Map<String, Object> oldPartita = oldSnapPartite.get(key);
         StringBuilder messaggio = null;
@@ -2810,8 +2817,8 @@ public class Main {
                         messaggio = new StringBuilder(key + "\n");
                     }
                     messaggio.append("Risultato:" + golCasa + "-" + golFuori + "\n");
-                    chiaveRisultato=golCasa + "-" + golFuori;
-                    operazione="GOL";
+                    chiaveRisultato = golCasa + "-" + golFuori;
+                    operazione = "GOL";
                 }
 
                 List<Map> oldRetiCasa = (List<Map>) ((Map) oldPartita.get(sqCasa)).get("RETI");
@@ -2822,8 +2829,8 @@ public class Main {
                     }
                     messaggio.append("Correzione reti per " + sqCasa + ": " + logReti(retiCasa) + "\n");
                     List<Map> oldRetiFuori = (List<Map>) ((Map) oldPartita.get(sqFuori)).get("RETI");
-                    chiaveRisultato=oldRetiCasa.size() + "-" + oldRetiFuori.size();
-                    operazione="ANNULLA";
+                    chiaveRisultato = oldRetiCasa.size() + "-" + oldRetiFuori.size();
+                    operazione = "ANNULLA";
 
                 }
                 for (int i = 0; i < retiCasa.size(); i++) {
@@ -2852,8 +2859,8 @@ public class Main {
                         messaggio = new StringBuilder(key + "\n");
                     }
                     messaggio.append("Correzione reti per " + sqFuori + ": " + logReti(retiFuori) + "\n");
-                    chiaveRisultato=oldRetiCasa.size() + "-" + oldRetiFuori.size();
-                    operazione="ANNULLA";
+                    chiaveRisultato = oldRetiCasa.size() + "-" + oldRetiFuori.size();
+                    operazione = "ANNULLA";
                 }
                 for (int i = 0; i < retiFuori.size(); i++) {
                     Map mapRetiFuori = retiFuori.get(i);
@@ -2876,7 +2883,7 @@ public class Main {
             }
             if (messaggio != null) {
                 try {
-                    inviaRisultatiNotifica(messaggio.toString(),chiaveRisultato, operazione);
+                    inviaRisultatiNotifica(messaggio.toString(), chiaveRisultato, operazione);
                 } catch (Exception e) {
                     e.printStackTrace(System.out);
                 }
