@@ -189,11 +189,35 @@ public class Main {
                 for (int ix = 1; ix < partiteDellaGiornata.size(); ix++) {
                     //					if (i>=32) continue;
                     if (partiteDellaGiornata.get(ix) instanceof TextNode) continue;
-                    List<Node> partita = partiteDellaGiornata.get(ix).childNodes();
-                    String giorno = partita.get(1).childNode(0).toString();
+                    List<Node> nodePartita = partiteDellaGiornata.get(ix).childNodes();
+                    List<String> partita = new ArrayList<>();
+                    if (nodePartita.size()==3){
+                        System.out.println();
+                        String giorno = nodePartita.get(0).childNode(0).toString();
+                        String dataOrario = nodePartita.get(1).childNode(0).toString();
+                        String[] splitDataOrario = dataOrario.split(" - ");
+                        String part = nodePartita.get(2).childNode(0).toString();
+                        partita.add(giorno);
+                        partita.add(splitDataOrario[0]);
+                        partita.add(splitDataOrario[1]);
+                        partita.add(part);
+                    } else if (nodePartita.size()==4){
+                        String giorno = nodePartita.get(0).childNode(0).toString();
+                        String data = nodePartita.get(1).childNode(0).toString();
+                        String orario = nodePartita.get(2).childNode(0).toString();
+                        String part = nodePartita.get(3).childNode(0).toString();
+                        partita.add(giorno);
+                        partita.add(data);
+                        partita.add(orario);
+                        partita.add(part);
+                    }
+                    else {
+                        System.out.println();
+                    }
+                    String giorno = partita.get(1);
                     try {
                         if (giorno.contains("strong")) continue;
-                        String data = partita.get(1).childNode(0).toString();
+                        String data = partita.get(1);
                         if (data.equals("17/09/2023")) {//BUG DAZN
                             data = "18/09/2023";
                         }
@@ -206,12 +230,12 @@ public class Main {
 						else if (data.length()==5 && data.substring(3,5).equals("06")) data = data + "/2023";
 						else data = data + "/2022";
 						 */
-                        String ora = partita.get(2).childNode(0).toString();
+                        String ora = partita.get(2);
                         ora = ora.replace(".", ":");
                         if (ora.equals("-") || ora.equals("&nbsp;")) {
                             ora = "15:00";
                         }
-                        String squadre = partita.get(3).childNode(0).toString();
+                        String squadre = partita.get(3);
                         //					System.out.println(iGiornata + "-" + giorno + "-" + data + "-" + ora + "-" + squadre);
                         ZonedDateTime parseZDT = ZonedDateTime.parse(data + " - " + ora + ":00 +0000", dtf.withZone(ZoneId.of("Europe/Rome")));
                         List<Integer> list = giorniGioca.get(parseZDT);
