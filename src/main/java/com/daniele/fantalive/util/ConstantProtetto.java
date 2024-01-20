@@ -21,6 +21,8 @@ public class ConstantProtetto {
 			constant.KEEP_ALIVE_END = ZonedDateTime.now();
 		}
 		constant.DISABILITA_NOTIFICA_TELEGRAM = Boolean.valueOf(System.getenv("DISABILITA_NOTIFICA_TELEGRAM"));
+		constant.disableCertificateValidation = Boolean.valueOf(System.getenv("DISABILITA_CERTIFICATE_VALIDATION"));
+
 		constant.LIVE_FROM_FILE = Boolean.valueOf(System.getenv("LIVE_FROM_FILE"));
 		constant.ABILITA_REFRESH = Boolean.valueOf(System.getenv("ABILITA_REFRESH"));
 		constant.CHAT_ID_FANTALIVE = Long.valueOf(System.getenv("CHAT_ID_FANTALIVE"));
