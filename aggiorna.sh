@@ -5,7 +5,7 @@ if [ -z "$java_pid" ]; then
     echo "Nessun processo Java trovato con il nome: $process_name"
 else
     echo "Terminazione del processo Java con PID: $java_pid"
-    kill "$java_pid"
+    kill -9 "$java_pid"
 fi
 git pull
 ./lancia.sh
