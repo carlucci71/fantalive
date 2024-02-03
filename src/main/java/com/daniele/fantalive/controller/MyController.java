@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -35,8 +36,10 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -391,7 +394,16 @@ public class MyController {
     }
 
     @RequestMapping("/test")
-    public Map<String, Return> test(boolean conLive) throws Exception {
+    public Map<String, Return> test(boolean conLive, HttpServletRequest request) throws Exception {
+//        String xForwardedForHeader = request.getHeader("X-Forwarded-For");
+
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()){
+            String h = headerNames.nextElement();
+            String v = request.getHeader(h);
+            System.out.println("-->" + h + "<->" + v);
+        }
+
         Map<String, Return> go = Main.go(conLive, null, null);
         return go;
     }
@@ -422,7 +434,7 @@ public class MyController {
     }
 
     @PostMapping("/salva")
-    public Map<String, Return> salva(@RequestBody Map<String, Return> body) throws Exception {
+    public Map<String, Return> salva(@RequestBody Map<String, Return> body, HttpServletRequest request) throws Exception {
         Return r = body.get("r");
         List<Squadra> squadre = r.getSquadre();
         Set set = new HashSet<>();
@@ -433,7 +445,7 @@ public class MyController {
         if (r.getNome().equalsIgnoreCase(Constant.Campionati.BE.name()) && r.getSquadre().size() < Constant.NUM_SQUADRE_BE)
             throw new RuntimeException("Squadre mangiate. Salva!");
         Main.upsertSalva(Constant.FORMAZIONE + r.getNome(), Main.toJson(r.getSquadre()));
-        return test(true);
+        return test(true, request);
     }
 
 
