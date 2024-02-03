@@ -394,16 +394,7 @@ public class MyController {
     }
 
     @RequestMapping("/test")
-    public Map<String, Return> test(boolean conLive, HttpServletRequest request) throws Exception {
-//        String xForwardedForHeader = request.getHeader("X-Forwarded-For");
-
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()){
-            String h = headerNames.nextElement();
-            String v = request.getHeader(h);
-            System.out.println("-->" + h + "<->" + v);
-        }
-
+    public Map<String, Return> test(boolean conLive) throws Exception {
         Map<String, Return> go = Main.go(conLive, null, null);
         return go;
     }
@@ -445,7 +436,7 @@ public class MyController {
         if (r.getNome().equalsIgnoreCase(Constant.Campionati.BE.name()) && r.getSquadre().size() < Constant.NUM_SQUADRE_BE)
             throw new RuntimeException("Squadre mangiate. Salva!");
         Main.upsertSalva(Constant.FORMAZIONE + r.getNome(), Main.toJson(r.getSquadre()));
-        return test(true, request);
+        return test(true);
     }
 
 

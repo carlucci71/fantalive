@@ -1,7 +1,6 @@
 package com.daniele.fantalive.util;
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,13 +21,6 @@ public class TransactionFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request,ServletResponse response,FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
-		Enumeration<String> headerNames = req.getHeaderNames();
-		while (headerNames.hasMoreElements()){
-			String h = headerNames.nextElement();
-			String v = req.getHeader(h);
-			System.out.println("*->" + h + "<->" + v);
-		}
-
 		String requestURI = req.getRequestURI();
 		if (!requestURI.equalsIgnoreCase("/fantalive/fantalive-websocket")) {
 			Constant.LAST_REFRESH=ZonedDateTime.now();
