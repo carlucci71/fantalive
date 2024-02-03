@@ -67,6 +67,16 @@ public class MyController {
     @Value("${IP:}")
     String ip;
 
+    /*
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()){
+            String h = headerNames.nextElement();
+            String v = request.getHeader(h);
+            System.out.println("-->" + h + "<->" + v);
+        }
+-->host<->85.235.148.177:8080
+-->referer<->http://85.235.148.177:8080/fantalive/index.html
+     */
     @PostConstruct
     private void post() throws Exception {
         Main.init(salvaRepository, socketHandlerFantalive, constant, true, serverport, ip);
