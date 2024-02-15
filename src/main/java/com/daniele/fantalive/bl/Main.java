@@ -1467,6 +1467,7 @@ public class Main {
 
             // Install the all-trusting host verifier
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+            System.out.println("CERTIFICATI DISABILITATI");
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             e.printStackTrace();
         }
