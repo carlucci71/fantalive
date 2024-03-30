@@ -928,6 +928,10 @@ public class MyController {
     public void preparaSquadre(@RequestBody Map<String, Object> body) throws Exception {
         try {
             Main.aggKeyFG();
+            if (Constant.disableCertificateValidation) {
+                Main.disabilitaControlloCertificati();
+            }
+
             if (body != null) {
                 String clearDB = (String) body.get("clearDB");
                 if (clearDB.equalsIgnoreCase("S")) {
