@@ -2209,11 +2209,16 @@ public class Main {
     }
 
     public static void aggKeyFG() throws Exception {
-        int giornata = constant.GIORNATA;
-        Main.keyFG = new HashMap<String, String>();
-        Main.keyFG.put(Constant.Campionati.FANTAVIVA.name(), "id_comp=" + Constant.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.FANTAVIVA.name())) + ".json");
-        Main.keyFG.put(Constant.Campionati.LUCCICAR.name(), "id_comp=" + Constant.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.LUCCICAR.name())) + ".json");
-        Main.keyFG.put(Constant.Campionati.REALFANTACOMIX21.name(), "id_comp=" + Constant.COMP_REALFANTACOMIX21_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_REALFANTACOMIX21_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_REALFANTACOMIX21_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) + ".json");
+        try {
+            int giornata = constant.GIORNATA;
+            Main.keyFG = new HashMap<String, String>();
+            Main.keyFG.put(Constant.Campionati.FANTAVIVA.name(), "id_comp=" + Constant.COMP_VIVA_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_VIVA_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.FANTAVIVA.name())) + ".json");
+            Main.keyFG.put(Constant.Campionati.LUCCICAR.name(), "id_comp=" + Constant.COMP_LUCCICAR_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_LUCCICAR_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.LUCCICAR.name())) + ".json");
+            Main.keyFG.put(Constant.Campionati.REALFANTACOMIX21.name(), "id_comp=" + Constant.COMP_REALFANTACOMIX21_FG + "&r=" + String.valueOf(giornata - Constant.DELTA_REALFANTACOMIX21_FG) + "&f=" + String.valueOf(giornata - Constant.DELTA_REALFANTACOMIX21_FG) + "_" + calcolaAggKey(Main.aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name())) + ".json");
+        } catch (Exception e)
+        {
+
+        }
     }
 
     public static final Map<String, String> aliasCampionati = new HashMap<>();
