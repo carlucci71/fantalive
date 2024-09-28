@@ -302,7 +302,8 @@ public class CalcolaPartita {
 		Map<String, Map<String, Map<String, Object>>> totaliScontri=new HashMap<>(); 
 
 		for (int ggDaCalcolare=1;ggDaCalcolare<=MAX_GIORNATA_DA_CALCOLARE;ggDaCalcolare++) {
-			ZonedDateTime zonedDateTime = Main.calendarioInizioGiornata.get(ggDaCalcolare + Constant.DELTA_FS);
+			ZonedDateTime zonedDateTime = null;//FIXME
+			// Main.calendarioInizioGiornata.get(ggDaCalcolare + Constant.DELTA_FS);
 			ZonedDateTime now = ZonedDateTime.now();
 			if (zonedDateTime != null && now.isAfter(zonedDateTime)) {
 				iMaxGG=ggDaCalcolare + Constant.DELTA_FS;

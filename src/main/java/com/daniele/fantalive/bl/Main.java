@@ -89,6 +89,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.MessageFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -133,7 +134,7 @@ public class Main {
     public static List<String> sqDaEv = null;
     private static Map<String, Giocatore> oldSnapshot = null;
     private static SalvaRepository salvaRepository = null;
-    private static Map<ZonedDateTime, List<Integer>> giorniGioca = new TreeMap<>();
+    private static Map<LocalDate, List<Integer>> giorniGioca = new TreeMap<>();
     private static SocketHandlerFantalive socketHandlerFantalive = null;
     private static ScheduledExecutorService executor = null;
     private static Constant constant = null;
@@ -145,8 +146,7 @@ public class Main {
     static Map<String, String> nickPlayer;
     static Map<String, String> reverseNickPlayer;
     static Map<Integer, String> reverseStatusMatch;
-    public static Map<Integer, ZonedDateTime> calendario;
-    public static Map<Integer, ZonedDateTime> calendarioInizioGiornata;
+    public static Map<Integer, LocalDate> calendario;
     static Set<String> sqRealFantacomix21;
     static Set<String> idRealFantacomix21;
     static Set<String> giocRealFantacomix21;
@@ -164,116 +164,50 @@ public class Main {
         if (ip != null && !ip.equals("")) {
             Main.MIO_IP = ip;
         }
+        if (mapper == null) {
+            //			mapper = new ObjectMapper();
+            mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        }
         serverPort = port;
         executor = Executors.newSingleThreadScheduledExecutor();
         salvaRepository = salvaRepositorySpring;
         socketHandlerFantalive = socketHandlerSpring;
         constant = constantSpring;
         constant.AUTH_FS = getAuthFS();
+        if (constant.GIORNATA_FORZATA != null) {
+            constant.GIORNATA = constant.GIORNATA_FORZATA;
+        } else {
         if (calendario == null) {
             calendario = new LinkedHashMap();
-            calendarioInizioGiornata = new LinkedHashMap<>();
-            String http = (String) callHTTP("GET", "application/json; charset=UTF-8", String.format(Constant.URL_CALENDARIO), null).get("response");
-            //			https://www.tomshw.it/culturapop/calendario-serie-a-2021-22-risultati-e-dove-vedere-le-partite/
-            //			System.out.println(http);
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");//13/08/2022 - 18:30:00 +0000
-            Document doc = Jsoup.parse(http);//, StandardCharsets.UTF_8.toString()
-            Elements elements = doc.getElementsByClass("table-bordered");
-            for (int i = 0; i < elements.size(); i++) {
-                Element element = elements.get(i);
-                Element first = element.getElementsByTag("tbody").first();
-                int iGiornata = i + 1;
-                String ultimaData = null;
-                String primaData = null;
-                List<Node> partiteDellaGiornata = first.childNodes();
-                for (int ix = 1; ix < partiteDellaGiornata.size(); ix++) {
-                    //					if (i>=32) continue;
-                    if (partiteDellaGiornata.get(ix) instanceof TextNode) continue;
-                    List<Node> nodePartita = partiteDellaGiornata.get(ix).childNodes();
-                    List<String> partita = new ArrayList<>();
-                    if (nodePartita.size()==3){
-                        System.out.println();
-                        String giorno = nodePartita.get(0).childNode(0).toString();
-                        String dataOrario = nodePartita.get(1).childNode(0).toString();
-                        String[] splitDataOrario = dataOrario.split(" - ");
-                        String part = nodePartita.get(2).childNode(0).toString();
-                        partita.add(giorno);
-                        partita.add(splitDataOrario[0]);
-                        partita.add(splitDataOrario[1]);
-                        partita.add(part);
-                    } else if (nodePartita.size()==4){
-                        String giorno = nodePartita.get(0).childNode(0).toString();
-                        String data = nodePartita.get(1).childNode(0).toString();
-                        String orario = nodePartita.get(2).childNode(0).toString();
-                        String part = nodePartita.get(3).childNode(0).toString();
-                        partita.add(giorno);
-                        partita.add(data);
-                        partita.add(orario);
-                        partita.add(part);
-                    }
-                    else {
-                        System.out.println();
-                    }
-                    String giorno = partita.get(1);
-                    try {
-                        if (giorno.contains("strong")) continue;
-                        String data = partita.get(1);
-                        if (data.equals("17/09/2023")) {//BUG DAZN
-                            data = "18/09/2023";
-                        }
-						/*
-						if (data.length()==5 && data.substring(3,5).equals("01")) data = data + "/2023";
-						else if (data.length()==5 && data.substring(3,5).equals("02")) data = data + "/2023";
-						else if (data.length()==5 && data.substring(3,5).equals("03")) data = data + "/2023";
-						else if (data.length()==5 && data.substring(3,5).equals("04")) data = data + "/2023";
-						else if (data.length()==5 && data.substring(3,5).equals("05")) data = data + "/2023";
-						else if (data.length()==5 && data.substring(3,5).equals("06")) data = data + "/2023";
-						else data = data + "/2022";
-						 */
-                        String ora = partita.get(2);
-                        ora = ora.replace(".", ":");
-                        if (ora.equals("-") || ora.equals("&nbsp;")) {
-                            ora = "15:00";
-                        }
-                        String squadre = partita.get(3);
-                        //					System.out.println(iGiornata + "-" + giorno + "-" + data + "-" + ora + "-" + squadre);
-                        ZonedDateTime parseZDT = ZonedDateTime.parse(data + " - " + ora + ":00 +0000", dtf.withZone(ZoneId.of("Europe/Rome")));
-                        List<Integer> list = giorniGioca.get(parseZDT);
-                        if (list == null) {
-                            list = new ArrayList<>();
-                        }
-                        list.add(iGiornata);
-                        giorniGioca.put(parseZDT, list);
-                        ultimaData = data;
-                        if (primaData == null) primaData = data;
-                        //					System.out.println(iGiornata + ": " + ultimoGiorno + "-" + ultimoMese + "-" + ultimoAnno);
-                    } catch (Exception e) {
-                        e.printStackTrace(System.out);
-                    }
-                }
-                if (ultimaData != null) {
-                    ZonedDateTime parseZDT = ZonedDateTime.parse(ultimaData + " - 23:59:00 +0000", dtf);
-                    calendario.put(iGiornata, parseZDT);
-                    //					String primoAnno="2021";
-                    //					if (Integer.parseInt(primoMese)<8) primoAnno = "2022";
-                    parseZDT = ZonedDateTime.parse(primaData + " - 23:59:00 +0000", dtf);
-                    calendarioInizioGiornata.put(iGiornata, parseZDT);
-                }
-            }
-            ZonedDateTime now = ZonedDateTime.now();
-            Set<Integer> keySet = calendario.keySet();
-            for (Integer attG : keySet) {
-                ZonedDateTime zonedDateTime = calendario.get(attG);
-                if (now.isAfter(zonedDateTime)) {
-                    Constant.GIORNATA = attG + 1;
-                }
-            }
-            if (constant.GIORNATA_FORZATA != null) {
-                constant.GIORNATA = constant.GIORNATA_FORZATA;
-            }
-            ZonedDateTime zonedDateTime = calendario.get(constant.GIORNATA);
 
-            //			System.out.println(Constant.GIORNATA);
+            LocalDate now = LocalDate.now();
+            for (int i = 1; i <= 38; i++) {
+                String cal = (String) Main.callHTTP("GET", "application/json; charset=UTF-8", String.format(Constant.URL_CALENDARIO, i), null).get("response");
+                Map<String, Object> json = Main.jsonToMap(cal);
+                List<Map<String, Object>> l = (List<Map<String, Object>>) ((Map) json.get("data")).get("games");
+                for (Map<String, Object> objectMap : l) {
+                    List<Map<String, Object>> games = (List<Map<String, Object>>) objectMap.get("matches");
+                    for (Map<String, Object> game : games) {
+                        String str = (String) game.get("utcDate");
+                        ZonedDateTime parseZDT = ZonedDateTime.parse(str).withZoneSameInstant(ZoneId.of("Europe/Rome"));
+                        LocalDate parseLD=parseZDT.toLocalDate();
+                        calendario.put(i, parseLD);
+                        giorniGioca.computeIfAbsent(parseLD, k -> new ArrayList<>()).add(i);
+                        if (now.isAfter(parseLD)) {
+                            constant.GIORNATA=i;
+                        }
+                    }
+                }
+            }
+
+        }
+        /*
+            List<Integer> list = giorniGioca.get(parseZDT);
+            giornata la prima after
+          */
+
+
         }
         Main.aggKeyFG();
         if (sqDaEv == null) {
@@ -282,11 +216,6 @@ public class Main {
         if (toSocket == null) {
             toSocket = new HashMap<>();
             toSocket.put("timeRefresh", 0);
-        }
-        if (mapper == null) {
-            //			mapper = new ObjectMapper();
-            mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         }
         if (sqRealFantacomix21 == null) {
             sqRealFantacomix21 = new HashSet() {{
@@ -436,6 +365,75 @@ public class Main {
             eventi.put(23, new String[]{"assist_gold", "", "", "1", "", "S", Constant.ASSIST, "assist_gold"});
             eventi.put(24, new String[]{"assist movimento livello medio", "", "", "1", "", "S", Constant.ASSIST, "assistMovimentoLvMedio"});
             eventi.put(25, new String[]{"assist movimento livello alto", "", "", "1", "", "S", Constant.ASSIST, ""});
+            eventi.put(26, new String[]{"mom", "", "", "1", "", "N", Constant.ASSIST, ""});
+            /*
+             getBonusKeyFromIndex: function(bonusIndex) {
+        var qualityAssist = Formations.getLeagueOptions().tipo_assist == 2;
+
+        switch (bonusIndex) {
+            case 1: return 'amm';
+            case 2: return 'esp';
+            case 3: return 'gol';
+            case 4: return 'gs';
+            //case 5: return 'ass';
+            //case 6: return 'asf';
+            case 7: return 'rig_pa';
+            case 8: return 'rig_sb';
+            case 9: return 'rig';
+            case 10: return 'aut';
+            case 11: return 'gv';
+            case 12: return 'gp';
+            case 13: return 'imb';
+            case 16: return 'var';
+            case 17: return 'inf';
+            case 20: return 'ass_i';
+            case 21: return 'ass_s';
+            case 22: return 'ass';
+            case 23: return 'ass_g';
+            //case 24: return qualityAssist ? 'ass_2' : 'asf';
+            //case 25: return qualityAssist ? 'ass_3' : 'asf';
+            case 26: return 'mom';
+            default: '';
+        }
+    },
+
+    getIconTooltip: function(key, role, forLegend) {
+
+        var label = '';
+
+        if ($.isNumeric(key)) key = Match.getBonusKeyFromIndex(key);
+
+        switch (String(key).toLowerCase()) {
+            case 'amm': label = 'Ammonizione'; break;
+            //case 'ass': label = 'Assist in movimento'; break;
+            //case 'asf': label = 'Assist da fermo'; break;
+            case 'aut': label = 'Autogol'; break;
+            case 'in': label = 'Subentrato dalla panchina'; break;
+            case 'esp': label = 'Espulso'; break;
+            case 'gol': label = 'Gol segnato'; break;
+            case 'gp': label = 'Gol del pareggio'; break;
+            case 'gs': label = 'Gol subito'; break;
+            case 'gv': label = 'Gol della vittoria'; break;
+            case 'migliore': label = 'Migliore in campo'; break;
+            case 'imb': label = 'Portiere imbattuto'; break;
+            case 'rig_pa': label = 'Rigore parato'; break;
+            case 'rig_sb': label = 'Rigore sbagliato'; break;
+            case 'rig': label = 'Rigore segnato'; break;
+            case 'sp': label = 'Spostato'; break;
+            case 'out': label = 'Sostituito'; break;
+            case 'var': label = 'Gol annullato dal VAR'; break;
+            case 'inf': label = 'Uscito per infortunio'; break;
+            case 'ass_i': label = 'Contributo al gol'; break;
+            case 'ass_s': label = 'Assist Soft'; break;
+            case 'ass': label = 'Assist'; break;
+            case 'ass_g': label = 'Assist Gold'; break;
+
+            case 'sw_0': label = 'Switch non avvenuto'; break;
+            case 'sw_1': label = 'Switch avvenuto'; break;
+            case 'sw_2': label = 'Switch non valutato'; break;
+            case 'mom': label = 'Man of the match'; break;
+        }
+             */
             if (valorizzaBMFG && false) {//TODO
                 Map<String, Object> bmFantaviva = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.FANTAVIVA.name()));
                 Map<String, Object> bmRealFantacomix21 = (Map<String, Object>) bm_FG(Main.aliasCampionati.get(Constant.Campionati.REALFANTACOMIX21.name()));
@@ -487,6 +485,8 @@ public class Main {
             sq.put(144, "CRE");
             sq.put(119, "LEC");
             sq.put(143, "MON");
+            sq.put(138, "VEN");
+            sq.put(153, "COM");
         }
         if (configsCampionato == null) {
             configsCampionato = new ArrayList<ConfigCampionato>();
@@ -501,18 +501,13 @@ public class Main {
     }
 
     public static void verificaOggiGioca() {
-        ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime z = null;
-        Set<ZonedDateTime> keyGiorniGioca = giorniGioca.keySet();
-        for (ZonedDateTime giornoGioca : keyGiorniGioca) {
+        LocalDate now = LocalDate.now();
+        LocalDate z = null;
+        Set<LocalDate> keyGiorniGioca = giorniGioca.keySet();
+        for (LocalDate giornoGioca : keyGiorniGioca) {
             if (giorniGioca.get(giornoGioca).contains(constant.GIORNATA) && now.getYear() == giornoGioca.getYear() && now.getMonth() == giornoGioca.getMonth() && now.getDayOfMonth() == giornoGioca.getDayOfMonth()) {
                 z = giornoGioca;
             }
-        }
-        if (z != null) {
-            constant.KEEP_ALIVE_END = z.plusHours(2);
-        } else {
-            constant.KEEP_ALIVE_END = ZonedDateTime.now();
         }
     }
 
@@ -1961,40 +1956,6 @@ public class Main {
         return snapPartite;
     }
 
-    private static void overrideTag(String s1, String s2, Map<String, String> mapSnap) throws Exception {
-        //https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/16/live_21.json
-        if (false) {
-            ZonedDateTime zonedDateTime = calendarioInizioGiornata.get(Constant.GIORNATA);
-            ZonedDateTime now = ZonedDateTime.now();
-            if (now.isAfter(zonedDateTime)) {
-                String callHTTP = (String) callHTTP("GET", "application/json; charset=UTF-8", "https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/" + Constant.I_LIVE_FANTACALCIO + "/live_" + Constant.GIORNATA + ".json", null).get("response");
-                Map<String, Object> jsonToMap = jsonToMap(callHTTP);
-                List<Map<String, Object>> incontri = (List<Map<String, Object>>) ((Map) jsonToMap.get("data")).get("inc");
-                for (Map<String, Object> incontro : incontri) {
-                    String incSqCasa = sq.get(incontro.get("id_a"));
-                    String incSqFuori = sq.get(incontro.get("id_b"));
-                    if (incSqCasa.equals(s1) || incSqCasa.equals(s2)) {
-                        String newVal = (String) incontro.get("d");
-                        String newTag = reverseStatusMatch.get(incontro.get("sto"));
-                        if (mapSnap != null && !mapSnap.get("tag").equals(newTag)) {
-                            mapSnap.put("tag", newTag);
-                            mapSnap.put("val", newVal);
-                        }
-                    }
-                    if (incSqFuori.equals(s1) || incSqFuori.equals(s2)) {
-                        String newVal = (String) incontro.get("d");
-                        String newTag = reverseStatusMatch.get(incontro.get("sto"));
-                        if (mapSnap != null && !mapSnap.get("tag").equals(newTag)) {
-                            mapSnap.put("tag", newTag);
-                            mapSnap.put("val", newVal);
-                        }
-                    }
-
-                }
-            }
-        }
-    }
-
     public static Map<String, Object> callHTTP(String verbo, String contentType, String url, String body, Map<String, String>... headers) throws Exception {
         //		System.out.println(verbo + " " + url + " " + printMap(headers));
         Map<String, Object> ret = new HashMap<>();
@@ -2784,7 +2745,6 @@ public class Main {
             String sqFuori = alSq.get(1);
             map.put("tag", tag);
             map.put("val", val);
-            overrideTag(sqCasa, sqFuori, map);
             orari.put(sqCasa, map);
             orari.put(sqFuori, map);
             generaNotificheRisultati(partita, tag, sqCasa, sqFuori);
@@ -2956,7 +2916,11 @@ public class Main {
                     Integer idS = (Integer) map.get("id_s");
                     boolean trov = false;
                     newMap.put("nome", nomeGiocatoreLive);
-                    newMap.put("voto", map.get("v"));
+                    String voto="0";
+                    if (map.get("v")!=null && !Double.valueOf(map.get("v").toString()).equals(56D)){
+                        voto=map.get("v").toString();
+                    }
+                    newMap.put("voto", voto);
                     String evento = "";
                     List<Integer> bm = (List) map.get("bm");
                     for (Integer integer : bm) {
@@ -4932,36 +4896,6 @@ public class Main {
         });
         sb.append("\n");
         return sb.toString();
-    }
-
-    public static Map<String, String> visKeepAliveEnd() throws Exception {
-        String visKeepAlive = "N";
-        if (Constant.KEEP_ALIVE_END.isAfter(ZonedDateTime.now())) {
-            visKeepAlive = "S";
-        }
-        Map<String, String> ret = new HashMap<String, String>();
-        ret.put("VIS_KEEP_ALIVE", visKeepAlive);
-        return ret;
-    }
-
-    public static Map<String, Object> setKeepAliveEnd(Map<String, Object> body) throws Exception {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        boolean verso = (boolean) body.get("verso");
-        if (verso) {
-            constant.KEEP_ALIVE_END = ZonedDateTime.now().withHour(23).withMinute(0).withSecond(0).withZoneSameLocal(ZoneId.of("Europe/Rome"));
-        } else {
-            constant.KEEP_ALIVE_END = ZonedDateTime.now().plusHours(-1);
-        }
-        String visKeepAlive = "N";
-        ZonedDateTime now = ZonedDateTime.now();
-        if (Constant.KEEP_ALIVE_END.isAfter(now)) {
-            visKeepAlive = "S";
-        }
-        Main.toSocket.put("visKeepAlive", visKeepAlive);
-        ret.put("KEEP_ALIVE_END", constant.KEEP_ALIVE_END);
-        ret.put("VIS_KEEP_ALIVE", visKeepAlive);
-        socketHandlerFantalive.invia(Main.toSocket);
-        return ret;
     }
 
     public static void calcolaScontro(Squadra squadra1, Squadra squadra2, int ggDaCalcolare) {

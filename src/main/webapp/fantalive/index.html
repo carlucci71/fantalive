@@ -46,10 +46,6 @@
 <br>
 <label>Last refresh: </label>{{lastRefresh}}
 
-<span ng-show="visKeepAlive=='S'">
-	<!--  <label>Last keep alive: ??? </label>{{lastKeepAlive}} -->
-	<label>Fine keep alive: </label>{{keepAliveEnd}}
-</span>
 <br>
 <label>Secondi ritardo notifica: </label>{{ritardoNotifica}}
 <br>
@@ -159,11 +155,6 @@
  	<button ng-click="preparaSquadre()">Prepara squadre</button>
 	clear DB <input type=checkBox ng-model=clearDB></input>
 	<br><br>
-	<span>
-		<button ng-click="setKeepAliveEnd(true, '.')">SET KEEP ALIVE END</button>
-		<button ng-click="setKeepAliveEnd(false, '.')">CLEAR KEEP ALIVE END</button>
-	</span>
-	<br>
 	<textarea style="width:800px;height:200px " type=text ng-model="file"></textarea>
 	<br>
 	<button style="width:180px;"  ng-click="getFile('OD')">Get orari (DB)</button>

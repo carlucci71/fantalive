@@ -3,6 +3,7 @@ package fantalive;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +33,8 @@ public class FantaLiveTest {
 	
     @Test
     public void testCalendario() throws Exception{
-    	Map<Integer, ZonedDateTime> calendario = Main.calendario;
-    	ZonedDateTime zonedDateTime = calendario.get(1);
+    	Map<Integer, LocalDate> calendario = Main.calendario;
+    	LocalDate zonedDateTime = calendario.get(1);
 		assertEquals(zonedDateTime.getMonth().getValue(), 8);
     }
 
@@ -67,18 +68,7 @@ public class FantaLiveTest {
 		}
 		assertTrue(dettaglioGiocatore.indexOf("Sersale")>0);
     }
-    
-    @Test
-    public void testVisKeepAliveEnd() throws Exception{
-    	Map<String, String> visKeepAliveEnd = Main.visKeepAliveEnd();
-    	assertEquals("S", visKeepAliveEnd.get("VIS_KEEP_ALIVE"));
-    	Map<String, Object> body=new HashMap<String, Object>();
-    	body.put("verso", false);
-    	Map<String, Object> setKeepAliveEnd = Main.setKeepAliveEnd(body);
-    	assertEquals("N", (String)setKeepAliveEnd.get("VIS_KEEP_ALIVE"));
-    	
-    }
-    
+
     @Test
     public void testProiezioni()  throws Exception{
     	Map<String, Object> proiezioni = Main.proiezioni(Campionati.BE.name());

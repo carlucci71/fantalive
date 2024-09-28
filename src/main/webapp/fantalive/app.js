@@ -161,17 +161,8 @@ app.run(
 					if (msg.ritardoNotifica){
 						$rootScope.ritardoNotifica=msg.ritardoNotifica;
 					}
-//					if (msg.lastKeepAlive){
-//						$rootScope.lastKeepAlive=msg.lastKeepAlive;
-//					}
 					if (msg.lastRefresh){
 						$rootScope.lastRefresh=msg.lastRefresh;
-					}
-					if (msg.keepAliveEnd){
-						$rootScope.keepAliveEnd=msg.keepAliveEnd;
-					}
-					if (msg.visKeepAlive){
-						$rootScope.visKeepAlive=msg.visKeepAlive;
 					}
 				}
 				$rootScope.$apply();
@@ -731,31 +722,7 @@ app.run(
 						alert("Errore-8-3: " + angular.toJson(error));
 				});
 			}
-			$rootScope.accendiKeepAlive = function(verso){
-				$rootScope.setKeepAliveEnd(true, "./fantalive");
-				window.location.href = './fantalive/index.html';
-			}
-			$rootScope.setKeepAliveEnd = function(verso, prefix){
-				$rootScope.inizio=new Date();
-				$rootScope.fine="";
-				$rootScope.loading=true;
-				$resource(prefix + '/setKeepAliveEnd',{}).save({'verso': verso}).$promise.then(function(x) {
-					console.log(x);
-					$rootScope.fine=new Date();
-					$rootScope.loading=false;
-				}).catch(function(error) {
-					$rootScope.fine=new Date();
-					$rootScope.loading=false;
-					if (error && error.data && error.data.message)
-						alert("Errore-9-1: " + error.data.message);
-					else if (error && error.data)
-						alert("Errore-9-2: " + error.data);
-					else 
-						alert("Errore-9-3: " + angular.toJson(error));
-				});
-			}
-			
-			
+
 			$rootScope.setRitardoNotifica = function(){
 				$rootScope.inizio=new Date();
 				$rootScope.fine="";

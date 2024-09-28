@@ -97,17 +97,10 @@ public class MyController {
         }
     }
 
-    /*
-        @Scheduled(fixedRate = 60000)
-        public void scheduleKeepAlive() throws Exception {
-            if (constant.ABILITA_REFRESH) {
-                keepAlive();
-            }
-        }
-    */
+
     @GetMapping("/getMyFile")
     public String getFile() throws Exception {
-        return keepAlive();
+        return null;//FIXME
     }
 
     @GetMapping("/simulaF1")
@@ -205,31 +198,6 @@ public class MyController {
             }
         }
     }
-
-
-    private String keepAlive() throws Exception {
-        String ret = "";
-        ZonedDateTime now = ZonedDateTime.now();
-        if (constant.KEEP_ALIVE_END.isAfter(now)) {
-            long between = 0;
-            if (Constant.LAST_REFRESH != null) between = ChronoUnit.MINUTES.between(Constant.LAST_REFRESH, now);
-            if (between > 25) {
-                String http = (String) Main.callHTTP("GET", "application/json; charset=UTF-8", String.format(Constant.URL_KEEP_ALIVE_HEROKU), null).get("response");
-                ret = Constant.KEEP_ALIVE + " Keep Alive!";
-                Main.inviaCronacaNotifica(ret);
-                System.out.println("REFRESH!!");
-                Constant.LAST_REFRESH = ZonedDateTime.now();
-            } else {
-//				System.out.println("non ancora refresh:" + between);
-                ret = "NON ANCORA REFRESH:" + between;
-            }
-        } else {
-            ret = Constant.dateTimeFormatterOut.format(now) + " --> " + Constant.dateTimeFormatterOut.format(Constant.KEEP_ALIVE_END);
-            System.out.println("NON NECESSARIO REFRESH!!");
-        }
-        return ret;
-    }
-
     @Scheduled(fixedRate = 5000)
     public void chckNotifica() throws Exception {
         if (Constant.ABILITA_REFRESH) {
@@ -242,16 +210,9 @@ public class MyController {
             Main.toSocket.put("timeRefresh", Main.timeRefresh);
             Main.toSocket.put("liveFromFile", Constant.LIVE_FROM_FILE);
             Main.toSocket.put("disabilitaNotificaTelegram", Constant.DISABILITA_NOTIFICA_TELEGRAM);
-            //		if (Constant.LAST_KEEP_ALIVE != null) Main.toSocket.put("lastKeepAlive", Constant.dateTimeFormatterOut.format(Constant.LAST_KEEP_ALIVE));
             if (Constant.LAST_REFRESH != null)
                 Main.toSocket.put("lastRefresh", Constant.dateTimeFormatterOut.format(Constant.LAST_REFRESH));
-            Main.toSocket.put("keepAliveEnd", Constant.dateTimeFormatterOut.format(Constant.KEEP_ALIVE_END));
-            String visKeepAlive = "N";
             ZonedDateTime now = ZonedDateTime.now();
-            if (Constant.KEEP_ALIVE_END.isAfter(now)) {
-                visKeepAlive = "S";
-            }
-            Main.toSocket.put("visKeepAlive", visKeepAlive);
             Main.toSocket.put("ritardoNotifica", Constant.RITARDO);
 
             String runningBot = "STOPPED";
@@ -749,11 +710,6 @@ public class MyController {
         return Main.go(true, null, body.get("sqEv"));
     }
 
-    @PostMapping("/setKeepAliveEnd")
-    public Map<String, Object> setKeepAliveEnd(@RequestBody Map<String, Object> body) throws Exception {
-        return Main.setKeepAliveEnd(body);
-    }
-
     @PostMapping("/setGiornata")
     public Map<String, Object> setGiornata(@RequestBody Map<String, Object> body) {
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -801,7 +757,6 @@ public class MyController {
         lista.add(new String[]{Constant.RIGORE_SEGNATO, "RIGORE SEGNATO"});
         lista.add(new String[]{Constant.AUTOGOL, "AUTOGOL"});
 //		lista.add(new String [] {Constant.CIAO,"CIAO"});
-        lista.add(new String[]{Constant.KEEP_ALIVE, "KEEP ALIVE"});
         lista.add(new String[]{Constant.P, "P"});
         lista.add(new String[]{Constant.D, "D"});
         lista.add(new String[]{Constant.C, "C"});

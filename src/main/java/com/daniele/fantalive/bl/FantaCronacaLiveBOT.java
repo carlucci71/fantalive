@@ -119,8 +119,7 @@ public class FantaCronacaLiveBOT extends TelegramLongPollingBot{
 				Constant.RIGORE_SBAGLIATO +  
 				Constant.RIGORE_SEGNATO +
 				Constant.AUTOGOL +	
-				Constant.CIAO +
-				Constant.KEEP_ALIVE );
+				Constant.CIAO );
 
 
 	}

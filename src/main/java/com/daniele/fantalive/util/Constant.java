@@ -18,13 +18,13 @@ public class Constant {
 	public static final String COMP_VIVA_FG = "512870";//512870 champions F1 e 512874 la coppa;//cookie comp_fanta-viva_Leghe2022 di https://leghe.fantacalcio.it/servizi/V1_LegheMessaggi/.... 512843 campionato 
 	public static final String COMP_LUCCICAR_FG = "379529";
 	public static final String COMP_REALFANTACOMIX21_FG = "339736";
-	public static final int DELTA_FS=3;
+	public static final int DELTA_FS=4;
 	public static final int NUM_PARTITE_FS = 4;
-	public static final String COMP_FS = "144101";
-	public static final int PRIMA_GIORNATA_FS = 10569316;
+	public static final String COMP_FS = "147396";
+	public static final int PRIMA_GIORNATA_FS = 10499643;
 	public static final String SPORT_ID_LIVE_GAZZETTA = "1";
 	public static final String COMP_ID_LIVE_GAZZETTA = "21";
-	public static final String I_LIVE_FANTACALCIO = "18";//TODO AUMENTA CON L'ANNO
+	public static final String I_LIVE_FANTACALCIO = "19";//TODO AUMENTA CON L'ANNO
 
 	public static int RITARDO = 0;
 	public static Integer GIORNATA;
@@ -42,8 +42,6 @@ public class Constant {
 	public static boolean PREPARA_SQUADRE_ON_LOAD=false;
 	public static boolean ABILITA_REFRESH;
 	public static boolean DISABILITA_NOTIFICA_TELEGRAM;
-	public static ZonedDateTime KEEP_ALIVE_END;
-//	public static ZonedDateTime LAST_KEEP_ALIVE;
 	public static int SCHEDULED_SNAP;
 	public static  int NUM_SQUADRE_BE = 0;	
 	public static final String FORMAZIONE = "formazione";
@@ -86,8 +84,7 @@ public class Constant {
 	public static final String RIGORE_SEGNATO = "\uD83E\uDD4A";
 	public static final String AUTOGOL = "\uD83D\uDCA9";	
 	public static final String CIAO = "\uD83D\uDC4B";
-	public static final String KEEP_ALIVE = "\uD83E\uDE7A";
-	public static final String P = "\u24C5";	
+	public static final String P = "\u24C5";
 	public static final String D = "\u24B9";	
 	public static final String C = "\u24B8";	
 	public static final String A = "\u24B6";
@@ -129,11 +126,9 @@ public class Constant {
 	public static final String URL_PROIEZIONI_FG = "https://appleghe.fantacalcio.it/api/v1/V2_LegaFormazioni/Proiezione?id_comp=%s&giornata=%s";
 	public static final String URL_LOGIN_FS = "https://www.fanta.soccer/it/login/";
 	//public static final String URL_CALENDARIO = "https://www.dazn.com/it-IT/news/serie-a/il-calendario-completo-della-serie-a-tim-2022-2023/b1n0ghgi7x0t1rj6zswxyho13";
-	public static final String URL_CALENDARIO = "https://www.dazn.com/it-IT/news/calcio/calendario-completo-serie-a-tim-dove-vedere-le-partite/1hkwqz1bsr1zy18lutswylmvb9";
+	public static final String URL_CALENDARIO = "https://api2-mtc.gazzetta.it/api/v1/sports/calendar?day=%d&sportId=1&competitionId=21";
 	public static final String URL_LOGIN_APP_FG = "https://appleghe.fantacalcio.it/api/v1/v1_utente/login";
-	public static final String URL_KEEP_ALIVE_HERO = "https://fantalive71.herokuapp.com/fantalive/index.html";
 	public static final String URL_API_GAZZETTA = "https://api2-mtc.gazzetta.it/api/v1/sports/calendar?sportId=1&competitionId=%d";
-	public static final String URL_KEEP_ALIVE_HEROKU = "https://fantalive71.herokuapp.com/fantalive/index.html";
 	public static final String URL_LIVE_FG = "https://www.fantacalcio.it/api/live/%d?g=%d&i=%s";
 	public static final int ICASA=2;
 	public static Map<Integer, String> listaFG=new HashMap<>();

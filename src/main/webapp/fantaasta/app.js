@@ -39,9 +39,6 @@ app.run(
 				$rootScope.sendMsg(JSON.stringify({'operazione':'cancellaUtente', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
 				$rootScope.nomegiocatore='';
 			};
-	        setInterval(function () {
-				$rootScope.keepAlive();
-	        }, 60000*10);
 			$rootScope.scegliMantra=function(){
 				$rootScope.isMantra=!$rootScope.isMantra;
 				if($rootScope.isMantra){
@@ -80,21 +77,6 @@ app.run(
 					$rootScope.idgiocatore=id;
 					$rootScope.doConnect();
 				}
-			}
-			$rootScope.keepAlive = function() {
-				const now = new Date();
-				const year = now.getFullYear();
-				const month = now.getMonth() + 1; // I mesi sono indicizzati da 0 a 11, quindi aggiungiamo 1 per ottenere il mese corretto
-				const day = now.getDate();
-				const hours = now.getHours();
-				const minutes = now.getMinutes();
-				const seconds = now.getSeconds();
-				const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
-				console.log("KEEPALIVE: " + formattedTime);
-				$resource('./keepAlive',{}).query().$promise.then(function() {
-				console.log("OK");
-				});
 			}
 			$rootScope.changeVisFvm = function() {
 				$resource('./visFvm',{}).query().$promise.then(function() {

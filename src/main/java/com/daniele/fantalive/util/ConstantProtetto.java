@@ -14,12 +14,6 @@ public class ConstantProtetto {
 	public static Constant constant() {
 		Constant constant = new Constant();
 		constant.instanza=ConstantProtetto.class.getCanonicalName();
-		if(System.getenv("KEEP_ALIVE_END") != null) {
-			constant.KEEP_ALIVE_END = ZonedDateTime.parse(System.getenv("KEEP_ALIVE_END"), Constant.dateTimeFormatterIn);
-		}
-		else {
-			constant.KEEP_ALIVE_END = ZonedDateTime.now();
-		}
 		constant.DISABILITA_NOTIFICA_TELEGRAM = Boolean.valueOf(System.getenv("DISABILITA_NOTIFICA_TELEGRAM"));
 		constant.disableCertificateValidation = Boolean.valueOf(System.getenv("DISABILITA_CERTIFICATE_VALIDATION"));
 
