@@ -12,10 +12,10 @@ public class Constant {
 	public static enum Campionati {BE, FANTAVIVA, LUCCICAR, REALFANTACOMIX21}
 	public static final String URL_NOTIFICA_NAS = "http://192.168.1.105:7080/fantalive-0.0.1-SNAPSHOT/";
 	public static final String URL_NOTIFICA_HEROKU = "https://fantalive71.herokuapp.com/fantalive/index.html";
-	public static final int DELTA_VIVA_FG=4;
+	public static final int DELTA_VIVA_FG=5;
 	public static final int DELTA_LUCCICAR_FG=2;
 	public static final int DELTA_REALFANTACOMIX21_FG=4;
-	public static final String COMP_VIVA_FG = "512870";//512870 champions F1 e 512874 la coppa;//cookie comp_fanta-viva_Leghe2022 di https://leghe.fantacalcio.it/servizi/V1_LegheMessaggi/.... 512843 campionato 
+	public static final String COMP_VIVA_FG = "644971";//""644971";
 	public static final String COMP_LUCCICAR_FG = "379529";
 	public static final String COMP_REALFANTACOMIX21_FG = "339736";
 	public static final int DELTA_FS=4;
