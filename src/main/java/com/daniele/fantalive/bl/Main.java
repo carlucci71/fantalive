@@ -2291,7 +2291,7 @@ motm->0.0
             bodyMap.put("username", constant.UTENTE_FG);
             bodyMap.put("password", constant.PWD_FG);
             Map<String, String> headers = new HashMap<>();
-            headers.put("app_key", constant.APPKEY_FG_MOBILE);
+            headers.put("app_key", constant.APPKEY_FG);
             headers.put("Content-Type", "application/json");
             Map<String, Object> postHTTP = callHTTP("POST", "application/json; charset=UTF-8", String.format("https://apileague.fantacalcio.it/onboarding/v1/login"), toJson(bodyMap), headers);
             String response = (String) postHTTP.get("response");
@@ -2549,8 +2549,8 @@ motm->0.0
         bodyMap.put("username", constant.UTENTE_FG);
         bodyMap.put("password", constant.PWD_FG);
         Map<String, String> headers = new HashMap<>();
-        headers.put("app_key", constant.APPKEY_FG_MOBILE);
-        Map<String, Object> postHTTP = callHTTP("POST", "application/json; charset=UTF-8", String.format("https://apileague.fantacalcio.it/onboarding/v1/login"), toJson(bodyMap), headers);
+        headers.put("app_key", Constant.APPKEY_FG_MOBILE);
+        Map<String, Object> postHTTP = callHTTP("POST", "application/json; charset=UTF-8", String.format(Constant.URL_LOGIN_APP_FG), toJson(bodyMap), headers);
         String response = (String) postHTTP.get("response");
         Map<String, Object> mapResponse = jsonToMap(response);//dati del login
         Map data = (Map) mapResponse.get("data");
@@ -2563,7 +2563,6 @@ motm->0.0
             if (((String) legaAtt.get("alias")).equalsIgnoreCase(lega)) {
                 lega_token = (String) legaAtt.get("token");
                 id_squadra = (int) legaAtt.get("id_squadra");
-
             }
         }
         String modulo = sq.getModulo();
@@ -2580,14 +2579,9 @@ motm->0.0
         teams.add(mapT);
         mapBody.put("teams", teams);
         headers = new HashMap<>();
-        headers.put("app_key", constant.APPKEY_FG_MOBILE);
+        headers.put("app_key", Constant.APPKEY_FG_MOBILE);
         headers.put("lega_token", lega_token);
-        headers.put("user_token", user_token);
-
-        headers.put("authorization", "Bearer " + token.get("Fanta-Viva"));
-
-
-
+        headers.put("user_token", user_token);//FIXME
         postHTTP = callHTTP("POST", "application/json; charset=UTF-8", "https://appleghe.fantacalcio.it/api/v1/V1_LegaFormazioni/Simulatore", toJson(mapBody), headers);
         response = (String) postHTTP.get("response");
         mapResponse = jsonToMap(response);
@@ -3242,9 +3236,9 @@ motm->0.0
                         int pos = 1;
                         if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.FANTAVIVA.name())) pos = 1;
                         //if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.LUCCICAR.name())) pos = 2;
-                        if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.BE.name())) pos = 3;
+                        if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.BE.name()))  pos = 3;
                         //if (r.getCampionato().equalsIgnoreCase(Constant.Campionati.REALFANTACOMIX21.name())) pos = 4;
-                        if (pos == 1 || pos == 4) {
+                        if (pos == 1 || pos == 3) {
                             modificatore = modificatore + Double.parseDouble(eventiAtt[pos]);
                         } else {
                             modificatore = 0;

@@ -615,6 +615,7 @@ public class MyController {
         macroRuoliMantra.put("Dd", "D");
         macroRuoliMantra.put("Ds", "D");
         macroRuoliMantra.put("Dc", "D");
+        macroRuoliMantra.put("B", "D");
 
         macroRuoliMantra.put("E", "C");
         macroRuoliMantra.put("C", "C");
