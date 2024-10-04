@@ -712,13 +712,15 @@ public class MyController {
     }
 
     @PostMapping("/setGiornata")
-    public Map<String, Object> setGiornata(@RequestBody Map<String, Object> body) {
+    public Map<String, Object> setGiornata(@RequestBody Map<String, Object> body) throws Exception {
         Map<String, Object> ret = new HashMap<String, Object>();
         Constant.GIORNATA = (Integer) body.get("giornata");
         Main.oldSnapLives = null;
         Main.oldSnapOrari = null;
         Main.instantUsati = new HashMap<>();
         Main.sqStatusMatch = new HashMap<>();
+
+        Main.aggKeyFG();
 
         return ret;
     }
