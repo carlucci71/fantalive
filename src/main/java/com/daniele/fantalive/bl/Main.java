@@ -738,11 +738,11 @@ motm->0.0
                     String oldTag = oldGioc.getOrario().get("tag");
                     String newTag = newGioc.getOrario().get("tag");
                     if (newTag.equalsIgnoreCase("PreMatch") && newGioc.isNotificaLive() == false && !oldGioc.isSquadraGioca() && newGioc.isSquadraGioca()) {
-                        mapEventi.put("NON SCHIERATO", new RigaNotifica(0, "NON SCHIERATO", Constant.NON_SCHIERATO));
+                        mapEventi.put("NON SCHIERATO", new RigaNotifica(0, "NON SCHIERATO!", Constant.NON_SCHIERATO));
                         squadreSchieratoNonSchierato.add(newGioc.getSquadra());
                     }
                     if (newTag.equalsIgnoreCase("PreMatch") && newGioc.isNotificaLive() == true && !oldGioc.isSquadraGioca() && newGioc.isSquadraGioca()) {
-                        mapEventi.put("SCHIERATO", new RigaNotifica(0, "SCHIERATO", Constant.SCHIERATO));
+                        mapEventi.put("SCHIERATO", new RigaNotifica(0, "SCHIERATO!", Constant.SCHIERATO));
                         squadreSchieratoNonSchierato.add(newGioc.getSquadra());
                     }
                     if (!squadreSchieratoNonSchierato.contains(newGioc.getSquadra())) {
