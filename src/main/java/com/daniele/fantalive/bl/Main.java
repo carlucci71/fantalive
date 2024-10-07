@@ -196,7 +196,7 @@ public class Main {
                             LocalDate parseLD = parseZDT.toLocalDate();
                             calendario.put(i, parseLD);
                             giorniGioca.computeIfAbsent(parseLD, k -> new ArrayList<>()).add(i);
-                            if (now.isAfter(parseLD)) {
+                            if (!now.isBefore(parseLD)) {
                                 constant.GIORNATA = i;
                             }
                         }
@@ -240,16 +240,18 @@ public class Main {
                 put("LUCCICAR-daddy", "IO");
                 put("LUCCICAR-Team Frank..10", "fra");
                 put("LUCCICAR-Team Alberto..04", "bebo");
-                put("FANTAVIVA-Va bene lo stessooo", "Angy");
-                put("FANTAVIVA-Real Colizzati", "Dum");
+
+                put("FANTAVIVA-AC Lesna", "Vale");
+                put("FANTAVIVA-GioMario", "Gio");
+                put("FANTAVIVA-SamPdor", "Angy");
+                put("FANTAVIVA-?CataVento??", "DarioLuigi");
                 put("FANTAVIVA-Tavolino", "IO");
-                put("FANTAVIVA-Reset Fc", "Vale");
-                put("FANTAVIVA-AS Sersale 1975", "Ben");
                 put("FANTAVIVA-Longobarda", "Ale");
-                put("FANTAVIVA-A.C. Avanti Cristo", "KK");
-                put("FANTAVIVA-ASC Melizzano", "Dario");
-                put("FANTAVIVA-perqualcheciacciinpiu", "Gigi");
+                put("FANTAVIVA-AC Ciughina", "KK");
+                put("FANTAVIVA-Real colizzati", "Dum");
                 put("FANTAVIVA-Ciulone", "Andrea");
+                put("FANTAVIVA-AS Sersele 1975", "Ben");
+
                 put("BE-Atletico Mikatanto", "Dante");
                 put("BE-VincereAManiBasse", "Roby");
                 put("BE-Universal", "Claudio");
@@ -738,11 +740,11 @@ motm->0.0
                     String oldTag = oldGioc.getOrario().get("tag");
                     String newTag = newGioc.getOrario().get("tag");
                     if (newTag.equalsIgnoreCase("PreMatch") && newGioc.isNotificaLive() == false && !oldGioc.isSquadraGioca() && newGioc.isSquadraGioca()) {
-                        mapEventi.put("NON SCHIERATO", new RigaNotifica(0, "NON SCHIERATO!" + newGioc.isNotificaLive(), Constant.NON_SCHIERATO));
+                        mapEventi.put("NON SCHIERATO", new RigaNotifica(0, "NON SCHIERATO", Constant.NON_SCHIERATO));
                         squadreSchieratoNonSchierato.add(newGioc.getSquadra());
                     }
                     if (newTag.equalsIgnoreCase("PreMatch") && newGioc.isNotificaLive() == true && !oldGioc.isSquadraGioca() && newGioc.isSquadraGioca()) {
-                        mapEventi.put("SCHIERATO", new RigaNotifica(0, "SCHIERATO!" + newGioc.isNotificaLive(), Constant.SCHIERATO));
+                        mapEventi.put("SCHIERATO", new RigaNotifica(0, "SCHIERATO", Constant.SCHIERATO));
                         squadreSchieratoNonSchierato.add(newGioc.getSquadra());
                     }
                     if (!squadreSchieratoNonSchierato.contains(newGioc.getSquadra())) {
@@ -3398,7 +3400,9 @@ motm->0.0
                         giocatore.setEvento(eventodecodificato);
                         giocatore.setCodEventi(codEventi);
                         giocatore.setModificatore(modificatore);
-                        giocatore.setNotificaLive(true);
+                        if (giocatore.getVoto()>0) {
+                            giocatore.setNotificaLive(true);
+                        }
                     }
                 }
             }
