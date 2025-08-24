@@ -151,7 +151,7 @@ public class Main {
     static Set<String> idRealFantacomix21;
     static Set<String> giocRealFantacomix21;
     public static Map<String, String> keyFG = null;
-    public static Map<String, Object> fantaVivaOption = null;
+    public static Map<String, Object> fantaVivaOption = new HashMap<>();
     public static String fantaVivaCookie = null;
     public static int timeRefresh = 0;
 
