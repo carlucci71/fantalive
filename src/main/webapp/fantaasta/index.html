@@ -362,7 +362,8 @@
 			</div>
 			<input ng-show="isAdmin" type="button" value="azzera tempo" ng-click="azzeraTempo()"></input>
 			<input ng-show="isAdmin" type="button" value="azzera offerta" ng-click="azzeraOfferta()"></input>
-   		 	<i title="dettaglio" class="fa fa-info-circle" style="cursor:pointer" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id, false,offertaVincente.giocatore.fvm)"></i>
+            <label  ng-if="visFmv">{{offertaVincente.giocatore.fvm}}</label>
+            <i title="dettaglio" class="fa fa-info-circle" style="cursor:pointer" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id, false,offertaVincente.giocatore.fvm)"></i>
    		 	<i title="dettaglio old" class="fa fa-info-circle" style="cursor:pointer;color:red" ng-show="isMantra" ng-click="urlDettaglio(offertaVincente.giocatore.nome,offertaVincente.giocatore.id, true,offertaVincente.giocatore.fvm)"></i>
             <span ng-show="isMantra && selCalciatoreUnder23=='SI'">*</span>
             <span ng-show="!isMantra || selCalciatoreUnder23!='SI'">&nbsp;</span>
