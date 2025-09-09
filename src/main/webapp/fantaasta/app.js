@@ -1222,6 +1222,16 @@ app.run(
 					}
 				});
 			}
+
+			$rootScope.disconnectAll = function(){
+				$rootScope.messaggi=[];
+				$rootScope.bSemaforoAttivo=true;
+				$rootScope.tokenDispositiva=Math.floor(Math.random()*(10000)+1);
+				$resource('./disconnectAll',{}).save({'tokenDispositiva':$rootScope.tokenDispositiva}).$promise.then(function(data) {
+
+				});
+			}
+
 			$rootScope.clearOfferta=function(){
 				$rootScope.offertaVincente="";
 				$rootScope.filterRuolo="";

@@ -36,6 +36,7 @@
 	<div class="utenteLoggato" ng-show="nomegiocatore && !connessioneKO">
 		Buona fortuna {{nomegiocatore}}
 		<img ng-click="forzaLogout()" class="imgForzaLogout" style="margin-bottom:2px;cursor:pointer" title="disconntetti" src='./cestino.png'/>
+        <img style="cursor:pointer" ng-show="isAdmin" title="disconnectAll" src='./conferma.jpeg' ng-click="disconnectAll()"/>
 	</div>
 	<span ng-show=false style="background-color:red;width: 10%;border-style: dotted;border-22px;border-color:yellow;position:absolute;">xxx</span>
 	

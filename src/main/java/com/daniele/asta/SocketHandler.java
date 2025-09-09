@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
@@ -615,7 +616,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
         invia(toJson(m));
     }
 
-    private void invia(String payload) throws IOException {
+    private void inviaOrig(String payload) throws IOException {
         for (WebSocketSession webSocketSession : getSessions()) {
             if (webSocketSession.isOpen()) {
                 synchronized (webSocketSession) {
@@ -625,7 +626,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
         }
     }
 
-    private synchronized void inviaNew(String payload) throws IOException {
+    private synchronized void invia(String payload) throws IOException {
         for (WebSocketSession webSocketSession : getSessions()) {
             if (webSocketSession.isOpen()) {
                 webSocketSession.sendMessage(new TextMessage(payload));
@@ -633,6 +634,18 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
         }
     }
 
+    public void disconnectAll() {
+        synchronized (sessions) {
+            for (WebSocketSession session : sessions) {
+                try {
+                    session.close(CloseStatus.NORMAL);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            sessions.clear();
+        }
+    }
 
     @Scheduled(fixedRateString = "${frequenza.refresh}", initialDelay = 1000)
     private void aggiorna() throws IOException {
