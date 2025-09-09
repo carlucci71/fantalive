@@ -822,7 +822,7 @@ public class MyControllerAsta {
 			String idgiocatore =  ((Map)body.get("offerta")).get("idgiocatore").toString();
 			String idCalciatore = ((Map)body.get("offerta")).get("idCalciatore").toString();
 			Optional<Fantarose> findById = fantaroseRepository.findById(Integer.parseInt(idCalciatore));
-			if (findById.isPresent()) {
+			if (findById.isPresent()) {//ALTRIMENTI DA ERRORE DOPPIO INSERT CON DOPPIO ADMIN
                 ret.put("insert", "OK");
 			}
 			else {
