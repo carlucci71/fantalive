@@ -625,6 +625,15 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
         }
     }
 
+    private synchronized void inviaNew(String payload) throws IOException {
+        for (WebSocketSession webSocketSession : getSessions()) {
+            if (webSocketSession.isOpen()) {
+                webSocketSession.sendMessage(new TextMessage(payload));
+            }
+        }
+    }
+
+
     @Scheduled(fixedRateString = "${frequenza.refresh}", initialDelay = 1000)
     private void aggiorna() throws IOException {
         Map<String, Object> m = new HashMap<>();
