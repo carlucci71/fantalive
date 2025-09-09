@@ -50,7 +50,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
         msg.put("categoria", categoria);
         messaggi.add(msg);
         LoggerMessaggi loggerMessaggi = new LoggerMessaggi();
-        loggerMessaggi.setId(now);
+        loggerMessaggi.setId(UUID.randomUUID().toString());
         loggerMessaggi.setMessaggio(messaggio);
         loggerMessaggi.setCategoria(categoria.name());
         loggerMessaggi.setIndirizzo(indirizzo);

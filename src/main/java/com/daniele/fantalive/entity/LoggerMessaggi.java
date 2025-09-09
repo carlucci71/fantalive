@@ -9,14 +9,14 @@ import javax.persistence.Id;
 public class LoggerMessaggi {
 
 	@Id
-	private long id;
+	private String id;
 	private String messaggio;
 	private String categoria;
 	private String indirizzo;
-	public long getId() {
+	public String getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public String getMessaggio() {
