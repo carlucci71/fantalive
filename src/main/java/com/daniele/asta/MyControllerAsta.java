@@ -823,7 +823,7 @@ public class MyControllerAsta {
 			String idCalciatore = ((Map)body.get("offerta")).get("idCalciatore").toString();
 			Optional<Fantarose> findById = fantaroseRepository.findById(Integer.parseInt(idCalciatore));
 			if (findById.isPresent()) {
-				ret.put("insert", "KO");
+                ret.put("insert", "OK");
 			}
 			else {
 				Integer offerta = (Integer) ((Map)body.get("offerta")).get("offerta");
