@@ -616,7 +616,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
         invia(toJson(m));
     }
 
-    private void inviaOrig(String payload) throws IOException {
+    private void invia(String payload) throws IOException {
         for (WebSocketSession webSocketSession : getSessions()) {
             if (webSocketSession.isOpen()) {
                 synchronized (webSocketSession) {
@@ -626,7 +626,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
         }
     }
 
-    private synchronized void invia(String payload) throws IOException {
+    private synchronized void inviaNew(String payload) throws IOException {
         for (WebSocketSession webSocketSession : getSessions()) {
             if (webSocketSession.isOpen()) {
                 webSocketSession.sendMessage(new TextMessage(payload));
