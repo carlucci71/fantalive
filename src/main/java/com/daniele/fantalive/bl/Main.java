@@ -469,13 +469,15 @@ motm->0.0
                     String[] valori = eventi.get(key);
                     String kFg = valori[7];
                     try {
-                        fontiVoti.put(aliasCampionati.get(Campionati.FANTAVIVA.name()), (Integer) ((Map) fantaVivaOption.get("fonte")).get("fonte_voti"));
-                        //fontiVoti.put(aliasCampionati.get(Campionati.LUCCICAR.name()), (Integer) ((Map) bmLuccicar.get("fonte")).get("fonte_voti"));
-                        //fontiVoti.put(aliasCampionati.get(Campionati.REALFANTACOMIX21.name()), (Integer) ((Map) bmRealFantacomix21.get("fonte")).get("fonte_voti"));
+                        if (fantaVivaOption.get("fonte") != null) {
+                            fontiVoti.put(aliasCampionati.get(Campionati.FANTAVIVA.name()), (Integer) ((Map) fantaVivaOption.get("fonte")).get("fonte_voti"));
+                            //fontiVoti.put(aliasCampionati.get(Campionati.LUCCICAR.name()), (Integer) ((Map) bmLuccicar.get("fonte")).get("fonte_voti"));
+                            //fontiVoti.put(aliasCampionati.get(Campionati.REALFANTACOMIX21.name()), (Integer) ((Map) bmRealFantacomix21.get("fonte")).get("fonte_voti"));
 
-                        overrideBM((Map<String, Object>) fantaVivaOption, valori, kFg, 1);
-                        //overrideBM(bmLuccicar, valori, kFg, 2);
-                        //overrideBM(bmRealFantacomix21, valori, kFg, 4);
+                            overrideBM((Map<String, Object>) fantaVivaOption, valori, kFg, 1);
+                            //overrideBM(bmLuccicar, valori, kFg, 2);
+                            //overrideBM(bmRealFantacomix21, valori, kFg, 4);
+                        }
                     } catch (Exception e) {
                         System.out.println("Errore: " + e.getMessage());
                     }
@@ -506,21 +508,23 @@ motm->0.0
             sq.put(18, "TOR");
             sq.put(19, "UDI");
             sq.put(20, "VER");
-            sq.put(5, "EMP");
-            sq.put(138, "VEN");
             sq.put(137, "SAL");
             sq.put(144, "CRE");
             sq.put(119, "LEC");
-            sq.put(143, "MON");
             sq.put(138, "VEN");
             sq.put(153, "COM");
+//            sq.put(143, "MON");
+//            sq.put(5, "EMP");
+//            sq.put(138, "VEN");
+
+            sq.put(157, "PIS");
         }
         if (configsCampionato == null) {
             configsCampionato = new ArrayList<ConfigCampionato>();
 
-            configsCampionato.add(new ConfigCampionato(24, "FANTAGAZZETTA", Constant.Campionati.REALFANTACOMIX21.name(), "NOMANTRA", "TUTTI"));
-            configsCampionato.add(new ConfigCampionato(24, "FANTAGAZZETTA", Constant.Campionati.LUCCICAR.name(), "NOMANTRA", "F1"));
-            configsCampionato.add(new ConfigCampionato(22, "FANTAGAZZETTA", Constant.Campionati.FANTAVIVA.name(), "MANTRA", "PARTITE"));
+//            configsCampionato.add(new ConfigCampionato(24, "FANTAGAZZETTA", Constant.Campionati.REALFANTACOMIX21.name(), "NOMANTRA", "TUTTI"));
+//            configsCampionato.add(new ConfigCampionato(24, "FANTAGAZZETTA", Constant.Campionati.LUCCICAR.name(), "NOMANTRA", "F1"));
+//            configsCampionato.add(new ConfigCampionato(22, "FANTAGAZZETTA", Constant.Campionati.FANTAVIVA.name(), "MANTRA", "PARTITE"));
 
             configsCampionato.add(new ConfigCampionato(22, "FANTASERVICE", Constant.Campionati.BE.name(), "NOMANTRA", "PARTITE"));
         }

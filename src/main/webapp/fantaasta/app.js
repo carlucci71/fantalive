@@ -1192,12 +1192,28 @@ app.run(
 						$rootScope.inizia(ng,value.id);
 					});
 			}
-			
+			$rootScope.iniziaFromLiberi = function(calci) {
+                $rootScope.selCalciatoreMacroRuolo=calci.macroRuolo;//C
+                $rootScope.selCalciatore=calci.id+"@"+calci.nome//1113586@Alex Sala
+			    $rootScope.inizia($rootScope.nomegiocatore,$rootScope.idgiocatore);
+			}
+
 			$rootScope.inizia = function(ng,ig) {
+			console.log($rootScope.selCalciatoreMacroRuolo);//C
+			console.log($rootScope.selCalciatore);//1113586@Alex Sala
+			console.log($rootScope.nomegiocatore);//Daniele
+			console.log($rootScope.idgiocatore);//5
+			console.log(ng);//Daniele
+			console.log(ig);//5
 				$rootScope.bSemaforoAttivo=false;
 				$rootScope.timeStart=0;
 				$rootScope.contaTempo=0;
-				$rootScope.sendMsg(JSON.stringify({'operazione':'start', 'selCalciatoreMacroRuolo':$rootScope.selCalciatoreMacroRuolo,'selCalciatore':$rootScope.selCalciatore, 'nomegiocatoreOperaCome':$rootScope.nomegiocatore, 'idgiocatoreOperaCome':$rootScope.idgiocatore,'nomegiocatore':ng,'idgiocatore':ig}));
+				$rootScope.sendMsg(JSON.stringify({'operazione':'start'
+				, 'selCalciatoreMacroRuolo':$rootScope.selCalciatoreMacroRuolo
+				,'selCalciatore':$rootScope.selCalciatore
+				, 'nomegiocatoreOperaCome':$rootScope.nomegiocatore
+				, 'idgiocatoreOperaCome':$rootScope.idgiocatore
+				,'nomegiocatore':ng,'idgiocatore':ig}));
 				$rootScope.selCalciatore="";
 				if (false){//PROVE LETTURA
 					$resource('./leggi',{}).save({'nome':$rootScope.selCalciatoreNome}).$promise.then(function(data) {
@@ -1328,9 +1344,6 @@ app.run(
 					var avv=false;
 					if ($rootScope.isMantra){
 						max=$rootScope.maxA;
-//						if(newValue!='P'){
-//							max=max-$rootScope.minP+$rootScope.getFromMapSpesoTotale('CONTAP',value.nome);
-//						}
 						if($rootScope.getFromMapSpesoTotale('CONTAALL',value.nome)<max) avv=true;
 					} 
 					else {
@@ -1345,7 +1358,20 @@ app.run(
 
 			});
 			
-			
+			$rootScope.chiamaFromLiberi= function(calciatore){
+				if ($rootScope.isMantra){
+                    return false;
+                }
+				var max;
+                if(calciatore.ruolo == 'P') max=$rootScope.maxP;
+                if(calciatore.ruolo == 'D') max=$rootScope.maxD;
+                if(calciatore.ruolo == 'C') max=$rootScope.maxC;
+                if(calciatore.ruolo == 'A') max=$rootScope.maxA;
+				var x=$rootScope.getFromMapSpesoTotale('CONTA'+calciatore.ruolo,$rootScope.nomegiocatore);
+    			return x<max;
+			    //return $rootScope.getFromMapSpesoTotale('CONTA'+calciatore.ruolo,$rootScope.nomegiocatore)<2);
+			}
+
 			$rootScope.sort = {
 				    column: 'Ruolo',
 				    descending: false

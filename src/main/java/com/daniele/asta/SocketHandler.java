@@ -201,7 +201,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                 List<Map<String, Object>> riepilogoAllenatori = myController.riepilogoAllenatori();
                 Configurazione configurazione = myController.getConfigurazione();
                 boolean okTurno = false;
-                int contaPassaggi=0;
+                int contaPassaggi = 0;
                 while (!okTurno) {
                     iTurno++;
                     String nomeFirst = null;
@@ -242,32 +242,32 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
 
                     int contaP = 0;
                     if (attP.get("conta") != null) {
-                        contaP=((BigInteger) attP.get("conta")).intValue();
+                        contaP = ((BigInteger) attP.get("conta")).intValue();
                     }
                     int contaD = 0;
                     if (attD.get("conta") != null) {
-                        contaD=((BigInteger) attD.get("conta")).intValue();
+                        contaD = ((BigInteger) attD.get("conta")).intValue();
                     }
                     int contaC = 0;
                     if (attC.get("conta") != null) {
-                        contaC=((BigInteger) attC.get("conta")).intValue();
+                        contaC = ((BigInteger) attC.get("conta")).intValue();
                     }
                     int contaA = 0;
                     if (attA.get("conta") != null) {
-                        contaA=((BigInteger) attA.get("conta")).intValue();
+                        contaA = ((BigInteger) attA.get("conta")).intValue();
                     }
 
                     if (
-                            contaP !=configurazione.getMaxP().intValue() ||
-                            contaD !=configurazione.getMaxD().intValue() ||
-                            contaC !=configurazione.getMaxC().intValue() ||
-                            contaA !=configurazione.getMaxA().intValue()
+                            contaP != configurazione.getMaxP().intValue() ||
+                                    contaD != configurazione.getMaxD().intValue() ||
+                                    contaC != configurazione.getMaxC().intValue() ||
+                                    contaA != configurazione.getMaxA().intValue()
                     ) {
                         okTurno = true;
                     }
                     contaPassaggi++;
-                    if (configurazione.getNumeroGiocatori()<contaPassaggi){
-                        okTurno=true;
+                    if (configurazione.getNumeroGiocatori() < contaPassaggi) {
+                        okTurno = true;
                     }
                 }
                 myController.setTurno(Integer.toString(iTurno));
@@ -387,47 +387,57 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                 scadenzaAsta.setTimeInMillis(calInizioOfferta.getTimeInMillis());
                 scadenzaAsta.add(Calendar.SECOND, myController.getDurataAsta());
                 Map<String, Object> m = new HashMap<>();
-//			Long maxRilancio = myController.getMapSpesoTotale().get(nomegiocatore).get("maxRilancio");
-                if (offerta > maxRilancio) {
-                    String str = "Rilancio da " + offerta + " di " + nomegiocatore + " per "
-                            + offertaVincente.get("nomeCalciatore") + "("
-                            + ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
-                            + ((Giocatori) offertaVincente.get("giocatore")).getSquadra() + " abbassato a " + maxRilancio
-                            + " perchè oltre il massimo rilancio.";
+                boolean autoRilancio = false;
+                if (nomegiocatore.equals(offertaVincente.get("nomegiocatore").toString())) {
+                    String str = "Autorilancio di " + nomegiocatore + " annullato. ";
                     if (!nomegiocatoreOperaCome.equalsIgnoreCase(nomegiocatore)) {
                         str = str + "(" + nomegiocatoreOperaCome + ")";
                     }
                     creaMessaggio(indirizzo, str, EnumCategoria.Asta);
-                    offerta = maxRilancio;
+                    autoRilancio = true;
                 }
-                if (now.after(scadenzaAsta)) {
-                    String str = "Rilancio di " + nomegiocatore + " per " + offertaVincente.get("nomeCalciatore") + "("
-                            + ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
-                            + ((Giocatori) offertaVincente.get("giocatore")).getSquadra() + " arrivato dopo : "
-                            + (now.getTimeInMillis() - scadenzaAsta.getTimeInMillis()) + "millisecondi da scadenza asta";
-                    if (!nomegiocatoreOperaCome.equalsIgnoreCase(nomegiocatore)) {
-                        str = str + "(" + nomegiocatoreOperaCome + ")";
-                    }
-                    creaMessaggio(indirizzo, str, EnumCategoria.Asta);
-                } else {
-                    String str = "Rilancio di " + offerta + " fatto da " + nomegiocatore;
-                    if (!nomegiocatoreOperaCome.equalsIgnoreCase(nomegiocatore)) {
-                        str = str + "(" + nomegiocatoreOperaCome + ")";
-                    }
-                    str = str + " per " + offertaVincente.get("nomeCalciatore") + "("
-                            + ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
-                            + ((Giocatori) offertaVincente.get("giocatore")).getSquadra();
-                    if (attOfferta != null && offerta <= attOfferta && azzera == null) {
-                        creaMessaggio(indirizzo, str + " non superiore all'offerta vincente di " + attOfferta + " fatta da "
-                                + offertaVincente.get("nomegiocatore"), EnumCategoria.Asta);
-                    } else {
-                        calInizioOfferta = Calendar.getInstance();
-                        offertaVincente.put("nomegiocatore", nomegiocatore);
-                        offertaVincente.put("idgiocatore", idgiocatore);
-                        offertaVincente.put("offerta", offerta);
-                        m.put("offertaVincente", offertaVincente);
-                        m.put("selCalciatoreMacroRuolo", selCalciatoreMacroRuolo);
+                if (!autoRilancio) {
+                    if (offerta > maxRilancio) {
+                        String str = "Rilancio da " + offerta + " di " + nomegiocatore + " per "
+                                + offertaVincente.get("nomeCalciatore") + "("
+                                + ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
+                                + ((Giocatori) offertaVincente.get("giocatore")).getSquadra() + " abbassato a " + maxRilancio
+                                + " perchè oltre il massimo rilancio.";
+                        if (!nomegiocatoreOperaCome.equalsIgnoreCase(nomegiocatore)) {
+                            str = str + "(" + nomegiocatoreOperaCome + ")";
+                        }
                         creaMessaggio(indirizzo, str, EnumCategoria.Asta);
+                        offerta = maxRilancio;
+                    }
+                    if (now.after(scadenzaAsta)) {
+                        String str = "Rilancio di " + nomegiocatore + " per " + offertaVincente.get("nomeCalciatore") + "("
+                                + ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
+                                + ((Giocatori) offertaVincente.get("giocatore")).getSquadra() + " arrivato dopo : "
+                                + (now.getTimeInMillis() - scadenzaAsta.getTimeInMillis()) + "millisecondi da scadenza asta";
+                        if (!nomegiocatoreOperaCome.equalsIgnoreCase(nomegiocatore)) {
+                            str = str + "(" + nomegiocatoreOperaCome + ")";
+                        }
+                        creaMessaggio(indirizzo, str, EnumCategoria.Asta);
+                    } else {
+                        String str = "Rilancio di " + offerta + " fatto da " + nomegiocatore;
+                        if (!nomegiocatoreOperaCome.equalsIgnoreCase(nomegiocatore)) {
+                            str = str + "(" + nomegiocatoreOperaCome + ")";
+                        }
+                        str = str + " per " + offertaVincente.get("nomeCalciatore") + "("
+                                + ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
+                                + ((Giocatori) offertaVincente.get("giocatore")).getSquadra();
+                        if (attOfferta != null && offerta <= attOfferta && azzera == null) {
+                            creaMessaggio(indirizzo, str + " non superiore all'offerta vincente di " + attOfferta + " fatta da "
+                                    + offertaVincente.get("nomegiocatore"), EnumCategoria.Asta);
+                        } else {
+                            calInizioOfferta = Calendar.getInstance();
+                            offertaVincente.put("nomegiocatore", nomegiocatore);
+                            offertaVincente.put("idgiocatore", idgiocatore);
+                            offertaVincente.put("offerta", offerta);
+                            m.put("offertaVincente", offertaVincente);
+                            m.put("selCalciatoreMacroRuolo", selCalciatoreMacroRuolo);
+                            creaMessaggio(indirizzo, str, EnumCategoria.Asta);
+                        }
                     }
                 }
                 invia(toJson(m));

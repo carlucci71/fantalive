@@ -50,6 +50,7 @@
  		        <span ng-hide="sort.column === 'preferito'"><i class="fa fa-sort"></i></span>
             </th>
             <th></th>
+            <th></th>
         </tr>
         <tr>
             <th ng-show="isMantra"><input class="divCalciatore"style="width:70px;text-align:center" type=text ng-model="filterMacroRuolo"></input></th>
@@ -62,6 +63,7 @@
 				<i title="preferito" style="width:30px;text-align:center"  ng-click="filterPreferito=!filterPreferito" ng-show="filterPreferito" class="fa fa-check-square"></i>
 				<i title="preferito" style="width:30px;text-align:center"  ng-click="filterPreferito=!filterPreferito" ng-show="!filterPreferito" class="fa fa-square"></i>
 			</th>
+            <th></th>
             <th></th>
         </tr>
     </thead>
@@ -83,6 +85,11 @@
             <span ng-show="isMantra && calciatore.under23=='SI'">*</span>
             <span ng-show="!isMantra || calciatore.under23!='SI'">&nbsp;</span>
 		</td>
+      <td>
+          <img style="cursor:pointer" ng-show="durataAsta>0 && (nomeGiocatoreTurno==nomegiocatore || !isATurni)
+                                                && chiamaFromLiberi(calciatore) && !offertaVincente.nomegiocatore "
+               title="avvia asta" src='./startGiocatore.png' ng-click="iniziaFromLiberi(calciatore)"/>
+      </td>
    </tr>
  </tbody>
 </table>

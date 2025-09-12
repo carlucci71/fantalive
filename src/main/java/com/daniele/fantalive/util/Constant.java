@@ -18,13 +18,13 @@ public class Constant {
 	public static final String COMP_VIVA_FG = "644971";//""644971";
 	public static final String COMP_LUCCICAR_FG = "379529";
 	public static final String COMP_REALFANTACOMIX21_FG = "339736";
-	public static final int DELTA_FS=4;
+	public static final int DELTA_FS=2;
 	public static final int NUM_PARTITE_FS = 4;
-	public static final String COMP_FS = "147396";
-	public static final int PRIMA_GIORNATA_FS = 10499643;
+	public static final String COMP_FS = "149742";
+	public static final int PRIMA_GIORNATA_FS = 10440697;
 	public static final String SPORT_ID_LIVE_GAZZETTA = "1";
 	public static final String COMP_ID_LIVE_GAZZETTA = "21";
-	public static final String I_LIVE_FANTACALCIO = "19";//TODO AUMENTA CON L'ANNO
+	public static final String I_LIVE_FANTACALCIO = "20";//TODO AUMENTA CON L'ANNO
 
 	public static int RITARDO = 0;
 	public static Integer GIORNATA;

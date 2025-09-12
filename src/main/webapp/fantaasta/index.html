@@ -133,10 +133,10 @@
 		    	<td> <!-- nome -->
 		    		<label ng-class="{nonSonoIo: utente.nome!=nomegiocatore, sonoIo: utente.nome==nomegiocatore}">{{utente.nome}}</label>
 			    	<!-- <br> -->
-			    	<img ng-show="!nomegiocatore && utenti.indexOf(utente.nome)==-1" class="imgConnetti" style="margin-bottom:2px;cursor:pointer" title='connetti' src='./connect-icon.png' ng-click="callDoConnect(utente.nome, utente.id, utente.pwd)"/>
+			    	<img ng-show="!nomegiocatore && utenti.indexOf(utente.nome)==-1" class="imgConnetti" style="margin-bottom:2px;cursor:pointer" title='connetti' src='./disconnect-icon.png' ng-click="callDoConnect(utente.nome, utente.id, utente.pwd)"/>
 					<img title="connesso" class="imgConnetti" ng-show="utenti.indexOf(utente.nome)>-1" style="margin-bottom:2px" src='./connesso.jpeg' />		    	
 		    		<img ng-show="utente.nome!=nomegiocatore && ((isAdmin && utenti.indexOf(utente.nome)>-1) || utentiScaduti.indexOf(utente.nome)>-1)" title="cancella utente" style="cursor:pointer"class="imgConnetti" src='./cestino.png' ng-click="cancellaUtente(utente)" />
-				    <img ng-show="utente.nome==nomegiocatore" class="imgConnetti" style="margin-bottom:2px;cursor:pointer" src='./disconnect-icon.png' title='disconnetti' ng-click="doDisconnect()" />
+				    <img ng-show="utente.nome==nomegiocatore" class="imgConnetti" style="margin-bottom:2px;cursor:pointer" src='./connect-icon.png' title='disconnetti' ng-click="doDisconnect()" />
 					<img ng-show="isAdmin && selCalciatore && durataAsta>0 && avviabili.indexOf(utente.nome)>=0" title="avvia asta"  class="imgConnetti" style="margin-bottom:2px;cursor:pointer" src='./startGiocatore.png' ng-click="inizia(utente.nome, utente.id)" />
 					<label class="lblLatenza" ng-show="utenti.indexOf(utente.nome)>-1">({{latenza(utente)}})</label>
 				</td>
@@ -266,13 +266,22 @@
 						</span>
 						
 						<span class="spanBtnIncrementa">
-							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-1" class="btnIncrementa" type="button" value="{{offertaPriv+1}}" ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+1)"></input>
+							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-1"
+                                   class="btnIncrementa" type="button" value="{{offertaPriv+1}}"
+                                   ng-disabled="contaTempo<2000"
+                                   ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+1)"></input>
 						</span>
 						<span class="spanBtnIncrementa">
-							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-5" class="btnIncrementa" type="button" value="{{offertaPriv++5}}" ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+5)"></input>
+							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-5"
+                                   class="btnIncrementa" type="button" value="{{offertaPriv++5}}"
+                                   ng-disabled="contaTempo<2000"
+                                   ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+5)"></input>
 						</span>
 						<span class="spanBtnIncrementa">
-							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-10" class="btnIncrementa" type="button" value="{{offertaPriv++10}}" ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+10)"></input>
+							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-10"
+                                   class="btnIncrementa" type="button" value="{{offertaPriv++10}}"
+                                   ng-disabled="contaTempo<2000"
+                                   ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+10)"></input>
 						</span>
 						<br>
 						<label class="nextOperation" ng-show="offertaVincente.nomegiocatore!=nomegiocatore">Puoi rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)}})</label>
@@ -315,13 +324,22 @@
 								</span>
 								
 								<span class="spanBtnIncrementa">
-									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-1" class="btnIncrementa" type="button" value="{{offertaPrivOC+1}}" ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+1)"></input>
+									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-1"
+                                           class="btnIncrementa" type="button" value="{{offertaPrivOC+1}}"
+                                           ng-disabled="contaTempo<2000"
+                                           ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+1)"></input>
 								</span>
 								<span class="spanBtnIncrementa">
-									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-5" class="btnIncrementa" type="button" value="{{offertaPrivOC+5}}" ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+5)"></input>
+									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-5"
+                                           class="btnIncrementa" type="button" value="{{offertaPrivOC+5}}"
+                                           ng-disabled="contaTempo<2000"
+                                           ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+5)"></input>
 								</span>
 								<span class="spanBtnIncrementa">
-									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-10" class="btnIncrementa" type="button" value="{{offertaPrivOC+10}}" ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+10)"></input>
+									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-10"
+                                           class="btnIncrementa" type="button" value="{{offertaPrivOC+10}}"
+                                           ng-disabled="contaTempo<2000"
+                                           ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+10)"></input>
 								</span>
 								<br>
 								<label class="nextOperation" ng-show="offertaVincente.nomegiocatore!=nomegiocatoreOperaCome">Puoi rilanciare per {{nomegiocatoreOperaCome}} (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)}})</label>
