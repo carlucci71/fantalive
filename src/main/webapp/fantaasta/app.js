@@ -1325,8 +1325,8 @@ app.run(
 			$rootScope.pausaAsta= function() {
 				$rootScope.sendMsg(JSON.stringify({'operazione':'pausaAsta', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
 			}
-			$rootScope.testRilancia=function(ng){
-				if ($rootScope.offertaVincente && ($rootScope.contaTempo<1500 || $rootScope.offertaVincente.nomegiocatore==ng)){
+			$rootScope.testRilancia=function(ng, valore){
+				if ($rootScope.offertaVincente && ($rootScope.contaTempo<1500 || $rootScope.offertaVincente.nomegiocatore==ng || $rootScope.offertaVincente.offerta>=valore)){
 				    return false;
 				}
 				return true;

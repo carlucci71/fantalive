@@ -262,34 +262,32 @@
 							<input  class="inputDatoOfferta" type="number"  ng-model="offertaPriv"></input>
 						</span>
 						<span class="spanIconePunta">
-							<i title="offri" style="cursor:pointer;" class="fa fa-money"
-                               ng-show="testRilancia(nomegiocatore) && offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)"
+							<i title="offri" style="cursor:pointer;" class="fa fa-money "
+                               ng-show="testRilancia(nomegiocatore,offertaPriv) && offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)"
                                ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv)"></i>
 						</span>
-
-						<span >
-                            <img src="zambrotta.jpeg" class="spanBtnIncrementa"
-                               ng-show="testRilancia(nomegiocatore) && offertaVincente.offerta<21 && offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)"
-                               ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,21)"></i>
-						</span>
-
 						<span class="spanBtnIncrementa">
 							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-1"
                                    class="btnIncrementa" type="button" value="{{offertaPriv+1}}"
-                                   ng-if="testRilancia(nomegiocatore)"
+                                   ng-if="testRilancia(nomegiocatore, offertaPriv+1)"
                                    ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+1)"></input>
 						</span>
 						<span class="spanBtnIncrementa">
 							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-5"
                                    class="btnIncrementa" type="button" value="{{offertaPriv++5}}"
-                                   ng-if="testRilancia(nomegiocatore)"
+                                   ng-if="testRilancia(nomegiocatore, offertaPriv+5)"
                                    ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+5)"></input>
 						</span>
 						<span class="spanBtnIncrementa">
 							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-10"
                                    class="btnIncrementa" type="button" value="{{offertaPriv++10}}"
-                                   ng-if="testRilancia(nomegiocatore)"
+                                   ng-if="testRilancia(nomegiocatore, offertaPriv+10)"
                                    ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+10)"></input>
+						</span>
+						<span >
+                            <img src="zambrotta.jpeg" style="cursor:pointer"
+                                 ng-show="testRilancia(nomegiocatore, 21) && offertaVincente.offerta<21 && offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)"
+                                 ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,21)"></i>
 						</span>
 						<br>
 						<label class="nextOperation" ng-show="offertaVincente.nomegiocatore!=nomegiocatore">Puoi rilanciare (max {{getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)}})</label>
@@ -329,26 +327,26 @@
 								</span>
 								<span class="spanIconePunta">
 									<i title="offri" style="cursor:pointer;" class="fa fa-money"
-                                       ng-show="testRilancia(nomegiocatoreOperaCome) && offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)"
+                                       ng-show="testRilancia(nomegiocatoreOperaCome, offertaPrivOC) && offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)"
                                        ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC)"></i>
 								</span>
 								
 								<span class="spanBtnIncrementa">
 									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-1"
                                            class="btnIncrementa" type="button" value="{{offertaPrivOC+1}}"
-                                           ng-if="testRilancia(nomegiocatoreOperaCome)"
+                                           ng-if="testRilancia(nomegiocatoreOperaCome, offertaPrivOC+1)"
                                            ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+1)"></input>
 								</span>
 								<span class="spanBtnIncrementa">
 									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-5"
                                            class="btnIncrementa" type="button" value="{{offertaPrivOC+5}}"
-                                           ng-if="testRilancia(nomegiocatoreOperaCome)"
+                                           ng-if="testRilancia(nomegiocatoreOperaCome, offertaPrivOC+5)"
                                            ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+5)"></input>
 								</span>
 								<span class="spanBtnIncrementa">
 									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-10"
                                            class="btnIncrementa" type="button" value="{{offertaPrivOC+10}}"
-                                           ng-if="testRilancia(nomegiocatoreOperaCome)"
+                                           ng-if="testRilancia(nomegiocatoreOperaCome, offertaPrivOC+10)"
                                            ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+10)"></input>
 								</span>
 								<br>

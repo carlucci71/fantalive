@@ -112,11 +112,11 @@ input {
 	display: inline-block;
  }
  .spanBtnIncrementa{
-	width: 65px;
+	width: 95px;
 	display: inline-block;
  }
  .btnIncrementa{
-	width: 55px;
+	width: 85px;
  }
 .sortorder:after {
   content: '\25b2';   
