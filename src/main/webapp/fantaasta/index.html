@@ -32,13 +32,18 @@
  	<div ng-show="connessioneKO">
  		<label class="nextOperation">{{connessioneKO}}</label>
  	</div>
- 
-	<div class="utenteLoggato" ng-show="nomegiocatore && !connessioneKO">
+
+    <div class="utenteLoggato" >
+	<span ng-show="!connessioneKO">
+        <img ng-click="openChangeLog()" style="cursor:pointer;width: 73px;height: 40px;" title="ChangeLog Asta" src='./changelog.jpeg'/>
+    </span>
+
+	<span class="utenteLoggato" ng-show="nomegiocatore && !connessioneKO">
 		Buona fortuna {{nomegiocatore}}
 		<img ng-click="forzaLogout()" class="imgForzaLogout" style="margin-bottom:2px;cursor:pointer" title="disconntetti" src='./cestino.png'/>
         <img style="cursor:pointer; width:20; height:20" ng-show="isAdmin" title="disconnectAll" src='./kill.png' ng-click="disconnectAll()"/>
-	</div>
-
+	</span>
+    </div>
 	
 <div ng-show="config && !connessioneKO">
 	<label>CONFIGURAZIONE</label>

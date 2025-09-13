@@ -1493,6 +1493,28 @@ app.controller('ModalDemoCtrl', function ($uibModal, $log, $rootScope) {
 //	      alert("now I'll close the modal");
 	    });
 	  };
+
+	  	$rootScope.openChangeLog = function () {
+      		var modalInstance = $uibModal.open({
+      			animation: true,
+      			size: 'lg',
+      			ariaLabelledBy: 'modal-title',
+      			ariaDescribedBy: 'modal-body',
+      			templateUrl: 'modaleChangeLog.html',
+      			controller: 'ModalInstanceCtrl',
+      			controllerAs: 'pc',
+      			windowClass: 'app-modal-window',
+      			scope: $rootScope,
+      			resolve: {
+      				data: function () {
+      					return "";
+      				}
+      			}
+      		});
+      		modalInstance.result.then(function () {
+      		});
+      	};
+
 	});
 
 app.controller('ModalInstanceCtrl', function ($uibModalInstance, data, $rootScope, $resource) {
