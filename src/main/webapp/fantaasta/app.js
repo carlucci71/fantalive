@@ -1105,6 +1105,7 @@ app.run(
 						if (msg.timeout=='N') $rootScope.timeout=null; else $rootScope.timeout=msg.timeout;
 					}
 					if (msg.offertaVincente){
+                        $rootScope.contaTempo=0;
 						$rootScope.offertaVincente=msg.offertaVincente;
 						if($rootScope.isSingle){
 							$rootScope.offerta=$rootScope.offertaVincente.offerta;
@@ -1323,7 +1324,17 @@ app.run(
 			$rootScope.pausaAsta= function() {
 				$rootScope.sendMsg(JSON.stringify({'operazione':'pausaAsta', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
 			}
-			
+			$rootScope.backColorRilancia=function(ng){
+				if ($rootScope.contaTempo<1500 || $rootScope.offertaVincente.nomegiocatore==ng){
+				    return "yellow";
+				}
+			}
+			$rootScope.disableRilancia=function(ng){
+				if ($rootScope.contaTempo<1500 || $rootScope.offertaVincente.nomegiocatore==ng){
+				    return true;
+				}
+				return false;
+			}
 			$rootScope.calcolaIsAdmin= function() {
 				$rootScope.isAdmin=false;
 				angular.forEach($rootScope.elencoAllenatori, function(value,chiave) {

@@ -1,30 +1,5 @@
 package com.daniele.asta;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpSession;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
-
 import com.daniele.fantalive.entity.Allenatori;
 import com.daniele.fantalive.entity.Configurazione;
 import com.daniele.fantalive.entity.EnumCategoria;
@@ -35,6 +10,28 @@ import com.daniele.fantalive.repository.LoggerRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
+
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 @Component
 public class SocketHandler extends TextWebSocketHandler implements WebSocketHandler {
@@ -434,6 +431,9 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                             offertaVincente.put("nomegiocatore", nomegiocatore);
                             offertaVincente.put("idgiocatore", idgiocatore);
                             offertaVincente.put("offerta", offerta);
+                            Map<String, Object> m2 = new HashMap<>();
+                            m2.put("contaTempo", 0);
+                            invia(toJson(m2));
                             m.put("offertaVincente", offertaVincente);
                             m.put("selCalciatoreMacroRuolo", selCalciatoreMacroRuolo);
                             creaMessaggio(indirizzo, str, EnumCategoria.Asta);
@@ -668,8 +668,9 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
     private void aggiorna() throws IOException {
         Map<String, Object> m = new HashMap<>();
         Calendar now = Calendar.getInstance();
-        if (calInizioOfferta != null)
+        if (calInizioOfferta != null) {
             m.put("contaTempo", now.getTimeInMillis() - calInizioOfferta.getTimeInMillis());
+        }
         m.put("timeout", timeOut);
         m.put("utentiScaduti", utentiScaduti);
 //		m.put("elencoAllenatori", myController.getAllAllenatori());

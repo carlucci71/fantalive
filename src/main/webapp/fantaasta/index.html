@@ -268,19 +268,22 @@
 						<span class="spanBtnIncrementa">
 							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-1"
                                    class="btnIncrementa" type="button" value="{{offertaPriv+1}}"
-                                   ng-disabled="contaTempo<2000"
+                                   ng-style="{'background-color':backColorRilancia(nomegiocatore)}"
+                                   ng-disabled="disableRilancia(nomegiocatore)"
                                    ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+1)"></input>
 						</span>
 						<span class="spanBtnIncrementa">
 							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-5"
                                    class="btnIncrementa" type="button" value="{{offertaPriv++5}}"
-                                   ng-disabled="contaTempo<2000"
+                                   ng-style="{'background-color':backColorRilancia(nomegiocatore)}"
+                                   ng-disabled="disableRilancia(nomegiocatore)"
                                    ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+5)"></input>
 						</span>
 						<span class="spanBtnIncrementa">
 							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-10"
                                    class="btnIncrementa" type="button" value="{{offertaPriv++10}}"
-                                   ng-disabled="contaTempo<2000"
+                                   ng-style="{'background-color':backColorRilancia(nomegiocatore)}"
+                                   ng-disabled="disableRilancia(nomegiocatore)"
                                    ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv+10)"></input>
 						</span>
 						<br>
@@ -326,19 +329,22 @@
 								<span class="spanBtnIncrementa">
 									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-1"
                                            class="btnIncrementa" type="button" value="{{offertaPrivOC+1}}"
-                                           ng-disabled="contaTempo<2000"
+                                           ng-style="{'background-color':backColorRilancia(nomegiocatoreOperaCome)}"
+                                           ng-disabled="disableRilancia(nomegiocatoreOperaCome)"
                                            ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+1)"></input>
 								</span>
 								<span class="spanBtnIncrementa">
 									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-5"
                                            class="btnIncrementa" type="button" value="{{offertaPrivOC+5}}"
-                                           ng-disabled="contaTempo<2000"
+                                           ng-style="{'background-color':backColorRilancia(nomegiocatoreOperaCome)}"
+                                           ng-disabled="disableRilancia(nomegiocatoreOperaCome)"
                                            ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+5)"></input>
 								</span>
 								<span class="spanBtnIncrementa">
 									<input ng-show="offertaPrivOC<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatoreOperaCome)-10"
                                            class="btnIncrementa" type="button" value="{{offertaPrivOC+10}}"
-                                           ng-disabled="contaTempo<2000"
+                                           ng-style="{'background-color':backColorRilancia(nomegiocatoreOperaCome)}"
+                                           ng-disabled="disableRilancia(nomegiocatoreOperaCome)"
                                            ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC+10)"></input>
 								</span>
 								<br>
