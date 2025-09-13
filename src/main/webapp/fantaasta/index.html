@@ -266,7 +266,13 @@
                                ng-show="testRilancia(nomegiocatore) && offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)"
                                ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,offertaPriv)"></i>
 						</span>
-						
+
+						<span >
+                            <img src="zambrotta.jpeg" class="spanBtnIncrementa"
+                               ng-show="testRilancia(nomegiocatore) && offertaVincente.offerta<21 && offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)"
+                               ng-click="inviaOffertaLibera(nomegiocatore,idgiocatore,21)"></i>
+						</span>
+
 						<span class="spanBtnIncrementa">
 							<input ng-show="offertaPriv<=getFromMapSpesoTotale('MAXRILANCIO',nomegiocatore)-1"
                                    class="btnIncrementa" type="button" value="{{offertaPriv+1}}"
