@@ -372,7 +372,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                 invia(toJson(m));
             } else if (operazione != null && operazione.equals("inviaOfferta")) {
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
-                Boolean azzera = null;
+                boolean azzera = false;
                 if (jsonToMap.get("azzera") != null) azzera = (Boolean) jsonToMap.get("azzera");
                 String idgiocatore = jsonToMap.get("idgiocatore").toString();
                 String nomegiocatoreOperaCome = (String) jsonToMap.get("nomegiocatoreOperaCome");
@@ -385,7 +385,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                 scadenzaAsta.add(Calendar.SECOND, myController.getDurataAsta());
                 Map<String, Object> m = new HashMap<>();
                 boolean autoRilancio = false;
-                if (nomegiocatore.equals(offertaVincente.get("nomegiocatore").toString())) {
+                if (!azzera && nomegiocatore.equals(offertaVincente.get("nomegiocatore").toString())) {
                     String str = "Autorilancio di " + nomegiocatore + " annullato. ";
                     if (!nomegiocatoreOperaCome.equalsIgnoreCase(nomegiocatore)) {
                         str = str + "(" + nomegiocatoreOperaCome + ")";
@@ -423,7 +423,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                         str = str + " per " + offertaVincente.get("nomeCalciatore") + "("
                                 + ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
                                 + ((Giocatori) offertaVincente.get("giocatore")).getSquadra();
-                        if (attOfferta != null && offerta <= attOfferta && azzera == null) {
+                        if (attOfferta != null && offerta <= attOfferta && azzera == false) {
                             creaMessaggio(indirizzo, str + " non superiore all'offerta vincente di " + attOfferta + " fatta da "
                                     + offertaVincente.get("nomegiocatore"), EnumCategoria.Asta);
                         } else {

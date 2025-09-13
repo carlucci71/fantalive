@@ -1286,6 +1286,7 @@ app.run(
 			$rootScope.riapri= function(){
 				$rootScope.tokenCasuale=Math.floor(Math.random()*(100000)+1);
 				$rootScope.sendMsg(JSON.stringify({'operazione':'riapri', 'tokenCasuale':$rootScope.tokenCasuale,'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
+    			$rootScope.firstAbilitaForza=false;
 			}
 			$rootScope.incrementaOfferta = function(ng,ig,val){
 				$rootScope.offerta=$rootScope.offerta+val;
@@ -1324,16 +1325,11 @@ app.run(
 			$rootScope.pausaAsta= function() {
 				$rootScope.sendMsg(JSON.stringify({'operazione':'pausaAsta', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
 			}
-			$rootScope.backColorRilancia=function(ng){
-				if ($rootScope.contaTempo<1500 || $rootScope.offertaVincente.nomegiocatore==ng){
-				    return "yellow";
+			$rootScope.testRilancia=function(ng){
+				if ($rootScope.offertaVincente && ($rootScope.contaTempo<1500 || $rootScope.offertaVincente.nomegiocatore==ng)){
+				    return false;
 				}
-			}
-			$rootScope.disableRilancia=function(ng){
-				if ($rootScope.contaTempo<1500 || $rootScope.offertaVincente.nomegiocatore==ng){
-				    return true;
-				}
-				return false;
+				return true;
 			}
 			$rootScope.calcolaIsAdmin= function() {
 				$rootScope.isAdmin=false;
