@@ -1282,6 +1282,10 @@ app.run(
 				$rootScope.sendMsg(JSON.stringify({'operazione':'forza', 'conferma':conferma, 'tokenCasuale':$rootScope.tokenCasuale,'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore,'forzaAllenatore':$rootScope.forzaAllenatore,'forzaOfferta':$rootScope.forzaOfferta}));
 				$rootScope.abilitaForza=false;
 			}
+			$rootScope.riapri= function(){
+				$rootScope.tokenCasuale=Math.floor(Math.random()*(100000)+1);
+				$rootScope.sendMsg(JSON.stringify({'operazione':'riapri', 'tokenCasuale':$rootScope.tokenCasuale,'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
+			}
 			$rootScope.incrementaOfferta = function(ng,ig,val){
 				$rootScope.offerta=$rootScope.offerta+val;
 				$rootScope.inviaOfferta(ng,ig);

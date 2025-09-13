@@ -453,7 +453,6 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                         nomeForzaAllenatore = allenatori.getNome();
                     }
                 }
-
                 Map<String, Object> m = new HashMap<>();
                 offertaVincente.put("offerta", forzaOfferta);
                 offertaVincente.put("nomegiocatore", nomeForzaAllenatore);
@@ -470,6 +469,14 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                 creaMessaggio(indirizzo, "Offerta forzata da " + nomegiocatore + " per "
                                 + offertaVincente.get("nomeCalciatore") + ": " + nomeForzaAllenatore + " per " + forzaOfferta,
                         EnumCategoria.Asta);
+                invia(toJson(m));
+            } else if (operazione != null && operazione.equals("riapri")) {
+                String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
+                Map<String, Object> m = new HashMap<>();
+                calInizioOfferta = Calendar.getInstance();
+                m.put("messaggi", messaggi);
+                m.put("offertaVincente", offertaVincente);
+                creaMessaggio(indirizzo, "Offerta riaperta da " + nomegiocatore + " per " + offertaVincente.get("nomeCalciatore"), EnumCategoria.Asta);
                 invia(toJson(m));
             } else if (operazione != null && operazione.equals("verificaDispositiva")) {
                 Integer tokenDispositiva = (Integer) jsonToMap.get("tokenDispositiva");
