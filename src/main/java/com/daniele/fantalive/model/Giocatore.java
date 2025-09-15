@@ -38,7 +38,17 @@ public class Giocatore {
 	private String nomeFS;
 	private String nomeFSCambiato;
 	private String idFs;
-	public String getRuolo() {
+	private String fantasquadra;
+
+    public String getFantasquadra() {
+        return fantasquadra;
+    }
+
+    public void setFantasquadra(String fantasquadra) {
+        this.fantasquadra = fantasquadra;
+    }
+
+    public String getRuolo() {
 		return ruolo;
 	}
 	public void setRuolo(String ruolo) {

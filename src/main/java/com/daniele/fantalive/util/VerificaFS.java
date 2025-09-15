@@ -119,29 +119,33 @@ public class VerificaFS {
 
     private void stampa() {
 
-        printToken("Modificatori");
-        printToken("Ruolo");
+        printToken("Fantasquadra");
         printToken("Nome");
-        printToken("Voto");
         printToken("Squadra");
+        printToken("Ruolo");
+        printToken("Voto");
+        printToken("Modificatori");
         printToken("Id FS");
-        printToken("Voto live");
-        printToken("Squadra live");
         printToken("Nome live");
+        printToken("Squadra live");
+        printToken("Voto live");
         printToken("BM Live");
         printToken("Id FG");
         System.out.println();
 
         mapGioc.forEach((giocatore, map) -> {
-            printToken(giocatore.getModificatori());
-            printToken(giocatore.getRuolo());
+            printToken(giocatore.getFantasquadra());
             printToken(giocatore.getNome());
-            printToken(giocatore.getVoto());
             printToken(giocatore.getSquadra());
-            printToken(Long.valueOf(giocatore.getIdFs()) < 1000000 ? giocatore.getIdFs() + 1000000 : giocatore.getIdFs());
-            printToken(map.get("voto"));
-            printToken(map.get("squadra"));
+            printToken(giocatore.getRuolo());
+            printToken(giocatore.getVoto());
+            printToken(giocatore.getModificatori());
+            printToken(Long.valueOf(giocatore.getIdFs()) < 1000000
+                    ? Long.valueOf(giocatore.getIdFs()) + 1000000
+                    : giocatore.getIdFs());
             printToken(map.get("nome"));
+            printToken(map.get("squadra"));
+            printToken(map.get("voto"));
             printToken(map.get("bm"));
             printToken(map.get("id"));
             System.out.println();
@@ -171,11 +175,11 @@ public class VerificaFS {
 
     private void ricercaFSInLive(List<Map<String, Object>> getLiveFromFG, Giocatore giocatore) {
         String nomeGiocatoreFsCambiato = giocatore.getNomeFSCambiato();
-        boolean trov=false;
+        boolean trov = false;
         for (Map<String, Object> map : getLiveFromFG) {
             Map<String, Object> newMap = new HashMap<>();
             if (map.get("n").toString().equalsIgnoreCase(nomeGiocatoreFsCambiato)) {
-                trov=true;
+                trov = true;
                 Integer idS = (Integer) map.get("id_s");
                 newMap.put("squadra", sq.get(idS));
 
@@ -184,19 +188,32 @@ public class VerificaFS {
                 if (map.get("v") != null && !Double.valueOf(map.get("v").toString()).equals(56D)) {
                     voto = map.get("v").toString();
                 }
+                /*
+        eventi.put(11, new String[]{"gol vittoria", "", "", "0", "", "N", Constant.GOL, "gol_decisivo_vittoria"});
+        eventi.put(12, new String[]{"gol pareggio", "", "", "0", "", "N", Constant.GOL, "gol_decisivo_pareggio"});
+        eventi.put(14, new String[]{"uscito", "", "", "0", "", "S", Constant.USCITO, ""});
+        eventi.put(15, new String[]{"entrato", "", "", "0", "", "S", Constant.ENTRATO, ""});
+        eventi.put(16, new String[]{"gol annullato", "", "", "0", "", "N", Constant.GOL_ANNULLATO, ""});
+        eventi.put(17, new String[]{"infortunio", "", "", "0", "", "N", Constant.INFORTUNIO, ""});
+
+                 */
                 newMap.put("voto", voto);
                 List<Integer> bm = (List) map.get("bm");
                 String bbm = bm.stream()
-                        .map(b -> eventi.getOrDefault(b, new String[]{"??"})[0])
-                        .collect(Collectors.joining(" - "));
+                        .filter(b -> !b.equals(11) && !b.equals(12) && !b.equals(14) && !b.equals(15) && !b.equals(16) && !b.equals(17))
+                        .map(b -> {
+                            String[] val = eventi.getOrDefault(b, new String[]{"??"});
+                            return "1 " + val[0] + "(" + (val[3].startsWith("-") ? "" : "+") + val[3] + ")";
+                        })
+                        .collect(Collectors.joining(", "));
 
 
-                newMap.put("bm", bbm);
+                newMap.put("bm", "[" + bbm + "]");
                 newMap.put("id", map.get("id"));
                 mapGioc.put(giocatore, newMap);
             }
         }
-        if (trov==false){
+        if (trov == false) {
             System.out.println(nomeGiocatoreFsCambiato + "-" + giocatore.getSquadra());
         }
     }
