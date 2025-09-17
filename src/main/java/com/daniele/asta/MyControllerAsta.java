@@ -1,59 +1,5 @@
 package com.daniele.asta;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import javax.sound.sampled.AudioFileFormat.Type;
-import jakarta.transaction.Transactional;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.jsoup.Jsoup;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.web.savedrequest.DefaultSavedRequest;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.socket.WebSocketSession;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXParseException;
-
 import com.daniele.fantalive.dto.ExportMantra;
 import com.daniele.fantalive.dto.GiocatoriPerSquadra;
 import com.daniele.fantalive.dto.SpesoTotale;
@@ -76,6 +22,57 @@ import com.sun.speech.freetts.Voice;
 import com.sun.speech.freetts.VoiceManager;
 import com.sun.speech.freetts.audio.AudioPlayer;
 import com.sun.speech.freetts.audio.SingleFileAudioPlayer;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.jsoup.Jsoup;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.socket.WebSocketSession;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXParseException;
+
+import javax.sound.sampled.AudioFileFormat.Type;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 @RestController
@@ -165,7 +162,7 @@ public class MyControllerAsta {
         }
         return ret;
     }
-
+/*
     @RequestMapping("/sesH")
     public Map<String, Object> sesH() {
         Map<String, Object> ret = new HashMap<>();
@@ -184,14 +181,14 @@ public class MyControllerAsta {
         ret.put("sessioni", m);
         return ret;
     }
-
+*/
     private String d(Long l) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(l);
         return sdf.format(c.getTime());
     }
-
+/*
     private String e(HttpSession hs, String name) {
         String s = name + ":";
         if (hs.getAttribute(name) != null) {
@@ -205,7 +202,7 @@ public class MyControllerAsta {
         }
         return s;
     }
-
+*/
 
     @RequestMapping("/sesW")
     public Map<String, Object> sesW() {
@@ -516,12 +513,12 @@ public class MyControllerAsta {
                         Row currentRow = rowIterator.next();
                         if (!bPrima) {
                             Giocatori giocatori = new Giocatori();
-                            giocatori.setId(new Double(currentRow.getCell(0).getNumericCellValue()).intValue());
+                            giocatori.setId((int) currentRow.getCell(0).getNumericCellValue());
                             giocatori.setNome(currentRow.getCell(1).getStringCellValue() + " " + currentRow.getCell(2).getStringCellValue());
                             giocatori.setSquadra(currentRow.getCell(3).getStringCellValue());
                             giocatori.setRuolo(currentRow.getCell(4).getStringCellValue());
                             giocatori.setMacroRuolo(currentRow.getCell(4).getStringCellValue());
-                            giocatori.setQuotazione(new Double(currentRow.getCell(6).getNumericCellValue()).intValue());
+                            giocatori.setQuotazione((int) currentRow.getCell(6).getNumericCellValue());
                             if (currentRow.getLastCellNum() > 7) {
                                 giocatori.setFvm(currentRow.getCell(7).getNumericCellValue());
                             }
