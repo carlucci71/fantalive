@@ -3784,6 +3784,8 @@ motm->0.0
         if (first != null) {
             giocatore = new Giocatore();
             giocatore.setFantasquadra(fantasquadra);
+            giocatore.setDove(dove);
+            giocatore.setTit(ruolo);
             String text = first.text();
             String squadra = text.substring(text.indexOf("(") + 1, text.length() - 1);
             if (!text.equalsIgnoreCase("-")) {

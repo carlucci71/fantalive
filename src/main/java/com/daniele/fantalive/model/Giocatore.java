@@ -39,6 +39,17 @@ public class Giocatore {
 	private String nomeFSCambiato;
 	private String idFs;
 	private String fantasquadra;
+    private String dove;
+    private String tit;
+
+    public String getDove() {
+        return dove;
+    }
+
+    public void setDove(String dove) {
+        this.dove = dove;
+    }
+
 
     public String getFantasquadra() {
         return fantasquadra;
@@ -255,4 +266,12 @@ public class Giocatore {
 	public void setPartita(String partita) {
 		this.partita = partita;
 	}
+
+    public String getTit() {
+        return tit;
+    }
+
+    public void setTit(String tit) {
+        this.tit = tit;
+    }
 }

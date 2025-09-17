@@ -120,8 +120,10 @@ public class VerificaFS {
     private void stampa() {
 
         printToken("Fantasquadra");
-        printToken("Nome");
         printToken("Squadra");
+        printToken("Nome");
+        printToken("Dove");
+        printToken("Tit");
         printToken("Ruolo");
         printToken("Voto");
         printToken("Modificatori");
@@ -135,17 +137,19 @@ public class VerificaFS {
 
         mapGioc.forEach((giocatore, map) -> {
             printToken(giocatore.getFantasquadra());
-            printToken(giocatore.getNome());
             printToken(giocatore.getSquadra());
+            printToken(giocatore.getNome());
+            printToken(giocatore.getDove());
+            printToken(giocatore.getTit());
             printToken(giocatore.getRuolo());
-            printToken(giocatore.getVoto());
+            printToken(String.valueOf(giocatore.getVoto()).replace(".",","));
             printToken(giocatore.getModificatori());
             printToken(Long.valueOf(giocatore.getIdFs()) < 1000000
                     ? Long.valueOf(giocatore.getIdFs()) + 1000000
                     : giocatore.getIdFs());
             printToken(map.get("nome"));
             printToken(map.get("squadra"));
-            printToken(map.get("voto"));
+            printToken(map.get("voto").toString().replace(".",","));
             printToken(map.get("bm"));
             printToken(map.get("id"));
             System.out.println();
@@ -185,7 +189,7 @@ public class VerificaFS {
 
                 newMap.put("nome", nomeGiocatoreFsCambiato);
                 String voto = "0";
-                if (map.get("v") != null && !Double.valueOf(map.get("v").toString()).equals(56D)) {
+                if (map.get("v") != null && !Double.valueOf(map.get("v").toString()).equals(56D) && !Double.valueOf(map.get("v").toString()).equals(55D)) {
                     voto = map.get("v").toString();
                 }
                 /*
