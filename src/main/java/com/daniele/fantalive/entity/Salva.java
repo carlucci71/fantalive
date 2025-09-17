@@ -1,19 +1,16 @@
 package com.daniele.fantalive.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-
-import org.hibernate.annotations.Type;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 
 @Entity
 public class Salva {
 	@Id
 	private String nome;
 	@Lob
-	@Type(type = "text")
-//	@Column(columnDefinition="TEXT", name = "testo")
+	@Column(columnDefinition = "text")
 	private String testo;
 
 	public Salva() {

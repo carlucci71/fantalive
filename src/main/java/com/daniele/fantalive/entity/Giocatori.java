@@ -2,8 +2,8 @@ package com.daniele.fantalive.entity;
 
 import java.util.Calendar;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 //@Entity(name = "giocatori")
 //@Table(name = "giocatori")
