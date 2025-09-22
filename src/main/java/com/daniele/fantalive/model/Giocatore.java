@@ -35,6 +35,7 @@ public class Giocatore {
 	private boolean entra=false;
 	private boolean esce=false;
 	private boolean notificaLive;
+    private boolean liveFS;
 	private boolean capitano=false;
 	private boolean viceCapitano=false;
 	private String nomeFS;
@@ -44,6 +45,15 @@ public class Giocatore {
     private String dove;
     private String tit;
 
+
+
+    public boolean isLiveFS() {
+        return liveFS;
+    }
+
+    public void setLiveFS(boolean liveFS) {
+        this.liveFS = liveFS;
+    }
 
     public double getModificatoreOrig() {
         return modificatoreOrig;

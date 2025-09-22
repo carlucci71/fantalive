@@ -3270,36 +3270,10 @@ motm->0.0
         for (Squadra squadra : squadre.get(campionato)) {
             boolean isAmmonito = false;
             for (Giocatore giocatore : squadra.getTitolari()) {
-                findGiocatoreInLives(giocatore, lives, tipo, conVoto);
-                if (giocatore != null && giocatore.getRuolo() != null && (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P"))) {
-                    if (giocatore.getVoto() > 0 && !giocatore.getCodEventi().contains(4) && !giocatore.getCodEventi().contains(1000)) {
-                        giocatore.getCodEventi().add(1000);
-                        giocatore.setModificatore(giocatore.getModificatore() + 1);
-                    }
-                }
-                if (giocatore != null && giocatore.getSquadra() != null) {
-                    if (orari != null) {
-                        giocatore.setOrario(recuperaOrario(orari, giocatore.getSquadra().toUpperCase()));
-                        giocatore.setPartita(recuperaPartita(giocatore.getSquadra().toUpperCase(), snap.keySet()));
-                    }
-                }
                 if (giocatore.getCodEventi().contains(1) || giocatore.getCodEventi().contains(2)) {
                     isAmmonito = true;
                 }
-                if (conLive) {
-                    getLiveFs();
-                    giocatore.setVotoOrig(giocatore.getVoto());
-                    giocatore.setModificatoreOrig(giocatore.getModificatore());
-                    Squadra squadraLiveFs = sqFs.stream().filter(s -> s.getNome().equals(squadra.getNome())).findFirst().get();
-                    Optional<Giocatore> firstGiocatore = squadraLiveFs.getTitolari().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
-                    if (!firstGiocatore.isPresent()) {
-                        firstGiocatore = squadraLiveFs.getRiserve().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
-                    }
-                    if (firstGiocatore.isPresent()) {
-                        giocatore.setVoto(firstGiocatore.get().getVoto());
-                        giocatore.setModificatore(firstGiocatore.get().getModificatore());
-                    }
-                }
+                adattaGiocatoreInLives(conLive, squadra, giocatore, lives, tipo, conVoto, orari);
 
             }
             if (modificatori.get(campionato) != null) {
@@ -3313,37 +3287,46 @@ motm->0.0
         }
         for (Squadra squadra : squadre.get(campionato)) {
             for (Giocatore giocatore : squadra.getRiserve()) {
-                findGiocatoreInLives(giocatore, lives, tipo, conVoto);
-                if (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P")) {
-                    if (giocatore.getVoto() > 0 && !giocatore.getCodEventi().contains(4) && !giocatore.getCodEventi().contains(1000)) {
-                        giocatore.getCodEventi().add(1000);
-                        giocatore.setModificatore(giocatore.getModificatore() + 1);
-                    }
-                }
-                if (giocatore != null && giocatore.getSquadra() != null) {
-                    if (orari != null) {
-                        giocatore.setOrario(orari.get(giocatore.getSquadra().toUpperCase()));
-                    }
-                }
-                if (conLive) {
-                    getLiveFs();
-                    giocatore.setVotoOrig(giocatore.getVoto());
-                    giocatore.setModificatoreOrig(giocatore.getModificatore());
-                    Squadra squadraLiveFs = sqFs.stream().filter(s -> s.getNome().equals(squadra.getNome())).findFirst().get();
-                    Optional<Giocatore> firstGiocatore = squadraLiveFs.getTitolari().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
-                    if (!firstGiocatore.isPresent()) {
-                        firstGiocatore = squadraLiveFs.getRiserve().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
-                    }
-                    if (firstGiocatore.isPresent()) {
-                        giocatore.setVoto(firstGiocatore.get().getVoto());
-                        giocatore.setModificatore(firstGiocatore.get().getModificatore());
-                    }
-                }
+                adattaGiocatoreInLives(conLive, squadra, giocatore, lives, tipo, conVoto, orari);
             }
         }
         r.setSquadre(squadre.get(campionato));
         r.setConLive(conLive);
         return r;
+    }
+
+    private static void adattaGiocatoreInLives(boolean conLive, Squadra squadra, Giocatore giocatore, List<Live> lives, String tipo, boolean conVoto, Map<String, Map<String, String>> orari) throws Exception {
+        findGiocatoreInLives(giocatore, lives, tipo, conVoto);
+        if (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P")) {
+            if (giocatore.getVoto() > 0 && !giocatore.getCodEventi().contains(4) && !giocatore.getCodEventi().contains(1000)) {
+                giocatore.getCodEventi().add(1000);
+                giocatore.setModificatore(giocatore.getModificatore() + 1);
+            }
+        }
+        if (giocatore != null && giocatore.getSquadra() != null) {
+            if (orari != null) {
+                giocatore.setOrario(orari.get(giocatore.getSquadra().toUpperCase()));
+            }
+        }
+        if (conLive) {
+            getLiveFs();
+            giocatore.setVotoOrig(giocatore.getVoto());
+            giocatore.setModificatoreOrig(giocatore.getModificatore());
+            Squadra squadraLiveFs = sqFs.stream().filter(s -> s.getNome().equals(squadra.getNome())).findFirst().get();
+            Optional<Giocatore> firstGiocatore = squadraLiveFs.getTitolari().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
+            if (!firstGiocatore.isPresent()) {
+                firstGiocatore = squadraLiveFs.getRiserve().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
+            }
+            if (firstGiocatore.isPresent()) {
+                giocatore.setLiveFS(false);
+                //giocatore.isSquadraGioca()
+                if (giocatore.getVoto() > 0) {
+                    giocatore.setLiveFS(true);
+                    giocatore.setVoto(firstGiocatore.get().getVoto());
+                    giocatore.setModificatore(firstGiocatore.get().getModificatore());
+                }
+            }
+        }
     }
 
 
