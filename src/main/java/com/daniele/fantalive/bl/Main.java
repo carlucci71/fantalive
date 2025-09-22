@@ -90,6 +90,7 @@ import java.sql.ResultSet;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -369,7 +370,7 @@ public class Main {
             eventi.put(23, new String[]{"assist_gold", "", "", "1", "", "S", Constant.ASSIST, "assist_gold"});
             eventi.put(24, new String[]{"assist movimento livello medio", "", "", "1", "", "S", Constant.ASSIST, "assistMovimentoLvMedio"});
             eventi.put(25, new String[]{"assist movimento livello alto", "", "", "1", "", "S", Constant.ASSIST, ""});
-            eventi.put(26, new String[]{"mom", "", "", "1", "", "N", Constant.ASSIST, ""});
+            eventi.put(26, new String[]{"man of the match", "", "", "1", "", "N", Constant.ASSIST, ""});
             /*
 
 
@@ -489,34 +490,32 @@ motm->0.0
         }
         if (sq == null) {
             sq = new LinkedHashMap<Integer, String>();
-            sq.put(8, "GEN");
-            sq.put(7, "FRO");
             sq.put(1, "ATA");
             sq.put(2, "BOL");
-            sq.put(21, "CAG");
+//            sq.put(5, "EMP");
             sq.put(6, "FIO");
+            sq.put(7, "FRO");
+            sq.put(8, "GEN");
             sq.put(9, "INT");
             sq.put(10, "JUV");
             sq.put(11, "LAZ");
             sq.put(12, "MIL");
             sq.put(13, "NAP");
-            sq.put(107, "PAR");
             sq.put(15, "ROM");
             sq.put(16, "SAM");
             sq.put(17, "SAS");
-            sq.put(129, "SPE");
             sq.put(18, "TOR");
             sq.put(19, "UDI");
             sq.put(20, "VER");
-            sq.put(137, "SAL");
-            sq.put(144, "CRE");
+            sq.put(21, "CAG");
+            sq.put(107, "PAR");
             sq.put(119, "LEC");
+            sq.put(129, "SPE");
+            sq.put(137, "SAL");
             sq.put(138, "VEN");
-            sq.put(153, "COM");
 //            sq.put(143, "MON");
-//            sq.put(5, "EMP");
-//            sq.put(138, "VEN");
-
+            sq.put(144, "CRE");
+            sq.put(153, "COM");
             sq.put(157, "PIS");
         }
         if (configsCampionato == null) {
@@ -1071,27 +1070,6 @@ motm->0.0
             }
         }
         return ret;
-    }
-
-    private static void liveForzato() throws Exception {
-        String sFG = "{\r\n" +
-                "  \"dati\" : \"{\\\"teams\\\":[{\\\"id\\\":3072657,\\\"modulo\\\":\\\"3421\\\",\\\"moduloS\\\":\\\"4231\\\",\\\"fattore\\\":2,\\\"total\\\":77.5,\\\"cap\\\":\\\"\\\",\\\"players\\\":[{\\\"id\\\":1934,\\\"rank\\\":5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[4,4,4],\\\"voto\\\":5,\\\"nome\\\":\\\"Strakosha\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":2,\\\"squadraGioca\\\":true},{\\\"id\\\":288,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[15],\\\"voto\\\":0,\\\"nome\\\":\\\"Chiellini\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true},{\\\"id\\\":286,\\\"rank\\\":8,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[3,3],\\\"voto\\\":8,\\\"nome\\\":\\\"Bonucci\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":14,\\\"squadraGioca\\\":true},{\\\"id\\\":4428,\\\"rank\\\":7,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[22],\\\"voto\\\":7,\\\"nome\\\":\\\"De Ligt\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":8,\\\"squadraGioca\\\":true},{\\\"id\\\":2816,\\\"rank\\\":7,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[14,20],\\\"voto\\\":7,\\\"nome\\\":\\\"Di Lorenzo\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":7,\\\"squadraGioca\\\":true},{\\\"id\\\":2775,\\\"rank\\\":6.5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[22,14],\\\"voto\\\":6.5,\\\"nome\\\":\\\"Ruiz\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":7.5,\\\"squadraGioca\\\":true},{\\\"id\\\":4890,\\\"rank\\\":7,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[1],\\\"voto\\\":7,\\\"nome\\\":\\\"Tameze\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6.5,\\\"squadraGioca\\\":true},{\\\"id\\\":335,\\\"rank\\\":5.5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[14],\\\"voto\\\":5.5,\\\"nome\\\":\\\"Felipe Anderson\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":5.5,\\\"squadraGioca\\\":true},{\\\"id\\\":409,\\\"rank\\\":7,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[21,21],\\\"voto\\\":7,\\\"nome\\\":\\\"Insigne\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":8,\\\"squadraGioca\\\":true},{\\\"id\\\":1995,\\\"rank\\\":5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[14],\\\"voto\\\":5,\\\"nome\\\":\\\"Djuricic\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":5,\\\"squadraGioca\\\":true},{\\\"id\\\":2819,\\\"rank\\\":5.5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":5.5,\\\"nome\\\":\\\"Caputo\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":5.5,\\\"squadraGioca\\\":true},{\\\"id\\\":5786,\\\"rank\\\":6,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Cabral\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":472,\\\"rank\\\":6,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Destro\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":2167,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Orsolini\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":5007,\\\"rank\\\":6.5,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[20,14],\\\"voto\\\":6.5,\\\"nome\\\":\\\"Ilic\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6.5,\\\"squadraGioca\\\":true},{\\\"id\\\":4965,\\\"rank\\\":6,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[14],\\\"voto\\\":6,\\\"nome\\\":\\\"Marin\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":4869,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Dominguez\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":2289,\\\"rank\\\":5.5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":5.5,\\\"nome\\\":\\\"Dalbert\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":5.5,\\\"squadraGioca\\\":true},{\\\"id\\\":358,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":0,\\\"nome\\\":\\\"De Sciglio\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true},{\\\"id\\\":256,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":0,\\\"nome\\\":\\\"Juan Jesus\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true},{\\\"id\\\":5323,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":0,\\\"nome\\\":\\\"Martinez Quarta\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true},{\\\"id\\\":2860,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":0,\\\"nome\\\":\\\"Malcuit\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true},{\\\"id\\\":387,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":0,\\\"nome\\\":\\\"Reina\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true}],\\\"bmp\\\":0,\\\"bmd\\\":1,\\\"bmc\\\":0,\\\"bma\\\":0,\\\"bmfp\\\":0,\\\"bmr\\\":0,\\\"bmcap\\\":0,\\\"ru\\\":0,\\\"nome\\\":\\\"A.C. Avanti Cristo\\\"},{\\\"id\\\":3769554,\\\"modulo\\\":\\\"3412\\\",\\\"moduloS\\\":\\\"3412\\\",\\\"fattore\\\":0,\\\"total\\\":79,\\\"cap\\\":\\\"\\\",\\\"players\\\":[{\\\"id\\\":4270,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Rui Patricio\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":4245,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Smalling\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":2788,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Bremer\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":2296,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Mancini\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":5513,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Dumfries\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":645,\\\"rank\\\":7.5,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[3],\\\"voto\\\":7.5,\\\"nome\\\":\\\"Milinkovic-Savic\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":10.5,\\\"squadraGioca\\\":true},{\\\"id\\\":2744,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Svanberg\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":581,\\\"rank\\\":6,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Faraoni\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":2172,\\\"rank\\\":7,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[3,1,14],\\\"voto\\\":7,\\\"nome\\\":\\\"Barak\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":9.5,\\\"squadraGioca\\\":true},{\\\"id\\\":4517,\\\"rank\\\":7,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[3,14],\\\"voto\\\":7,\\\"nome\\\":\\\"Lozano\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":10,\\\"squadraGioca\\\":true},{\\\"id\\\":2544,\\\"rank\\\":0,\\\"played\\\":true,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Abraham\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":218,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":0,\\\"nome\\\":\\\"Perin\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":0,\\\"squadraGioca\\\":true},{\\\"id\\\":2119,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Deulofeu\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":4179,\\\"rank\\\":6,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Gonzalez N.\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":505,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Bonazzoli\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":2719,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Barrow\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":2525,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Darmian\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":76,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Romagnoli S.\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":4404,\\\"rank\\\":6,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Thorsby\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":170,\\\"rank\\\":5,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":5,\\\"nome\\\":\\\"Badelj\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":5,\\\"squadraGioca\\\":true},{\\\"id\\\":5479,\\\"rank\\\":6,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Ceccaroni\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":true},{\\\"id\\\":5509,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Vina\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false},{\\\"id\\\":4185,\\\"rank\\\":0,\\\"played\\\":false,\\\"malus\\\":0,\\\"totBM\\\":0,\\\"bm\\\":[],\\\"voto\\\":6,\\\"nome\\\":\\\"Maitland-Niles\\\",\\\"capitano\\\":false,\\\"viceCapitano\\\":false,\\\"fantavoto\\\":6,\\\"squadraGioca\\\":false}],\\\"bmp\\\":0,\\\"bmd\\\":0,\\\"bmc\\\":0,\\\"bma\\\":0,\\\"bmfp\\\":0,\\\"bmr\\\":0,\\\"bmcap\\\":0,\\\"ru\\\":0,\\\"nome\\\":\\\"Tavolino\\\"}],\\\"ris\\\":\\\"2-2\\\",\\\"s\\\":\\\"2\\\",\\\"adv\\\":null,\\\"msg\\\":\\\"\\\"}\"\r\n" +
-                "}\r\n" +
-                "";
-        String sFS = "{\r\n" +
-                "  \"dati\" : \"{\\\"teams\\\":[{\\\"total\\\":89.25,\\\"players\\\":[{\\\"fantavoto\\\":5.25,\\\"totBM\\\":0,\\\"voto\\\":6.25,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Szczesny W. (P)\\\",\\\"malus\\\":0,\\\"bm\\\":[4],\\\"played\\\":true},{\\\"fantavoto\\\":7.25,\\\"totBM\\\":0,\\\"voto\\\":6.25,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Danilo . (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[22],\\\"played\\\":true},{\\\"fantavoto\\\":13.75,\\\"totBM\\\":0,\\\"voto\\\":7.75,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Bonucci L. (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[3,3],\\\"played\\\":true},{\\\"fantavoto\\\":10,\\\"totBM\\\":0,\\\"voto\\\":7,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Koulibaly K. (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[3],\\\"played\\\":true},{\\\"fantavoto\\\":10.5,\\\"totBM\\\":0,\\\"voto\\\":7.5,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Milinkovic-Savic S. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[3],\\\"played\\\":true},{\\\"fantavoto\\\":9.5,\\\"totBM\\\":0,\\\"voto\\\":6.5,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Zurkowski S. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[3,14],\\\"played\\\":true},{\\\"fantavoto\\\":5.5,\\\"totBM\\\":0,\\\"voto\\\":5.5,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Djuricic F. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[14],\\\"played\\\":true},{\\\"fantavoto\\\":6.25,\\\"totBM\\\":0,\\\"voto\\\":6.25,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Bernardeschi F. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[14],\\\"played\\\":true},{\\\"fantavoto\\\":10,\\\"totBM\\\":0,\\\"voto\\\":7,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Rafael Leao  (A)\\\",\\\"malus\\\":0,\\\"bm\\\":[3],\\\"played\\\":true},{\\\"fantavoto\\\":5.75,\\\"totBM\\\":0,\\\"voto\\\":5.75,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Morata . (A)\\\",\\\"malus\\\":0,\\\"bm\\\":[14],\\\"played\\\":true},{\\\"fantavoto\\\":6,\\\"totBM\\\":0,\\\"voto\\\":6,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":false,\\\"nome\\\":\\\"Afena-Gyan F. (A)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":true},{\\\"fantavoto\\\":0,\\\"totBM\\\":0,\\\"voto\\\":0,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Perin M. (P)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":10.75,\\\"totBM\\\":0,\\\"voto\\\":7.25,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Audero E. (P)\\\",\\\"malus\\\":0,\\\"bm\\\":[1,7,1000],\\\"played\\\":false},{\\\"fantavoto\\\":6.25,\\\"totBM\\\":0,\\\"voto\\\":6.25,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Tomori F. (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":5.75,\\\"totBM\\\":0,\\\"voto\\\":5.75,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Caldara M. (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":6.25,\\\"totBM\\\":0,\\\"voto\\\":6.25,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Kalulu P. (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":0,\\\"totBM\\\":0,\\\"voto\\\":0,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"De Sciglio M. (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":6,\\\"totBM\\\":0,\\\"voto\\\":6,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":false,\\\"nome\\\":\\\"Pezzella Giu.  (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":5.5,\\\"totBM\\\":0,\\\"voto\\\":5.5,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Ikone'  (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[15],\\\"played\\\":false},{\\\"fantavoto\\\":-0.5,\\\"totBM\\\":0,\\\"voto\\\":0,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Kovalenko V. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[15,1],\\\"played\\\":false},{\\\"fantavoto\\\":0,\\\"totBM\\\":0,\\\"voto\\\":0,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Zielinski P. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":6.25,\\\"totBM\\\":0,\\\"voto\\\":6.25,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Tonali S. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":5.75,\\\"totBM\\\":0,\\\"voto\\\":5.75,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Cabral  (A)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":5.75,\\\"totBM\\\":0,\\\"voto\\\":5.75,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Raspadori G. (A)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":4.5,\\\"totBM\\\":0,\\\"voto\\\":5,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Pavoletti L. (A)\\\",\\\"malus\\\":0,\\\"bm\\\":[15,1],\\\"played\\\":false}],\\\"bma\\\":0,\\\"bmd\\\":-1,\\\"bmc\\\":0.5,\\\"nome\\\":\\\"Jonny Fighters\\\"},{\\\"total\\\":81.5,\\\"players\\\":[{\\\"fantavoto\\\":7.25,\\\"totBM\\\":0,\\\"voto\\\":6.25,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Maignan M. (P)\\\",\\\"malus\\\":0,\\\"bm\\\":[1000],\\\"played\\\":true},{\\\"fantavoto\\\":10,\\\"totBM\\\":0,\\\"voto\\\":7,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Rrahmani A. (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[3],\\\"played\\\":true},{\\\"fantavoto\\\":7.75,\\\"totBM\\\":0,\\\"voto\\\":6.75,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"de Ligt M. (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[22],\\\"played\\\":true},{\\\"fantavoto\\\":6,\\\"totBM\\\":0,\\\"voto\\\":6,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Skriniar M. (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":true},{\\\"fantavoto\\\":6,\\\"totBM\\\":0,\\\"voto\\\":6,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":false,\\\"nome\\\":\\\"Cristante B. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":true},{\\\"fantavoto\\\":6,\\\"totBM\\\":0,\\\"voto\\\":6,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":false,\\\"nome\\\":\\\"de Roon M. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":true},{\\\"fantavoto\\\":6,\\\"totBM\\\":0,\\\"voto\\\":6,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":false,\\\"nome\\\":\\\"Verdi S. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":true},{\\\"fantavoto\\\":6,\\\"totBM\\\":0,\\\"voto\\\":6,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Ricci S. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[15],\\\"played\\\":true},{\\\"fantavoto\\\":9.5,\\\"totBM\\\":0,\\\"voto\\\":6.5,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Joao Pedro . (A)\\\",\\\"malus\\\":0,\\\"bm\\\":[3],\\\"played\\\":true},{\\\"fantavoto\\\":10.5,\\\"totBM\\\":0,\\\"voto\\\":7.5,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Caprari G. (A)\\\",\\\"malus\\\":0,\\\"bm\\\":[3,14],\\\"played\\\":true},{\\\"fantavoto\\\":6,\\\"totBM\\\":0,\\\"voto\\\":6,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":false,\\\"nome\\\":\\\"Abraham T. (A)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":true},{\\\"fantavoto\\\":5.25,\\\"totBM\\\":0,\\\"voto\\\":6.25,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Montipo'  (P)\\\",\\\"malus\\\":0,\\\"bm\\\":[4],\\\"played\\\":false},{\\\"fantavoto\\\":6,\\\"totBM\\\":0,\\\"voto\\\":6,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":false,\\\"nome\\\":\\\"Demiral M. (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":0,\\\"totBM\\\":0,\\\"voto\\\":0,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Ceppitelli L. (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":0,\\\"totBM\\\":0,\\\"voto\\\":0,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Fares  (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":6,\\\"totBM\\\":0,\\\"voto\\\":6,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":false,\\\"nome\\\":\\\"Gagliolo R. (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":0,\\\"totBM\\\":0,\\\"voto\\\":0,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Yoshida M. (D)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":0,\\\"totBM\\\":0,\\\"voto\\\":0,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Castrovilli G. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":0,\\\"totBM\\\":0,\\\"voto\\\":0,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Rovella N. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":6,\\\"totBM\\\":0,\\\"voto\\\":6,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Torreira L. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[15],\\\"played\\\":false},{\\\"fantavoto\\\":5.25,\\\"totBM\\\":0,\\\"voto\\\":5.25,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Caputo F. (A)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":0,\\\"totBM\\\":0,\\\"voto\\\":0,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Kalinic N. (A)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":0,\\\"totBM\\\":0,\\\"voto\\\":0,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Tatarusanu C. (P)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false},{\\\"fantavoto\\\":0,\\\"totBM\\\":0,\\\"voto\\\":0,\\\"viceCapitano\\\":false,\\\"capitano\\\":false,\\\"squadraGioca\\\":true,\\\"nome\\\":\\\"Saelemaekers A. (C)\\\",\\\"malus\\\":0,\\\"bm\\\":[],\\\"played\\\":false}],\\\"bma\\\":0,\\\"bmd\\\":-1.5,\\\"bmc\\\":0,\\\"nome\\\":\\\"Universal\\\",\\\"fattore\\\":2}],\\\"ris\\\":\\\"4-3\\\"}\"\r\n" +
-                "}\r\n" +
-                "";
-        String s = sFG;
-        String d = (String) fromJson(s, Map.class).get("dati");
-        Map fromJson = fromJson(d, Map.class);
-        List<Map> l = (List<Map>) fromJson.get("teams");
-        for (Map map : l) {
-            List<Map<String, Object>> pl = (List<Map<String, Object>>) map.get("players");
-            for (Map<String, Object> map2 : pl) {
-                System.out.println(map2.get("nome") + "-" + map2.get("fantavoto"));
-            }
-        }
     }
 
 
@@ -1918,6 +1896,7 @@ motm->0.0
 
     private static Map<String, Map<String, Object>> oldSnapPartite = new LinkedHashMap();
     public static Map<String, Instant> instantUsati = new HashMap<>();
+    public static Map<String, LocalDate> orariPartite = new HashMap<>();
     private static Map<String, Map<String, Object>> cachedSnapPartite = new LinkedHashMap();
 
     private static Map<String, Map<String, Object>> partiteLive() throws Exception {
@@ -2001,7 +1980,8 @@ motm->0.0
 
 
                 String key = sqCasa + " vs " + sqFuori;
-
+                orariPartite.put(sqCasa ,ZonedDateTime.parse(map2.get("date").toString()).toLocalDate());
+                orariPartite.put(sqFuori ,ZonedDateTime.parse(map2.get("date").toString()).toLocalDate());
 
                 if (map2.get("timeStampOpta") != null) {
                     Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
@@ -3105,6 +3085,16 @@ motm->0.0
                     if (map.get("v") != null && !Double.valueOf(map.get("v").toString()).equals(56D)) {
                         voto = map.get("v").toString();
                     }
+                    if (map.get("v") != null && Double.valueOf(map.get("v").toString()).equals(55D)){
+                        newMap.put("is55",true);
+                    } else {
+                        newMap.put("is55",false);
+                    }
+                    if (map.get("v") != null && Double.valueOf(map.get("v").toString()).equals(56D)){
+                        newMap.put("is56",true);
+                    } else {
+                        newMap.put("is56",false);
+                    }
                     newMap.put("voto", voto);
                     String evento = "";
                     List<Integer> bm = (List) map.get("bm");
@@ -3116,7 +3106,8 @@ motm->0.0
                     }
                     newMap.put("evento", evento);
                     newMap.put("bm", map.get("bm"));
-                    newMap.put("id", map.get("id"));//TODO OK
+                    newMap.put("min", map.get("min"));
+                    newMap.put("id", map.get("id"));
                     for (Live live : lives) {
                         if (live.getSquadra().equals(sq.get(idS))) {
                             trov = true;
@@ -3236,9 +3227,12 @@ motm->0.0
                 //				System.out.println(gg.get("nome") + ";" + gg.get("ruolo") + ";" + live.getSquadra());
                 double modificatore = 0;
                 List<Integer> evento = (List<Integer>) gg.get("bm");
+                List<Integer> minEvento = (List<Integer>) gg.get("min");
                 List<Integer> codEventi = new ArrayList<Integer>();
+                List<Integer> minEventi = new ArrayList<Integer>();
                 String ev = "";
-                for (Integer eventoAtt : evento) {
+                for (int j=0;j<evento.size();j++){
+                    Integer eventoAtt=evento.get(j);
                     String[] eventiAtt = eventi.get(eventoAtt);
                     if (eventiAtt == null) {
                         throw new RuntimeException("Evento non censito: " + eventoAtt + " per " + gg.get("nome"));
@@ -3261,9 +3255,11 @@ motm->0.0
                         }
                     }
                     codEventi.add(eventoAtt);
+                    minEventi.add(minEvento.get(j));
                 }
                 gg.put("eventodecodificato", ev);
                 gg.put("codEventi", codEventi);
+                gg.put("minEventi", minEventi);
                 gg.put("modificatore", modificatore);
             }
         }
@@ -3312,15 +3308,15 @@ motm->0.0
             getLiveFs();
             giocatore.setVotoOrig(giocatore.getVoto());
             giocatore.setModificatoreOrig(giocatore.getModificatore());
+            giocatore.setLiveFS(false);
             Squadra squadraLiveFs = sqFs.stream().filter(s -> s.getNome().equals(squadra.getNome())).findFirst().get();
             Optional<Giocatore> firstGiocatore = squadraLiveFs.getTitolari().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
             if (!firstGiocatore.isPresent()) {
                 firstGiocatore = squadraLiveFs.getRiserve().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
             }
             if (firstGiocatore.isPresent()) {
-                giocatore.setLiveFS(false);
                 //giocatore.isSquadraGioca()
-                if (giocatore.getVoto() > 0) {
+                if ( LocalDate.now().compareTo(orariPartite.get(giocatore.getSquadra().toUpperCase()))>0) {
                     giocatore.setLiveFS(true);
                     giocatore.setVoto(firstGiocatore.get().getVoto());
                     giocatore.setModificatore(firstGiocatore.get().getModificatore());
@@ -3402,6 +3398,14 @@ motm->0.0
                         modificatore = (Double) g.get("modificatore");
                     }
                     String votoLive = g.get("voto").toString();
+
+                    boolean is55 = (boolean) g.get("is55");
+                    boolean is56 = (boolean) g.get("is56");
+                    List<Integer> min=new ArrayList<>();
+                    if (g.get("minEventi") != null){
+                      min=(List<Integer>) g.get("minEventi");
+                    }
+
                     List<Integer> eventoLive = (List<Integer>) g.get("bm");
                     if (nomeGiocatoreLive.toUpperCase().indexOf("ESUS") > -1 && giocatore.getNome().toUpperCase().indexOf("ESUS") > -1 && tipo.equalsIgnoreCase("FANTASERVICE")) {
                         //System.out.println();
@@ -3426,6 +3430,9 @@ motm->0.0
                         giocatore.setEvento(eventodecodificato);
                         giocatore.setCodEventi(codEventi);
                         giocatore.setModificatore(modificatore);
+                        giocatore.setIs55(is55);
+                        giocatore.setIs56(is56);
+                        giocatore.setMin(min);
                         if (giocatore.getVoto() > 0) {
                             giocatore.setNotificaLive(true);
                         }

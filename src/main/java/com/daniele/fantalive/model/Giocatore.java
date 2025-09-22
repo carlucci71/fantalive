@@ -44,6 +44,26 @@ public class Giocatore {
 	private String fantasquadra;
     private String dove;
     private String tit;
+    List<Integer> min;
+
+    public List<Integer> getMin() {
+        return min;
+    }
+
+    public void setMin(List<Integer> min) {
+        this.min = min;
+    }
+
+    public boolean isIs56() {
+        return is56;
+    }
+
+    public void setIs56(boolean is56) {
+        this.is56 = is56;
+    }
+
+    private boolean is55;
+    private boolean is56;
 
 
 
@@ -302,5 +322,13 @@ public class Giocatore {
 
     public void setTit(String tit) {
         this.tit = tit;
+    }
+
+    public boolean isIs55() {
+        return is55;
+    }
+
+    public void setIs55(boolean is55) {
+        this.is55 = is55;
     }
 }
