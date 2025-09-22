@@ -959,6 +959,11 @@ app.directive("visualizzasquadra", function() {
 				if (g.voto==0) return "NV";
 				return g.modificatore+g.voto;
 			}
+			$scope.getFantaVotoOrig=function(g){
+				if (!g.squadraGioca) return " ";
+				if (g.votoOrig==0) return "NV";
+				return g.modificatoreOrig+g.votoOrig;
+			}
 			$scope.getOrario=function(orario){
 				if (orario.tag=='FullTime' || orario.tag=='Postponed' || orario.tag=='Cancelled' || orario.tag=='Walkover') return orario.tag;
 				if (orario.tag=='PreMatch'){
@@ -986,6 +991,11 @@ app.directive("visualizzasquadra", function() {
 				if (!g.squadraGioca) return " ";
 				if (g.voto==0) return "NV";
 				return g.voto;
+			}
+			$scope.getVotoOrig=function(g){
+				if (!g.squadraGioca) return " ";
+				if (g.votoOrig==0) return "NV";
+				return g.votoOrig;
 			}
 			$scope.valEvento=function(evento,r){
 				var pos=0;

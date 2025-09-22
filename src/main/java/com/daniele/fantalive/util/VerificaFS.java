@@ -93,7 +93,7 @@ public class VerificaFS {
     private void go() throws Exception {
 
 //        https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/20/live_3.json
-        int g = 3;
+        int g = 4;
         String sqFromLive = (String) Main.callHTTP("GET", "application/json; charset=UTF-8", "https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/" + Constant.I_LIVE_FANTACALCIO + "/live_" + g + ".json", null).get("response");
         Map<String, Object> jsonToMap = jsonToMap(sqFromLive);
         List<Map<String, Object>> getLiveFromFG = (List<Map<String, Object>>) ((Map) jsonToMap.get("data")).get("pl");

@@ -18,10 +18,12 @@ public class Giocatore {
 	private String nomeLive;
 	private String ruoloLive;
 	private double voto=0;
+    private double votoOrig=0;
 	private boolean squadraGioca;
 	private boolean cambioSimulato=false;
 	private String evento="";
 	private double modificatore=0;
+    private double modificatoreOrig=0;
 	private String squadra;
 	private boolean nonGioca;
 	private boolean cambio;
@@ -42,6 +44,23 @@ public class Giocatore {
     private String dove;
     private String tit;
 
+
+    public double getModificatoreOrig() {
+        return modificatoreOrig;
+    }
+
+    public void setModificatoreOrig(double modificatoreOrig) {
+        this.modificatoreOrig = modificatoreOrig;
+    }
+
+
+    public double getVotoOrig() {
+        return votoOrig;
+    }
+
+    public void setVotoOrig(double votoOrig) {
+        this.votoOrig = votoOrig;
+    }
     public String getDove() {
         return dove;
     }

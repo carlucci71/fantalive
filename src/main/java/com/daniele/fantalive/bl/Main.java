@@ -1849,6 +1849,16 @@ motm->0.0
         return ret;
     }
 
+    static List<Squadra> sqFs = null;
+
+    public static void getLiveFs() throws Exception {
+        if (sqFs == null) {
+            String tokenNomeFile = "LIVEFS_" + Constant.GIORNATA + "_";
+            Main.scaricaBe(Constant.GIORNATA, tokenNomeFile);
+            sqFs = Main.getSquadreFromFS(tokenNomeFile, false, true);
+        }
+    }
+
     public static List<Squadra> getSquadreFromFS(String tokenNomeFile, boolean cancella, boolean conVoto) throws Exception {
         List<Squadra> squadre = new ArrayList<Squadra>();
         for (int i = 0; i < Constant.NUM_PARTITE_FS; i++) {
@@ -3106,7 +3116,7 @@ motm->0.0
                     }
                     newMap.put("evento", evento);
                     newMap.put("bm", map.get("bm"));
-                    newMap.put("id", map.get("id"));
+                    newMap.put("id", map.get("id"));//TODO OK
                     for (Live live : lives) {
                         if (live.getSquadra().equals(sq.get(idS))) {
                             trov = true;
@@ -3276,6 +3286,21 @@ motm->0.0
                 if (giocatore.getCodEventi().contains(1) || giocatore.getCodEventi().contains(2)) {
                     isAmmonito = true;
                 }
+                if (conLive) {
+                    getLiveFs();
+                    giocatore.setVotoOrig(giocatore.getVoto());
+                    giocatore.setModificatoreOrig(giocatore.getModificatore());
+                    Squadra squadraLiveFs = sqFs.stream().filter(s -> s.getNome().equals(squadra.getNome())).findFirst().get();
+                    Optional<Giocatore> firstGiocatore = squadraLiveFs.getTitolari().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
+                    if (!firstGiocatore.isPresent()) {
+                        firstGiocatore = squadraLiveFs.getRiserve().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
+                    }
+                    if (firstGiocatore.isPresent()) {
+                        giocatore.setVoto(firstGiocatore.get().getVoto());
+                        giocatore.setModificatore(firstGiocatore.get().getModificatore());
+                    }
+                }
+
             }
             if (modificatori.get(campionato) != null) {
                 if (!isAmmonito) {
@@ -3298,6 +3323,20 @@ motm->0.0
                 if (giocatore != null && giocatore.getSquadra() != null) {
                     if (orari != null) {
                         giocatore.setOrario(orari.get(giocatore.getSquadra().toUpperCase()));
+                    }
+                }
+                if (conLive) {
+                    getLiveFs();
+                    giocatore.setVotoOrig(giocatore.getVoto());
+                    giocatore.setModificatoreOrig(giocatore.getModificatore());
+                    Squadra squadraLiveFs = sqFs.stream().filter(s -> s.getNome().equals(squadra.getNome())).findFirst().get();
+                    Optional<Giocatore> firstGiocatore = squadraLiveFs.getTitolari().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
+                    if (!firstGiocatore.isPresent()) {
+                        firstGiocatore = squadraLiveFs.getRiserve().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
+                    }
+                    if (firstGiocatore.isPresent()) {
+                        giocatore.setVoto(firstGiocatore.get().getVoto());
+                        giocatore.setModificatore(firstGiocatore.get().getModificatore());
                     }
                 }
             }
@@ -3776,7 +3815,7 @@ motm->0.0
     }
 
     public static Giocatore estraiGiocatoreFromFS(Document doc, int i, String dove, String ruolo, boolean conVoto) {
-        String fantasquadra = dove.equalsIgnoreCase("Casa")?doc.select(".fantasquadra").first().text():doc.select(".fantasquadra").last().text();
+        String fantasquadra = dove.equalsIgnoreCase("Casa") ? doc.select(".fantasquadra").first().text() : doc.select(".fantasquadra").last().text();
         String string = "#MainContent_wuc_DettagliPartita1_rpt";
         string = "#MainContent_ctl00_rpt";
         Element first = doc.select(string + ruolo + dove + "_lblNome_" + i).first();
