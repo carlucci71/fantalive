@@ -1980,8 +1980,8 @@ motm->0.0
 
 
                 String key = sqCasa + " vs " + sqFuori;
-                orariPartite.put(sqCasa ,ZonedDateTime.parse(map2.get("date").toString()).toLocalDate());
-                orariPartite.put(sqFuori ,ZonedDateTime.parse(map2.get("date").toString()).toLocalDate());
+                orariPartite.put(sqCasa, ZonedDateTime.parse(map2.get("date").toString()).toLocalDate());
+                orariPartite.put(sqFuori, ZonedDateTime.parse(map2.get("date").toString()).toLocalDate());
 
                 if (map2.get("timeStampOpta") != null) {
                     Instant timeStampOpta = Instant.parse(map2.get("timeStampOpta").toString());
@@ -3085,15 +3085,15 @@ motm->0.0
                     if (map.get("v") != null && !Double.valueOf(map.get("v").toString()).equals(56D)) {
                         voto = map.get("v").toString();
                     }
-                    if (map.get("v") != null && Double.valueOf(map.get("v").toString()).equals(55D)){
-                        newMap.put("is55",true);
+                    if (map.get("v") != null && Double.valueOf(map.get("v").toString()).equals(55D)) {
+                        newMap.put("is55", true);
                     } else {
-                        newMap.put("is55",false);
+                        newMap.put("is55", false);
                     }
-                    if (map.get("v") != null && Double.valueOf(map.get("v").toString()).equals(56D)){
-                        newMap.put("is56",true);
+                    if (map.get("v") != null && Double.valueOf(map.get("v").toString()).equals(56D)) {
+                        newMap.put("is56", true);
                     } else {
-                        newMap.put("is56",false);
+                        newMap.put("is56", false);
                     }
                     newMap.put("voto", voto);
                     String evento = "";
@@ -3231,8 +3231,8 @@ motm->0.0
                 List<Integer> codEventi = new ArrayList<Integer>();
                 List<Integer> minEventi = new ArrayList<Integer>();
                 String ev = "";
-                for (int j=0;j<evento.size();j++){
-                    Integer eventoAtt=evento.get(j);
+                for (int j = 0; j < evento.size(); j++) {
+                    Integer eventoAtt = evento.get(j);
                     String[] eventiAtt = eventi.get(eventoAtt);
                     if (eventiAtt == null) {
                         throw new RuntimeException("Evento non censito: " + eventoAtt + " per " + gg.get("nome"));
@@ -3310,13 +3310,14 @@ motm->0.0
             giocatore.setModificatoreOrig(giocatore.getModificatore());
             giocatore.setLiveFS(false);
             Squadra squadraLiveFs = sqFs.stream().filter(s -> s.getNome().equals(squadra.getNome())).findFirst().get();
-            Optional<Giocatore> firstGiocatore = squadraLiveFs.getTitolari().stream().filter(g -> (g.getIdFs()==null?"":g.getIdFs()).equals(giocatore.getIdFs())).findFirst();
+            Optional<Giocatore> firstGiocatore = squadraLiveFs.getTitolari().stream().filter(g -> (g.getIdFs() == null ? "" : g.getIdFs()).equals(giocatore.getIdFs())).findFirst();
             if (!firstGiocatore.isPresent()) {
                 firstGiocatore = squadraLiveFs.getRiserve().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
             }
             if (firstGiocatore.isPresent()) {
                 //giocatore.isSquadraGioca()
-                if ( LocalDate.now().compareTo(orariPartite.get(giocatore.getSquadra().toUpperCase()))>0) {
+                //if (LocalDate.now().compareTo(orariPartite.get(giocatore.getSquadra().toUpperCase())) > 0)
+                 {
                     giocatore.setLiveFS(true);
                     giocatore.setVoto(firstGiocatore.get().getVoto());
                     giocatore.setModificatore(firstGiocatore.get().getModificatore());
@@ -3401,9 +3402,9 @@ motm->0.0
 
                     boolean is55 = (boolean) g.get("is55");
                     boolean is56 = (boolean) g.get("is56");
-                    List<Integer> min=new ArrayList<>();
-                    if (g.get("minEventi") != null){
-                      min=(List<Integer>) g.get("minEventi");
+                    List<Integer> min = new ArrayList<>();
+                    if (g.get("minEventi") != null) {
+                        min = (List<Integer>) g.get("minEventi");
                     }
 
                     List<Integer> eventoLive = (List<Integer>) g.get("bm");
