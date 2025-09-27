@@ -1,7 +1,23 @@
 <table class="nowrap">
-	<tr ng-repeat="giocatore in squadra.titolari | filtraGiocatore " ng-style="{'height':'30px','font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">
+    <th>
+    <td style="padding: 2px; widthX: 200px">idGioc</td>
+    <td style="padding: 2px; widthX: 200px">nome</td>
+    <td style="padding: 2px; widthX: 200px">squadra</td>
+    <td style="padding: 2px; widthX: 50px; text-align: center">partita</td>
+    <td style="padding: 2px; widthX: 50px; text-align: center">ruolo</td>
+    <td style="padding: 2px; widthX: 50px; text-align: center">votoFS [votoFG]</td>
+    <td style="padding: 2px; widthX: 200px; text-align: center">eventi</td>
+    <td style="padding: 2px; widthX: 50px; text-align: center">fantaVotoFS [fantavotoFG] -- liveFS -- is55 -- is56 -- min</td>
+    <td style="padding: 2px; widthX: 150px; text-align: center">orario</td>
+    <td>cambio</td>
+    <td>non cambiabile</td>
+    </td>
+    </th>
+
+    <tr ng-repeat="giocatore in squadra.titolari | filtraGiocatore " ng-style="{'height':'30px','font-weight': weight(giocatore),'color':txtColor(giocatore),'background-color':backColor(giocatore)}">
 		<td style="padding: 2px; widthX: 200px">{{giocatore.idGioc}}</td>
 		<td style="padding: 2px; widthX: 200px">{{giocatore.nome}}</td>
+		<td style="padding: 2px; widthX: 200px">{{giocatore.squadra}}</td>
 		<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.partita}}</td>
 		<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.ruolo}}</td>
         <td style="padding: 2px; widthX: 50px; text-align: center">{{getVoto(giocatore)}} [{{getVotoOrig(giocatore)}}]</td>
@@ -19,12 +35,15 @@
 		<td style="padding: 2px; widthX: 150px; text-align: center">{{getOrario(giocatore.orario)}}</td>
 		<td>
 			&nbsp;<input ng-disabled="r.tipologia=='MANTRA'" ng-show="rlive" type=checkbox ng-model="giocatore.cambio"></input>
-			&nbsp;<input ng-disabled="r.tipologia=='MANTRA'" ng-show="rlive" type=checkbox ng-model="giocatore.nonCambiabile"></input>
-			<span ng-show="r.tipologia=='MANTRA'">
+		</td>
+        <td>
+            <input ng-disabled="r.tipologia=='MANTRA'" ng-show="rlive" type=checkbox ng-model="giocatore.nonCambiabile"></input>
+            <span ng-show="r.tipologia=='MANTRA'">
 				&nbsp;<input ng-show="rlive" type=checkbox ng-model="giocatore.mantraCambio"></input>
 				&nbsp;<label ng-show="rlive && giocatore.mantraMalus!=0">{{giocatore.mantraMalus}}</label>
 			</span>&nbsp;
-		</td>
+        </td>
+
 	</tr>
 </table>
 <br>
@@ -51,6 +70,7 @@
 		<td style="padding: 2px; widthX: 200px">{{giocatore.idGioc}}</td>
 		<td style="padding: 2px; widthX: 200px;">{{giocatore.nome}}</td>
 		<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.squadra}}</td>
+		<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.partita}}</td>
 		<td style="padding: 2px; widthX: 50px; text-align: center">{{giocatore.ruolo}}</td>
         <td style="padding: 2px; widthX: 50px; text-align: center">{{getVoto(giocatore)}} [{{getVotoOrig(giocatore)}}]</td>
 		<td style="padding: 2px; widthX: 200px; text-align: center">
@@ -65,14 +85,16 @@
 			<label ng-show=giocatore.cambiato>(*)</label>
 		</td>
 		<td style="padding: 2px; widthX: 150px; text-align: center">{{getOrario(giocatore.orario)}}</td>
-		<td>
-			&nbsp;<input ng-disabled="r.tipologia=='MANTRA'" ng-show="rlive" type=checkbox ng-model="giocatore.cambio"></input>
-			&nbsp;<input ng-disabled="r.tipologia=='MANTRA'" ng-show="rlive" type=checkbox ng-model="giocatore.nonCambiabile"></input>
-			<span ng-show="r.tipologia=='MANTRA'">
+        <td>
+            &nbsp;<input ng-disabled="r.tipologia=='MANTRA'" ng-show="rlive" type=checkbox ng-model="giocatore.cambio"></input>
+        </td>
+        <td>
+            <input ng-disabled="r.tipologia=='MANTRA'" ng-show="rlive" type=checkbox ng-model="giocatore.nonCambiabile"></input>
+            <span ng-show="r.tipologia=='MANTRA'">
 				&nbsp;<input ng-show="rlive" type=checkbox ng-model="giocatore.mantraCambio"></input>
 				&nbsp;<label ng-show="rlive && giocatore.mantraMalus!=0">{{giocatore.mantraMalus}}</label>
 			</span>&nbsp;
-		</td>
+        </td>
 	</tr>
 </table>
 <br>
