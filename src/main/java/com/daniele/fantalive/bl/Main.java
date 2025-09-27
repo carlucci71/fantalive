@@ -3310,7 +3310,7 @@ motm->0.0
             giocatore.setModificatoreOrig(giocatore.getModificatore());
             giocatore.setLiveFS(false);
             Squadra squadraLiveFs = sqFs.stream().filter(s -> s.getNome().equals(squadra.getNome())).findFirst().get();
-            Optional<Giocatore> firstGiocatore = squadraLiveFs.getTitolari().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
+            Optional<Giocatore> firstGiocatore = squadraLiveFs.getTitolari().stream().filter(g -> (g.getIdFs()==null?"":g.getIdFs()).equals(giocatore.getIdFs())).findFirst();
             if (!firstGiocatore.isPresent()) {
                 firstGiocatore = squadraLiveFs.getRiserve().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
             }
