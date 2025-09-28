@@ -980,11 +980,18 @@ app.directive("visualizzasquadra", function() {
 				}
 				return orario.val + "Min";
 			}
-			$scope.desEvento=function(ev,r){
+			$scope.desEvento=function(ev,r, gg, index){
 				if (!$scope.eventi) return "";
+                var minEv = gg.min[index]
+                var desMin="";
+                if (minEv<0){
+                    desMin = (minEv*-1) + " PT"
+                } else {
+                    desMin = minEv + " ST"
+                }
 				var evento = $scope.eventi[ev];
 				var ret = evento[0];
-				ret = ret + " <-> " + $scope.valEvento(evento,r); 
+				ret = ret + " [" + $scope.valEvento(evento,r) + "] " + desMin;
 				return ret;
 			}
 			$scope.getVoto=function(g){
