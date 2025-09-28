@@ -1,4 +1,4 @@
-var app = angular.module('app', [ 'ngResource','ngAnimate', 'ngSanitize', 'ui.bootstrap' ]);
+var app = angular.module('app', [ 'ngResource','ngAnimate', 'ngSanitize', 'ui.bootstrap', '720kb.tooltips' ]);
 app.run(
 		function($rootScope, $resource, $interval,$q,$timeout){
 			$rootScope.configura=false;
