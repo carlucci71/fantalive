@@ -90,7 +90,6 @@ import java.sql.ResultSet;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -3269,7 +3268,7 @@ motm->0.0
                 if (giocatore.getCodEventi().contains(1) || giocatore.getCodEventi().contains(2)) {
                     isAmmonito = true;
                 }
-                adattaGiocatoreInLives(conLive, squadra, giocatore, lives, tipo, conVoto, orari);
+                adattaGiocatoreInLives(conLive, squadra, giocatore, lives, tipo, conVoto, orari, snap);
 
             }
             if (modificatori.get(campionato) != null) {
@@ -3283,7 +3282,7 @@ motm->0.0
         }
         for (Squadra squadra : squadre.get(campionato)) {
             for (Giocatore giocatore : squadra.getRiserve()) {
-                adattaGiocatoreInLives(conLive, squadra, giocatore, lives, tipo, conVoto, orari);
+                adattaGiocatoreInLives(conLive, squadra, giocatore, lives, tipo, conVoto, orari, snap);
             }
         }
         r.setSquadre(squadre.get(campionato));
@@ -3291,7 +3290,7 @@ motm->0.0
         return r;
     }
 
-    private static void adattaGiocatoreInLives(boolean conLive, Squadra squadra, Giocatore giocatore, List<Live> lives, String tipo, boolean conVoto, Map<String, Map<String, String>> orari) throws Exception {
+    private static void adattaGiocatoreInLives(boolean conLive, Squadra squadra, Giocatore giocatore, List<Live> lives, String tipo, boolean conVoto, Map<String, Map<String, String>> orari, Map<String, Map<String, String>> snap) throws Exception {
         findGiocatoreInLives(giocatore, lives, tipo, conVoto);
         if (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P")) {
             if (giocatore.getVoto() > 0 && !giocatore.getCodEventi().contains(4) && !giocatore.getCodEventi().contains(1000)) {
@@ -3302,6 +3301,7 @@ motm->0.0
         if (giocatore != null && giocatore.getSquadra() != null) {
             if (orari != null) {
                 giocatore.setOrario(orari.get(giocatore.getSquadra().toUpperCase()));
+                giocatore.setPartita(recuperaPartita(giocatore.getSquadra().toUpperCase(), snap.keySet()));
             }
         }
         if (conLive) {
