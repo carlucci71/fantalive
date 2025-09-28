@@ -59,6 +59,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.format.datetime.DateFormatter;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.ObjectUtils;
 
 import javax.net.ssl.HostnameVerifier;
@@ -1828,6 +1829,12 @@ motm->0.0
 
     static List<Squadra> sqFs = null;
 
+    @Scheduled(fixedRate = 120000, initialDelay = 0)
+    public void resetSqFs() {
+        sqFs = null;
+        logger.info("PULISCO");
+    }
+
     public static void getLiveFs() throws Exception {
         if (sqFs == null) {
             String tokenNomeFile = "LIVEFS_" + Constant.GIORNATA + "_";
@@ -1835,6 +1842,7 @@ motm->0.0
             sqFs = Main.getSquadreFromFS(tokenNomeFile, false, true);
         }
     }
+
 
     public static List<Squadra> getSquadreFromFS(String tokenNomeFile, boolean cancella, boolean conVoto) throws Exception {
         List<Squadra> squadre = new ArrayList<Squadra>();
@@ -3317,7 +3325,7 @@ motm->0.0
             if (firstGiocatore.isPresent()) {
                 //giocatore.isSquadraGioca()
                 //if (LocalDate.now().compareTo(orariPartite.get(giocatore.getSquadra().toUpperCase())) > 0)
-                 {
+                {
                     giocatore.setLiveFS(true);
                     giocatore.setVoto(firstGiocatore.get().getVoto());
                     giocatore.setModificatore(firstGiocatore.get().getModificatore());
