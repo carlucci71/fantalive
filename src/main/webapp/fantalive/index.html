@@ -1,5 +1,6 @@
 <!-- filezilla C:\Users\d.carlucci\Documents\GitHub\fantalive\target\ /share/HDA_DATA/.qpkg/Tomcat/tomcat/webapps -->
 <html>
+<html>
 <head>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
@@ -9,6 +10,7 @@
 <link href="./stile.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<link href="./lib/angular-tooltips.min.css" rel="stylesheet">
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-resource.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
@@ -16,9 +18,24 @@
 <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
 <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.6.1/angular-locale_it-it.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    
 <script src="./lib/angular-tooltips.min.js"></script>
 <script type="text/javascript" src="./app.js"></script>
+<style>
+.custom-tooltip-html {
+  background: #222;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  font-size: 14px;
+  max-width: 300px;
+  word-break: break-word;
+  pointer-events: none;
+  opacity: 0.97;
+  position: absolute;
+  transition: opacity 0.2s;
+}
+</style>
 <body data-ng-init="init()" x-ng-app="app" ng-style="{'margin-left':'20px','background-color':backLoading()}">
 <!--
 <a target="_blank" href=./simulaF1>SIMULAF1</a>
@@ -46,6 +63,9 @@
 <span ng-show="timeRefresh"><label>Refresh tra: </label>{{20-(timeRefresh/1000)}}s</span>
 <br>
 <label>Last refresh: </label>{{lastRefresh}}
+
+<button tooltip="Test tooltip" tooltip-html="true">Test Tooltip</button>
+
 
 <br>
 <label>Secondi ritardo notifica: </label>{{ritardoNotifica}}

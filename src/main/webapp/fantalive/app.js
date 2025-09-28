@@ -1106,12 +1106,46 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, data, $rootScop
 		});
 	};
 });
-
-
-/*
-$rootScope.getFantaVoto=function(g){
-	if (!g.squadraGioca) return " ";
-	if (g.voto==0) return "NV";
-	return g.modificatore+g.voto;
-}
-*/
+app.directive('tooltipHtml', function($document, $compile, $timeout) {
+  return {
+    restrict: 'A',
+    scope: {
+      tooltipHtml: '@'
+    },
+    link: function(scope, element) {
+      var tooltipElem;
+      var showTooltip = function(event) {
+        if (tooltipElem) return;
+        tooltipElem = angular.element('<div class="custom-tooltip-html" ng-bind-html="tooltipHtml"></div>');
+        $compile(tooltipElem)(scope);
+        angular.element(document.body).append(tooltipElem);
+        var rect = element[0].getBoundingClientRect();
+        var scrollY = window.scrollY || window.pageYOffset;
+        var scrollX = window.scrollX || window.pageXOffset;
+        $timeout(function() {
+          var ttRect = tooltipElem[0].getBoundingClientRect();
+          var top = rect.top + scrollY - ttRect.height - 8;
+          var left = rect.left + scrollX + (rect.width - ttRect.width) / 2;
+          tooltipElem.css({
+            position: 'absolute',
+            top: top + 'px',
+            left: left + 'px',
+            zIndex: 9999,
+            pointerEvents: 'none',
+            opacity: 1
+          });
+        });
+      };
+      var hideTooltip = function() {
+        if (tooltipElem) {
+          tooltipElem.remove();
+          tooltipElem = null;
+        }
+      };
+      element.on('mouseenter touchstart', showTooltip);
+      element.on('mouseleave touchend touchcancel', hideTooltip);
+      // Rimuovi tooltip su destroy
+      scope.$on('$destroy', hideTooltip);
+    }
+  };
+});
