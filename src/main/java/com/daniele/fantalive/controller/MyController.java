@@ -198,6 +198,12 @@ public class MyController {
             }
         }
     }
+
+    @Scheduled(fixedRate = 1000 * 60 * 2)
+    public void resetSqFs() {
+        Main.sqFs = null;
+    }
+
     @Scheduled(fixedRate = 5000)
     public void chckNotifica() throws Exception {
         if (Constant.ABILITA_REFRESH) {

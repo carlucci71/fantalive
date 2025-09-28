@@ -1827,13 +1827,8 @@ motm->0.0
         return ret;
     }
 
-    static List<Squadra> sqFs = null;
+    public static List<Squadra> sqFs = null;
 
-    @Scheduled(fixedRate = 120000, initialDelay = 0)
-    public void resetSqFs() {
-        sqFs = null;
-        logger.info("PULISCO");
-    }
 
     public static void getLiveFs() throws Exception {
         if (sqFs == null) {
