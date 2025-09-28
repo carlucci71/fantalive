@@ -985,6 +985,7 @@ app.directive("visualizzasquadra", function() {
                 var evento = $scope.eventi[ev];
                 var ret = evento[0];
 				if (ev!=1000){
+                    var minEv = gg.min[index];
                     var desMin="";
                     if (minEv<0){
                         desMin = (minEv*-1) + " PT"
