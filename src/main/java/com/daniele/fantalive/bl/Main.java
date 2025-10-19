@@ -1644,10 +1644,10 @@ motm->0.0
         }
     }
 
-    public static void inviaRisultatiNotifica(String msg, String key, String operazione) throws Exception {
+    public static void inviaRisultatiNotifica(String msg, String key, String operazione, String keyOld) throws Exception {
         if (!constant.DISABILITA_NOTIFICA_TELEGRAM) {
             String uuid = UUID.randomUUID().toString();
-            uuid = uuid + "#" + key + "#" + operazione;
+            uuid = uuid + "#" + key + "#" + operazione + "#" + keyOld;
             Instant instant = Instant.now().plusSeconds(Constant.RITARDO);
             boolean trovato = false;
             if (operazione.equalsIgnoreCase("ANNULLA")) {
@@ -1659,8 +1659,8 @@ motm->0.0
                         System.out.print(split[i] + " ");
                     }
 //                    System.out.println();
-                    if (split.length > 2) {
-                        if (split[1].equals(key)) {
+                    if (split.length > 3) {
+                        if (split[3].equals(key)) {
                             trovato = true;
                             System.out.println("HO TROVATO IL RIFERIMENTO: " + inAttesa.getKey());
                             instant = inAttesa.getValue().getOraInvio();
@@ -2949,6 +2949,7 @@ motm->0.0
         //confronta con oldSnapPartite
         Map<String, Object> oldPartita = oldSnapPartite.get(key);
         StringBuilder messaggio = null;
+        String keyOld = "";
         if (oldPartita != null) {
             boolean cambioTag = false;
             String oldTag = (String) oldPartita.get("tag");
@@ -3011,6 +3012,7 @@ motm->0.0
 
                 List<Map> oldRetiFuori = (List<Map>) ((Map) oldPartita.get(sqFuori)).get("RETI");
                 List<Map> retiFuori = (List<Map>) ((Map) partita.get(sqFuori)).get("RETI");
+                keyOld = oldRetiCasa.size() + "-" + oldRetiFuori.size();
                 if (oldRetiFuori.size() > retiFuori.size()) {
                     if (messaggio == null) {
                         messaggio = new StringBuilder(key + "\n");
@@ -3040,7 +3042,7 @@ motm->0.0
             }
             if (messaggio != null) {
                 try {
-                    inviaRisultatiNotifica(messaggio.toString(), chiaveRisultato, operazione);
+                    inviaRisultatiNotifica(messaggio.toString(), chiaveRisultato, operazione, keyOld);
                 } catch (Exception e) {
                     e.printStackTrace(System.out);
                 }

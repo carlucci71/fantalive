@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -217,11 +218,13 @@ public class MyController {
             socketHandlerFantalive.invia(Main.toSocket);
         }
     }
+
     @RequestMapping("/inviaNotifica")
     public void inviaNotifica() throws Exception {
         Instant instant = Instant.now();
         Main.inviaNotifica("invio: " + instant.toString());
     }
+
     @RequestMapping("/forzaInvio")
     public List<String> forzaInvio() throws Exception {
         Instant now = Instant.now();
@@ -251,6 +254,20 @@ public class MyController {
             return ret;
 
         }
+    }
+
+    @RequestMapping("/gimmi")
+    public void gimmi() throws Exception {
+        int golCasa = 0;
+        int golFuori = 1;
+        Main.inviaRisultatiNotifica("Risultato:" + golCasa + "-" + golFuori + "\n", golCasa + "-" + golFuori, "GOL", "0" + "-" + "0");
+    }
+
+    @RequestMapping("/gimmiCanc")
+    public void gimmiCanc() throws Exception {
+        int golCasa = 0;
+        int golFuori = 0;
+        Main.inviaRisultatiNotifica("Risultato:" + golCasa + "-" + golFuori + "\n", golCasa + "-" + golFuori, "ANNULLA",golCasa + "-" + golFuori);
     }
 
     @RequestMapping("/getLivesFromDb")
