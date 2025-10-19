@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,20 +33,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @RestController
@@ -245,18 +233,44 @@ public class MyController {
         return ret;
     }
 
+    @Transactional
     @RequestMapping("/getOrariFromDb")
     public Map<String, String> getOrariFromDb() throws Exception {
-        Map<String, String> ret = new HashMap<>();
-        ret.put("file", Main.getTesto("snapPartite"));
-        return ret;
+        if (false) {
+            Optional<String> snapPartite = salvaRepository.findMaxNomeFromSalva("%snapPartite");
+            if (snapPartite.isEmpty()) {
+                return null;
+            } else {
+                Map<String, String> ret = new HashMap<>();
+                ret.put("file", Main.getTesto(snapPartite.get()));
+                return ret;
+            }
+        } else {
+            Map<String, String> ret = new HashMap<>();
+            ret.put("file", Main.getTesto("snapPartite"));
+            return ret;
+
+        }
     }
 
     @RequestMapping("/getLivesFromDb")
     public Map<String, String> getLivesFromDb() throws Exception {
-        Map<String, String> ret = new HashMap<>();
-        ret.put("file", Main.getTesto("lives"));
-        return ret;
+        if (false) {
+            Optional<String> snapPartite = salvaRepository.findMaxNomeFromSalva("%lives");
+            if (snapPartite.isEmpty()) {
+                return null;
+            } else {
+                Map<String, String> ret = new HashMap<>();
+                ret.put("file", Main.getTesto(snapPartite.get()));
+                return ret;
+            }
+        } else {
+            Map<String, String> ret = new HashMap<>();
+            ret.put("file", Main.getTesto("lives"));
+            return ret;
+
+        }
+
     }
 
     @PostMapping("/getFreeFromDb")
