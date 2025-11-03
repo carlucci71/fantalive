@@ -9,8 +9,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.daniele.fantalive.entity.Salva;
+import org.springframework.transaction.annotation.Transactional;
 
-
+@Transactional
 public interface SalvaRepository extends CrudRepository<Salva, String> {
 
 	@Query(value = "select * from salva where nome like :name", nativeQuery = true)

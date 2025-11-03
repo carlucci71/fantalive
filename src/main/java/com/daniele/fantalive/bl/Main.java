@@ -60,6 +60,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import javax.net.ssl.HostnameVerifier;
@@ -4412,6 +4413,7 @@ motm->0.0
         return ret;
     }
 
+    @Transactional(readOnly = true)
     public static List<Salva> proiezioneFS_name(String campionato, String nomePartitaSimulata) {
         String x = "%-" + "simulaFS" + "-" + campionato + "-" + nomePartitaSimulata;
         List<Salva> ret = salvaRepository.findSimulazioniName(x);

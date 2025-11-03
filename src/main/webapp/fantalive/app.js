@@ -6,6 +6,7 @@ app.run(
 			$rootScope.getOrari=false;
 			$rootScope.getFree=false;
 			$rootScope.getLives=false;
+		    $rootScope.votifg=true;
 			$rootScope.contaNomiDati=-1;
 			$rootScope.notificaCampionato="BE";
 			$rootScope.notificaSquadra="Universal";
@@ -950,19 +951,37 @@ app.directive("visualizzasquadra", function() {
 			rcampionato: "=",
 			rlive: "=",
 			eventi: "=",
+			votifg: "=",
 			squadra: "="
 		},
 		link: function($scope, element, attrs) {
-			$scope.getFantaVoto=function(g){
+			$scope.getFantaVotoFG=function(g){
 				if (!g.squadraGioca) return " ";
 				if (g.voto==0) return "NV";
 				return g.modificatore+g.voto;
 			}
-			$scope.getFantaVotoOrig=function(g){
+			$scope.getFantaVotoFS=function(g){
 				if (!g.squadraGioca) return " ";
 				if (g.votoOrig==0) return "NV";
-				return g.modificatoreOrig+g.votoOrig;
+				return g.modificatore+g.votoOrig;
 			}
+			$scope.getFantaVoto=function(g){
+        	   if($scope.votifg){
+			        return $scope.getFantaVotoFG(g);
+			    } else {
+			        return $scope.getFantaVotoFS(g);
+			    }
+			}
+			$scope.getFantaVotoOrig=function(g){
+        	   if(!$scope.votifg){
+			        return $scope.getFantaVotoFS(g);
+			    } else {
+			        return $scope.getFantaVotoFG(g);
+			    }
+			}
+
+
+
 			$scope.getOrario=function(orario){
 				if (orario.tag=='FullTime' || orario.tag=='Postponed' || orario.tag=='Cancelled' || orario.tag=='Walkover') return orario.tag;
 				if (orario.tag=='PreMatch'){
@@ -995,15 +1014,32 @@ app.directive("visualizzasquadra", function() {
 				}
 				return ret;
 			}
-			$scope.getVoto=function(g){
+
+			$scope.getVotoFS=function(g){
 				if (!g.squadraGioca) return " ";
 				if (g.voto==0) return "NV";
 				return g.voto;
 			}
-			$scope.getVotoOrig=function(g){
+			$scope.getVotoFG=function(g){
 				if (!g.squadraGioca) return " ";
 				if (g.votoOrig==0) return "NV";
 				return g.votoOrig;
+			}
+
+
+			$scope.getVoto=function(g){
+        	   if($scope.votifg){
+			        return $scope.getVotoFS(g);
+			    } else {
+			        return $scope.getVotoFG(g);
+			    }
+			}
+			$scope.getVotoOrig=function(g){
+        	   if(!$scope.votifg){
+			        return $scope.getVotoFS(g);
+			    } else {
+			        return $scope.getVotoFG(g);
+			    }
 			}
 			$scope.valEvento=function(evento,r){
 				var pos=0;

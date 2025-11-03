@@ -90,7 +90,7 @@
 					<br>
 					<!-- in tabelle -->
 					<visualizzasquadra r="getResultMyCampionato(squadralive.campionato)" rcampionato="squadralive.campionato"  
-					rlive="getResultMyCampionato(squadralive.campionato).conLive" eventi="eventi" 
+					rlive="getResultMyCampionato(squadralive.campionato).conLive" eventi="eventi" votifg="votifg"
 					squadra="getSquadraByCampionatoAndName(squadralive.campionato,squadralive.squadra)"></visualizzasquadra>
 				</td>
 			</tr>
@@ -116,7 +116,10 @@
 				 <input type=checkBox ng-model=liveFilter></input>
 				 preferiti 
 				 <input type=checkBox ng-model=favFilter></input>
-			<br>  
+				 voti
+                <input type="radio" name="visualizzaGroup" ng-model="votifg" ng-value="true"> FS
+                <input type="radio" name="visualizzaGroup" ng-model="votifg" ng-value="false"> FG
+                <br>
 			<input type=button value="&#9851;" ng-click="simulaPartiteLive()"></input>
 			</span> 
 			<div ng-repeat="r in result">
@@ -156,7 +159,7 @@
 					</div>
 					<div ng-show="hiddenVisSq.indexOf(squadra.nome)>-1">
 						<!-- dentro squadra -->
-							<visualizzasquadra r="r" rcampionato="r.campionato" rlive="r.conLive" eventi="eventi"  squadra="squadra"></visualizzasquadra>
+							<visualizzasquadra r="r" rcampionato="r.campionato" rlive="r.conLive" eventi="eventi"  votifg="votifg" squadra="squadra"></visualizzasquadra>
 					</div>
 				</div>
 			</div>
