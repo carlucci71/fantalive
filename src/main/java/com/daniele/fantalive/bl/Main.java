@@ -1679,6 +1679,7 @@ motm->0.0
             ThreadSeparato threadSeparato = new ThreadSeparato(risultatiConRitardoBOT, constant.CHAT_ID_FANTALIVE, msg, instant, uuid);
             executor.execute(threadSeparato);
             threadSeparatiInAttesa.put(uuid, threadSeparato);
+            System.out.println("PUT: " + uuid);
             //executor.schedule(threadSeparato, Constant.RITARDO, TimeUnit.SECONDS);
         } else {
             System.out.println("Notifica:\n" + msg);
