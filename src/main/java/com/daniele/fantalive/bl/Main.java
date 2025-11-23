@@ -1652,12 +1652,13 @@ motm->0.0
             Instant instant = Instant.now().plusSeconds(Constant.RITARDO);
             boolean trovato = false;
             if (operazione.equalsIgnoreCase("ANNULLA")) {
-                System.out.println("ANNULLA -> (" + key + ")");
+                System.out.println("ANNULLA -> (" + uuid + ")");
                 for (Map.Entry<String, ThreadSeparato> inAttesa : threadSeparatiInAttesa.entrySet()) {
+                    System.out.println("+-" + inAttesa + "-+");
                     String[] split = inAttesa.getKey().split("#");
-                    System.out.print("CICLO IN ATTESA---> (" + split.length + ")");
+                    System.out.println("CICLO IN ATTESA---> length(" + split.length + ")");
                     for (int i = 0; i < split.length; i++) {
-                        System.out.print(split[i] + " ");
+                        System.out.println("split: " + split[i] + " ");
                     }
 //                    System.out.println();
                     if (split.length > 3) {

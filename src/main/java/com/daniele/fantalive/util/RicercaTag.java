@@ -10,6 +10,8 @@ public class RicercaTag {
 		Main.init(null,null,null, false, "8080", null);
 		for (int i=1;i<2222;i++) {
 			try {
+                System.out.println("****");
+                System.out.println("i = " + i);
 				String http = (String) Main.callHTTP("GET", "application/json; charset=UTF-8",String.format(Constant.URL_API_GAZZETTA, i), null).get("response");
 				Map<String, Object> jsonToMap = Main.jsonToMap(http);
 				List<Map> l = (List<Map>) ((Map)jsonToMap.get("data")).get("games");
