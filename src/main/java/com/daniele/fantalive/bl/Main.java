@@ -1073,29 +1073,6 @@ motm->0.0
     }
 
 
-    public static void main(String[] args) throws Exception {
-        mainBatch(args);
-        for (int i = 0; i < 8; i++) {
-            //			System.err.println(i);
-            String s = "https://programma.salonelibro.it/api/v1/bookable-program-items?include=authors,exhibitors&filter[after]=2023-05-08%2012:14&page[size]=100&page[number]=" + i;
-            Map<String, Object> callHTTP = callHTTP("GET", "application/json; charset=UTF-8", s, null);
-            String json = callHTTP.get("response").toString();
-            Map fromJson = fromJson(json, Map.class);
-            List<Map> l = (List<Map>) fromJson.get("data");
-            for (Map m : l) {
-                List<Map> au = (List<Map>) m.get("authors");
-                System.out.print(m.get("date") + " " + m.get("time") + " --> ");
-                if (au.size() > 0) {
-                    for (Map map : au) {
-                        System.out.print(map.get("first_name") + " " + map.get("last_name") + " ");
-                    }
-                } else {
-                    System.out.print(m.get("title"));
-                }
-                System.out.println(".");
-            }
-        }
-    }
 
     public static void mainORIG(String[] args) throws Exception {
         //				mainSpring(args);
@@ -1651,26 +1628,25 @@ motm->0.0
             Instant instant = Instant.now().plusSeconds(Constant.RITARDO);
             boolean trovato = false;
             if (operazione.equalsIgnoreCase("ANNULLA")) {
-                System.out.println("ANNULLA -> (" + uuid + ")");
+                logger.info("ANNULLA -> ( {} )",uuid);
                 for (Map.Entry<String, ThreadSeparato> inAttesa : threadSeparatiInAttesa.entrySet()) {
-                    System.out.println("+-" + inAttesa + "-+");
                     String[] split = inAttesa.getKey().split("#");
-                    System.out.println("CICLO IN ATTESA---> length(" + split.length + ")");
+                    logger.info("CICLO IN ATTESA---> length({})",split.length);
                     for (int i = 0; i < split.length; i++) {
                         System.out.println("split: " + split[i] + " ");
                     }
 //                    System.out.println();
-                    if (split.length > 3) {
-                        if (split[3].equals(key)) {
+                    if (split.length >= 3) {
+                        if (split[1].equals(key)) {
                             trovato = true;
-                            System.out.println("HO TROVATO IL RIFERIMENTO: " + inAttesa.getKey());
+                            logger.info("HO TROVATO IL RIFERIMENTO: {}", inAttesa.getKey());
                             instant = inAttesa.getValue().getOraInvio();
                         }
                     }
                 }
                 if (!trovato) {
                     //se non lo ho trovato, vuol dire che è già stato mandato
-                    System.out.println("NON TROVATO...");
+                    logger.info("NON TROVATO...");
                     instant = Instant.now();
                 }
 
@@ -1678,7 +1654,7 @@ motm->0.0
             ThreadSeparato threadSeparato = new ThreadSeparato(risultatiConRitardoBOT, constant.CHAT_ID_FANTALIVE, msg, instant, uuid);
             executor.execute(threadSeparato);
             threadSeparatiInAttesa.put(uuid, threadSeparato);
-            System.out.println("PUT: " + uuid);
+            logger.info("PUT: {}", uuid);
             //executor.schedule(threadSeparato, Constant.RITARDO, TimeUnit.SECONDS);
         } else {
             System.out.println("Notifica:\n" + msg);
@@ -2973,21 +2949,23 @@ motm->0.0
                     messaggio.append("Risultato:" + golCasa + "-" + golFuori + "\n");
                     chiaveRisultato = golCasa + "-" + golFuori;
                     operazione = "GOL";
-                    System.out.println("OPERAZIONE -> (" + operazione + ")" + " CHIAVE_RISULTATO " + chiaveRisultato);
+                    logger.info("OPERAZIONE {} -> ({})" + " CHIAVE_RISULTATO {}",1,operazione,chiaveRisultato);
                 }
 
 
                 Map<String, String> analizzaRetiCasaFuori = analizzaRetiCasaFuori(oldPartita, sqCasa, partita, messaggio, key, sqFuori, true);
                 if (analizzaRetiCasaFuori != null){
                     chiaveRisultato=analizzaRetiCasaFuori.get("CHIAVE_RISULTATO");
+                    keyOld=analizzaRetiCasaFuori.get("KEY_OLD");
                     operazione=analizzaRetiCasaFuori.get("OPERAZIONE");
-                    System.out.println("OPERAZIONE2 -> (" + operazione + ")" + " CHIAVE_RISULTATO " + chiaveRisultato);
+                    logger.info("OPERAZIONE {} -> ({})" + " CHIAVE_RISULTATO {}",2,operazione,chiaveRisultato);
                 }
                 analizzaRetiCasaFuori = analizzaRetiCasaFuori(oldPartita, sqCasa, partita, messaggio, key, sqFuori,false);
                 if (analizzaRetiCasaFuori != null){
                     chiaveRisultato=analizzaRetiCasaFuori.get("CHIAVE_RISULTATO");
+                    keyOld=analizzaRetiCasaFuori.get("KEY_OLD");
                     operazione=analizzaRetiCasaFuori.get("OPERAZIONE");
-                    System.out.println("OPERAZIONE3 -> (" + operazione + ")" + " CHIAVE_RISULTATO " + chiaveRisultato);
+                    logger.info("OPERAZIONE {} -> ({})" + " CHIAVE_RISULTATO {}",3,operazione,chiaveRisultato);
                 }
             }
             if (messaggio != null) {
@@ -3003,8 +2981,8 @@ motm->0.0
         Map<String, String> ret=null;
         List<Map> oldRetiCasa = (List<Map>) ((Map) oldPartita.get(sqCasa)).get("RETI");
         List<Map> oldRetiFuori = (List<Map>) ((Map) oldPartita.get(sqFuori)).get("RETI");
-        List<Map> retiFuori = (List<Map>) ((Map) partita.get(sqFuori)).get("RETI");
         List<Map> retiCasa = (List<Map>) ((Map) partita.get(sqCasa)).get("RETI");
+        List<Map> retiFuori = (List<Map>) ((Map) partita.get(sqFuori)).get("RETI");
 
         List<Map> oldRetiCF;
         List<Map> retiCF;
@@ -3024,10 +3002,11 @@ motm->0.0
             if (messaggio == null) {
                 messaggio = new StringBuilder(key + "\n");
             }
-            messaggio.append("Correzione retiCF per " + sq + ": " + logReti(retiCF) + "\n");
+            messaggio.append("Correzione reti per " + squadraCF + ": " + logReti(retiCF) + "\n");
             String chiaveRisultato = oldRetiCasa.size() + "-" + oldRetiFuori.size();
+            String keyOld = retiCasa.size() + "-" + retiFuori.size();
             String operazione = "ANNULLA";
-            ret = Map.of("CHIAVE_RISULTATO", chiaveRisultato, "OPERAZIONE", operazione);
+            ret = Map.of("CHIAVE_RISULTATO", chiaveRisultato, "OPERAZIONE", operazione,"KEY_OLD",keyOld);
         }
 
         for (int i = 0; i < retiCF.size(); i++) {
@@ -3039,7 +3018,7 @@ motm->0.0
                     if (messaggio == null) {
                         messaggio = new StringBuilder(key + "\n");
                     }
-                    messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", sq, logRete(mapOldReti), logRete(mapReti)));
+                    messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", squadraCF, logRete(mapOldReti), logRete(mapReti)));
                 }
             } else {
                 if (messaggio == null) {
