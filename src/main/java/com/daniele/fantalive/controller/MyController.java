@@ -255,21 +255,6 @@ public class MyController {
 
         }
     }
-
-    @RequestMapping("/gimmi")
-    public void gimmi() throws Exception {
-        int golCasa = 0;
-        int golFuori = 1;
-        Main.inviaRisultatiNotifica("Risultato:" + golCasa + "-" + golFuori + "\n", golCasa + "-" + golFuori, "GOL", "0" + "-" + "0");
-    }
-
-    @RequestMapping("/gimmiCanc")
-    public void gimmiCanc() throws Exception {
-        int golCasa = 0;
-        int golFuori = 0;
-        Main.inviaRisultatiNotifica("Risultato:" + golCasa + "-" + golFuori + "\n", golCasa + "-" + golFuori, "ANNULLA",golCasa + "-" + golFuori);
-    }
-
     @RequestMapping("/getLivesFromDb")
     public Map<String, String> getLivesFromDb() throws Exception {
         if (false) {

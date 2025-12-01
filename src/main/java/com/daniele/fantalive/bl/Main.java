@@ -59,7 +59,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.format.datetime.DateFormatter;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
@@ -2946,9 +2945,9 @@ motm->0.0
     }
 
     private static void generaNotificheRisultati(Map<String, Object> partita, String tag, String sqCasa, String sqFuori) throws Exception {
+        String chiaveRisultato="";
+        String operazione="";
         String key = sqCasa + " vs " + sqFuori;
-        String chiaveRisultato = "";
-        String operazione = "";
         //confronta con oldSnapPartite
         Map<String, Object> oldPartita = oldSnapPartite.get(key);
         StringBuilder messaggio = null;
@@ -2958,12 +2957,6 @@ motm->0.0
             String oldTag = (String) oldPartita.get("tag");
             if (!tag.equals(oldTag)) {
                 cambioTag = true;
-				/*
-				if (messaggio==null) {
-					messaggio=new StringBuilder(key + "\n");
-				}
-				messaggio.append(tag + "\n");
-				 */
             }
             if (cambioTag) {
                 String testoCallback = visSnapPartita(false, new ArrayList<>(), sqCasa + " vs " + sqFuori, partita);
@@ -2980,67 +2973,21 @@ motm->0.0
                     messaggio.append("Risultato:" + golCasa + "-" + golFuori + "\n");
                     chiaveRisultato = golCasa + "-" + golFuori;
                     operazione = "GOL";
+                    System.out.println("OPERAZIONE -> (" + operazione + ")" + " CHIAVE_RISULTATO " + chiaveRisultato);
                 }
 
-                List<Map> oldRetiCasa = (List<Map>) ((Map) oldPartita.get(sqCasa)).get("RETI");
-                List<Map> retiCasa = (List<Map>) ((Map) partita.get(sqCasa)).get("RETI");
-                if (oldRetiCasa.size() > retiCasa.size()) {
-                    if (messaggio == null) {
-                        messaggio = new StringBuilder(key + "\n");
-                    }
-                    messaggio.append("Correzione reti per " + sqCasa + ": " + logReti(retiCasa) + "\n");
-                    List<Map> oldRetiFuori = (List<Map>) ((Map) oldPartita.get(sqFuori)).get("RETI");
-                    chiaveRisultato = oldRetiCasa.size() + "-" + oldRetiFuori.size();
-                    operazione = "ANNULLA";
 
+                Map<String, String> analizzaRetiCasaFuori = analizzaRetiCasaFuori(oldPartita, sqCasa, partita, messaggio, key, sqFuori, true);
+                if (analizzaRetiCasaFuori != null){
+                    chiaveRisultato=analizzaRetiCasaFuori.get("CHIAVE_RISULTATO");
+                    operazione=analizzaRetiCasaFuori.get("OPERAZIONE");
+                    System.out.println("OPERAZIONE2 -> (" + operazione + ")" + " CHIAVE_RISULTATO " + chiaveRisultato);
                 }
-                for (int i = 0; i < retiCasa.size(); i++) {
-                    Map mapRetiCasa = retiCasa.get(i);
-                    if (oldRetiCasa.size() > i) {
-                        Map mapOldRetiCasa = oldRetiCasa.get(i);
-                        if (!mapRetiCasa.get("tipo").equals(mapOldRetiCasa.get("tipo")) || !mapRetiCasa.get("minuto").equals(mapOldRetiCasa.get("minuto"))
-                                || !mapRetiCasa.get("giocatore").equals(mapOldRetiCasa.get("giocatore"))) {
-                            if (messaggio == null) {
-                                messaggio = new StringBuilder(key + "\n");
-                            }
-                            messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", sqCasa, logRete(mapOldRetiCasa), logRete(mapRetiCasa)));
-                        }
-                    } else {
-                        if (messaggio == null) {
-                            messaggio = new StringBuilder(key + "\n");
-                        }
-                        messaggio.append(logRete(mapRetiCasa));
-                    }
-                }
-
-                List<Map> oldRetiFuori = (List<Map>) ((Map) oldPartita.get(sqFuori)).get("RETI");
-                List<Map> retiFuori = (List<Map>) ((Map) partita.get(sqFuori)).get("RETI");
-                keyOld = oldRetiCasa.size() + "-" + oldRetiFuori.size();
-                if (oldRetiFuori.size() > retiFuori.size()) {
-                    if (messaggio == null) {
-                        messaggio = new StringBuilder(key + "\n");
-                    }
-                    messaggio.append("Correzione reti per " + sqFuori + ": " + logReti(retiFuori) + "\n");
-                    chiaveRisultato = oldRetiCasa.size() + "-" + oldRetiFuori.size();
-                    operazione = "ANNULLA";
-                }
-                for (int i = 0; i < retiFuori.size(); i++) {
-                    Map mapRetiFuori = retiFuori.get(i);
-                    if (oldRetiFuori.size() > i) {
-                        Map mapOldRetiFuori = oldRetiFuori.get(i);
-                        if (!mapRetiFuori.get("tipo").equals(mapOldRetiFuori.get("tipo")) || !mapRetiFuori.get("minuto").equals(mapOldRetiFuori.get("minuto"))
-                                || !mapRetiFuori.get("giocatore").equals(mapOldRetiFuori.get("giocatore"))) {
-                            if (messaggio == null) {
-                                messaggio = new StringBuilder(key + "\n");
-                            }
-                            messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", sqCasa, logRete(mapOldRetiFuori), logRete(mapRetiFuori)));
-                        }
-                    } else {
-                        if (messaggio == null) {
-                            messaggio = new StringBuilder(key + "\n");
-                        }
-                        messaggio.append(logRete(mapRetiFuori));
-                    }
+                analizzaRetiCasaFuori = analizzaRetiCasaFuori(oldPartita, sqCasa, partita, messaggio, key, sqFuori,false);
+                if (analizzaRetiCasaFuori != null){
+                    chiaveRisultato=analizzaRetiCasaFuori.get("CHIAVE_RISULTATO");
+                    operazione=analizzaRetiCasaFuori.get("OPERAZIONE");
+                    System.out.println("OPERAZIONE3 -> (" + operazione + ")" + " CHIAVE_RISULTATO " + chiaveRisultato);
                 }
             }
             if (messaggio != null) {
@@ -3052,7 +2999,57 @@ motm->0.0
             }
         }
     }
+    private static Map<String, String> analizzaRetiCasaFuori(Map<String, Object> oldPartita, String sqCasa, Map<String, Object> partita, StringBuilder messaggio, String key, String sqFuori, boolean verso) {
+        Map<String, String> ret=null;
+        List<Map> oldRetiCasa = (List<Map>) ((Map) oldPartita.get(sqCasa)).get("RETI");
+        List<Map> oldRetiFuori = (List<Map>) ((Map) oldPartita.get(sqFuori)).get("RETI");
+        List<Map> retiFuori = (List<Map>) ((Map) partita.get(sqFuori)).get("RETI");
+        List<Map> retiCasa = (List<Map>) ((Map) partita.get(sqCasa)).get("RETI");
 
+        List<Map> oldRetiCF;
+        List<Map> retiCF;
+        String squadraCF;
+        if (verso){
+            oldRetiCF=oldRetiCasa;
+            retiCF=retiCasa;
+            squadraCF=sqCasa;
+        } else {
+            oldRetiCF=oldRetiFuori;
+            retiCF=retiFuori;
+            squadraCF=sqFuori;
+        }
+
+
+        if (oldRetiCF.size() > retiCF.size()) {
+            if (messaggio == null) {
+                messaggio = new StringBuilder(key + "\n");
+            }
+            messaggio.append("Correzione retiCF per " + sq + ": " + logReti(retiCF) + "\n");
+            String chiaveRisultato = oldRetiCasa.size() + "-" + oldRetiFuori.size();
+            String operazione = "ANNULLA";
+            ret = Map.of("CHIAVE_RISULTATO", chiaveRisultato, "OPERAZIONE", operazione);
+        }
+
+        for (int i = 0; i < retiCF.size(); i++) {
+            Map mapReti = retiCF.get(i);
+            if (oldRetiCF.size() > i) {
+                Map mapOldReti = oldRetiCF.get(i);
+                if (!mapReti.get("tipo").equals(mapOldReti.get("tipo")) || !mapReti.get("minuto").equals(mapOldReti.get("minuto"))
+                        || !mapReti.get("giocatore").equals(mapOldReti.get("giocatore"))) {
+                    if (messaggio == null) {
+                        messaggio = new StringBuilder(key + "\n");
+                    }
+                    messaggio.append(String.format("Correzione rete di %s : da %s a %s \n", sq, logRete(mapOldReti), logRete(mapReti)));
+                }
+            } else {
+                if (messaggio == null) {
+                    messaggio = new StringBuilder(key + "\n");
+                }
+                messaggio.append(logRete(mapReti));
+            }
+        }
+        return ret;
+    }
     private static String logRete(Map mapRete) {
         return MessageFormat.format("{0} {1} al {2}\n", mapRete.get("tipo"), mapRete.get("giocatore"), mapRete.get("minuto"));
     }
