@@ -89,10 +89,27 @@ public double getTotaleTitolari() {
 	}
 	return new BigDecimal(tot, MathContext.DECIMAL128).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
 }
+    public double getTotaleTitolariOrig() {
+        double tot=0;
+        for (Giocatore giocatore : titolari) {
+            if (giocatore != null) {
+                tot=tot +  giocatore.getModificatoreOrig() + giocatore.getVotoOrig();
+            }
+        }
+        return new BigDecimal(tot, MathContext.DECIMAL128).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+
 public int getContaTitolari() {
 	int conta=0;
 	for (Giocatore giocatore : titolari) {
 		if (giocatore != null && giocatore.getVoto()>0) conta++;
+	}
+	return conta;
+}
+public int getContaTitolariOrig() {
+	int conta=0;
+	for (Giocatore giocatore : titolari) {
+		if (giocatore != null && giocatore.getVotoOrig()>0) conta++;
 	}
 	return conta;
 }
@@ -156,10 +173,22 @@ public Double getProiezione() {
 	d=d+fairPlay;
 	return new BigDecimal(d, MathContext.DECIMAL128).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
 }
+public Double getProiezioneOrig() {
+	double d = getTotaleTitolariOrig() + 6 * (11-getContaTitolariOrig() - getContaNonCambiabili());
+	for (Giocatore giocatore : titolari) {
+		if (giocatore.getMantraMalus() != null) {
+			d=d+giocatore.getMantraMalus();
+		}
+	}
+	d=d+fairPlay;
+	return new BigDecimal(d, MathContext.DECIMAL128).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+}
 public Double getTotale() {
-//	return getTotaleTitolari() + getModificatoreDifesa() + getModificatoreCentrocampo() + getModificatoreAttacco() + getMalusFormazioneAutomatica();
-	
 	double d = getTotaleTitolari() + getModificatoreDifesa() + getModificatoreCentrocampo() + getModificatoreAttacco() + getMalusFormazioneAutomatica();
+	return new BigDecimal(d, MathContext.DECIMAL128).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+}
+public Double getTotaleOrig() {
+	double d = getTotaleTitolariOrig() + getModificatoreDifesa() + getModificatoreCentrocampo() + getModificatoreAttacco() + getMalusFormazioneAutomatica();
 	return new BigDecimal(d, MathContext.DECIMAL128).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
 }
 public Boolean isEvidenza() {
