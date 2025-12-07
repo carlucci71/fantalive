@@ -963,7 +963,7 @@ app.directive("visualizzasquadra", function() {
 			$scope.getFantaVotoFS=function(g){
 				if (!g.squadraGioca) return " ";
 				if (g.votoOrig==0) return "NV";
-				return g.modificatore+g.votoOrig;
+				return g.modificatoreOrig+g.votoOrig;
 			}
 			$scope.getFantaVoto=function(g){
         	   if($scope.votifg){
