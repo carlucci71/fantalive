@@ -3632,9 +3632,12 @@ motm->0.0
     }
 
     public static void cambiaNomiFS(Giocatore giocatore) {
+        //https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/20/live_14.json VERIFICA
         giocatore.setNomeFSCambiato(giocatore.getNomeFS());
-        if (giocatore.getSquadra().equalsIgnoreCase("Int") && giocatore.getNomeFS().equalsIgnoreCase("josep martinez"))
-            giocatore.setNomeFSCambiato("Martinez Jo.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Cag") && giocatore.getNomeFS().equalsIgnoreCase("esposito"))
+            giocatore.setNomeFSCambiato("Esposito Se.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Int") && giocatore.getNomeFS().equalsIgnoreCase("esposito"))
+            giocatore.setNomeFSCambiato("Esposito F.P.");
         if (giocatore.getSquadra().equalsIgnoreCase("Int") && giocatore.getNomeFS().equalsIgnoreCase("josep martinez"))
             giocatore.setNomeFSCambiato("Martinez Jo.");
         if (giocatore.getSquadra().equalsIgnoreCase("Nap") && giocatore.getNomeFS().equalsIgnoreCase("højlund"))
