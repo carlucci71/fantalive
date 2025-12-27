@@ -3276,10 +3276,12 @@ motm->0.0
 
     private static void adattaGiocatoreInLives(boolean conLive, Squadra squadra, Giocatore giocatore, List<Live> lives, String tipo, boolean conVoto, Map<String, Map<String, String>> orari, Map<String, Map<String, String>> snap) throws Exception {
         findGiocatoreInLives(giocatore, lives, tipo, conVoto);
-        if (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P")) {
-            if (giocatore.getVoto() > 0 && !giocatore.getCodEventi().contains(4) && !giocatore.getCodEventi().contains(1000)) {
-                giocatore.getCodEventi().add(1000);
-                giocatore.setModificatore(giocatore.getModificatore() + 1);
+        if (giocatore != null && giocatore.getRuolo() != null) {
+            if (giocatore.getRuolo().equalsIgnoreCase("POR") || giocatore.getRuolo().equalsIgnoreCase("P")) {
+                if (giocatore.getVoto() > 0 && !giocatore.getCodEventi().contains(4) && !giocatore.getCodEventi().contains(1000)) {
+                    giocatore.getCodEventi().add(1000);
+                    giocatore.setModificatore(giocatore.getModificatore() + 1);
+                }
             }
         }
         if (giocatore != null && giocatore.getSquadra() != null) {
