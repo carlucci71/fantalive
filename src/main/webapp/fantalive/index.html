@@ -134,7 +134,7 @@
 						<img ng-show=!squadra.evidenza style="width: 10px; cursor: pointer;" title="add" src="./ico/fav1.png"></img> <img ng-show=squadra.evidenza style="width: 10px; cursor: pointer;" title="add" src="./ico/fav2.png"></img>
 					</label> 
 					<label ng-click="changeVisSq(squadra.nome)" ng-style="{'color':inEv(squadra)}">{{squadra.nome}} -->
-                        {{squadra.casaProiezione?(votifg?squadra.proiezioneOrig+2:squadra.proiezione+2):(votifg?squadra.proiezioneOrig:squadra.proiezione)}}</label>
+                        {{squadra.casaProiezione?(votifg?squadra.proiezione+2:squadra.proiezioneOrig+2):(votifg?squadra.proiezione:squadra.proiezioneOrig)}}</label>
 					<input style="width: 45" ng-show="r.conLive" type=number ng-model="squadra.deltaModificatore"></input> 
 					<input ng-show="r.conLive" type=checkbox ng-model="squadra.casaProiezione"></input> 
 					<!-- 
