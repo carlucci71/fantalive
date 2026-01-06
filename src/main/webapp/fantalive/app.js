@@ -1054,11 +1054,8 @@ app.directive("visualizzasquadra", function() {
 				if (giocatore.codEventi.indexOf(14)>-1) return "bold";
 			}
 			$scope.txtColor=function(giocatore){
-        	   if($scope.votifg){
-    				if (giocatore.voto==0) return "red";
-			    } else {
-				    if (giocatore.votoOrig==0) return "red";
-			    }
+        	   if($scope.votifg && giocatore.voto==0) return "red";
+        	   if(!$scope.votifg && giocatore.votoOrig==0) return "red";
 				//if (giocatore.voto==0) return "red";
 			}
 			$scope.backColor=function(giocatore){
