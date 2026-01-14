@@ -3295,7 +3295,10 @@ motm->0.0
             giocatore.setVotoOrig(giocatore.getVoto());
             giocatore.setModificatoreOrig(giocatore.getModificatore());
             giocatore.setLiveFS(false);
-            Squadra squadraLiveFs = sqFs.stream().filter(s -> s.getNome().equals(squadra.getNome())).findFirst().get();
+            Squadra squadraLiveFs = sqFs.stream()
+                    .filter(s -> s.getNome().equals(squadra.getNome()))
+                    .findFirst()
+                    .orElseThrow(()->new RuntimeException("Squadra non trovata: " + squadra.getNome()));
             Optional<Giocatore> firstGiocatore = squadraLiveFs.getTitolari().stream().filter(g -> (g.getIdFs() == null ? "" : g.getIdFs()).equals(giocatore.getIdFs())).findFirst();
             if (!firstGiocatore.isPresent()) {
                 firstGiocatore = squadraLiveFs.getRiserve().stream().filter(g -> g.getIdFs().equals(giocatore.getIdFs())).findFirst();
@@ -3305,8 +3308,13 @@ motm->0.0
                 //if (LocalDate.now().compareTo(orariPartite.get(giocatore.getSquadra().toUpperCase())) > 0)
                 {
                     giocatore.setLiveFS(true);
-                    giocatore.setVoto(firstGiocatore.get().getVoto());
-                    giocatore.setModificatore(firstGiocatore.get().getModificatore());
+                    giocatore.setVoto(firstGiocatore
+                            .get()
+                            .getVoto());
+                    giocatore
+                            .setModificatore(firstGiocatore
+                                    .get()
+                                    .getModificatore());
                 }
             }
         }
@@ -3537,10 +3545,21 @@ motm->0.0
     }
 
     public static Squadra getFromFS(Document doc, String dove, int progPartita, boolean conVoto) {
+        Map<String, String> m=Map.of(
+                "VincereAManiBasse 4-5-1 (null)","VincereAManiBasse",
+                "C. H. MOLLE 3-4-3 (null)","C. H. MOLLE",
+                "Canosa di Puglia... 4-3-3 (null)","Canosa di Puglia...",
+                "tavolino 3-4-3 (null)","tavolino",
+                "Universal 3-4-3 (null)","Universal",
+                "Jonny Fighters 3-4-3 (null)","Jonny Fighters",
+                "Atletico Conc 3-4-3 (null)","Atletico Conc",
+                "Atletico Mikatanto 3-4-3 (null)","Atletico Mikatanto"
+        );
         Element first = doc.select(".table-formazione" + dove.toLowerCase() + "-fantapartita").first();
         Elements select = first.select("th");
         Squadra squadra = new Squadra();
         String nomeSq = select.first().text();
+        nomeSq = m.getOrDefault(nomeSq,nomeSq);
         if (nomeSq.contains("-") && nomeSq.lastIndexOf(" ") > -1) {
             nomeSq = nomeSq.substring(0, nomeSq.lastIndexOf(" "));
         }
