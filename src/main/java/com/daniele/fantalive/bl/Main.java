@@ -3545,21 +3545,13 @@ motm->0.0
     }
 
     public static Squadra getFromFS(Document doc, String dove, int progPartita, boolean conVoto) {
-        Map<String, String> m=Map.of(
-                "VincereAManiBasse 4-5-1 (null)","VincereAManiBasse",
-                "C. H. MOLLE 3-4-3 (null)","C. H. MOLLE",
-                "Canosa di Puglia... 4-3-3 (null)","Canosa di Puglia...",
-                "tavolino 3-4-3 (null)","tavolino",
-                "Universal 3-4-3 (null)","Universal",
-                "Jonny Fighters 3-4-3 (null)","Jonny Fighters",
-                "Atletico Conc 3-4-3 (null)","Atletico Conc",
-                "Atletico Mikatanto 3-4-3 (null)","Atletico Mikatanto"
-        );
         Element first = doc.select(".table-formazione" + dove.toLowerCase() + "-fantapartita").first();
         Elements select = first.select("th");
         Squadra squadra = new Squadra();
         String nomeSq = select.first().text();
-        nomeSq = m.getOrDefault(nomeSq,nomeSq);
+        if (nomeSq.indexOf("(null)")>-1){
+        nomeSq=nomeSq.substring(0,nomeSq.length()-13);
+        }
         if (nomeSq.contains("-") && nomeSq.lastIndexOf(" ") > -1) {
             nomeSq = nomeSq.substring(0, nomeSq.lastIndexOf(" "));
         }
