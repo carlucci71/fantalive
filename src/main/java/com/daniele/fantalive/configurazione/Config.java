@@ -13,6 +13,7 @@ public class Config extends SpringBootServletInitializer implements WebSocketCon
 	
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		registry.addHandler(socketHandlerFantalive, "fantalive/fantalive-websocket")
+		.setAllowedOrigins("*")
 		.addInterceptors(new HttpSessionIdHandshakeInterceptor());
 	}
 
