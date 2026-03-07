@@ -1,0 +1,14 @@
+{
+  "name": "fantalive-mobile",
+  "version": "0.0.1",
+  "description": "Cordova wrapper per FantaLive (usare la cartella src/main/webapp come www)",
+  "scripts": {
+    "sync": "..\\sync-mobile.bat",
+    "prepare-ios": "cordova platform add ios --no-save || true && cordova prepare ios"
+  },
+  "cordova": {
+    "id": "com.daniele.fantalive",
+    "platforms": []
+  }
+}
+

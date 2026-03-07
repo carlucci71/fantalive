@@ -1,0 +1,15 @@
+# Cordova mobile project ignores
+node_modules/
+plugins/
+platforms/
+www/
+*.log
+*.keystore
+*.p12
+*.mobileprovision
+.DS_Store
+.idea/
+.vscode/
+*.iml
+/build/
+
