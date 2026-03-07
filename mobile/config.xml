@@ -5,9 +5,26 @@
   <author email="" href="">Daniele</author>
   <content src="index.html" />
   <access origin="*" />
+  <access origin="http://85.235.148.177:8080" />
   <preference name="ScrollEnabled" value="true" />
   <preference name="Orientation" value="default" />
   <platform name="ios">
+    <edit-config target="NSAppTransportSecurity" file="*-Info.plist" mode="merge">
+      <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+        <key>NSExceptionDomains</key>
+        <dict>
+          <key>85.235.148.177</key>
+          <dict>
+            <key>NSExceptionAllowsInsecureHTTPLoads</key>
+            <true/>
+            <key>NSIncludesSubdomains</key>
+            <true/>
+          </dict>
+        </dict>
+      </dict>
+    </edit-config>
     <allow-intent href="itms:*" />
     <allow-intent href="itms-apps:*" />
   </platform>
