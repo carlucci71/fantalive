@@ -8,7 +8,11 @@
   },
   "cordova": {
     "id": "com.daniele.fantalive",
-    "platforms": []
+    "platforms": [
+      "ios"
+    ]
+  },
+  "devDependencies": {
+    "cordova-ios": "^8.0.0"
   }
 }
-
