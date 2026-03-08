@@ -73,3 +73,9 @@ Se vuoi che io:
 - inizializzi un progetto Cordova più completo dentro `mobile` (es. eseguire `cordova create` e aggiungere file generati) posso farlo creando i file necessari nel repo; però il comando `cordova create` modifica metadata locali che è preferibile eseguire sul tuo ambiente (facilmente replicabile).
 
 Dimmi se vuoi che proceda a: 1) inizializzare un progetto Cordova più completo in `mobile` (senza piattaforme), 2) creare un esempio di GitHub Actions workflow per build iOS, o 3) lasciare così e passo successivo ti spiego i comandi per Xcode.
+
+
+Bundle
+com.daniele.fantalive
+
+Scaricato GoogleService-Info (fantalive).plist
