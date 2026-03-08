@@ -13,6 +13,7 @@
     ]
   },
   "devDependencies": {
-    "cordova-ios": "^8.0.0"
+    "cordova-ios": "^8.0.0",
+    "cordova-plugin-firebasex": "^19.1.0"
   }
 }

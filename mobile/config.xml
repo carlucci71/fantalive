@@ -9,6 +9,7 @@
   <preference name="ScrollEnabled" value="true" />
   <preference name="Orientation" value="default" />
   <platform name="ios">
+    <preference name="deployment-target" value="15.0" />
     <edit-config target="NSAppTransportSecurity" file="*-Info.plist" mode="merge">
       <dict>
         <key>NSAllowsArbitraryLoads</key>
