@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@capacitor-firebase/messaging": "^8.1.0",
+    "@capacitor/push-notifications": "^8.0.2"
+  }
+}
