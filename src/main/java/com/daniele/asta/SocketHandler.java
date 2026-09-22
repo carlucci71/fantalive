@@ -239,19 +239,19 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
 
                     int contaP = 0;
                     if (attP.get("conta") != null) {
-                        contaP = ((BigInteger) attP.get("conta")).intValue();
+                        contaP= getContaFromAtt(attP.get("conta"));
                     }
                     int contaD = 0;
                     if (attD.get("conta") != null) {
-                        contaD = ((BigInteger) attD.get("conta")).intValue();
+                        contaD= getContaFromAtt(attD.get("conta"));
                     }
                     int contaC = 0;
                     if (attC.get("conta") != null) {
-                        contaC = ((BigInteger) attC.get("conta")).intValue();
+                        contaC= getContaFromAtt(attC.get("conta"));
                     }
                     int contaA = 0;
                     if (attA.get("conta") != null) {
-                        contaA = ((BigInteger) attA.get("conta")).intValue();
+                        contaA= getContaFromAtt(attA.get("conta"));
                     }
 
                     if (
@@ -767,4 +767,13 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
         this.sessions = sessions;
     }
 
+    private int getContaFromAtt(Object o){
+        if (o instanceof BigInteger) {
+            return ((BigInteger) o).intValue();
+        } else if (o instanceof Integer) {
+            return  ((Integer) o).intValue();
+        } else if (o instanceof Long) {
+            return  ((Long) o).intValue();
+        } else return 0;
+    }
 }
