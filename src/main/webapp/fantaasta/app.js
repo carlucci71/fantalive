@@ -1,7 +1,7 @@
 var app = angular.module('app', [ 'ngResource','ngAnimate', 'ngSanitize', 'ui.bootstrap' ]);
 app.run(
 		function($rootScope, $resource, $interval,$q){
-	    	$rootScope.connessioneKO="Connessione al backend in corso...";
+	    	$rootScope.connessioneKO="";
 			$rootScope.sezLinkVisible=true;
 			$rootScope.sezUtentiVisible=true;
 			$rootScope.sezOperaComeVisible=true;
@@ -14,6 +14,10 @@ app.run(
 			$rootScope.offertaPrivOC=1;
 			$rootScope.offertaOC=1;
 			$rootScope.bSemaforoAttivo=true;
+			$rootScope.faseAsta='IDLE';
+			$rootScope.astaEpoch=0;
+			$rootScope.timeStart=-1;
+			$rootScope.avviabili=[];
 			$rootScope.messaggi=[];
 			$rootScope.tokenUtente;
 			$rootScope.isAdmin=false;
@@ -29,6 +33,48 @@ app.run(
 			$rootScope.isMantra=true;
 			$rootScope.caricamentoInCorso=false;
 			$rootScope.timePing=5000;
+			$rootScope.isPrimaryWsPage = function() {
+				var p = window.location.pathname;
+				if (p.indexOf('admin.html') !== -1) return true;
+				if (p.indexOf('index.html') !== -1) return true;
+				return p.endsWith('/fantaasta') || p.endsWith('/fantaasta/');
+			};
+			window.addEventListener('beforeunload', function() {
+				var u = FantaWsConnection.getSessionUser();
+				if (u) {
+					try { sessionStorage.setItem('fantaasta-reload-user', u); } catch (e) {}
+				}
+			});
+			FantaWsConnection.init({
+				defer: function() { return $q.defer(); },
+				resolvePromise: function(v) { return $q.when(v); },
+				rejectPromise: function(e) { return $q.reject(e); },
+				onMessage: function(data) { $rootScope.getMessaggio(data); },
+				onStatus: function(msg) { $rootScope.connessioneKO = msg || ''; },
+				onRemoteSteal: function() {
+					$resource('./cancellaSessioneNomeUtente',{}).save();
+					$rootScope.nomegiocatore = '';
+					$rootScope.idgiocatore = '';
+					alert('Utente connesso da un altro dispositivo.');
+				},
+				onDisconnectAll: function() {
+					try {
+						sessionStorage.removeItem('fantaasta-last-user');
+						sessionStorage.removeItem('fantaasta-last-id');
+						sessionStorage.removeItem('fantaasta-reload-user');
+					} catch (e) {}
+					$rootScope.nomegiocatore = '';
+					$rootScope.idgiocatore = '';
+					$rootScope.utenti = [];
+					$rootScope.connessioneKO = 'Sessione terminata dall\'admin';
+				},
+				onReconnect: function() {
+					if ($rootScope.syncSessionFromServer) {
+						return $rootScope.syncSessionFromServer();
+					}
+					return $q.when();
+				}
+			});
 			$rootScope.budget=500;
 			$rootScope.durataAstaDefault=15;
 			$rootScope.idgiocatoreOperaCome=-1;
@@ -75,21 +121,44 @@ app.run(
 				else {
 					$rootScope.nomegiocatore=nome;
 					$rootScope.idgiocatore=id;
-					$rootScope.doConnect();
+					return $rootScope.doConnect();
 				}
+				return $q.when();
 			}
 			$rootScope.changeVisFvm = function() {
 				$resource('./visFvm',{}).query().$promise.then(function() {
 
 				});
 			}
+			$rootScope.salvaUtenteTab = function(nome, id) {
+				try {
+					if (nome) {
+						sessionStorage.setItem('fantaasta-last-user', nome);
+						sessionStorage.setItem('fantaasta-last-id', String(id));
+					}
+				} catch (e) {}
+			};
+			$rootScope.recuperaUtenteTab = function() {
+				try {
+					var nome = sessionStorage.getItem('fantaasta-last-user');
+					var id = sessionStorage.getItem('fantaasta-last-id');
+					if (nome && id) {
+						return { nome: nome, id: parseInt(id, 10) };
+					}
+				} catch (e) {}
+				return null;
+			};
 			$rootScope.doConnect = function() {
-//		        console.log('Connected');
-		        if ($rootScope.nomegiocatore!=''){
-		        	$rootScope.tokenUtente=new Date().getTime();
-					$rootScope.sendMsg(JSON.stringify({'operazione':'connetti', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore, 'tokenUtente':$rootScope.tokenUtente}));
+		        if ($rootScope.nomegiocatore !== '') {
+		        	return FantaWsConnection.login($rootScope.nomegiocatore, $rootScope.idgiocatore).then(function() {
+		        		$rootScope.tokenUtente = FantaWsConnection.getTokenUtente();
+		        		$rootScope.salvaUtenteTab($rootScope.nomegiocatore, $rootScope.idgiocatore);
+		        	});
 		        }
-				$rootScope.calcolaIsAdmin();
+				return $q.when();
+			}
+			$rootScope.connectWS = function() {
+				return FantaWsConnection.connect();
 			}
 			$rootScope.urlDettaglio=function(cNome,cId, old, fvm){
 				var url;
@@ -563,22 +632,51 @@ app.run(
 			}
 			
 			$rootScope.caricaFile = function(tipoFile){
+				var fileInput = document.getElementById('file');
+				var f = fileInput && fileInput.files ? fileInput.files[0] : null;
+				if (!f) {
+					alert('Seleziona un file prima di caricare.');
+					return;
+				}
+				var nomeFile = (f.name || '').toLowerCase();
+				var tipoEffettivo = tipoFile;
+				if (nomeFile.endsWith('.xls') || nomeFile.endsWith('.xlsx')) {
+					tipoEffettivo = 'FS';
+				} else if (nomeFile.endsWith('.txt')) {
+					tipoEffettivo = 'MANTRA';
+				}
 				$rootScope.caricamentoInCorso=true;
-				var f = document.getElementById('file').files[0], r = new FileReader();
-                r.onloadend = function(e) {
-			    var data = e.target.result;
-				$rootScope.tokenDispositiva=Math.floor(Math.random()*(10000)+1);
-				$resource('./caricaFile',{}).save({'file':btoa(data), 'tipo' : tipoFile,'idgiocatore':$rootScope.idgiocatore,'tokenDispositiva':$rootScope.tokenDispositiva}).$promise.then(function(data) {
-					if(data.esitoDispositiva == 'OK'){
+				var r = new FileReader();
+				r.onloadend = function(e) {
+					if (e.target.error) {
 						$rootScope.caricamentoInCorso=false;
+						alert('Errore lettura file.');
+						return;
 					}
-					else {
-						alert('Carica file. Errore!')
-					}
-						
+					var result = e.target.result;
+					var base64 = result.indexOf(',') >= 0 ? result.split(',')[1] : btoa(result);
+					$rootScope.tokenDispositiva=Math.floor(Math.random()*(10000)+1);
+					$resource('./caricaFile',{}).save({'file':base64, 'tipo' : tipoEffettivo, 'fileName': f.name, 'idgiocatore':$rootScope.idgiocatore,'tokenDispositiva':$rootScope.tokenDispositiva}).$promise.then(function(data) {
+						$rootScope.caricamentoInCorso=false;
+						if(data.esitoDispositiva == 'OK'){
+							if (data.numGiocatori) {
+								alert('Caricati ' + data.numGiocatori + ' giocatori.');
+							}
+						}
+						else {
+							alert('Carica file. Errore! ' + (data.errore || ''))
+						}
+					}, function(err) {
+						$rootScope.caricamentoInCorso=false;
+						var msg = (err && err.data && err.data.errore) ? err.data.errore : '';
+						alert('Carica file. Errore! ' + msg)
 					});
-			    }
-			    r.readAsBinaryString(f);
+				};
+				r.onerror = function() {
+					$rootScope.caricamentoInCorso=false;
+					alert('Errore lettura file.');
+				};
+				r.readAsDataURL(f);
 			}
 			$rootScope.ordinaUtente= function(u,verso) {
 				angular.forEach($rootScope.elencoAllenatori, function(value,chiave) {
@@ -699,31 +797,231 @@ app.run(
 				
 			}
 			$rootScope.doDisconnect = function() {
-				$rootScope.sendMsg(JSON.stringify({'operazione':'disconnetti', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
-				$rootScope.nomegiocatore="";
-				$rootScope.isAdmin=false;
+				var nome = $rootScope.nomegiocatore;
+				var id = $rootScope.idgiocatore;
+				$rootScope.nomegiocatore = "";
+				$rootScope.isAdmin = false;
+				if (nome) {
+					FantaWsConnection.send(JSON.stringify({'operazione':'disconnetti', 'nomegiocatore':nome, 'idgiocatore':id}));
+				}
+				FantaWsConnection.disconnect();
 			}
-			$rootScope.connectWS = function() {
-				var alreadyConnected;
-				var deferred = $q.defer();
-				deferred.resolve("Hi");
-				var loc = window.location, new_uri;
-				if (loc.protocol === "https:") {
-					new_uri = "wss:";
+			$rootScope.mergeAstaMessage = function(msg) {
+				if (msg.astaEpoch != null && $rootScope.astaEpoch != null && msg.astaEpoch < $rootScope.astaEpoch) {
+					return;
+				}
+				if (msg.astaEpoch != null) {
+					$rootScope.astaEpoch = msg.astaEpoch;
+				}
+				if (msg.clearOfferta) {
+					$rootScope.clearOfferta();
+				}
+				var snap = {};
+				if (msg.faseAsta) snap.faseAsta = msg.faseAsta;
+				if (msg.sSemaforoAttivo !== undefined && msg.sSemaforoAttivo !== null) snap.sSemaforoAttivo = msg.sSemaforoAttivo;
+				if (msg.selCalciatoreMacroRuolo !== undefined) snap.selCalciatoreMacroRuolo = msg.selCalciatoreMacroRuolo;
+				if (msg.offertaVincente && msg.offertaVincente.nomegiocatore) {
+					snap.offertaVincente = msg.offertaVincente;
+				}
+				if (msg.timeStart != null) snap.timeStart = msg.timeStart;
+				if (msg.contaTempo != null) snap.contaTempo = msg.contaTempo;
+				if (msg.timeout) snap.timeout = msg.timeout;
+				if (msg.millisFromPausa) snap.millisFromPausa = msg.millisFromPausa;
+				if (msg.giocatoreTimeout) snap.giocatoreTimeout = msg.giocatoreTimeout;
+				var hasAsta = snap.faseAsta || snap.offertaVincente || snap.timeStart != null || snap.contaTempo != null
+					|| snap.sSemaforoAttivo !== undefined || snap.timeout || msg.clearOfferta;
+				if (hasAsta) {
+					$rootScope.applyAstaSnapshot(snap);
+				}
+				if (msg.offertaVincente && msg.offertaVincente.confermaForza) {
+					if ($rootScope.tokenCasuale == msg.offertaVincente.tokenCasuale) {
+						$rootScope.conferma();
+					}
+				}
+				if ((msg.faseAsta === 'DA_CONFERMARE' || msg.timeStart === 3) && !$rootScope.firstAbilitaForza
+						&& $rootScope.offertaVincente && $rootScope.offertaVincente.nomegiocatore) {
+					$rootScope.forzaOfferta = $rootScope.offertaVincente.offerta;
+					$rootScope.forzaAllenatore = $rootScope.offertaVincente.idgiocatore;
+					$rootScope.firstAbilitaForza = true;
+					$rootScope.abilitaForza = false;
+				}
+			};
+			$rootScope.applyAstaSnapshot = function(snap) {
+				if (!snap) {
+					return;
+				}
+				if (snap.astaEpoch != null) {
+					$rootScope.astaEpoch = snap.astaEpoch;
+				}
+				if (snap.faseAsta) {
+					$rootScope.faseAsta = snap.faseAsta;
+				}
+				if (snap.sSemaforoAttivo !== undefined && snap.sSemaforoAttivo !== null) {
+					$rootScope.bSemaforoAttivo = (snap.sSemaforoAttivo === 'S');
+				}
+				if (snap.selCalciatoreMacroRuolo !== undefined) {
+					$rootScope.selCalciatoreMacroRuolo = snap.selCalciatoreMacroRuolo;
+					$rootScope.ricalcolaAvviabili();
+				}
+				if (snap.offertaVincente && snap.offertaVincente.nomegiocatore) {
+					$rootScope.offertaVincente = snap.offertaVincente;
+					var offertaCorrente = snap.offertaVincente.offerta;
+					if ($rootScope.isSingle) {
+						$rootScope.offerta = offertaCorrente;
+					} else {
+						// Allinea sempre al rilancio corrente: evita tasti nascosti da testRilancia
+						$rootScope.offertaPriv = offertaCorrente;
+						$rootScope.offertaPrivOC = offertaCorrente;
+					}
+					$rootScope.ricalcolaAvviabili();
+				} else if (snap.faseAsta === 'IDLE') {
+					$rootScope.offertaVincente = '';
+					$rootScope.timeStart = -1;
+					$rootScope.contaTempo = 0;
+					$rootScope.timeout = null;
+					$rootScope.firstAbilitaForza = false;
+					$rootScope.abilitaForza = false;
+					$rootScope.ricalcolaAvviabili();
+				}
+				if (snap.timeStart != null) {
+					$rootScope.timeStart = snap.timeStart;
+				}
+				if (snap.contaTempo != null) {
+					if (snap.contaTempo > $rootScope.durataAsta * 1000) {
+						$rootScope.contaTempo = $rootScope.durataAsta * 1000;
+					} else {
+						$rootScope.contaTempo = snap.contaTempo;
+					}
+				}
+				if (snap.timeout) {
+					if (snap.timeout === 'N') {
+						$rootScope.timeout = null;
+					} else {
+						$rootScope.timeout = snap.timeout;
+					}
+				}
+				if (snap.millisFromPausa) {
+					$rootScope.millisFromPausa = snap.millisFromPausa;
+				}
+				if (snap.giocatoreTimeout) {
+					$rootScope.giocatoreTimeout = snap.giocatoreTimeout;
+				}
+			};
+			$rootScope.applyInitData = function(data) {
+				if (data.DA_CONFIGURARE) {
+					$rootScope.config = true;
+					$rootScope.scegliMantra();
+					return false;
+				}
+				$rootScope.config = false;
+				if (data.isATurni === "S") $rootScope.isATurni = true; else $rootScope.isATurni = false;
+				if (data.isSingle === "S") $rootScope.isSingle = true; else $rootScope.isSingle = false;
+				if (data.isMantra === "S") $rootScope.isMantra = true; else $rootScope.isMantra = false;
+				$rootScope.utenti = data.utenti;
+				$rootScope.turno = data.turno;
+				$rootScope.budget = data.budget;
+				$rootScope.durataAsta = data.durataAsta;
+				$rootScope.durataAstaDefault = data.durataAsta;
+				$rootScope.numAcquisti = data.numAcquisti;
+				$rootScope.numMinAcquisti = data.numMinAcquisti;
+				$rootScope.maxP = data.maxP;
+				$rootScope.maxD = data.maxD;
+				$rootScope.maxC = data.maxC;
+				$rootScope.maxA = data.maxA;
+				$rootScope.minP = data.minP;
+				$rootScope.minD = data.minD;
+				$rootScope.minC = data.minC;
+				$rootScope.minA = data.minA;
+				$rootScope.nomeGiocatoreTurno = data.nomeGiocatoreTurno;
+				$rootScope.giocatoriPerSquadra = data.giocatoriPerSquadra;
+				$rootScope.mapSpesoTotale = data.mapSpesoTotale;
+				$rootScope.elencoAllenatori = data.elencoAllenatori;
+				if ($rootScope.isPrimaryWsPage()) {
+					$rootScope.aggiornaTimePing($rootScope.timePing);
+				}
+				$rootScope.calciatori = data.calciatori;
+				var wsUser = FantaWsConnection.getSessionUser();
+				if (wsUser && FantaWsConnection.isReady()) {
+					$rootScope.nomegiocatore = wsUser;
+					$rootScope.idgiocatore = $rootScope.risolviIdAllenatore(wsUser);
 				} else {
-					new_uri = "ws:";
+					$rootScope.nomegiocatore = data.giocatoreLoggato || "";
+					if ($rootScope.nomegiocatore) {
+						$rootScope.idgiocatore = data.idLoggato;
+					}
 				}
-				new_uri += "//" + loc.host;
-				new_uri += '/' + "messaggi-websocket";
-				document.cookie = 'PAGINA=' + window.location.href + '; path=/';				
-				ws = new WebSocket(new_uri);
-				ws.onmessage = function(data){
-					$rootScope.getMessaggio(data.data);
+				if ($rootScope.elencoAllenatori) {
+					$rootScope.calcolaIsAdmin();
 				}
-				ws.onclose = function(){
-					console.log("connessione chiusa");
+				if ($rootScope.idgiocatore > -1 && data.preferiti) {
+					$rootScope.preferiti = data.preferiti[$rootScope.idgiocatore];
+					$rootScope.coreografaPreferiti();
 				}
-				return deferred.promise;			
+				if (data.astaSnapshot) {
+					$rootScope.applyAstaSnapshot(data.astaSnapshot);
+				}
+				return true;
+			}
+			$rootScope.syncSessionFromServer = function() {
+				var isAdminPage = window.location.pathname.indexOf('admin.html') !== -1;
+				var isPrimaryWsPage = $rootScope.isPrimaryWsPage();
+				return $resource('./init',{}).get().$promise.then(function(data) {
+					var configured = $rootScope.applyInitData(data);
+					if (!isPrimaryWsPage) {
+						return data;
+					}
+					if (!configured) {
+						return FantaWsConnection.connect().then(function() { return data; });
+					}
+					if (!data.giocatoreLoggato && ($rootScope.nomegiocatore || FantaWsConnection.getSessionUser())) {
+						FantaWsConnection.handleDisconnectAll();
+						return data;
+					}
+					if (isAdminPage) {
+						var adminAllenatore = $rootScope.trovaAllenatoreAdmin();
+						if (!adminAllenatore) {
+							$rootScope.connessioneKO = 'Nessun utente admin configurato nella lega.';
+							return data;
+						}
+						$rootScope.nomegiocatore = adminAllenatore.nome;
+						$rootScope.idgiocatore = adminAllenatore.id;
+						$rootScope.calcolaIsAdmin();
+						return FantaWsConnection.login(adminAllenatore.nome, adminAllenatore.id).then(function() {
+							$rootScope.tokenUtente = FantaWsConnection.getTokenUtente();
+							return data;
+						});
+					}
+					var tabUser = $rootScope.recuperaUtenteTab();
+					if (!$rootScope.nomegiocatore && tabUser) {
+						$rootScope.nomegiocatore = tabUser.nome;
+						$rootScope.idgiocatore = tabUser.id;
+					}
+					if ($rootScope.nomegiocatore || FantaWsConnection.getSessionUser()) {
+						var reloadUser = null;
+						try { reloadUser = sessionStorage.getItem('fantaasta-reload-user'); } catch (e) {}
+						try { sessionStorage.removeItem('fantaasta-reload-user'); } catch (e) {}
+						var wsUser = FantaWsConnection.getSessionUser();
+						if (wsUser && FantaWsConnection.isReady()) {
+							$rootScope.nomegiocatore = wsUser;
+							$rootScope.idgiocatore = $rootScope.risolviIdAllenatore(wsUser);
+							$rootScope.calcolaIsAdmin();
+							$rootScope.salvaUtenteTab($rootScope.nomegiocatore, $rootScope.idgiocatore);
+							return data;
+						}
+						var sameTabReload = reloadUser && reloadUser === $rootScope.nomegiocatore;
+						if (data.onlineWs && data.giocatoreLoggato === $rootScope.nomegiocatore && !sameTabReload) {
+							$rootScope.nomegiocatore = '';
+							$rootScope.idgiocatore = '';
+							return data;
+						}
+						return FantaWsConnection.syncFromHttpSession($rootScope.nomegiocatore, $rootScope.idgiocatore).then(function() {
+							$rootScope.tokenUtente = FantaWsConnection.getTokenUtente();
+							$rootScope.salvaUtenteTab($rootScope.nomegiocatore, $rootScope.idgiocatore);
+							return data;
+						});
+					}
+					return FantaWsConnection.connect().then(function() { return data; });
+				});
 			}
 
 			$rootScope.forzaTurno= function(turno) {
@@ -839,7 +1137,6 @@ app.run(
 					$rootScope.numMinAcquisti=$rootScope.minP+$rootScope.minD+$rootScope.minC+$rootScope.minA;
 					$resource('./inizializzaLega',{}).save({'minP':$rootScope.minP,'minD':$rootScope.minD,'minC':$rootScope.minC,'minA':$rootScope.minA,'maxP':$rootScope.maxP,'maxD':$rootScope.maxD,'maxC':$rootScope.maxC,'maxA':$rootScope.maxA,'numAcquisti':$rootScope.numAcquisti,'numMinAcquisti':$rootScope.numMinAcquisti,'durataAsta':$rootScope.durataAstaDefault,'budget':$rootScope.budget,'numUtenti':$rootScope.numeroUtenti,'isATurni':$rootScope.isATurni,'isSingle':$rootScope.isSingle,'isMantra':$rootScope.isMantra}).$promise.then(function(data) {
 						if(data.esitoDispositiva == 'OK'){
-							$rootScope.ricaricaIndex(false);
 							if(data.isATurni=="S")
 								$rootScope.isATurni=true;
 							else
@@ -852,11 +1149,15 @@ app.run(
 								$rootScope.isMantra=true;
 							else
 								$rootScope.isMantra=false;
-					    	$rootScope.connectWS().then(function(){
-						        setTimeout(function () {
-									$rootScope.callDoConnect("GIOC0",0,"");
+					    	$rootScope.ricaricaIndex(false).then(function(){
+									var adminAllenatore = $rootScope.trovaAllenatoreAdmin();
+									if (!adminAllenatore) {
+										alert('Nessun utente admin configurato.');
+										return;
+									}
+									return $rootScope.callDoConnect(adminAllenatore.nome, adminAllenatore.id, "");
+					        }).then(function(){
 									window.location.href = './admin.html';
-						        }, 1000);
 					        });
 						}
 						else {
@@ -887,61 +1188,13 @@ app.run(
 				}
 			}
 			$rootScope.ricaricaIndex=function(chiudi){
-				$resource('./init',{}).get().$promise.then(function(data) {
-					$rootScope.connectWS();
-					if (data.DA_CONFIGURARE){
-						$rootScope.config=true;
-						$rootScope.scegliMantra();
-						if(chiudi){
-							window.location.href = './index.html';
-						}
-					} else {
-						$rootScope.config=false;
-						$rootScope.nomegiocatore=data.giocatoreLoggato;
-						if ($rootScope.nomegiocatore){
-							$rootScope.idgiocatore=data.idLoggato;
-//							$rootScope.doConnect();
-							$rootScope.pinga();
-						}
-						if(data.isATurni=="S")
-							$rootScope.isATurni=true;
-						else
-							$rootScope.isATurni=false;
-						if(data.isSingle=="S")
-							$rootScope.isSingle=true;
-						else
-							$rootScope.isSingle=false;
-						if(data.isMantra=="S")
-							$rootScope.isMantra=true;
-						else
-							$rootScope.isMantra=false;
-						$rootScope.utenti=data.utenti;
-						$rootScope.turno=data.turno;
-						$rootScope.budget=data.budget;
-						$rootScope.durataAsta=data.durataAsta;
-						$rootScope.durataAstaDefault=data.durataAsta;
-						$rootScope.numAcquisti=data.numAcquisti;
-						$rootScope.numMinAcquisti=data.numMinAcquisti;
-						$rootScope.maxP=data.maxP;
-						$rootScope.maxD=data.maxD;
-						$rootScope.maxC=data.maxC;
-						$rootScope.maxA=data.maxA;
-						$rootScope.minP=data.minP;
-						$rootScope.minD=data.minD;
-						$rootScope.minC=data.minC;
-						$rootScope.minA=data.minA;
-						$rootScope.nomeGiocatoreTurno=data.nomeGiocatoreTurno;
-						$rootScope.giocatoriPerSquadra=data.giocatoriPerSquadra;
-						$rootScope.mapSpesoTotale=data.mapSpesoTotale;
-						$rootScope.elencoAllenatori=data.elencoAllenatori;
-						$rootScope.aggiornaTimePing($rootScope.timePing);
-						$rootScope.calciatori=data.calciatori;
-						if ($rootScope.idgiocatore>-1) {
-							$rootScope.preferiti=data.preferiti[$rootScope.idgiocatore];
-							$rootScope.coreografaPreferiti();
-						}
+				return $rootScope.syncSessionFromServer().then(function(data) {
+					if (data.DA_CONFIGURARE && chiudi) {
+						window.location.href = './index.html';
 					}
-	            })}
+					return data;
+				});
+			}
 
 			$rootScope.coreografaPreferiti=function(){
 				if ($rootScope.preferiti){
@@ -952,32 +1205,12 @@ app.run(
 				
 			}
 			
-			$rootScope.ricaricaIndex(false);
 			$rootScope.sendMsg=function(s){
 				try {
-				    if (ws.readyState === 1) {
-				    	ws.send(s);
-				    	$rootScope.connessioneKO="";
-				    }
-				    else 
-				    {
-				    	if (ws.readyState ==0){
-					    	$rootScope.connessioneKO="Connessione al backend in corso...";
-				    	}
-				    	else if (ws.readyState ==3){
-					    	$rootScope.connessioneKO="Backend non raggiungibile";
-					    	$rootScope.connectWS().then(function(){
-						        setTimeout(function () {
-									$rootScope.ricaricaIndex(false);
-						        }, 1000);
-					        });
-				    	}
-				    	else {
-					    	$rootScope.connessioneKO="Errore di connessione";
-				    	}
-				    }
+					return FantaWsConnection.send(s);
 	            } catch (error) {
 			    	$rootScope.connessioneKO=error;
+			    	return $q.reject(error);
 	            }				
 			}
 			$rootScope.latenza = function(u){
@@ -992,9 +1225,36 @@ app.run(
 				
 				return u.checkPing;
 			}
+			$rootScope.applyTimerBroadcast = function(msg) {
+				if (msg.utenti) {
+					$rootScope.utenti = msg.utenti;
+				}
+				if (msg.pingUtenti) {
+					$rootScope.pingUtenti = msg.pingUtenti;
+				}
+				if (msg.utentiScaduti) {
+					$rootScope.utentiScaduti = msg.utentiScaduti;
+				}
+				$rootScope.mergeAstaMessage(msg);
+				if (!$rootScope.$$phase) {
+					$rootScope.$apply();
+				} else {
+					$rootScope.$applyAsync();
+				}
+			};
 			$rootScope.getMessaggio = function(message){
 				if (message){
 					var msg = JSON.parse(message);
+					FantaWsConnection.handleServerMessage(msg);
+					if (msg.broadcastTipo === 'timer') {
+						$rootScope.applyTimerBroadcast(msg);
+						return;
+					}
+					if (msg.connettiOk) {
+						$rootScope.tokenUtente = FantaWsConnection.getTokenUtente();
+						$rootScope.salvaUtenteTab($rootScope.nomegiocatore, $rootScope.idgiocatore);
+						$rootScope.connessioneKO = '';
+					}
 //					console.log(msg);
 					if (msg.RICHIESTA){
 						var t=msg.RICHIESTA + "-" + new Date().getTime();
@@ -1029,6 +1289,16 @@ app.run(
 						$rootScope.forzaAllenatore="";
 						$rootScope.forzaOfferta=0;
 						$rootScope.firstAbilitaForza=false;
+						if (msg.selCalciatoreMacroRuolo) {
+							$rootScope.selCalciatoreMacroRuolo=msg.selCalciatoreMacroRuolo;
+						}
+						if (msg.timeStart != null) {
+							$rootScope.timeStart=msg.timeStart;
+						}
+						if (msg.contaTempo != null) {
+							$rootScope.contaTempo=msg.contaTempo;
+						}
+						$rootScope.ricalcolaAvviabili();
 					}
 					if (msg.isMantra){
 						if (msg.isMantra=="S")
@@ -1038,6 +1308,7 @@ app.run(
 					}
 					if (msg.selCalciatoreMacroRuolo){
 						$rootScope.selCalciatoreMacroRuolo=msg.selCalciatoreMacroRuolo;
+						$rootScope.ricalcolaAvviabili();
 					}
 					if (msg.loggerMessaggi){
 						$rootScope.loggerMessaggi=msg.loggerMessaggi;
@@ -1086,74 +1357,19 @@ app.run(
 					if (msg.pingUtenti){
 						$rootScope.pingUtenti=msg.pingUtenti;
 					}
-					if (msg.RESET_UTENTE){
-						if (msg.RESET_UTENTE==$rootScope.tokenUtente){
-							$rootScope.nomegiocatore="";
-							alert("Utente esistente. Riconnettiti!");
-						}
-					}			
-					if (msg.clearOfferta){
-						$rootScope.clearOfferta();
-					}
-					if (msg.giocatoreTimeout){
-						$rootScope.giocatoreTimeout=msg.giocatoreTimeout;
-					}
-					if (msg.millisFromPausa){
-						$rootScope.millisFromPausa=msg.millisFromPausa;
-					}
-					if (msg.timeout){
-						if (msg.timeout=='N') $rootScope.timeout=null; else $rootScope.timeout=msg.timeout;
-					}
-					if (msg.offertaVincente){
-                        $rootScope.contaTempo=0;
-						$rootScope.offertaVincente=msg.offertaVincente;
-						if($rootScope.isSingle){
-							$rootScope.offerta=$rootScope.offertaVincente.offerta;
-						} else{
-							if($rootScope.autoAllineaOC) {
-								$rootScope.offertaPrivOC=$rootScope.offertaVincente.offerta;
-							}
-							if($rootScope.autoAllinea) {
-								$rootScope.offertaPriv=$rootScope.offertaVincente.offerta;
-							}
-						}
-						if (msg.offertaVincente.confermaForza){
-							if ($rootScope.tokenCasuale==msg.offertaVincente.tokenCasuale) 
-								$rootScope.conferma();
-						}
-					}
 					if (msg.durataAsta){
 						$rootScope.durataAsta=msg.durataAsta;
 					}
-					if (msg.contaTempo){
-						if (msg.contaTempo>$rootScope.durataAsta*1000)
-							$rootScope.contaTempo=$rootScope.durataAsta*1000;
-						else
-							$rootScope.contaTempo=msg.contaTempo;
+					$rootScope.mergeAstaMessage(msg);
+					if (msg.turno != null && msg.turno !== '') {
+						$rootScope.turno = msg.turno;
 					}
-					if (msg.sSemaforoAttivo){
-						if (msg.sSemaforoAttivo=='S')
-							$rootScope.bSemaforoAttivo=true;
-						else
-							$rootScope.bSemaforoAttivo=false;
-					}
-					if (msg.timeStart){
-						$rootScope.timeStart=msg.timeStart;
-						if (msg.timeStart==3 && !$rootScope.firstAbilitaForza) {
-							$rootScope.forzaOfferta=$rootScope.offertaVincente.offerta;
-							$rootScope.forzaAllenatore=$rootScope.offertaVincente.idgiocatore;
-							$rootScope.firstAbilitaForza=true;
-							$rootScope.abilitaForza=true;
-						}
-					}
-					if(msg.turno){
-						$rootScope.turno=msg.turno;
-					}
-					if(msg.nomeGiocatoreTurno){
-						$rootScope.nomeGiocatoreTurno=msg.nomeGiocatoreTurno;
+					if (msg.nomeGiocatoreTurno != null && msg.nomeGiocatoreTurno !== '') {
+						$rootScope.nomeGiocatoreTurno = msg.nomeGiocatoreTurno;
 					}
 					if(msg.mapSpesoTotale){
 						$rootScope.mapSpesoTotale=msg.mapSpesoTotale;
+						$rootScope.ricalcolaAvviabili();
 					}
 					if(msg.giocatoriPerSquadra){
 						$rootScope.giocatoriPerSquadra=msg.giocatoriPerSquadra;
@@ -1161,20 +1377,31 @@ app.run(
 					if (msg.utentiScaduti){
 						$rootScope.utentiScaduti=msg.utentiScaduti;
 					}
-					$rootScope.$apply();
+					if (!$rootScope.$$phase) {
+						$rootScope.$apply();
+					} else {
+						$rootScope.$applyAsync();
+					}
 				}
 			}
 			$rootScope.pinga = function(){
-//				if ($rootScope.nomegiocatore)
-					$rootScope.sendMsg(JSON.stringify({'operazione':'ping','nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
+				if (!$rootScope.nomegiocatore || !FantaWsConnection.isReady()) {
+					return;
+				}
+				$rootScope.sendMsg(JSON.stringify({'operazione':'ping','nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
 			}
 			$rootScope.aggiornaTimePing= function(timePing) {
+				if (!$rootScope.isPrimaryWsPage()) {
+					return;
+				}
 				$interval.cancel(a);
 				a=$interval(function() {$rootScope.pinga();}, timePing);
 			}
-			var a=$interval(function() {$rootScope.pinga();}, $rootScope.timePing);
+			var a;
+			if ($rootScope.isPrimaryWsPage()) {
+				a=$interval(function() {$rootScope.pinga();}, $rootScope.timePing);
+			}
 			$rootScope.liberaSemaforo = function() {
-				$rootScope.bSemaforoAttivo=true;
 				$rootScope.sendMsg(JSON.stringify({'operazione':'liberaSemaforo'}));
 			}
 /*			$rootScope.verificaAvviaAsta = function(ng) {
@@ -1200,15 +1427,6 @@ app.run(
 			}
 
 			$rootScope.inizia = function(ng,ig) {
-			console.log($rootScope.selCalciatoreMacroRuolo);//C
-			console.log($rootScope.selCalciatore);//1113586@Alex Sala
-			console.log($rootScope.nomegiocatore);//Daniele
-			console.log($rootScope.idgiocatore);//5
-			console.log(ng);//Daniele
-			console.log(ig);//5
-				$rootScope.bSemaforoAttivo=false;
-				$rootScope.timeStart=0;
-				$rootScope.contaTempo=0;
 				$rootScope.sendMsg(JSON.stringify({'operazione':'start'
 				, 'selCalciatoreMacroRuolo':$rootScope.selCalciatoreMacroRuolo
 				,'selCalciatore':$rootScope.selCalciatore
@@ -1227,50 +1445,44 @@ app.run(
 						$rootScope.sendMsg(JSON.stringify({'operazione':'azzeraTempo', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
 			};
 			$rootScope.conferma = function(){
+				if ($rootScope.faseAsta !== 'DA_CONFERMARE' || !$rootScope.offertaVincente || !$rootScope.offertaVincente.nomegiocatore) {
+					alert('Conferma non disponibile: nessuna asta in attesa di conferma.');
+					return;
+				}
 				$rootScope.messaggi=[];
-				$rootScope.bSemaforoAttivo=true;
 				$rootScope.tokenDispositiva=Math.floor(Math.random()*(10000)+1);
 				$resource('./confermaAsta',{}).save({'offerta':$rootScope.offertaVincente,'idgiocatore':$rootScope.idgiocatore,'tokenDispositiva':$rootScope.tokenDispositiva}).$promise.then(function(data) {
-					if(data.esitoDispositiva == 'OK'){
-						if (data.insert == 'OK') $rootScope.sendMsg(JSON.stringify({'operazione':'confermaAsta', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
+					if(data.esitoDispositiva != 'OK'){
+						alert('Conferma. Errore! ' + (data.errore || ''))
 					}
-					else {
-						alert('Conferma. Errore!')
-					}
+				}, function(err) {
+					var msg = (err && err.data && err.data.errore) ? err.data.errore : '';
+					alert('Conferma. Errore! ' + msg)
 				});
 			}
 
 			$rootScope.disconnectAll = function(){
 				$rootScope.messaggi=[];
-				$rootScope.bSemaforoAttivo=true;
 				$rootScope.tokenDispositiva=Math.floor(Math.random()*(10000)+1);
 				$resource('./disconnectAll',{}).save({'tokenDispositiva':$rootScope.tokenDispositiva}).$promise.then(function(data) {
-
+					FantaWsConnection.handleDisconnectAll();
 				});
 			}
 
 			$rootScope.clearOfferta=function(){
+				$rootScope.faseAsta='IDLE';
 				$rootScope.offertaVincente="";
-				$rootScope.filterRuolo="";
-//				$rootScope.filterMacroRuolo="";
-				$rootScope.filterNome="";
-				$rootScope.filterSquadra="";
-				$rootScope.filterFvm="";
-				$rootScope.filterQuotazione="";
-				$rootScope.filterPreferito=false;
-				$rootScope.selCalciatore="";
-				$rootScope.selCalciatoreId="";
-				$rootScope.selCalciatoreRuolo="";
-				$rootScope.selCalciatoreMacroRuolo="";
-				$rootScope.selCalciatoreNome="";
-				$rootScope.selCalciatoreSquadra="";
-				$rootScope.selCalciatoreSquadra="";
+				$rootScope.timeStart=-1;
+				$rootScope.contaTempo=0;
+				$rootScope.firstAbilitaForza=false;
+				$rootScope.abilitaForza=false;
+				$rootScope.timeout=null;
 				$rootScope.offertaOC=1;
 				$rootScope.offerta=1;
 				$rootScope.offertaPrivOC=1;
 				$rootScope.offertaPriv=1;
-				$rootScope.idgiocatoreOperaCome=-1;
-				$rootScope.nomegiocatoreOperaCome="";
+				// Non azzerare selCalciatore/avviabili/operaCome: serve per asta successiva
+				$rootScope.ricalcolaAvviabili();
 			}
 			$rootScope.aggiornaAutoAllinea = function(accendi){
 				$rootScope.autoAllinea=accendi;
@@ -1304,7 +1516,6 @@ app.run(
 			$rootScope.annulla = function(){
 				if (window.confirm("Annullo offerta di:" + $rootScope.offertaVincente.nomegiocatore + " per " + $rootScope.offertaVincente.giocatore.nome + "(" + $rootScope.offertaVincente.giocatore.ruolo + ") " + $rootScope.offertaVincente.giocatore.squadra + " vinto a " + $rootScope.offertaVincente.offerta)){
 					$rootScope.messaggi=[];
-					$rootScope.bSemaforoAttivo=true;
 					$rootScope.sendMsg(JSON.stringify({'operazione':'annullaAsta', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
 				}
 			}
@@ -1314,7 +1525,13 @@ app.run(
 				$rootScope.sendMsg(JSON.stringify({'operazione':'inviaOfferta', 'maxRilancio':$rootScope.getFromMapSpesoTotale('MAXRILANCIO',ng),'nomegiocatore':ng, 'idgiocatore':ig, 'nomegiocatoreOperaCome':$rootScope.nomegiocatore, 'idgiocatoreOperaCome':$rootScope.idgiocatore, 'offerta':$rootScope.offerta,'azzera':azzera}));
 			}
 			$rootScope.cancellaUtente = function(u) {
-				$rootScope.sendMsg(JSON.stringify({'operazione':'cancellaUtente', 'nomegiocatore':u.nome, 'idgiocatore':u.id}));
+				$rootScope.sendMsg(JSON.stringify({
+					'operazione':'cancellaUtente',
+					'nomegiocatore':u.nome,
+					'idgiocatore':u.id,
+					'nomegiocatoreOperaCome':$rootScope.nomegiocatore,
+					'idgiocatoreOperaCome':$rootScope.idgiocatore
+				}));
 			}
 			$rootScope.terminaAsta= function() {
 				$rootScope.sendMsg(JSON.stringify({'operazione':'terminaAsta', 'nomegiocatore':$rootScope.nomegiocatore, 'idgiocatore':$rootScope.idgiocatore}));
@@ -1331,18 +1548,65 @@ app.run(
 				}
 				return true;
 			}
+			$rootScope.risolviIdAllenatore = function(nome) {
+				if (!$rootScope.elencoAllenatori || !nome) {
+					return '';
+				}
+				var id = '';
+				angular.forEach($rootScope.elencoAllenatori, function(utente) {
+					if (utente.nome === nome) {
+						id = utente.id;
+					}
+				});
+				return id;
+			};
+			$rootScope.haIlTurno = function(nome) {
+				if (!$rootScope.isATurni) {
+					return false;
+				}
+				return nome === $rootScope.nomeGiocatoreTurno;
+			};
+			$rootScope.puoAvviareAsta = function(nome) {
+				if ($rootScope.avviabili.indexOf(nome) < 0) {
+					return false;
+				}
+				if (!$rootScope.isATurni) {
+					return true;
+				}
+				return nome === $rootScope.nomeGiocatoreTurno;
+			};
+			$rootScope.isUtenteAdmin = function(utente) {
+				if (!utente) return false;
+				return utente.isAdmin === true || utente.isAdmin === 'true' || utente.isAdmin === 'S';
+			};
+			$rootScope.trovaAllenatoreAdmin = function() {
+				if (!$rootScope.elencoAllenatori || !$rootScope.elencoAllenatori.length) {
+					return null;
+				}
+				var admin = null;
+				angular.forEach($rootScope.elencoAllenatori, function(utente) {
+					if ($rootScope.isUtenteAdmin(utente) && (!admin || utente.ordine < admin.ordine)) {
+						admin = utente;
+					}
+				});
+				return admin;
+			};
 			$rootScope.calcolaIsAdmin= function() {
 				$rootScope.isAdmin=false;
 				angular.forEach($rootScope.elencoAllenatori, function(value,chiave) {
 					if(value.id == $rootScope.idgiocatore)
-						if(value.isAdmin) $rootScope.isAdmin=true;
+						if($rootScope.isUtenteAdmin(value)) $rootScope.isAdmin=true;
 					});
 			}
 			$rootScope.$watch("elencoAllenatori", function(newValue, oldValue) {
 				$rootScope.calcolaIsAdmin();
 			});
-			$rootScope.$watch("selCalciatoreMacroRuolo", function(newValue, oldValue) {
-				if(!newValue) return true;
+			$rootScope.ricalcolaAvviabili=function() {
+				var newValue=$rootScope.selCalciatoreMacroRuolo;
+				if(!newValue) {
+					$rootScope.avviabili=[];
+					return;
+				}
 				var max;
 				if (!$rootScope.isMantra){
 					if(newValue == 'P') max=$rootScope.maxP;
@@ -1356,17 +1620,23 @@ app.run(
 					if ($rootScope.isMantra){
 						max=$rootScope.maxA;
 						if($rootScope.getFromMapSpesoTotale('CONTAALL',value.nome)<max) avv=true;
-					} 
+					}
 					else {
 						if($rootScope.getFromMapSpesoTotale('CONTA'+newValue,value.nome)<max) avv=true;
 					}
 					if(avv && $rootScope.getFromMapSpesoTotale('MAXRILANCIO',value.nome)<=0) avv=false;
 					if(avv){
-						$rootScope.avviabili.push(value.nome)					
+						$rootScope.avviabili.push(value.nome);
 					}
 				});
-				
-
+			};
+			$rootScope.$watch("selCalciatoreMacroRuolo", function(newValue, oldValue) {
+				$rootScope.ricalcolaAvviabili();
+			});
+			$rootScope.$watch("autoAllinea", function(newValue) {
+				if (newValue && $rootScope.offertaVincente && $rootScope.offertaVincente.offerta) {
+					$rootScope.offertaPriv=$rootScope.offertaVincente.offerta;
+				}
 			});
 			
 			$rootScope.chiamaFromLiberi= function(calciatore){
@@ -1399,7 +1669,29 @@ app.run(
 				        sort.column = column;
 				        sort.descending = false;
 				    }
-				};			
+				};
+
+			if ($rootScope.isPrimaryWsPage()) {
+				document.addEventListener('visibilitychange', function() {
+					if (document.visibilityState !== 'visible') {
+						return;
+					}
+					if (!$rootScope.nomegiocatore || FantaWsConnection.isSuspended()) {
+						return;
+					}
+					if (!FantaWsConnection.isReady()) {
+						$rootScope.doConnect();
+					} else {
+						$rootScope.sendMsg(JSON.stringify({
+							operazione: 'ping',
+							nomegiocatore: $rootScope.nomegiocatore,
+							idgiocatore: $rootScope.idgiocatore
+						}));
+					}
+				});
+			}
+
+			$rootScope.ricaricaIndex(false);
 	}
 )
 

@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
+import com.daniele.configurazione.HttpSessionIdHandshakeInterceptor;
+
 @Component
 public class Config extends SpringBootServletInitializer implements WebSocketConfigurer {
 

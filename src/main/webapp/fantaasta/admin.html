@@ -17,13 +17,14 @@
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
 <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
-<script type="text/javascript" src="./app.js"></script>
+<script type="text/javascript" src="./ws-connection.js?v=20250925s"></script>
+<script type="text/javascript" src="./app.js?v=20250925s"></script>
 
 <body x-ng-app="app" style="margin-left:20px">
-<div ng-show ="!bSemaforoAttivo">
-<label>OFFERTA IN CORSO</label>
-</div>
-<div ng-show="nomegiocatore && bSemaforoAttivo">
+<p ng-show="connessioneKO" style="color:red;font-weight:bold">{{connessioneKO}}</p>
+<p ng-show="!nomegiocatore && config" style="color:red">Lega non configurata. Vai alla <a href="./index.html">home</a>.</p>
+<p ng-show="!nomegiocatore && !config" style="color:orange">Accesso admin in corso...</p>
+<div ng-show="nomegiocatore">
 	<div style="border-style:dotted;width:98%;padding-left:10px;padding-right:10px; padding-top:10px;padding-bottom:10px"><label style="color:red;text-align:center;background-color:yellow;width:100%">Utenti</label>
 		<table>
 			  <tr>
@@ -112,9 +113,8 @@
 			<div >
 				<input type="file" id="file" name="file"/>
 			</div>
-			<button ng-show="!isMantra" ng-click="caricaFile('FS')">Carica FS</button>
-			<!-- scarica lista svincolati, apri excel, rimuovi prime 2 righe, -esporta - cambia tipo file - testo delimitato da tabulazione  -->
-			<button ng-show="isMantra"  ng-click="caricaFile('MANTRA')">Carica Mantra</button>
+			<button ng-click="caricaFile('FS')">Carica Quotazioni (.xls / .xlsx)</button>
+			<button ng-show="isMantra" ng-click="caricaFile('MANTRA')">Carica Mantra (.txt)</button>
 			<label ng-show="caricamentoInCorso">CARICAMENTO IN CORSO</label>
 		</div>
 		<br><br>

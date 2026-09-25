@@ -1,5 +1,6 @@
 package com.daniele.asta;
 
+import com.daniele.asta.session.AstaSessionRegistry;
 import com.daniele.fantalive.dto.ExportMantra;
 import com.daniele.fantalive.dto.GiocatoriPerSquadra;
 import com.daniele.fantalive.dto.SpesoTotale;
@@ -30,9 +31,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -104,6 +108,8 @@ public class MyControllerAsta {
     EntityManager em;
     @Autowired
     SocketHandler socketHandler;
+    @Autowired
+    AstaSessionRegistry sessionRegistry;
     private Map<String, Map<String, Long>> mapSpesoTotale = new HashMap();
     private Integer numAcquisti = 0;
     private Integer numMinAcquisti = 0;
@@ -303,15 +309,13 @@ public class MyControllerAsta {
         } else {
             String giocatoreLoggato = (String) httpSession.getAttribute("nomeGiocatoreLoggato");
             String idLoggato = (String) httpSession.getAttribute("idLoggato");
+            sessionRegistry.pruneStaleBindings();
             if (giocatoreLoggato != null) {
-                if (socketHandler.getUtentiLoggati().contains(giocatoreLoggato)) {
-                    ret.put("giocatoreLoggato", giocatoreLoggato);
-                    ret.put("idLoggato", idLoggato);
-                } else {
-                    httpSession.removeAttribute("nomeGiocatoreLoggato");
-                    httpSession.removeAttribute("idLoggato");
-                }
+                ret.put("giocatoreLoggato", giocatoreLoggato);
+                ret.put("idLoggato", idLoggato);
+                ret.put("onlineWs", sessionRegistry.isLoggedIn(giocatoreLoggato));
             }
+            ret.put("utenti", sessionRegistry.getLoggedUserNames());
             Iterable<Allenatori> allAllenatori = getAllAllenatori();
             for (Allenatori allenatori : allAllenatori) {
                 if (allenatori.getOrdine() == Integer.parseInt(getTurno())) {
@@ -352,7 +356,6 @@ public class MyControllerAsta {
             }
             ret.put("numAcquisti", numAcquisti);
             ret.put("numMinAcquisti", numMinAcquisti);
-            ret.put("utenti", socketHandler.getUtentiLoggati());
             ret.put("maxP", maxP);
             ret.put("maxD", maxD);
             ret.put("maxC", maxC);
@@ -371,6 +374,7 @@ public class MyControllerAsta {
             ret.put("turno", getTurno());
             aggiornaFavoriti((String) httpSession.getAttribute("idLoggato"));
             ret.put("preferiti", favoriti);
+            ret.put("astaSnapshot", socketHandler.buildAstaSnapshot());
         }
         return ret;
     }
@@ -470,98 +474,206 @@ public class MyControllerAsta {
 
 
     @PostMapping("/caricaFile")
-    public Map<String, Object> caricaFile(@RequestBody Map<String, Object> body, HttpServletRequest request) throws Exception {
+    public Map<String, Object> caricaFile(@RequestBody Map<String, Object> body, HttpServletRequest request) {
         Map<String, Object> ret = new HashMap<>();
-        if (isOkDispositiva(body)) {
+        if (!isOkDispositiva(body)) {
+            ret.put("esitoDispositiva", "KO");
+            ret.put("errore", "Verifica dispositiva fallita");
+            return ret;
+        }
+        try {
             byte[] byteContent = Base64.getDecoder().decode((String) body.get("file"));
             String tipoFile = (String) body.get("tipo");
+            String fileName = body.get("fileName") != null ? body.get("fileName").toString() : "";
+            tipoFile = resolveTipoFile(tipoFile, byteContent, fileName);
             giocatoriRepository.deleteAll();
+            int count;
             if ("FS".equalsIgnoreCase(tipoFile)) {
-                try { //vecchia versione il file fornito era in xml
-                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder builder = factory.newDocumentBuilder();
-                    String content = new String(byteContent);
-                    InputSource is = new InputSource(new StringReader(content));
-                    Document parse = builder.parse(is);
-                    NodeList childNodes = parse.getChildNodes().item(0).getChildNodes();
-                    for (int i = 0; i < childNodes.getLength(); i++) {
-                        if (i > 0) {
-                            Node tr = childNodes.item(i);
-                            NodeList childNodesTr = tr.getChildNodes();
-                            String id = childNodesTr.item(0).getTextContent();
-                            String squadra = childNodesTr.item(3).getTextContent();
-                            String nome = childNodesTr.item(1).getTextContent() + " " + childNodesTr.item(2).getTextContent();
-                            String ruolo = childNodesTr.item(4).getTextContent();
-                            String quotazione = childNodesTr.item(6).getTextContent();
-                            Giocatori giocatori = new Giocatori();
-                            giocatori.setId(Integer.parseInt(id));
-                            giocatori.setNome(nome);
-                            giocatori.setQuotazione(Integer.parseInt(quotazione));
-                            giocatori.setRuolo(ruolo);
-                            giocatori.setMacroRuolo(ruolo);
-                            giocatori.setSquadra(squadra);
-                            giocatoriRepository.save(giocatori);
-                        }
-                    }
-                } catch (SAXParseException e) {
-                    InputStream targetStream = new ByteArrayInputStream(byteContent);
-                    Workbook workbook = new HSSFWorkbook(targetStream);
-                    Sheet sheet = workbook.getSheetAt(0);
-                    Iterator<Row> rowIterator = sheet.iterator();
-                    boolean bPrima = true;
-                    while (rowIterator.hasNext()) {
-                        Row currentRow = rowIterator.next();
-                        if (!bPrima) {
-                            Giocatori giocatori = new Giocatori();
-                            giocatori.setId((int) currentRow.getCell(0).getNumericCellValue());
-                            giocatori.setNome(currentRow.getCell(1).getStringCellValue() + " " + currentRow.getCell(2).getStringCellValue());
-                            giocatori.setSquadra(currentRow.getCell(3).getStringCellValue());
-                            giocatori.setRuolo(currentRow.getCell(4).getStringCellValue());
-                            giocatori.setMacroRuolo(currentRow.getCell(4).getStringCellValue());
-                            giocatori.setQuotazione((int) currentRow.getCell(6).getNumericCellValue());
-                            if (currentRow.getLastCellNum() > 7) {
-                                giocatori.setFvm(currentRow.getCell(7).getNumericCellValue());
-                            }
-                            giocatoriRepository.save(giocatori);
-                        }
-                        bPrima = false;
-                    }
-                    workbook.close();
-                }
+                count = caricaFs(byteContent);
             } else if ("MANTRA".equalsIgnoreCase(tipoFile)) {
-                String content = new String(byteContent);
-                String[] split = content.split("\n");
-                for (int i = 0; i < split.length; i++) {
-                    String riga = split[i];
-                    String[] colonne = riga.split("\t");
-                    Giocatori giocatori = new Giocatori();
-                    giocatori.setId(Integer.parseInt(colonne[0]));
-                    giocatori.setNome(colonne[2]);
-                    try {
-                        giocatori.setQuotazione(Integer.parseInt(colonne[6].replace("\r", "")));
-                    } catch (Exception e) {
-                        giocatori.setQuotazione(-1);
-                    }
-                    String ruolo = colonne[1].replaceAll("\"", "");
-                    giocatori.setRuolo(ruolo);
-                    String primoRuolo = ruolo;
-                    if (ruolo.indexOf(";") > 0)
-                        primoRuolo = ruolo.substring(0, ruolo.indexOf(";"));
-                    giocatori.setMacroRuolo(macroRuoliMantra.get(primoRuolo));
-                    giocatori.setSquadra(colonne[3]);
-                    giocatoriRepository.save(giocatori);
-                }
+                count = caricaMantra(byteContent);
             } else {
-                throw new RuntimeException("Tipo file non riconoscituo:" + tipoFile);
+                ret.put("esitoDispositiva", "KO");
+                ret.put("errore", "Tipo file non riconosciuto: " + tipoFile);
+                return ret;
+            }
+            if (count == 0) {
+                ret.put("esitoDispositiva", "KO");
+                ret.put("errore", "Nessun giocatore importato: verifica formato file");
+                return ret;
             }
             socketHandler.notificaCaricaFile(request.getRemoteAddr());
             ret.put("esitoDispositiva", "OK");
-        } else {
+            ret.put("numGiocatori", count);
+        } catch (Exception e) {
             ret.put("esitoDispositiva", "KO");
+            ret.put("errore", e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName());
         }
-
         return ret;
+    }
 
+    private String resolveTipoFile(String tipoFile, byte[] byteContent, String fileName) {
+        if (isExcelContent(byteContent)) {
+            return "FS";
+        }
+        String lower = fileName.toLowerCase();
+        if (lower.endsWith(".xls") || lower.endsWith(".xlsx")) {
+            return "FS";
+        }
+        if (lower.endsWith(".txt")) {
+            return "MANTRA";
+        }
+        return tipoFile;
+    }
+
+    private boolean isExcelContent(byte[] byteContent) {
+        if (byteContent == null || byteContent.length < 4) {
+            return false;
+        }
+        // OLE2 (.xls)
+        if (byteContent[0] == (byte) 0xD0 && byteContent[1] == (byte) 0xCF) {
+            return true;
+        }
+        // ZIP (.xlsx)
+        return byteContent[0] == 'P' && byteContent[1] == 'K';
+    }
+
+    private int caricaFs(byte[] byteContent) throws Exception {
+        try {
+            return caricaFsXml(byteContent);
+        } catch (SAXParseException e) {
+            return caricaFsExcel(byteContent);
+        }
+    }
+
+    private int caricaFsXml(byte[] byteContent) throws Exception {
+        int count = 0;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        String content = new String(byteContent);
+        InputSource is = new InputSource(new StringReader(content));
+        Document parse = builder.parse(is);
+        NodeList childNodes = parse.getChildNodes().item(0).getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            if (i > 0) {
+                Node tr = childNodes.item(i);
+                NodeList childNodesTr = tr.getChildNodes();
+                String id = childNodesTr.item(0).getTextContent();
+                String squadra = childNodesTr.item(3).getTextContent();
+                String nome = childNodesTr.item(1).getTextContent() + " " + childNodesTr.item(2).getTextContent();
+                String ruolo = childNodesTr.item(4).getTextContent();
+                String quotazione = childNodesTr.item(6).getTextContent();
+                Giocatori giocatori = new Giocatori();
+                giocatori.setId(Integer.parseInt(id));
+                giocatori.setNome(nome.trim());
+                giocatori.setQuotazione(Integer.parseInt(quotazione));
+                giocatori.setRuolo(ruolo);
+                giocatori.setMacroRuolo(ruolo);
+                giocatori.setSquadra(squadra);
+                giocatoriRepository.save(giocatori);
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private int caricaFsExcel(byte[] byteContent) throws Exception {
+        int count = 0;
+        DataFormatter formatter = new DataFormatter();
+        try (InputStream targetStream = new ByteArrayInputStream(byteContent);
+                Workbook workbook = WorkbookFactory.create(targetStream)) {
+            Sheet sheet = workbook.getSheetAt(0);
+            for (Row currentRow : sheet) {
+                if (currentRow == null) {
+                    continue;
+                }
+                Integer id = parseCellInt(currentRow.getCell(0), formatter);
+                if (id == null || id <= 0) {
+                    continue;
+                }
+                Giocatori giocatori = new Giocatori();
+                giocatori.setId(id);
+                String cognome = formatCell(currentRow.getCell(1), formatter);
+                String nome = formatCell(currentRow.getCell(2), formatter);
+                giocatori.setNome((cognome + " " + nome).trim());
+                giocatori.setSquadra(formatCell(currentRow.getCell(3), formatter));
+                String ruolo = formatCell(currentRow.getCell(4), formatter);
+                giocatori.setRuolo(ruolo);
+                giocatori.setMacroRuolo(ruolo);
+                Integer quotazione = parseCellInt(currentRow.getCell(6), formatter);
+                giocatori.setQuotazione(quotazione != null ? quotazione : -1);
+                if (currentRow.getLastCellNum() > 7) {
+                    Cell fvmCell = currentRow.getCell(7);
+                    if (fvmCell != null) {
+                        try {
+                            giocatori.setFvm(Double.parseDouble(formatter.formatCellValue(fvmCell).replace(",", ".")));
+                        } catch (Exception ignored) {
+                            // colonna FVM opzionale
+                        }
+                    }
+                }
+                giocatoriRepository.save(giocatori);
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private int caricaMantra(byte[] byteContent) {
+        int count = 0;
+        String content = new String(byteContent);
+        String[] split = content.split("\n");
+        for (String riga : split) {
+            if (riga == null || riga.trim().isEmpty()) {
+                continue;
+            }
+            String[] colonne = riga.split("\t");
+            if (colonne.length < 7) {
+                continue;
+            }
+            try {
+                Giocatori giocatori = new Giocatori();
+                giocatori.setId(Integer.parseInt(colonne[0].trim()));
+                giocatori.setNome(colonne[2].trim());
+                try {
+                    giocatori.setQuotazione(Integer.parseInt(colonne[6].replace("\r", "").trim()));
+                } catch (Exception e) {
+                    giocatori.setQuotazione(-1);
+                }
+                String ruolo = colonne[1].replaceAll("\"", "");
+                giocatori.setRuolo(ruolo);
+                String primoRuolo = ruolo;
+                if (ruolo.indexOf(";") > 0) {
+                    primoRuolo = ruolo.substring(0, ruolo.indexOf(";"));
+                }
+                giocatori.setMacroRuolo(macroRuoliMantra.get(primoRuolo));
+                giocatori.setSquadra(colonne[3].trim());
+                giocatoriRepository.save(giocatori);
+                count++;
+            } catch (Exception ignored) {
+                // salta righe intestazione o malformate
+            }
+        }
+        return count;
+    }
+
+    private String formatCell(Cell cell, DataFormatter formatter) {
+        if (cell == null) {
+            return "";
+        }
+        return formatter.formatCellValue(cell).trim();
+    }
+
+    private Integer parseCellInt(Cell cell, DataFormatter formatter) {
+        String value = formatCell(cell, formatter);
+        if (value.isEmpty()) {
+            return null;
+        }
+        try {
+            return (int) Double.parseDouble(value.replace(",", "."));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private boolean isOkDispositiva(@RequestBody Map<String, Object> body) {
@@ -818,13 +930,20 @@ public class MyControllerAsta {
     public synchronized Map<String, Object> confermaAsta(@RequestBody Map<String, Object> body) throws Exception {
         Map<String, Object> ret = new HashMap<>();
         if (isOkDispositiva(body)) {
-            String idgiocatore = ((Map) body.get("offerta")).get("idgiocatore").toString();
-            String idCalciatore = ((Map) body.get("offerta")).get("idCalciatore").toString();
+            Map<String, Object> offertaServer = socketHandler.getOffertaVincente();
+            if (offertaServer == null || offertaServer.isEmpty() || offertaServer.get("idgiocatore") == null
+                    || offertaServer.get("idCalciatore") == null || offertaServer.get("offerta") == null) {
+                ret.put("esitoDispositiva", "KO");
+                ret.put("errore", "Nessuna offerta attiva sul server");
+                return ret;
+            }
+            String idgiocatore = offertaServer.get("idgiocatore").toString();
+            String idCalciatore = offertaServer.get("idCalciatore").toString();
             Optional<Fantarose> findById = fantaroseRepository.findById(Integer.parseInt(idCalciatore));
             if (findById.isPresent()) {//ALTRIMENTI DA ERRORE DOPPIO INSERT CON DOPPIO ADMIN
                 ret.put("insert", "OK");
             } else {
-                Integer offerta = (Integer) ((Map) body.get("offerta")).get("offerta");
+                Integer offerta = ((Number) offertaServer.get("offerta")).intValue();
                 Calendar c = Calendar.getInstance();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
                 String stm = sdf.format(c.getTime());
@@ -836,9 +955,17 @@ public class MyControllerAsta {
                 fantaroseRepository.save(fantarosa);
                 ret.put("insert", "OK");
             }
+            try {
+                socketHandler.confirmAstaAndBroadcast("HTTP");
+            } catch (IOException e) {
+                ret.put("esitoDispositiva", "KO");
+                ret.put("errore", "Conferma salvata ma broadcast fallito: " + e.getMessage());
+                return ret;
+            }
             ret.put("esitoDispositiva", "OK");
         } else {
             ret.put("esitoDispositiva", "KO");
+            ret.put("errore", "Verifica dispositiva fallita");
         }
         return ret;
     }

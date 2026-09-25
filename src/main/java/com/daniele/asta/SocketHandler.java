@@ -1,15 +1,21 @@
 package com.daniele.asta;
 
+import com.daniele.asta.service.AstaBroadcastService;
+import com.daniele.asta.service.AstaDataService;
+import com.daniele.asta.service.AstaMessageLogService;
+import com.daniele.asta.service.AstaTurnoService;
+import com.daniele.asta.session.AstaSessionBinding;
+import com.daniele.asta.session.AstaSessionRegistry;
 import com.daniele.fantalive.entity.Allenatori;
 import com.daniele.fantalive.entity.Configurazione;
 import com.daniele.fantalive.entity.EnumCategoria;
 import com.daniele.fantalive.entity.Giocatori;
-import com.daniele.fantalive.entity.LoggerMessaggi;
 import com.daniele.fantalive.repository.GiocatoriRepository;
-import com.daniele.fantalive.repository.LoggerRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -17,12 +23,10 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,35 +34,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 @Component
 public class SocketHandler extends TextWebSocketHandler implements WebSocketHandler {
 
-    private void creaMessaggio(String indirizzo, String messaggio, EnumCategoria categoria) {
-        Long now = System.currentTimeMillis();
-        UUID uuid = UUID.randomUUID();
-        Map<String, Object> msg = new HashMap<>();
-        msg.put("key", uuid.toString());
-        msg.put("data", now);
-        msg.put("testo", messaggio);
-        msg.put("indirizzo", indirizzo);
-        msg.put("categoria", categoria);
-        messaggi.add(msg);
-        LoggerMessaggi loggerMessaggi = new LoggerMessaggi();
-        loggerMessaggi.setId(now);
-        loggerMessaggi.setMessaggio(messaggio);
-        loggerMessaggi.setCategoria(categoria.name());
-        loggerMessaggi.setIndirizzo(indirizzo);
-        loggerRepository.save(loggerMessaggi);
-    }
+    private static final Logger log = LoggerFactory.getLogger(SocketHandler.class);
+    private static final long HANDLE_SLOW_MS = 200;
 
     private List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
-    private List<String> utentiLoggati = new ArrayList<>();
-    List<String> utentiScaduti = new ArrayList<>();
-    Map<String, Map<String, Object>> pingUtenti = new HashMap<>();
     Map<String, Object> offertaVincente = new HashMap<>();
     Calendar calInizioOfferta;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ssZ");
@@ -70,56 +54,88 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
     String giocatoreTimeout;
     String sSemaforoAttivo;
     private Integer tokenVerifica = -1;
+    /** Incrementato ad ogni cambio stato asta/offerta; i client ignorano broadcast obsoleti. */
+    private long astaEpoch = 0;
 
-    @Autowired
-    LoggerRepository loggerRepository;
-    List<Map<String, Object>> messaggi = new ArrayList<>();
     @Autowired
     MyControllerAsta myController;
     @Autowired
     GiocatoriRepository giocatoriRepository;
+    @Autowired
+    AstaSessionRegistry sessionRegistry;
+    @Autowired
+    AstaMessageLogService messageLogService;
+    @Autowired
+    AstaBroadcastService broadcastService;
+    @Autowired
+    AstaDataService astaDataService;
+    @Autowired
+    AstaTurnoService astaTurnoService;
+    @Autowired
+    HttpSessionConfig httpSessionConfig;
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message)
             throws InterruptedException, IOException {
+        long handleStart = System.nanoTime();
+        String operazione = null;
+        String indirizzo = null;
         try {
-            String indirizzo = session.getRemoteAddress().toString();
+            indirizzo = session.getRemoteAddress().toString();
             HttpSession httpSession = (HttpSession) session.getAttributes().get("HTTPSESSIONID");
             String payload = message.getPayload();
             Map<String, Object> jsonToMap = jsonToMap(payload);
-            String operazione = (String) jsonToMap.get("operazione");
+            operazione = (String) jsonToMap.get("operazione");
 
-            if (operazione != null && operazione.equals("ping")) {
-//			System.out.println("Ping ricevuto" + payload);
-            } else {
-//			System.err.println("Messaggio ricevuto" + payload);
+            if (!"ping".equals(operazione)) {
+                log.info("[WS] recv op={} session={} remote={} httpSession={} payloadBytes={}",
+                        operazione, session.getId(), indirizzo, httpSession != null, payload.length());
+            } else if (log.isDebugEnabled()) {
+                log.debug("[WS] recv ping session={} remote={}", session.getId(), indirizzo);
+            }
+
+            synchronized (this) {
+
+            if (operazione != null && needsAuth(operazione)
+                    && !requireBoundOperator(session, jsonToMap, operazione)) {
+                return;
             }
 
             if (operazione != null && operazione.equals("cancellaUtente")) {
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
+                String operator = sessionRegistry.getUserForWsSession(session);
                 Integer iIdgiocatore = Integer.parseInt(jsonToMap.get("idgiocatore").toString());
-                getUtentiLoggati().remove(nomegiocatore);
-                utentiScaduti.remove(nomegiocatore);
-                pingUtenti.remove(nomegiocatore);
+                if (operator != null && !operator.equals(nomegiocatore) && !isAllenatoreAdmin(operator)) {
+                    log.warn("[WS] cancellaUtente rifiutata: {} non admin, target={}", operator, nomegiocatore);
+                    Map<String, Object> err = new HashMap<>();
+                    err.put("erroreOperazione", "Solo l'admin può disconnettere altri utenti.");
+                    sessionRegistry.sendToSession(session, toJson(err));
+                    return;
+                }
+                AstaSessionBinding targetBinding = sessionRegistry.getBinding(nomegiocatore);
+                if (targetBinding != null) {
+                    sessionRegistry.closeSession(targetBinding.getSession(), targetBinding.getTokenUtente(), false);
+                }
+                sessionRegistry.unbindUser(nomegiocatore);
                 Map<String, Object> m = new HashMap<>();
                 m.put("utenti", getUtentiLoggati());
-                creaMessaggio(indirizzo, "Utente cancellato: " + nomegiocatore, EnumCategoria.Alert);
+                messageLogService.creaMessaggio(indirizzo, "Utente cancellato: " + nomegiocatore, EnumCategoria.Alert);
                 m.put("azzera", String.valueOf(iIdgiocatore));
-                m.put("messaggi", messaggi);
-                invia(toJson(m));
+                m.put("messaggi", messageLogService.getMessaggiForBroadcast());
+                inviaEvento(m);
             }
             if (operazione != null && operazione.equals("azzera")) {
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
-                String idgiocatore = jsonToMap.get("idgiocatore").toString();
-                creaMessaggio(indirizzo, "AZZERATO DA: " + nomegiocatore, EnumCategoria.Alert);
-                Map<String, Object> m = new HashMap<>();
-                m.put("calciatori", myController.getGiocatoriLiberi());
-                setUtentiLoggati(new ArrayList<>());
-                utentiScaduti = new ArrayList<>();
-                pingUtenti = new HashMap<>();
+                messageLogService.creaMessaggio(indirizzo, "AZZERATO DA: " + nomegiocatore, EnumCategoria.Alert);
+                resetStatoAstaInIdle();
+                messageLogService.clearMessaggi();
+                sessionRegistry.clearAll();
+                Map<String, Object> m = buildIdleBroadcastPayload();
+                m.put("calciatori", astaDataService.getGiocatoriLiberi());
                 m.put("utenti", getUtentiLoggati());
+                m.put("messaggi", messageLogService.getMessaggiForBroadcast());
                 m.put("azzera", "x");
-                invia(toJson(m));
+                inviaEvento(m);
             }
             if (operazione != null && operazione.equals("connetti")) {
 //			messaggi = new ArrayList<>();
@@ -127,27 +143,33 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                 String idgiocatore = jsonToMap.get("idgiocatore").toString();
                 Long tokenUtente = (Long) jsonToMap.get("tokenUtente");
                 Map<String, Object> m = new HashMap<>();
-                if (utentiScaduti.contains(nomegiocatore)) {
-                    getUtentiLoggati().remove(nomegiocatore);
-                    utentiScaduti.remove(nomegiocatore);
-                    pingUtenti.remove(nomegiocatore);
-                }
-                if (getUtentiLoggati() != null && getUtentiLoggati().contains(nomegiocatore)) {
-                    creaMessaggio(indirizzo, "Sessione RUBATA da " + nomegiocatore, EnumCategoria.Alert);
+                sessionRegistry.clearExpiredAndRejoin(nomegiocatore);
+                if (httpSession == null) {
+                    log.warn("[WS] connetti rifiutato: sessione HTTP assente session={}", session.getId());
+                    Map<String, Object> err = new HashMap<>();
+                    err.put("erroreConnetti", "Sessione HTTP non disponibile. Ricarica la pagina.");
+                    sessionRegistry.sendToSession(session, toJson(err));
+                    return;
                 }
                 httpSession.setAttribute("nomeGiocatoreLoggato", nomegiocatore);
                 httpSession.setAttribute("idLoggato", idgiocatore);
-                getUtentiLoggati().remove(nomegiocatore);
-                getUtentiLoggati().add(nomegiocatore);
-                m.put("calciatori", myController.getGiocatoriLiberi());
-                myController.aggiornaFavoriti(idgiocatore);
-                m.put("preferiti", myController.getFavoriti());
-                m.put("cronologiaOfferte", myController.elencoCronologiaOfferte());
+                String httpSessionId = httpSession.getId();
+                final String remoteAddr = indirizzo;
+                sessionRegistry.bind(session, nomegiocatore, idgiocatore, tokenUtente, httpSessionId,
+                        msg -> messageLogService.creaMessaggio(remoteAddr, msg, EnumCategoria.Alert));
+                sessionRegistry.closeUnboundDuplicateHttpSessions(getSessions(), session);
+                m.putAll(astaDataService.buildConnettiPayload(idgiocatore));
                 m.put("utenti", getUtentiLoggati());
-                creaMessaggio(indirizzo, "Connesso: " + nomegiocatore, EnumCategoria.Connessione);
-                m.put("messaggi", messaggi);
-                m.put("cronologiaOfferte", myController.elencoCronologiaOfferte());
-                invia(toJson(m));
+                messageLogService.creaMessaggio(indirizzo, "Connesso: " + nomegiocatore, EnumCategoria.Connessione);
+                m.put("messaggi", messageLogService.getMessaggiForBroadcast());
+                m.put("connettiOk", true);
+                m.put("broadcastTipo", "evento");
+                sessionRegistry.sendToSession(session, toJson(m));
+                Map<String, Object> presence = new HashMap<>();
+                presence.put("broadcastTipo", "evento");
+                presence.put("utenti", getUtentiLoggati());
+                presence.put("messaggi", messageLogService.getMessaggiForBroadcast());
+                inviaBroadcastExcept(session, toJson(presence));
             } else if (operazione != null && operazione.equals("forzaTurno")) {
                 String turno = jsonToMap.get("turno").toString();
                 Iterable<Allenatori> allAllenatori = myController.getAllAllenatori();
@@ -160,7 +182,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                 Map<String, Object> m = new HashMap<>();
                 m.put("turno", myController.getTurno());
                 m.put("nomeGiocatoreTurno", myController.getNomeGiocatoreTurno());
-                invia(toJson(m));
+                inviaEvento(m);
             } else if (operazione != null && operazione.equals("azzeraTempo")) {
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
                 Map<String, Object> m = new HashMap<>();
@@ -168,174 +190,123 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                     millisFromPausa = 0l;
                 } else {
                     calInizioOfferta = Calendar.getInstance();
+                    bumpAstaEpoch();
                 }
-                creaMessaggio(indirizzo,
+                messageLogService.creaMessaggio(indirizzo,
                         "Tempo azzerato da " + nomegiocatore + " per " + offertaVincente.get("nomeCalciatore") + "("
                                 + ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
                                 + ((Giocatori) offertaVincente.get("giocatore")).getSquadra(),
                         EnumCategoria.Asta);
+                m.put("faseAsta", "BIDDING");
+                m.put("contaTempo", 0L);
+                m.put("timeStart", -1);
+                putAstaEpoch(m);
+                m.put("timeout", "N");
                 m.put("millisFromPausa", Long.toString(millisFromPausa));
-                m.put("messaggi", messaggi);
-                invia(toJson(m));
+                m.put("messaggi", messageLogService.getMessaggiForBroadcast());
+                inviaEvento(m);
             } else if (operazione != null && operazione.equals("confermaAsta")) {
-                sSemaforoAttivo = "S";
-                messaggi = new ArrayList<>();
-                creaMessaggio(indirizzo,
-                        "Asta confermata per " + offertaVincente.get("nomeCalciatore") + "("
-                                + ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
-                                + ((Giocatori) offertaVincente.get("giocatore")).getSquadra() + ". Assegnato a "
-                                + offertaVincente.get("nomegiocatore") + " per " + offertaVincente.get("offerta"),
-                        EnumCategoria.Asta);
-                offertaVincente = new HashMap<>();
-                selCalciatoreMacroRuolo = "";
-                Map<String, Object> m = new HashMap<>();
-                String idgiocatore = jsonToMap.get("idgiocatore").toString();
-                m.put("calciatori", myController.getGiocatoriLiberi());
-                m.put("cronologiaOfferte", myController.elencoCronologiaOfferte());
-                m.put("clearOfferta", "x");
-                m.put("messaggi", messaggi);
-                Integer iTurno = Integer.parseInt(myController.getTurno());
-                Iterable<Allenatori> allAllenatori = myController.getAllAllenatori();
-                List<Map<String, Object>> riepilogoAllenatori = myController.riepilogoAllenatori();
-                Configurazione configurazione = myController.getConfigurazione();
-                boolean okTurno = false;
-                int contaPassaggi = 0;
-                while (!okTurno) {
-                    iTurno++;
-                    String nomeFirst = null;
-                    Integer conta = 0;
-                    for (Allenatori allenatori : allAllenatori) {
-                        if (nomeFirst == null) {
-                            nomeFirst = allenatori.getNome();
-                        }
-                        if (allenatori.getOrdine() == iTurno) {
-                            myController.setNomeGiocatoreTurno(allenatori.getNome());
-                        }
-                        conta++;
-                    }
-                    if (iTurno > conta - 1) {
-                        iTurno = 0;
-                        myController.setNomeGiocatoreTurno(nomeFirst);
-                    }
-                    List<Map<String, Object>> attAllenatore = riepilogoAllenatori.stream()
-                            .filter((kk) -> kk.get("nome").equals(myController.getNomeGiocatoreTurno()))
-                            .collect(Collectors.toList());
-
-                    Map<String, Object> attP = attAllenatore.stream()
-                            .filter((kk) -> kk.get("ruolo").equals("P"))
-                            .findFirst()
-                            .orElse(new HashMap<>());
-                    Map<String, Object> attD = attAllenatore.stream()
-                            .filter((kk) -> kk.get("ruolo").equals("D"))
-                            .findFirst()
-                            .orElse(new HashMap<>());
-                    Map<String, Object> attC = attAllenatore.stream()
-                            .filter((kk) -> kk.get("ruolo").equals("C"))
-                            .findFirst()
-                            .orElse(new HashMap<>());
-                    Map<String, Object> attA = attAllenatore.stream()
-                            .filter((kk) -> kk.get("ruolo").equals("A"))
-                            .findFirst()
-                            .orElse(new HashMap<>());
-
-                    int contaP = 0;
-                    if (attP.get("conta") != null) {
-                        contaP= getContaFromAtt(attP.get("conta"));
-                    }
-                    int contaD = 0;
-                    if (attD.get("conta") != null) {
-                        contaD= getContaFromAtt(attD.get("conta"));
-                    }
-                    int contaC = 0;
-                    if (attC.get("conta") != null) {
-                        contaC= getContaFromAtt(attC.get("conta"));
-                    }
-                    int contaA = 0;
-                    if (attA.get("conta") != null) {
-                        contaA= getContaFromAtt(attA.get("conta"));
-                    }
-
-                    if (
-                            contaP != configurazione.getMaxP().intValue() ||
-                                    contaD != configurazione.getMaxD().intValue() ||
-                                    contaC != configurazione.getMaxC().intValue() ||
-                                    contaA != configurazione.getMaxA().intValue()
-                    ) {
-                        okTurno = true;
-                    }
-                    contaPassaggi++;
-                    if (configurazione.getNumeroGiocatori() < contaPassaggi) {
-                        okTurno = true;
-                    }
-                }
-                myController.setTurno(Integer.toString(iTurno));
-                m.put("turno", myController.getTurno());
-                m.put("giocatoriPerSquadra", myController.giocatoriPerSquadra());
-                m.put("mapSpesoTotale", myController.getMapSpesoTotale());
-                m.put("nomeGiocatoreTurno", myController.getNomeGiocatoreTurno());
-                invia(toJson(m));
-
+                confirmAstaAndBroadcast(indirizzo);
             } else if (operazione != null && operazione.equals("annullaAsta")) {
-                sSemaforoAttivo = "S";
-                messaggi = new ArrayList<>();
-                creaMessaggio(indirizzo, "Asta annullata per:" + offertaVincente.get("nomeCalciatore"), EnumCategoria.Asta);
-                offertaVincente = new HashMap<>();
-                selCalciatoreMacroRuolo = "";
-                Map<String, Object> m = new HashMap<>();
-                m.put("clearOfferta", "x");
-                m.put("messaggi", messaggi);
-                invia(toJson(m));
+                annullaAstaAndBroadcast(indirizzo);
             } else if (operazione != null && operazione.equals("resumeAsta")) {
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
                 Calendar now = Calendar.getInstance();
                 calInizioOfferta.setTimeInMillis(now.getTimeInMillis() - millisFromPausa);
                 Map<String, Object> m = new HashMap<>();
-                creaMessaggio(indirizzo, "Offerta tolta dalla pausa da " + nomegiocatore + " per "
+                messageLogService.creaMessaggio(indirizzo, "Offerta tolta dalla pausa da " + nomegiocatore + " per "
                                 + offertaVincente.get("nomeCalciatore") + ". Riparte dopo " + millisFromPausa + " millisecondi",
                         EnumCategoria.Asta);
                 timeOut = "N";
+                m.put("faseAsta", "BIDDING");
                 m.put("timeout", timeOut);
                 m.put("contaTempo", now.getTimeInMillis() - calInizioOfferta.getTimeInMillis());
-                m.put("messaggi", messaggi);
-                invia(toJson(m));
+                m.put("messaggi", messageLogService.getMessaggiForBroadcast());
+                inviaEvento(m);
             } else if (operazione != null && operazione.equals("pausaAsta")) {
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
                 Calendar now = Calendar.getInstance();
                 millisFromPausa = now.getTimeInMillis() - calInizioOfferta.getTimeInMillis();
                 calInizioOfferta.set(Calendar.YEAR, 2971);
                 Map<String, Object> m = new HashMap<>();
-                creaMessaggio(
+                messageLogService.creaMessaggio(
                         indirizzo, "Offerta messa in pausa da da " + nomegiocatore + " per "
                                 + offertaVincente.get("nomeCalciatore") + " dopo " + millisFromPausa + " millisecondi",
                         EnumCategoria.Asta);
                 timeOut = "S";
+                m.put("faseAsta", "PAUSA");
                 m.put("millisFromPausa", Long.toString(millisFromPausa));
                 giocatoreTimeout = nomegiocatore;
                 m.put("giocatoreTimeout", giocatoreTimeout);
                 m.put("timeout", timeOut);
-                m.put("messaggi", messaggi);
-                invia(toJson(m));
+                m.put("messaggi", messageLogService.getMessaggiForBroadcast());
+                inviaEvento(m);
             } else if (operazione != null && operazione.equals("terminaAsta")) {
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
-                String idgiocatore = jsonToMap.get("idgiocatore").toString();
                 calInizioOfferta.set(Calendar.YEAR, 1971);
+                timeOut = "N";
                 Map<String, Object> m = new HashMap<>();
-                creaMessaggio(indirizzo, "Offerta terminata in anticipo da " + nomegiocatore + " per "
+                messageLogService.creaMessaggio(indirizzo, "Offerta terminata in anticipo da " + nomegiocatore + " per "
                         + offertaVincente.get("nomeCalciatore"), EnumCategoria.Asta);
-                m.put("messaggi", messaggi);
-                invia(toJson(m));
+                bumpAstaEpoch();
+                m.put("faseAsta", "DA_CONFERMARE");
+                m.put("timeStart", 3);
+                m.put("offertaVincente", offertaVincente);
+                putAstaEpoch(m);
+                m.put("messaggi", messageLogService.getMessaggiForBroadcast());
+                inviaEvento(m);
             } else if (operazione != null && operazione.equals("liberaSemaforo")) {
+                String operator = sessionRegistry.getUserForWsSession(session);
+                if (!isAllenatoreAdmin(operator)) {
+                    log.warn("[WS] liberaSemaforo rifiutata: {} non admin", operator);
+                    Map<String, Object> err = new HashMap<>();
+                    err.put("erroreOperazione", "Solo l'admin può sbloccare il semaforo.");
+                    sessionRegistry.sendToSession(session, toJson(err));
+                    return;
+                }
                 sSemaforoAttivo = "S";
+                Map<String, Object> m = new HashMap<>();
+                m.put("sSemaforoAttivo", sSemaforoAttivo);
+                m.put("faseAsta", resolveFaseAsta(Calendar.getInstance()));
+                inviaEvento(m);
             } else if (operazione != null && operazione.equals("start")) {
                 selCalciatoreMacroRuolo = (String) jsonToMap.get("selCalciatoreMacroRuolo");
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
+                if (!requireTargetSelfOrAdmin(session, nomegiocatore, operazione)) {
+                    return;
+                }
                 String idgiocatore = jsonToMap.get("idgiocatore").toString();
                 String nomegiocatoreOperaCome = (String) jsonToMap.get("nomegiocatoreOperaCome");
+                if (Boolean.TRUE.equals(myController.getIsATurni())) {
+                    String turnoAttuale = myController.getNomeGiocatoreTurno();
+                    String operator = sessionRegistry.getUserForWsSession(session);
+                    if (turnoAttuale == null || turnoAttuale.isEmpty()) {
+                        Map<String, Object> err = new HashMap<>();
+                        err.put("erroreOperazione", "Turno asta non definito.");
+                        sessionRegistry.sendToSession(session, toJson(err));
+                        return;
+                    }
+                    if (!turnoAttuale.equals(nomegiocatore)) {
+                        Map<String, Object> err = new HashMap<>();
+                        err.put("erroreOperazione", "Puoi avviare l'asta solo per " + turnoAttuale + " (turno corrente).");
+                        sessionRegistry.sendToSession(session, toJson(err));
+                        return;
+                    }
+                    if (!turnoAttuale.equals(operator) && !isAllenatoreAdmin(operator)) {
+                        Map<String, Object> err = new HashMap<>();
+                        err.put("erroreOperazione", "Solo " + turnoAttuale + " o l'admin possono avviare l'asta in questo turno.");
+                        sessionRegistry.sendToSession(session, toJson(err));
+                        return;
+                    }
+                }
                 String selCalciatore = (String) jsonToMap.get("selCalciatore");
                 String[] split = selCalciatore.split("@");
                 idCalciatore = split[0];
                 nomeCalciatore = split[1];
                 sSemaforoAttivo = "N";
+                timeOut = "N";
+                giocatoreTimeout = null;
+                millisFromPausa = 0L;
                 calInizioOfferta = Calendar.getInstance();
                 offertaVincente = new HashMap<>();
                 offertaVincente.put("giocatore", giocatoriRepository.findById(Integer.parseInt(idCalciatore)).get());
@@ -344,10 +315,18 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                 offertaVincente.put("offerta", 1);
                 offertaVincente.put("nomeCalciatore", nomeCalciatore);
                 offertaVincente.put("idCalciatore", idCalciatore);
+                bumpAstaEpoch();
 
                 Map<String, Object> m = new HashMap<>();
+                m.put("faseAsta", "BIDDING");
                 m.put("avviaAsta", "S");
                 m.put("offertaVincente", offertaVincente);
+                putAstaEpoch(m);
+                m.put("selCalciatoreMacroRuolo", selCalciatoreMacroRuolo);
+                m.put("sSemaforoAttivo", sSemaforoAttivo);
+                m.put("timeStart", -1);
+                m.put("contaTempo", 0);
+                m.put("mapSpesoTotale", myController.getMapSpesoTotale());
                 String str = "Asta avviata da " + nomegiocatore + " per " + offertaVincente.get("nomeCalciatore") + "("
                         + ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
                         + ((Giocatori) offertaVincente.get("giocatore")).getSquadra();
@@ -355,31 +334,34 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                     str = str + "(" + nomegiocatoreOperaCome + ")";
                 }
                 m.put("loggerMessaggi", myController.elencoLoggerMessaggi());
-                messaggi = new ArrayList<>();
-                creaMessaggio(indirizzo, str, EnumCategoria.Asta);
-                invia(toJson(m));
+                messageLogService.clearMessaggi();
+                messageLogService.creaMessaggio(indirizzo, str, EnumCategoria.Asta);
+                inviaEvento(m);
             } else if (operazione != null && operazione.equals("disconnetti")) {
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
                 String idgiocatore = jsonToMap.get("idgiocatore").toString();
-                getUtentiLoggati().remove(nomegiocatore);
-                utentiScaduti.remove(nomegiocatore);
-                pingUtenti.remove(nomegiocatore);
-                httpSession.removeAttribute("nomeGiocatoreLoggato");
-                httpSession.removeAttribute("idLoggato");
+                sessionRegistry.unbindUser(nomegiocatore);
+                if (httpSession != null) {
+                    httpSession.removeAttribute("nomeGiocatoreLoggato");
+                    httpSession.removeAttribute("idLoggato");
+                }
                 Map<String, Object> m = new HashMap<>();
-                creaMessaggio(indirizzo, "Utente disconnesso: " + nomegiocatore, EnumCategoria.Connessione);
-                m.put("calciatori", myController.getGiocatoriLiberi());
+                messageLogService.creaMessaggio(indirizzo, "Utente disconnesso: " + nomegiocatore, EnumCategoria.Connessione);
+                m.put("calciatori", astaDataService.getGiocatoriLiberi());
                 m.put("utenti", getUtentiLoggati());
-                invia(toJson(m));
+                inviaEvento(m);
             } else if (operazione != null && operazione.equals("inviaOfferta")) {
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
+                if (!requireTargetSelfOrAdmin(session, nomegiocatore, operazione)) {
+                    return;
+                }
                 boolean azzera = false;
                 if (jsonToMap.get("azzera") != null) azzera = (Boolean) jsonToMap.get("azzera");
                 String idgiocatore = jsonToMap.get("idgiocatore").toString();
                 String nomegiocatoreOperaCome = (String) jsonToMap.get("nomegiocatoreOperaCome");
-                Integer offerta = (Integer) jsonToMap.get("offerta");
-                Integer maxRilancio = (Integer) jsonToMap.get("maxRilancio");
-                Integer attOfferta = (Integer) offertaVincente.get("offerta");
+                Integer offerta = toInt(jsonToMap.get("offerta"));
+                Integer maxRilancio = toInt(jsonToMap.get("maxRilancio"));
+                Integer attOfferta = toInt(offertaVincente.get("offerta"));
                 Calendar now = Calendar.getInstance();
                 Calendar scadenzaAsta = Calendar.getInstance();
                 scadenzaAsta.setTimeInMillis(calInizioOfferta.getTimeInMillis());
@@ -391,7 +373,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                     if (!nomegiocatoreOperaCome.equalsIgnoreCase(nomegiocatore)) {
                         str = str + "(" + nomegiocatoreOperaCome + ")";
                     }
-                    creaMessaggio(indirizzo, str, EnumCategoria.Asta);
+                    messageLogService.creaMessaggio(indirizzo, str, EnumCategoria.Asta);
                     autoRilancio = true;
                 }
                 if (!autoRilancio) {
@@ -404,7 +386,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                         if (!nomegiocatoreOperaCome.equalsIgnoreCase(nomegiocatore)) {
                             str = str + "(" + nomegiocatoreOperaCome + ")";
                         }
-                        creaMessaggio(indirizzo, str, EnumCategoria.Asta);
+                        messageLogService.creaMessaggio(indirizzo, str, EnumCategoria.Asta);
                         offerta = maxRilancio;
                     }
                     if (now.after(scadenzaAsta)) {
@@ -415,7 +397,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                         if (!nomegiocatoreOperaCome.equalsIgnoreCase(nomegiocatore)) {
                             str = str + "(" + nomegiocatoreOperaCome + ")";
                         }
-                        creaMessaggio(indirizzo, str, EnumCategoria.Asta);
+                        messageLogService.creaMessaggio(indirizzo, str, EnumCategoria.Asta);
                     } else {
                         String str = "Rilancio di " + offerta + " fatto da " + nomegiocatore;
                         if (!nomegiocatoreOperaCome.equalsIgnoreCase(nomegiocatore)) {
@@ -425,28 +407,32 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                                 + ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
                                 + ((Giocatori) offertaVincente.get("giocatore")).getSquadra();
                         if (attOfferta != null && offerta <= attOfferta && azzera == false) {
-                            creaMessaggio(indirizzo, str + " non superiore all'offerta vincente di " + attOfferta + " fatta da "
+                            messageLogService.creaMessaggio(indirizzo, str + " non superiore all'offerta vincente di " + attOfferta + " fatta da "
                                     + offertaVincente.get("nomegiocatore"), EnumCategoria.Asta);
                         } else {
                             calInizioOfferta = Calendar.getInstance();
                             offertaVincente.put("nomegiocatore", nomegiocatore);
                             offertaVincente.put("idgiocatore", idgiocatore);
                             offertaVincente.put("offerta", offerta);
-                            Map<String, Object> m2 = new HashMap<>();
-                            m2.put("contaTempo", 0);
-                            invia(toJson(m2));
+                            bumpAstaEpoch();
+                            log.info("[WS] offerta vincente {}={} (id={}) epoch={}",
+                                    nomegiocatore, offerta, idgiocatore, astaEpoch);
+                            m.put("faseAsta", "BIDDING");
+                            m.put("contaTempo", 0);
+                            m.put("timeStart", -1);
                             m.put("offertaVincente", offertaVincente);
                             m.put("selCalciatoreMacroRuolo", selCalciatoreMacroRuolo);
-                            creaMessaggio(indirizzo, str, EnumCategoria.Asta);
+                            putAstaEpoch(m);
+                            messageLogService.creaMessaggio(indirizzo, str, EnumCategoria.Asta);
                         }
                     }
                 }
-                invia(toJson(m));
+                inviaEvento(m);
             } else if (operazione != null && operazione.equals("forza")) {
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
                 String idgiocatore = jsonToMap.get("idgiocatore").toString();
                 String forzaAllenatore = (String) jsonToMap.get("forzaAllenatore");
-                Integer forzaOfferta = (Integer) jsonToMap.get("forzaOfferta");
+                Integer forzaOfferta = toInt(jsonToMap.get("forzaOfferta"));
                 String nomeForzaAllenatore = "";
                 Iterable<Allenatori> allAllenatori = myController.getAllAllenatori();
                 for (Allenatori allenatori : allAllenatori) {
@@ -458,6 +444,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                 offertaVincente.put("offerta", forzaOfferta);
                 offertaVincente.put("nomegiocatore", nomeForzaAllenatore);
                 offertaVincente.put("idgiocatore", forzaAllenatore);
+                bumpAstaEpoch();
 
                 Map<String, Object> offertaVincenteClone = new HashMap<>();
                 for (String key : offertaVincente.keySet()) {
@@ -466,19 +453,33 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                 offertaVincenteClone.put("confermaForza", jsonToMap.get("conferma"));
                 offertaVincenteClone.put("tokenCasuale", jsonToMap.get("tokenCasuale"));
 
+                m.put("faseAsta", "DA_CONFERMARE");
+                m.put("timeStart", 3);
                 m.put("offertaVincente", offertaVincenteClone);
-                creaMessaggio(indirizzo, "Offerta forzata da " + nomegiocatore + " per "
+                putAstaEpoch(m);
+                messageLogService.creaMessaggio(indirizzo, "Offerta forzata da " + nomegiocatore + " per "
                                 + offertaVincente.get("nomeCalciatore") + ": " + nomeForzaAllenatore + " per " + forzaOfferta,
                         EnumCategoria.Asta);
-                invia(toJson(m));
+                inviaEvento(m);
             } else if (operazione != null && operazione.equals("riapri")) {
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
-                Map<String, Object> m = new HashMap<>();
+                timeOut = "N";
+                giocatoreTimeout = null;
+                millisFromPausa = 0L;
+                sSemaforoAttivo = "N";
                 calInizioOfferta = Calendar.getInstance();
-                m.put("messaggi", messaggi);
+                bumpAstaEpoch();
+                Map<String, Object> m = new HashMap<>();
+                m.put("faseAsta", "BIDDING");
+                m.put("sSemaforoAttivo", sSemaforoAttivo);
+                m.put("timeStart", -1);
+                m.put("contaTempo", 0);
+                m.put("timeout", "N");
+                m.put("messaggi", messageLogService.getMessaggiForBroadcast());
                 m.put("offertaVincente", offertaVincente);
-                creaMessaggio(indirizzo, "Offerta riaperta da " + nomegiocatore + " per " + offertaVincente.get("nomeCalciatore"), EnumCategoria.Asta);
-                invia(toJson(m));
+                putAstaEpoch(m);
+                messageLogService.creaMessaggio(indirizzo, "Offerta riaperta da " + nomegiocatore + " per " + offertaVincente.get("nomeCalciatore"), EnumCategoria.Asta);
+                inviaEvento(m);
             } else if (operazione != null && operazione.equals("verificaDispositiva")) {
                 Integer tokenDispositiva = (Integer) jsonToMap.get("tokenDispositiva");
                 String idgiocatore = jsonToMap.get("idgiocatore").toString();
@@ -489,49 +490,47 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
 
             } else if (operazione != null && operazione.equals("ping")) {
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
-                utentiScaduti = new ArrayList<>();
-                Calendar now = Calendar.getInstance();
-                if (nomegiocatore != null) {
-                    Map<String, Object> mp = new HashMap<>();
-                    mp.put("lastPing", now);
-                    mp.put("checkPing", 0);
-                    pingUtenti.put(nomegiocatore, mp);
+                if (nomegiocatore != null && !nomegiocatore.isEmpty()
+                        && sessionRegistry.verifySessionUser(session, nomegiocatore)) {
+                    sessionRegistry.recordPing(nomegiocatore);
                 }
-                Map<String, Object> m = new HashMap<>();
-                for (String utente : getUtentiLoggati()) {
-                    Map<String, Object> map = pingUtenti.get(utente);
-                    if (map != null) {
-                        Calendar c = (Calendar) map.get("lastPing");
-                        long checkPing = now.getTimeInMillis() - c.getTimeInMillis();
-                        map.put("checkPing", checkPing);
-                        if (checkPing > 20000) {
-                            utentiScaduti.add(utente);
-                        }
-                    }
-                }
-                m.put("RICHIESTA", nomegiocatore);
-                invia(toJson(m));
             } else {
                 invia(payload);
             }
+
+            } // synchronized (this)
+
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            log.warn("[WS] errore op={} session={} remote={}: {}",
+                    operazione, session.getId(), indirizzo, e.getMessage(), e);
+        } finally {
+            long handleMs = (System.nanoTime() - handleStart) / 1_000_000;
+            if ("ping".equals(operazione)) {
+                if (handleMs >= HANDLE_SLOW_MS && log.isDebugEnabled()) {
+                    log.debug("[WS] ping lento ms={} session={}", handleMs, session.getId());
+                }
+            } else if (handleMs >= HANDLE_SLOW_MS) {
+                log.warn("[WS] handle LENTO op={} ms={} session={} remote={}",
+                        operazione, handleMs, session.getId(), indirizzo);
+            } else if (operazione != null) {
+                log.info("[WS] handle ok op={} ms={} session={}", operazione, handleMs, session.getId());
+            }
         }
     }
 
     public void notificaInizializzaLega(String indirizzo) throws IOException {
         Map<String, Object> m = new HashMap<>();
-        creaMessaggio(indirizzo, "Lega inizializzata", EnumCategoria.Alert);
-        m.put("messaggi", messaggi);
+        messageLogService.creaMessaggio(indirizzo, "Lega inizializzata", EnumCategoria.Alert);
+        m.put("messaggi", messageLogService.getMessaggiForBroadcast());
         m.put("elencoAllenatori", myController.getAllAllenatori());
-        invia(toJson(m));
+        inviaEvento(m);
     }
 
     public void verificaTokenDispositiva(String idgiocatore) {
         try {
             Map<String, Object> m = new HashMap<>();
             m.put("verificaDispositiva", idgiocatore);
-            invia(toJson(m));
+            inviaEvento(m);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -540,16 +539,16 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
     public void notificaCancellaOfferta(Map<String, Object> mapOfferta, String indirizzo, String idgiocatore)
             throws IOException {
         Map<String, Object> m = new HashMap<>();
-        creaMessaggio(indirizzo,
+        messageLogService.creaMessaggio(indirizzo,
                 "Offerta registrata CANCELLATA: " + mapOfferta.get("allenatore") + " per " + mapOfferta.get("giocatore")
                         + "(" + mapOfferta.get("ruolo") + ") " + mapOfferta.get("squadra") + " vinto a "
                         + mapOfferta.get("costo"),
                 EnumCategoria.Alert);
-        m.put("messaggi", messaggi);
+        m.put("messaggi", messageLogService.getMessaggiForBroadcast());
         m.put("giocatoriPerSquadra", myController.giocatoriPerSquadra());
         m.put("mapSpesoTotale", myController.getMapSpesoTotale());
-        m.put("calciatori", myController.getGiocatoriLiberi());
-        invia(toJson(m));
+        m.put("calciatori", astaDataService.getGiocatoriLiberi());
+        inviaEvento(m);
     }
 
     public void aggiornaConfigLega(Map<String, String> utentiRinominati, Iterable<Allenatori> allAllenatori,
@@ -559,27 +558,15 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
         while (iterator.hasNext()) {
             String vecchioNome = (String) iterator.next();
             String nuovoNome = utentiRinominati.get(vecchioNome);
-            if (utentiScaduti.contains(vecchioNome)) {
-                utentiScaduti.remove(vecchioNome);
-                utentiScaduti.add(nuovoNome);
-            }
-            if (getUtentiLoggati().contains(vecchioNome)) {
-                getUtentiLoggati().remove(vecchioNome);
-                getUtentiLoggati().add(nuovoNome);
-            }
-            Map<String, Object> map = pingUtenti.get(vecchioNome);
-            if (map != null) {
-                pingUtenti.remove(vecchioNome);
-                pingUtenti.put(nuovoNome, map);
-            }
+            sessionRegistry.renameUser(vecchioNome, nuovoNome);
             if (myController.getNomeGiocatoreTurno().equalsIgnoreCase(vecchioNome)) {
                 myController.setNomeGiocatoreTurno(nuovoNome);
             }
         }
         Map<String, Object> m = new HashMap<>();
-        creaMessaggio(indirizzo, "Aggiornata configurazione: " + configurazione, EnumCategoria.Alert);
+        messageLogService.creaMessaggio(indirizzo, "Aggiornata configurazione: " + configurazione, EnumCategoria.Alert);
         if (!utentiRinominati.isEmpty())
-            creaMessaggio(indirizzo, "Utenti rinominati: " + utentiRinominati, EnumCategoria.Alert);
+            messageLogService.creaMessaggio(indirizzo, "Utenti rinominati: " + utentiRinominati, EnumCategoria.Alert);
         if (myController.getIsATurni()) {
             m.put("isATurni", "S");
         } else {
@@ -607,147 +594,214 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
         m.put("minA", myController.getMinA());
         m.put("budget", myController.getBudget());
         m.put("durataAsta", myController.getDurataAsta());
-        m.put("messaggi", messaggi);
+        m.put("messaggi", messageLogService.getMessaggiForBroadcast());
         m.put("utentiRinominati", utentiRinominati);
         m.put("elencoAllenatori", allAllenatori);
-        invia(toJson(m));
+        inviaEvento(m);
     }
 
     public void notificaPreferiti(Map<Integer, List<Integer>> fav) throws IOException {
         Map<String, Object> m = new HashMap<>();
         m.put("preferiti", fav);
-        invia(toJson(m));
+        inviaEvento(m);
     }
 
     public void visFmv() throws IOException {
         Map<String, Object> m = new HashMap<>();
         m.put("visFmv", "X");
-        invia(toJson(m));
+        inviaEvento(m);
     }
 
 
     public void notificaCaricaFile(String indirizzo) throws IOException {
         Map<String, Object> m = new HashMap<>();
-        creaMessaggio(indirizzo, "Giocatori caricati", EnumCategoria.Alert);
-        m.put("calciatori", myController.getGiocatoriLiberi());
-        m.put("messaggi", messaggi);
-        invia(toJson(m));
+        messageLogService.creaMessaggio(indirizzo, "Giocatori caricati", EnumCategoria.Alert);
+        m.put("calciatori", astaDataService.getGiocatoriLiberi());
+        m.put("messaggi", messageLogService.getMessaggiForBroadcast());
+        inviaEvento(m);
     }
 
-    private void inviaOrig(String payload) throws IOException {
-        for (WebSocketSession webSocketSession : getSessions()) {
-            if (webSocketSession.isOpen()) {
-                synchronized (webSocketSession) {
-                    webSocketSession.sendMessage(new TextMessage(payload));
-                }
+    private boolean needsAuth(String operazione) {
+        return !"connetti".equals(operazione)
+                && !"ping".equals(operazione)
+                && !"verificaDispositiva".equals(operazione);
+    }
+
+    private String resolveOperator(Map<String, Object> jsonToMap) {
+        String operator = (String) jsonToMap.get("nomegiocatoreOperaCome");
+        if (operator == null || operator.isEmpty()) {
+            operator = (String) jsonToMap.get("nomegiocatore");
+        }
+        return operator;
+    }
+
+    private boolean isAllenatoreAdmin(String nomegiocatore) {
+        if (nomegiocatore == null) {
+            return false;
+        }
+        for (Allenatori allenatore : myController.getAllAllenatori()) {
+            if (nomegiocatore.equals(allenatore.getNome()) && Boolean.TRUE.equals(allenatore.getIsAdmin())) {
+                return true;
             }
         }
+        return false;
+    }
+
+    private boolean requireTargetSelfOrAdmin(WebSocketSession session, String target, String operazione)
+            throws IOException {
+        String operator = sessionRegistry.getUserForWsSession(session);
+        if (target == null || operator == null) {
+            return true;
+        }
+        if (!target.equalsIgnoreCase(operator) && !isAllenatoreAdmin(operator)) {
+            log.warn("[WS] {} rifiutata: {} non admin, target={}", operazione, operator, target);
+            Map<String, Object> err = new HashMap<>();
+            err.put("erroreOperazione", "Solo l'admin può operare per altri utenti.");
+            sessionRegistry.sendToSession(session, toJson(err));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean requireBoundOperator(WebSocketSession session, Map<String, Object> jsonToMap,
+            String operazione) throws IOException {
+        String operator = resolveOperator(jsonToMap);
+        if (operator == null || operator.isEmpty()) {
+            operator = sessionRegistry.getUserForWsSession(session);
+        }
+        if (operator == null || !sessionRegistry.verifySessionUser(session, operator)) {
+            log.warn("[WS] op {} rifiutata: utente {} non associato a session={}",
+                    operazione, operator, session.getId());
+            Map<String, Object> err = new HashMap<>();
+            err.put("erroreOperazione", "Operazione non autorizzata per la sessione corrente.");
+            sessionRegistry.sendToSession(session, toJson(err));
+            return false;
+        }
+        return true;
+    }
+
+    private void inviaBroadcastExcept(WebSocketSession except, String payload) throws IOException {
+        broadcastService.broadcastExcept(getSessions(), except, payload);
     }
 
     private void invia(String payload) throws IOException {
-        TextMessage message = new TextMessage(payload);
-        for (WebSocketSession webSocketSession : getSessions()) {
-            if (!webSocketSession.isOpen()) {
-                sessions.remove(webSocketSession);
-                continue;
-            }
+        broadcastService.broadcastAll(getSessions(), payload, () -> getUtentiLoggati().size());
+    }
+
+    public void disconnectAll() throws IOException {
+        Map<String, Object> stop = new HashMap<>();
+        stop.put("DISCONNECT_ALL", true);
+        String payload = toJson(stop);
+        List<WebSocketSession> toClose = new ArrayList<>(sessions);
+        for (WebSocketSession session : toClose) {
             try {
-                webSocketSession.sendMessage(message);
-            } catch (Exception e) {
-                System.err.println("Invio websocket fallito per sessione " + webSocketSession.getId() + ": " + e.getMessage());
-                chiudiSessione(webSocketSession);
-            }
-        }
-    }
-
-    private void chiudiSessione(WebSocketSession webSocketSession) {
-        sessions.remove(webSocketSession);
-        try {
-            webSocketSession.close(CloseStatus.SESSION_NOT_RELIABLE);
-        } catch (Exception ignored) {
-        }
-    }
-
-    private void rimuoviSessione(WebSocketSession session) {
-        sessions.removeIf(s -> s.getId().equals(session.getId()));
-    }
-
-    @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        rimuoviSessione(session);
-    }
-
-    @Override
-    public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
-        rimuoviSessione(session);
-        try {
-            session.close(CloseStatus.SERVER_ERROR);
-        } catch (Exception ignored) {
-        }
-    }
-
-    public void disconnectAll() {
-        synchronized (sessions) {
-            for (WebSocketSession session : sessions) {
-                try {
-                    session.close(CloseStatus.NORMAL);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (session.isOpen()) {
+                    sessionRegistry.sendToSession(session, payload);
                 }
+            } catch (IOException e) {
+                log.warn("[WS] disconnectAll notify failed session={}: {}", session.getId(), e.getMessage());
             }
-            sessions.clear();
+        }
+        clearHttpLoginSessions();
+        sessionRegistry.clearAll();
+        for (WebSocketSession session : toClose) {
+            try {
+                session.close(CloseStatus.NORMAL);
+            } catch (IOException e) {
+                log.warn("[WS] disconnectAll close failed session={}: {}", session.getId(), e.getMessage());
+            }
+        }
+        sessions.clear();
+        log.info("[WS] disconnectAll completato, sessioni chiuse={}", toClose.size());
+    }
+
+    private void clearHttpLoginSessions() {
+        for (HttpSession hs : httpSessionConfig.getActiveSessions()) {
+            try {
+                hs.removeAttribute("nomeGiocatoreLoggato");
+                hs.removeAttribute("idLoggato");
+            } catch (IllegalStateException e) {
+                log.debug("[WS] HTTP session già invalidata id={}", hs.getId());
+            }
         }
     }
 
     @Scheduled(fixedRateString = "${frequenza.refresh}", initialDelay = 1000)
     private void aggiorna() throws IOException {
-        Map<String, Object> m = new HashMap<>();
-        Calendar now = Calendar.getInstance();
-        if (calInizioOfferta != null) {
-            m.put("contaTempo", now.getTimeInMillis() - calInizioOfferta.getTimeInMillis());
+        Map<String, Object> m;
+        synchronized (this) {
+            sessionRegistry.evaluateExpiredUsers();
+            if (!hasOffertaAttiva() && getSessions().isEmpty()) {
+                return;
+            }
+            m = buildTimerBroadcastPayload();
         }
-        m.put("timeout", timeOut);
-        m.put("utentiScaduti", utentiScaduti);
-//		m.put("elencoAllenatori", myController.getAllAllenatori());
-        m.put("utenti", getUtentiLoggati());
-        m.put("durataAsta", myController.getDurataAsta());
-        m.put("sSemaforoAttivo", sSemaforoAttivo);
-        m.put("offertaVincente", offertaVincente);
-        m.put("selCalciatoreMacroRuolo", selCalciatoreMacroRuolo);
-        m.put("pingUtenti", pingUtenti);
-        m.put("messaggi", messaggi);
-        m.put("giocatoreTimeout", giocatoreTimeout);
-        m.put("turno", myController.getTurno());
-        m.put("nomeGiocatoreTurno", myController.getNomeGiocatoreTurno());
-        m.put("millisFromPausa", Long.toString(millisFromPausa));
-        long l = 0;
-        int conta = 0;
-        if (calInizioOfferta != null) {
-            l = (now.getTimeInMillis() - calInizioOfferta.getTimeInMillis()) / 1000;
-            l = 100 * l / myController.getDurataAsta();
-            if (l < 33)
-                conta = -1;
-            else if (l < 66)
-                conta = 1;
-            else if (l < 99)
-                conta = 2;
-            else
-                conta = 3;
-        }
-        m.put("timeStart", conta);
         invia(toJson(m));
+    }
+
+    private void inviaEvento(Map<String, Object> m) throws IOException {
+        m.put("broadcastTipo", "evento");
+        invia(toJson(m));
+    }
+
+    /** Tick scheduler: solo timer + presenza (S4.1/S4.2). */
+    private Map<String, Object> buildTimerBroadcastPayload() {
+        Map<String, Object> m = new HashMap<>();
+        m.put("broadcastTipo", "timer");
+        Calendar now = Calendar.getInstance();
+        boolean astaAttiva = hasOffertaAttiva();
+        boolean timerAttivo = isTimerAttivo();
+        if (timerAttivo) {
+            m.put("contaTempo", now.getTimeInMillis() - calInizioOfferta.getTimeInMillis());
+            int phase = computeTimeStartPhase(now);
+            m.put("timeStart", phase);
+            m.put("faseAsta", phase >= 3 ? "DA_CONFERMARE" : "BIDDING");
+        } else if (astaAttiva && "S".equals(timeOut)) {
+            m.put("faseAsta", "PAUSA");
+        }
+        if (astaAttiva) {
+            m.put("timeout", timeOut);
+            m.put("giocatoreTimeout", giocatoreTimeout);
+            m.put("millisFromPausa", Long.toString(millisFromPausa));
+            putAstaEpoch(m);
+        }
+        m.put("utentiScaduti", sessionRegistry.getExpiredUsers());
+        m.put("utenti", getUtentiLoggati());
+        m.put("pingUtenti", sessionRegistry.getPingUtentiSnapshot());
+        return m;
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-//		HttpSession httpSession = (HttpSession) session.getAttributes().get("HTTPSESSIONID");
-        // Decorator: invii thread-safe e non bloccanti; un client lento viene chiuso invece di bloccare tutti
-        getSessions().add(new ConcurrentWebSocketSessionDecorator(session, SEND_TIME_LIMIT_MS, SEND_BUFFER_SIZE_LIMIT));
-        sessions.removeIf(s -> !s.isOpen());
+        HttpSession httpSession = (HttpSession) session.getAttributes().get("HTTPSESSIONID");
+        getSessions().add(session);
+        Iterator<WebSocketSession> iterator = sessions.iterator();
+        List<WebSocketSession> rimuovibili = new ArrayList<>();
+        while (iterator.hasNext()) {
+            WebSocketSession webSocketSession = (WebSocketSession) iterator.next();
+            if (!webSocketSession.isOpen()) {
+                rimuovibili.add(webSocketSession);
+            }
+        }
+        for (WebSocketSession webSocketSession : rimuovibili) {
+            sessions.remove(webSocketSession);
+            log.info("[WS] cleanup sessione chiusa id={} remote={}",
+                    webSocketSession.getId(), webSocketSession.getRemoteAddress());
+        }
+        sessionRegistry.closeUnboundDuplicateHttpSessions(getSessions(), session);
+        log.info("[WS] connect session={} remote={} httpSession={} sessions={} utenti={}",
+                session.getId(), session.getRemoteAddress(), httpSession != null,
+                getSessions().size(), getUtentiLoggati().size());
     }
 
-    private static final int SEND_TIME_LIMIT_MS = 10_000;
-    private static final int SEND_BUFFER_SIZE_LIMIT = 5 * 1024 * 1024;
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        sessionRegistry.onWsClosed(session);
+        boolean removed = getSessions().remove(session);
+        log.info("[WS] disconnect session={} remote={} status={} removed={} sessions={} utenti={}",
+                session.getId(), session.getRemoteAddress(), status, removed,
+                getSessions().size(), getUtentiLoggati().size());
+    }
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -780,11 +834,11 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
     }
 
     public List<String> getUtentiLoggati() {
-        return utentiLoggati;
+        return sessionRegistry.getLoggedUserNames();
     }
 
     public void setUtentiLoggati(List<String> utentiLoggati) {
-        this.utentiLoggati = utentiLoggati;
+        sessionRegistry.clearAll();
     }
 
     public List<WebSocketSession> getSessions() {
@@ -795,13 +849,170 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
         this.sessions = sessions;
     }
 
-    private int getContaFromAtt(Object o){
-        if (o instanceof BigInteger) {
-            return ((BigInteger) o).intValue();
-        } else if (o instanceof Integer) {
-            return  ((Integer) o).intValue();
-        } else if (o instanceof Long) {
-            return  ((Long) o).intValue();
-        } else return 0;
+    public Map<String, Object> getOffertaVincente() {
+        return offertaVincente;
     }
+
+    public Map<String, Object> buildAstaSnapshot() {
+        Map<String, Object> snap = new HashMap<>();
+        Calendar now = Calendar.getInstance();
+        String fase = resolveFaseAsta(now);
+        snap.put("faseAsta", fase);
+        if (sSemaforoAttivo != null) {
+            snap.put("sSemaforoAttivo", sSemaforoAttivo);
+        }
+        snap.put("selCalciatoreMacroRuolo", selCalciatoreMacroRuolo);
+        if (hasOffertaAttiva()) {
+            snap.put("offertaVincente", offertaVincente);
+            if (isTimerAttivo()) {
+                snap.put("contaTempo", now.getTimeInMillis() - calInizioOfferta.getTimeInMillis());
+                snap.put("timeStart", computeTimeStartPhase(now));
+            }
+            if ("S".equals(timeOut)) {
+                snap.put("timeout", timeOut);
+                snap.put("millisFromPausa", Long.toString(millisFromPausa));
+                snap.put("giocatoreTimeout", giocatoreTimeout);
+            }
+        } else {
+            snap.put("timeStart", -1);
+        }
+        snap.put("astaEpoch", astaEpoch);
+        return snap;
+    }
+
+    public synchronized void confirmAstaAndBroadcast(String indirizzo) throws IOException {
+        if (!hasOffertaAttiva()) {
+            log.info("[WS] confermaAsta skip: nessuna offerta attiva (indirizzo={})", indirizzo);
+            return;
+        }
+        sSemaforoAttivo = "S";
+        messageLogService.clearMessaggi();
+        messageLogService.creaMessaggio(indirizzo,
+                "Asta confermata per " + offertaVincente.get("nomeCalciatore") + "("
+                        + ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
+                        + ((Giocatori) offertaVincente.get("giocatore")).getSquadra() + ". Assegnato a "
+                        + offertaVincente.get("nomegiocatore") + " per " + offertaVincente.get("offerta"),
+                EnumCategoria.Asta);
+        resetStatoAstaInIdle();
+        Map<String, Object> m = buildIdleBroadcastPayload();
+        m.putAll(astaDataService.buildPostConfirmPayload());
+        m.put("messaggi", messageLogService.getMessaggiForBroadcast());
+        astaTurnoService.avanzaTurnoDopoConferma(m);
+        inviaEvento(m);
+    }
+
+    public synchronized void annullaAstaAndBroadcast(String indirizzo) throws IOException {
+        if (!hasOffertaAttiva()) {
+            log.info("[WS] annullaAsta skip: nessuna offerta attiva");
+            return;
+        }
+        messageLogService.clearMessaggi();
+        messageLogService.creaMessaggio(indirizzo, "Asta annullata per:" + offertaVincente.get("nomeCalciatore"), EnumCategoria.Asta);
+        resetStatoAstaInIdle();
+        Map<String, Object> m = buildIdleBroadcastPayload();
+        m.put("messaggi", messageLogService.getMessaggiForBroadcast());
+        inviaEvento(m);
+    }
+
+    private void resetStatoAstaInIdle() {
+        offertaVincente = new HashMap<>();
+        selCalciatoreMacroRuolo = "";
+        timeOut = "N";
+        giocatoreTimeout = null;
+        millisFromPausa = 0L;
+        calInizioOfferta = null;
+        sSemaforoAttivo = "S";
+        bumpAstaEpoch();
+    }
+
+    /** Reset stato asta in-memory (solo dev/test E2E). */
+    public synchronized void resetForDevTest() {
+        resetStatoAstaInIdle();
+        messageLogService.clearMessaggi();
+    }
+
+    private Map<String, Object> buildIdleBroadcastPayload() {
+        Map<String, Object> m = new HashMap<>();
+        m.put("faseAsta", "IDLE");
+        m.put("clearOfferta", "x");
+        m.put("timeStart", -1);
+        m.put("sSemaforoAttivo", sSemaforoAttivo);
+        m.put("selCalciatoreMacroRuolo", selCalciatoreMacroRuolo);
+        m.put("timeout", "N");
+        putAstaEpoch(m);
+        return m;
+    }
+
+    private static int toInt(Object value) {
+        if (value == null) {
+            return 0;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        return Integer.parseInt(value.toString());
+    }
+
+    private void bumpAstaEpoch() {
+        astaEpoch++;
+    }
+
+    private void putAstaEpoch(Map<String, Object> m) {
+        if (m != null) {
+            m.put("astaEpoch", astaEpoch);
+        }
+    }
+
+    private boolean hasOffertaAttiva() {
+        return offertaVincente != null && offertaVincente.get("nomegiocatore") != null;
+    }
+
+    private boolean isTimerAttivo() {
+        if (calInizioOfferta == null || !hasOffertaAttiva() || "S".equals(timeOut)) {
+            return false;
+        }
+        int year = calInizioOfferta.get(Calendar.YEAR);
+        return year != 1971 && year != 2971;
+    }
+
+    private int computeTimeStartPhase(Calendar now) {
+        if (calInizioOfferta == null || myController.getDurataAsta() <= 0) {
+            return -1;
+        }
+        long l = (now.getTimeInMillis() - calInizioOfferta.getTimeInMillis()) / 1000;
+        l = 100 * l / myController.getDurataAsta();
+        if (l < 33) {
+            return -1;
+        }
+        if (l < 66) {
+            return 1;
+        }
+        if (l < 99) {
+            return 2;
+        }
+        return 3;
+    }
+
+    private String resolveFaseAsta(Calendar now) {
+        if (!hasOffertaAttiva()) {
+            return "IDLE";
+        }
+        if ("S".equals(timeOut)) {
+            return "PAUSA";
+        }
+        if (calInizioOfferta != null) {
+            int year = calInizioOfferta.get(Calendar.YEAR);
+            if (year == 2971) {
+                return "PAUSA";
+            }
+            if (year == 1971) {
+                return "DA_CONFERMARE";
+            }
+            if (isTimerAttivo() && computeTimeStartPhase(now) >= 3) {
+                return "DA_CONFERMARE";
+            }
+        }
+        return "BIDDING";
+    }
+
 }

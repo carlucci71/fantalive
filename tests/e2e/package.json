@@ -1,0 +1,14 @@
+{
+  "name": "fantalive-e2e",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:flow": "playwright test asta-browser-flow.spec.js",
+    "test:core": "playwright test asta.spec.js",
+    "test:headed": "playwright test --headed",
+    "test:flow:headed": "playwright test asta-browser-flow.spec.js --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

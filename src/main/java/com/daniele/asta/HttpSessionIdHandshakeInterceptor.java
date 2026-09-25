@@ -15,7 +15,7 @@ public class HttpSessionIdHandshakeInterceptor implements HandshakeInterceptor {
  public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
   if (request instanceof ServletServerHttpRequest) {
    ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-   HttpSession session = servletRequest.getServletRequest().getSession(false);
+   HttpSession session = servletRequest.getServletRequest().getSession(true);
    if (session != null) {
     attributes.put("HTTPSESSIONID", session);
    }

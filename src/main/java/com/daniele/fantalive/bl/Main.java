@@ -121,7 +121,6 @@ import java.util.zip.GZIPInputStream;
 public class Main {
 
     static String serverPort;
-    public static Map<String, Object> toSocket;
     public static String MIO_IP;
     public static FantaLiveBOT fantaLiveBot;
     public static FantaCronacaLiveBOT fantaCronacaLiveBot;
@@ -157,6 +156,32 @@ public class Main {
     public static int timeRefresh = 0;
 
     static Logger logger = LoggerFactory.getLogger(Main.class);
+
+    /** Snapshot immutabile dello stato UI FantaLive (no mutazione condivisa). */
+    public static Map<String, Object> buildFantaliveStatusPayload(int timeRefreshValue) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("timeRefresh", timeRefreshValue);
+        payload.put("liveFromFile", constant.LIVE_FROM_FILE);
+        payload.put("disabilitaNotificaTelegram", constant.DISABILITA_NOTIFICA_TELEGRAM);
+        if (Constant.LAST_REFRESH != null) {
+            payload.put("lastRefresh", Constant.dateTimeFormatterOut.format(Constant.LAST_REFRESH));
+        }
+        payload.put("ritardoNotifica", Constant.RITARDO);
+        String runningBot = "STOPPED";
+        if (fantaLiveBot != null && fantaLiveBot.isRunning()) {
+            runningBot = "RUNNING";
+        }
+        payload.put("runningBot", runningBot);
+        return payload;
+    }
+
+    public static String fantaliveStatusMetaKey() {
+        String lastRefresh = Constant.LAST_REFRESH != null
+                ? Constant.dateTimeFormatterOut.format(Constant.LAST_REFRESH) : "";
+        String runningBot = fantaLiveBot != null && fantaLiveBot.isRunning() ? "RUNNING" : "STOPPED";
+        return constant.LIVE_FROM_FILE + "|" + constant.DISABILITA_NOTIFICA_TELEGRAM + "|"
+                + lastRefresh + "|" + Constant.RITARDO + "|" + runningBot;
+    }
 
 
     public static void init(SalvaRepository salvaRepositorySpring, SocketHandlerFantalive socketHandlerSpring, Constant constantSpring, boolean valorizzaBMFG, String port, String ip) throws Exception {
@@ -215,10 +240,6 @@ public class Main {
         Main.aggKeyFG();
         if (sqDaEv == null) {
             inizializzaSqDaEv();
-        }
-        if (toSocket == null) {
-            toSocket = new HashMap<>();
-            toSocket.put("timeRefresh", 0);
         }
         if (sqRealFantacomix21 == null) {
             sqRealFantacomix21 = new HashSet() {{

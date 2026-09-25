@@ -51,6 +51,7 @@ public class MyController {
     @Autowired
     SalvaRepository salvaRepository;
 
+    private String lastFantaliveMetaKey = null;
 
     @Value("${server.port}")
     String serverport;
@@ -197,28 +198,25 @@ public class MyController {
 
     @Scheduled(fixedRate = 5000)
     public void chckNotifica() throws Exception {
-        if (Constant.ABILITA_REFRESH) {
-
-            Main.timeRefresh = (int) Main.toSocket.get("timeRefresh");
-            if (Main.timeRefresh == Constant.SCHEDULED_SNAP) {
-                Main.snapshot(true);
-            }
-            Main.timeRefresh = Main.timeRefresh + 5000;
-            Main.toSocket.put("timeRefresh", Main.timeRefresh);
-            Main.toSocket.put("liveFromFile", Constant.LIVE_FROM_FILE);
-            Main.toSocket.put("disabilitaNotificaTelegram", Constant.DISABILITA_NOTIFICA_TELEGRAM);
-            if (Constant.LAST_REFRESH != null)
-                Main.toSocket.put("lastRefresh", Constant.dateTimeFormatterOut.format(Constant.LAST_REFRESH));
-            ZonedDateTime now = ZonedDateTime.now();
-            Main.toSocket.put("ritardoNotifica", Constant.RITARDO);
-
-            String runningBot = "STOPPED";
-            if (Main.fantaLiveBot != null && Main.fantaLiveBot.isRunning()) {
-                runningBot = "RUNNING";
-            }
-            Main.toSocket.put("runningBot", runningBot);
-            socketHandlerFantalive.invia(Main.toSocket);
+        if (!Constant.ABILITA_REFRESH) {
+            return;
         }
+        Main.timeRefresh = Main.timeRefresh + 5000;
+        if (Main.timeRefresh == Constant.SCHEDULED_SNAP) {
+            Main.snapshot(true);
+        }
+        if (!socketHandlerFantalive.hasActiveSessions()) {
+            return;
+        }
+        String metaKey = Main.fantaliveStatusMetaKey();
+        Map<String, Object> payload;
+        if (!metaKey.equals(lastFantaliveMetaKey)) {
+            lastFantaliveMetaKey = metaKey;
+            payload = Main.buildFantaliveStatusPayload(Main.timeRefresh);
+        } else {
+            payload = Collections.singletonMap("timeRefresh", Main.timeRefresh);
+        }
+        socketHandlerFantalive.invia(payload);
     }
 
     @RequestMapping("/inviaNotifica")

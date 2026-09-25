@@ -1,0 +1,38 @@
+---
+description: Aggiorna la roadmap FantaLive quando cambia lo stato di lavoro socket/sistemazione
+alwaysApply: true
+---
+
+# Roadmap FantaLive — aggiornamento obbligatorio
+
+Quando completi una fase, un fix significativo, o un test di verifica su socket/sessioni/asta, **aggiorna subito** i piani senza aspettare che l'utente lo chieda.
+
+## File da tenere allineati
+
+| File | Quando aggiornare |
+|------|-------------------|
+| `piani/roadmap-sistemazione.md` | Cambio stato fase S0–S6, macro attività #1–#14, prossimo passo |
+| `piani/socket/piano-sviluppo-socket.md` | Solo se cambiano criteri di uscita o attività di una fase |
+
+## Cosa aggiornare in `roadmap-sistemazione.md`
+
+1. Riga **Ultimo aggiornamento** (data + sintesi in una riga).
+2. Tabella **Fasi S0–S6**: `Da fare` → `In corso` → `Completata` / `Parziale (motivo)`.
+3. Riga **Prossimo passo** sotto l'intestazione.
+4. Sezione **Note recenti** (bullet brevi: cosa fatto, cosa resta, evidenze da log/test).
+5. Tabella **Macro attività**: allinea stato con la fase corrispondente.
+6. **Ordine consigliato**: la fase corrente in evidenza (es. `**S2** → S3 → S4`).
+
+## Trigger tipici
+
+- Fine implementazione di una fase (S1, S2, …)
+- Test manuale riuscito o fallito (asta, multi-client, admin)
+- Suite test completa: `./scripts/run-s6-tests.sh` (14 Java + 8 Playwright incluso `asta-browser-flow.spec.js`)
+- Bugfix che chiude un item della roadmap (#1–#14)
+- Scoperta di nuovo debito tecnico → aggiungi nota o macro se rilevante
+
+## Non fare
+
+- Non creare commit solo per la roadmap (a meno che l'utente lo chieda).
+- Non duplicare lunghe analisi: link a `analisi-socket.md` o note brevi.
+- Non lasciare stati obsoleti (es. S1 "Da fare" se già completata).

@@ -1,15 +1,14 @@
 package com.daniele.fantalive.configurazione;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
@@ -20,12 +19,19 @@ import com.daniele.fantalive.bl.Main;
 @Component
 public class SocketHandlerFantalive extends TextWebSocketHandler implements WebSocketHandler {
 
-	public void invia(Map map) throws IOException {
+	private static final Logger log = LoggerFactory.getLogger(SocketHandlerFantalive.class);
+
+	private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+
+	public void invia(Map<?, ?> map) throws IOException {
 		invia(Main.toJson(map));
 	}
-	
+
 	public void invia(String payload) throws IOException {
-		for (WebSocketSession webSocketSession : getSessions()) {
+		if (sessions.isEmpty()) {
+			return;
+		}
+		for (WebSocketSession webSocketSession : sessions) {
 			if (webSocketSession.isOpen()) {
 				synchronized (webSocketSession) {
 					webSocketSession.sendMessage(new TextMessage(payload));
@@ -33,30 +39,37 @@ public class SocketHandlerFantalive extends TextWebSocketHandler implements WebS
 			}
 		}
 	}
-	private List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+
 	public List<WebSocketSession> getSessions() {
 		return sessions;
 	}
 
-	public void setSessions(List<WebSocketSession> sessions) {
-		this.sessions = sessions;
-	}
-	@Override
-	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-//		HttpSession httpSession = (HttpSession) session.getAttributes().get("HTTPSESSIONID");
-		getSessions().add(session);
-		Iterator<WebSocketSession> iterator = sessions.iterator();
-		List<WebSocketSession> rimuovibili = new ArrayList<>();
-		while (iterator.hasNext()) {
-			WebSocketSession webSocketSession = (WebSocketSession) iterator.next();
-			if (!webSocketSession.isOpen()) {
-				rimuovibili.add(webSocketSession);
+	public boolean hasActiveSessions() {
+		for (WebSocketSession session : sessions) {
+			if (session.isOpen()) {
+				return true;
 			}
 		}
-		for (WebSocketSession webSocketSession : rimuovibili) {
-			sessions.remove(webSocketSession);
-		}
+		return false;
+	}
 
+	@Override
+	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+		sessions.add(session);
+		pruneClosedSessions();
+		log.info("[FantaLive WS] connect session={} remote={} sessions={}",
+				session.getId(), session.getRemoteAddress(), sessions.size());
+	}
+
+	@Override
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+		boolean removed = sessions.remove(session);
+		log.info("[FantaLive WS] disconnect session={} remote={} status={} removed={} sessions={}",
+				session.getId(), session.getRemoteAddress(), status, removed, sessions.size());
+	}
+
+	private void pruneClosedSessions() {
+		sessions.removeIf(session -> !session.isOpen());
 	}
 
 }
