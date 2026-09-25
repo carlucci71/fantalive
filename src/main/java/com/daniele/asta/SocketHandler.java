@@ -17,6 +17,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import jakarta.servlet.http.HttpSession;
@@ -643,11 +644,45 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
         }
     }
 
-    private synchronized void invia(String payload) throws IOException {
+    private void invia(String payload) throws IOException {
+        TextMessage message = new TextMessage(payload);
         for (WebSocketSession webSocketSession : getSessions()) {
-            if (webSocketSession.isOpen()) {
-                webSocketSession.sendMessage(new TextMessage(payload));
+            if (!webSocketSession.isOpen()) {
+                sessions.remove(webSocketSession);
+                continue;
             }
+            try {
+                webSocketSession.sendMessage(message);
+            } catch (Exception e) {
+                System.err.println("Invio websocket fallito per sessione " + webSocketSession.getId() + ": " + e.getMessage());
+                chiudiSessione(webSocketSession);
+            }
+        }
+    }
+
+    private void chiudiSessione(WebSocketSession webSocketSession) {
+        sessions.remove(webSocketSession);
+        try {
+            webSocketSession.close(CloseStatus.SESSION_NOT_RELIABLE);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void rimuoviSessione(WebSocketSession session) {
+        sessions.removeIf(s -> s.getId().equals(session.getId()));
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        rimuoviSessione(session);
+    }
+
+    @Override
+    public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+        rimuoviSessione(session);
+        try {
+            session.close(CloseStatus.SERVER_ERROR);
+        } catch (Exception ignored) {
         }
     }
 
@@ -706,20 +741,13 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 //		HttpSession httpSession = (HttpSession) session.getAttributes().get("HTTPSESSIONID");
-        getSessions().add(session);
-        Iterator<WebSocketSession> iterator = sessions.iterator();
-        List<WebSocketSession> rimuovibili = new ArrayList<>();
-        while (iterator.hasNext()) {
-            WebSocketSession webSocketSession = (WebSocketSession) iterator.next();
-            if (!webSocketSession.isOpen()) {
-                rimuovibili.add(webSocketSession);
-            }
-        }
-        for (WebSocketSession webSocketSession : rimuovibili) {
-            sessions.remove(webSocketSession);
-        }
-
+        // Decorator: invii thread-safe e non bloccanti; un client lento viene chiuso invece di bloccare tutti
+        getSessions().add(new ConcurrentWebSocketSessionDecorator(session, SEND_TIME_LIMIT_MS, SEND_BUFFER_SIZE_LIMIT));
+        sessions.removeIf(s -> !s.isOpen());
     }
+
+    private static final int SEND_TIME_LIMIT_MS = 10_000;
+    private static final int SEND_BUFFER_SIZE_LIMIT = 5 * 1024 * 1024;
 
     private ObjectMapper mapper = new ObjectMapper();
 
