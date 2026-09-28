@@ -1,0 +1,81 @@
+<div class="fa-panel fa-panel--players">
+  <div class="fa-panel__head fa-panel__head--compact">
+    <span>Giocatori</span>
+    <div class="fa-panel__head-actions">
+      <button type="button"
+              class="fa-chip fa-chip--tiny fa-chip--reset"
+              ng-class="{'is-active': haFiltriGiocatoriAttivi()}"
+              ng-click="resetFiltriGiocatori()"
+              ng-disabled="!haFiltriGiocatoriAttivi()"
+              title="Reset filtri">
+        <i class="fa fa-undo" aria-hidden="true"></i>
+        <span>Reset</span>
+      </button>
+      <button type="button"
+              class="fa-chip fa-chip--tiny"
+              ng-class="{'is-active': $root.filterPreferito}"
+              ng-click="$root.filterPreferito=!$root.filterPreferito"
+              title="Mostra solo preferiti">★</button>
+    </div>
+  </div>
+  <div class="fa-panel__body">
+    <input class="fa-input fa-input--compact" type="search" placeholder="Cerca nome…" ng-model="$root.filterNome">
+
+    <div class="fa-filters-row">
+      <button type="button" class="fa-filter-btn"
+              ng-class="{'is-active': $root.playerSortField==='quotazione'}"
+              ng-click="togglePlayerSort('quotazione')">
+        Quotazione
+      </button>
+      <button type="button" class="fa-filter-btn fa-filter-btn--icon"
+              ng-click="togglePlayerSortDir()"
+              title="{{$root.playerSortRev ? 'Decrescente' : 'Crescente'}}">
+        <i class="fa" ng-class="$root.playerSortRev ? 'fa-long-arrow-down' : 'fa-long-arrow-up'"></i>
+      </button>
+      <select class="fa-filter-select" ng-model="$root.filterRuolo">
+        <option value="">Ruolo</option>
+        <option value="P">P</option>
+        <option value="D">D</option>
+        <option value="C">C</option>
+        <option value="A">A</option>
+      </select>
+      <select class="fa-filter-select fa-filter-select--grow" ng-model="$root.filterSquadra">
+        <option value="">Squadra</option>
+        <option ng-repeat="s in squadreFilterOptions" value="{{s}}">{{s}}</option>
+      </select>
+    </div>
+
+    <div class="fa-player-list">
+      <div class="fa-player-row fa-player-row--compact"
+           ng-repeat="calciatore in calciatori | orderBy:$root.playerSortField:$root.playerSortRev | myTableFilter"
+           ng-class="{'is-selected': selCalciatoreId==calciatore.id}"
+           ng-click="selezionaCalciatore(calciatore)">
+        <span class="fa-role-badge" ng-class="roleClass(calciatore.ruolo)">{{calciatore.ruolo}}</span>
+        <div class="fa-player-row__main">
+          <div class="fa-player-row__name" title="{{calciatore.nome}}">{{calciatore.nome}}</div>
+          <div class="fa-player-row__club" title="{{calciatore.squadra}}">{{calciatore.squadra}}</div>
+        </div>
+        <div class="fa-player-row__trail">
+          <button type="button"
+                  class="fa-gavel-btn fa-gavel-btn--row"
+                  ng-show="puoMostrareGavel(calciatore)"
+                  ng-click="avviaCalciatoreAsta(calciatore, $event)"
+                  title="Metti all'asta">
+            <i class="fa fa-gavel"></i>
+          </button>
+          <span class="fa-player-row__price">{{calciatore.quotazione}}</span>
+          <button type="button"
+                  class="fa-player-row__fav"
+                  ng-class="{'is-on': calciatore.preferito}"
+                  ng-click="togglePreferito(calciatore, $event)"
+                  title="{{calciatore.preferito ? 'Togli dai preferiti' : 'Aggiungi ai preferiti'}}"
+                  aria-label="{{calciatore.preferito ? 'Togli dai preferiti' : 'Aggiungi ai preferiti'}}">
+            <i class="fa" ng-class="calciatore.preferito ? 'fa-star' : 'fa-star-o'"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <p ng-show="calciatori.length==0" class="fa-empty fa-empty--compact">Carica le quotazioni dalle impostazioni</p>
+  </div>
+</div>

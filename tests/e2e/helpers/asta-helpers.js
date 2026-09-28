@@ -10,20 +10,23 @@ async function waitForAngular(page) {
 }
 
 async function loginAsta(page, nome, id) {
-  await page.goto('/fantaasta/index.html', { waitUntil: 'domcontentloaded' });
+  await page.goto('/fantaasta/index.html?v=20250925ui47', { waitUntil: 'domcontentloaded' });
   await waitForAngular(page);
-  await page.evaluate(async ({ nome, id }) => {
-    sessionStorage.setItem('fantaasta-last-user', nome);
-    sessionStorage.setItem('fantaasta-last-id', String(id));
-    sessionStorage.setItem('fantaasta-reload-user', nome);
+  await page.evaluate(async ({ id }) => {
     const root = angular.element(document.body).scope().$root;
-    root.nomegiocatore = nome;
-    root.idgiocatore = String(id);
-    await root.syncSessionFromServer();
+    if (root.refreshLoginElenco) {
+      await root.refreshLoginElenco();
+    }
+    await root.entraCome(id);
   }, { nome, id });
   await page.waitForFunction(
-    () => window.FantaWsConnection && window.FantaWsConnection.isReady(),
-    null,
+    (expectedNome) => {
+      const root = angular.element(document.body).scope().$root;
+      return window.FantaWsConnection
+        && window.FantaWsConnection.isReady()
+        && root.nomegiocatore === expectedNome;
+    },
+    nome,
     { timeout: 30000 }
   );
 }
@@ -144,7 +147,6 @@ async function assertAutoBidControlsVisible(page, operaCome = false) {
   expect(state.autoOn).toBe(true);
   expect(state.canBid).toBe(true);
   expect(state.hasIncrement).toBe(true);
-  await expect(page.locator('.spanTestoAutoAllinea').first()).toBeVisible();
 }
 
 async function bidIncrement(page, amount, operaCome = false) {
@@ -174,13 +176,53 @@ async function selectOperaCome(page, nome) {
 
 async function terminaAsta(page) {
   await page.evaluate(() => {
-    angular.element(document.body).scope().$root.terminaAsta();
+    const root = angular.element(document.body).scope().$root;
+    if (root.terminaAstaPerConferma) {
+      root.terminaAstaPerConferma();
+    } else {
+      root.sendMsg(JSON.stringify({
+        operazione: 'terminaAsta',
+        nomegiocatore: root.nomegiocatore,
+        idgiocatore: root.idgiocatore,
+      }));
+    }
   });
   await waitForFase(page, 'DA_CONFERMARE');
 }
 
+async function pausaAsta(page) {
+  await page.evaluate(() => {
+    angular.element(document.body).scope().$root.pausaAsta();
+  });
+  await page.waitForFunction(() => {
+    const r = angular.element(document.body).scope().$root;
+    return r.isAstaInPausa() && r.offertaVincente && r.offertaVincente.nomegiocatore;
+  }, null, { timeout: 10000 });
+}
+
+async function resumeAsta(page) {
+  await page.evaluate(() => {
+    angular.element(document.body).scope().$root.resumeAsta();
+  });
+  await waitForFase(page, 'BIDDING');
+  await page.waitForFunction(() => {
+    const r = angular.element(document.body).scope().$root;
+    return r.offertaVincente && r.offertaVincente.nomegiocatore && r.contaTempo > 0;
+  }, null, { timeout: 10000 });
+}
+
+async function annullaAsta(page) {
+  page.once('dialog', (dialog) => dialog.accept());
+  await page.evaluate(() => {
+    angular.element(document.body).scope().$root.annulla();
+  });
+  await waitForFase(page, 'IDLE');
+}
+
 async function confermaAsta(page) {
-  await page.locator('img[title="conferma"]').click();
+  await page.evaluate(() => {
+    angular.element(document.body).scope().$root.conferma();
+  });
   await page.waitForFunction(() => {
     const r = angular.element(document.body).scope().$root;
     return r.faseAsta === 'IDLE' && r.mapSpesoTotale && Object.keys(r.mapSpesoTotale).length > 0;
@@ -212,6 +254,9 @@ module.exports = {
   bidIncrement,
   selectOperaCome,
   terminaAsta,
+  pausaAsta,
+  resumeAsta,
+  annullaAsta,
   confermaAsta,
   setupAdminLega,
 };

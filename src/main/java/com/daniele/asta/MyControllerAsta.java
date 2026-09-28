@@ -38,6 +38,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.jsoup.Jsoup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -82,6 +84,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping({"/fantaasta/"})
 public class MyControllerAsta {
+
+    private static final Logger log = LoggerFactory.getLogger(MyControllerAsta.class);
 
     private static final String JSESSIONID = "JSESSIONID=";
     private static final String PAGINA = "PAGINA=";
@@ -366,6 +370,8 @@ public class MyControllerAsta {
             ret.put("minA", minA);
             ret.put("budget", budget);
             ret.put("durataAsta", durataAsta);
+            ret.put("numeroGiocatori", configurazione.getNumeroGiocatori());
+            ret.put("nomeLega", resolveNomeLega(configurazione));
             ret.put("elencoAllenatori", allAllenatori);
             ret.put("nomeGiocatoreTurno", getNomeGiocatoreTurno());
             ret.put("giocatoriPerSquadra", giocatoriPerSquadra());
@@ -442,10 +448,24 @@ public class MyControllerAsta {
     public Map<String, Object> addFav(@RequestBody Map<String, Object> body) throws Exception {
         Map<String, Object> ret = new HashMap<>();
         if (body.get("idgiocatore") != null) {
-            Integer calciatoreId = (Integer) body.get("calciatoreId");
+            Object rawId = body.get("calciatoreId");
+            Integer calciatoreId = rawId instanceof Number ? ((Number) rawId).intValue() : null;
+            if (calciatoreId == null && rawId != null) {
+                try {
+                    calciatoreId = Integer.parseInt(rawId.toString());
+                } catch (NumberFormatException ignored) {
+                    calciatoreId = null;
+                }
+            }
+            if (calciatoreId == null) {
+                ret.put("errore", "calciatoreId mancante");
+                return ret;
+            }
             String idgiocatore = body.get("idgiocatore").toString();
-            Boolean aggiungi = (Boolean) body.get("aggiungi");
-            if (aggiungi) {
+            Boolean aggiungi = body.get("aggiungi") instanceof Boolean
+                    ? (Boolean) body.get("aggiungi")
+                    : Boolean.parseBoolean(String.valueOf(body.get("aggiungi")));
+            if (Boolean.TRUE.equals(aggiungi)) {
                 GiocatoriFavoriti favorite = new GiocatoriFavoriti();
                 favorite.setIdAllenatore(Integer.parseInt(idgiocatore));
                 favorite.setIdGiocatore(calciatoreId);
@@ -453,7 +473,9 @@ public class MyControllerAsta {
                 giocatoriFavoritiRepository.save(favorite);
             } else {
                 GiocatoriFavoriti favorite = giocatoriFavoritiRepository.getFavorite(calciatoreId, Integer.parseInt(idgiocatore));
-                giocatoriFavoritiRepository.delete(favorite);
+                if (favorite != null) {
+                    giocatoriFavoritiRepository.delete(favorite);
+                }
             }
             aggiornaFavoriti(idgiocatore);
             socketHandler.notificaPreferiti(favoriti);
@@ -509,6 +531,23 @@ public class MyControllerAsta {
             ret.put("esitoDispositiva", "KO");
             ret.put("errore", e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName());
         }
+        return ret;
+    }
+
+    @PostMapping("/cancellaQuotazioni")
+    @Transactional
+    public Map<String, Object> cancellaQuotazioni(@RequestBody Map<String, Object> body, HttpServletRequest request) throws Exception {
+        Map<String, Object> ret = new HashMap<>();
+        if (!isOkDispositiva(body)) {
+            ret.put("esitoDispositiva", "KO");
+            ret.put("errore", "Verifica dispositiva fallita");
+            return ret;
+        }
+        giocatoriRepository.deleteAll();
+        giocatoriFavoritiRepository.deleteAll();
+        socketHandler.notificaCaricaFile(request.getRemoteAddr());
+        ret.put("esitoDispositiva", "OK");
+        ret.put("numGiocatori", 0);
         return ret;
     }
 
@@ -676,6 +715,30 @@ public class MyControllerAsta {
         }
     }
 
+    private Integer toInt(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        try {
+            return (int) Double.parseDouble(value.toString().trim().replace(",", "."));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private boolean toBool(Object value) {
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        if (value == null) {
+            return false;
+        }
+        return "true".equalsIgnoreCase(value.toString()) || "S".equalsIgnoreCase(value.toString());
+    }
+
     private boolean isOkDispositiva(@RequestBody Map<String, Object> body) {
 		/*
 		try {
@@ -705,7 +768,17 @@ public class MyControllerAsta {
         Map<String, Object> ret = new HashMap<>();
         if (isOkDispositiva(body)) {
             Map<String, Object> mapOfferta = (Map) body.get("offerta");
-            Integer idGiocatore = (Integer) mapOfferta.get("idGiocatore");
+            if (mapOfferta == null || mapOfferta.get("idGiocatore") == null) {
+                ret.put("esitoDispositiva", "KO");
+                ret.put("errore", "idGiocatore mancante");
+                return ret;
+            }
+            Integer idGiocatore = toInt(mapOfferta.get("idGiocatore"));
+            if (idGiocatore == null) {
+                ret.put("esitoDispositiva", "KO");
+                ret.put("errore", "idGiocatore non valido");
+                return ret;
+            }
             fantaroseRepository.deleteById(idGiocatore);
             socketHandler.notificaCancellaOfferta(mapOfferta, request.getRemoteAddr(), String.valueOf(idGiocatore));
             ret.put("ret", elencoCronologiaOfferte());
@@ -719,21 +792,26 @@ public class MyControllerAsta {
     @PostMapping("/azzera")
     public Map<String, Object> azzera(@RequestBody Map<String, Object> body) throws Exception {
         Map<String, Object> ret = new HashMap<>();
-        if (isOkDispositiva(body)) {
-            ret.put("esitoDispositiva", "OK");
-            if (body.get("conferma") != null && body.get("conferma").toString().equalsIgnoreCase("S")) {
-                giocatoriRepository.deleteAll();
-                fantaroseRepository.deleteAll();
-                allenatoriRepository.deleteAll();
-                giocatoriFavoritiRepository.deleteAll();
-                loggerRepository.deleteAll();
-                Configurazione configurazione = getConfigurazione();
+        if (!isOkDispositiva(body)) {
+            ret.put("esitoDispositiva", "KO");
+            return ret;
+        }
+        if (body.get("conferma") != null && body.get("conferma").toString().equalsIgnoreCase("S")) {
+            giocatoriRepository.deleteAll();
+            fantaroseRepository.deleteAll();
+            allenatoriRepository.deleteAll();
+            giocatoriFavoritiRepository.deleteAll();
+            loggerRepository.deleteAll();
+            Configurazione configurazione = getConfigurazione();
+            if (configurazione != null) {
                 configurazione.setNumeroGiocatori(null);
+                configurazione.setNomeLega(null);
                 configurazioneRepository.save(configurazione);
             }
-        } else {
-            ret.put("esitoDispositiva", "KO");
+            socketHandler.disconnectAll();
+            socketHandler.resetForDevTest();
         }
+        ret.put("esitoDispositiva", "OK");
         return ret;
     }
 
@@ -742,22 +820,27 @@ public class MyControllerAsta {
         Configurazione configurazione = getConfigurazione();
         Map<String, Object> ret = new HashMap<>();
         if (configurazione == null || configurazione.getNumeroGiocatori() == null) {
-            Integer numUtenti = (Integer) body.get("numUtenti");
-            setDurataAsta((Integer) body.get("durataAsta"));
-            setBudget((Integer) body.get("budget"));
-            setNumAcquisti((Integer) body.get("numAcquisti"));
-            setNumMinAcquisti((Integer) body.get("numMinAcquisti"));
-            setMaxP((Integer) body.get("maxP"));
-            setMaxD((Integer) body.get("maxD"));
-            setMaxC((Integer) body.get("maxC"));
-            setMaxA((Integer) body.get("maxA"));
-            setMinP((Integer) body.get("minP"));
-            setMinD((Integer) body.get("minD"));
-            setMinC((Integer) body.get("minC"));
-            setMinA((Integer) body.get("minA"));
-            isATurni = (Boolean) body.get("isATurni");
-            setIsSingle((Boolean) body.get("isSingle"));
-            setIsMantra((Boolean) body.get("isMantra"));
+            Integer numUtenti = toInt(body.get("numUtenti"));
+            if (numUtenti == null || numUtenti < 2) {
+                ret.put("esitoDispositiva", "KO");
+                ret.put("errore", "Numero partecipanti non valido");
+                return ret;
+            }
+            setDurataAsta(toInt(body.get("durataAsta")));
+            setBudget(toInt(body.get("budget")));
+            setNumAcquisti(toInt(body.get("numAcquisti")));
+            setNumMinAcquisti(toInt(body.get("numMinAcquisti")));
+            setMaxP(toInt(body.get("maxP")));
+            setMaxD(toInt(body.get("maxD")));
+            setMaxC(toInt(body.get("maxC")));
+            setMaxA(toInt(body.get("maxA")));
+            setMinP(toInt(body.get("minP")));
+            setMinD(toInt(body.get("minD")));
+            setMinC(toInt(body.get("minC")));
+            setMinA(toInt(body.get("minA")));
+            isATurni = toBool(body.get("isATurni"));
+            setIsSingle(toBool(body.get("isSingle")));
+            setIsMantra(toBool(body.get("isMantra")));
             if (configurazione == null) configurazione = new Configurazione();
             configurazione.setId(0);
             configurazione.setNumeroGiocatori(numUtenti);
@@ -776,6 +859,10 @@ public class MyControllerAsta {
             configurazione.setIsATurni(isATurni);
             configurazione.setIsSingle(getIsSingle());
             configurazione.setMantra(getIsMantra());
+            String nomeLegaBody = body.get("nomeLega") != null ? body.get("nomeLega").toString().trim() : "";
+            if (!nomeLegaBody.isEmpty()) {
+                configurazione.setNomeLega(nomeLegaBody);
+            }
             configurazioneRepository.save(configurazione);
             for (int i = 0; i < numUtenti; i++) {
                 Allenatori al = new Allenatori();
@@ -795,11 +882,14 @@ public class MyControllerAsta {
                 }
                 al.setPwd("");
                 allenatoriRepository.save(al);
-                socketHandler.notificaInizializzaLega(request.getRemoteAddr());
             }
+            socketHandler.notificaInizializzaLega(request.getRemoteAddr());
             ret.put("esitoDispositiva", "OK");
+            ret.put("utentiCreati", numUtenti);
+            ret.put("nomeLega", resolveNomeLega(configurazione));
         } else {
             ret.put("esitoDispositiva", "KO");
+            ret.put("errore", "Lega già inizializzata (" + configurazione.getNumeroGiocatori() + " partecipanti). Usa reset/azzera per ricominciare.");
         }
         return ret;
     }
@@ -824,44 +914,68 @@ public class MyControllerAsta {
         if (isOkDispositiva(body)) {
             Map<String, String> utentiRinominati = new HashMap<>();
             int i = 0;
-            setBudget((Integer) body.get("budget"));
-            setNumAcquisti((Integer) body.get("numAcquisti"));
-            setNumMinAcquisti((Integer) body.get("numMinAcquisti"));
-            setMaxP((Integer) body.get("maxP"));
-            setMaxD((Integer) body.get("maxD"));
-            setMaxC((Integer) body.get("maxC"));
-            setMaxA((Integer) body.get("maxA"));
-            setMinP((Integer) body.get("minP"));
-            setMinD((Integer) body.get("minD"));
-            setMinC((Integer) body.get("minC"));
-            setMinA((Integer) body.get("minA"));
-            setDurataAsta((Integer) body.get("durataAsta"));
-            Boolean admin = (Boolean) body.get("admin");
-            isATurni = (Boolean) body.get("isATurni");
-            setIsSingle((Boolean) body.get("isSingle"));
+            setBudget(toInt(body.get("budget")));
+            setNumAcquisti(toInt(body.get("numAcquisti")));
+            setNumMinAcquisti(toInt(body.get("numMinAcquisti")));
+            setMaxP(toInt(body.get("maxP")));
+            setMaxD(toInt(body.get("maxD")));
+            setMaxC(toInt(body.get("maxC")));
+            setMaxA(toInt(body.get("maxA")));
+            setMinP(toInt(body.get("minP")));
+            setMinD(toInt(body.get("minD")));
+            setMinC(toInt(body.get("minC")));
+            setMinA(toInt(body.get("minA")));
+            int nuovaDurataAsta = toInt(body.get("durataAsta"));
+            if (nuovaDurataAsta > 0) {
+                setDurataAsta(nuovaDurataAsta);
+            }
+            Boolean admin = toBool(body.get("admin"));
+            isATurni = toBool(body.get("isATurni"));
+            setIsSingle(toBool(body.get("isSingle")));
+            setIsMantra(toBool(body.get("isMantra")));
             List<Map<String, Object>> elencoAllenatori = (List<Map<String, Object>>) body.get("elencoAllenatori");
+            if (elencoAllenatori == null) {
+                ret.put("esitoDispositiva", "KO");
+                ret.put("errore", "elencoAllenatori mancante");
+                return ret;
+            }
             for (Map<String, Object> map : elencoAllenatori) {
-                Allenatori al = allenatoriRepository.findById((Integer) map.get("id")).get();
-                String nuovoNome = (String) map.get("nuovoNome");
+                Integer id = toInt(map.get("id"));
+                if (id == null) {
+                    continue;
+                }
+                Allenatori al = allenatoriRepository.findById(id).orElse(null);
+                if (al == null) {
+                    continue;
+                }
+                String nuovoNome = map.get("nuovoNome") != null ? map.get("nuovoNome").toString().trim() : al.getNome();
+                if (nuovoNome.isEmpty()) {
+                    nuovoNome = al.getNome();
+                }
                 String vecchioNome = al.getNome();
                 String giocatoreLoggato = (String) httpSession.getAttribute("nomeGiocatoreLoggato");
                 if (!vecchioNome.equalsIgnoreCase(nuovoNome)) {
                     utentiRinominati.put(vecchioNome, nuovoNome);
-                    if (giocatoreLoggato.equalsIgnoreCase(vecchioNome)) {
+                    if (giocatoreLoggato != null && giocatoreLoggato.equalsIgnoreCase(vecchioNome)) {
                         ret.put("nuovoNomeLoggato", nuovoNome);
                         ret.put("vecchioNomeLoggato", vecchioNome);
-                        //					httpSession.setAttribute("nomeGiocatoreLoggato", nuovoNome);
+                        httpSession.setAttribute("nomeGiocatoreLoggato", nuovoNome);
                     }
                 }
                 al.setNome(nuovoNome);
-                String pwd = (String) map.get("pwd");
-                if (!pwd.equalsIgnoreCase(al.getPwd()))
+                String pwd = map.get("pwd") != null ? map.get("pwd").toString() : "";
+                String storedPwd = al.getPwd() != null ? al.getPwd() : "";
+                if (!pwd.equalsIgnoreCase(storedPwd)) {
                     al.setPwd(criptaggio.encrypt(pwd, nuovoNome));
-                if ("true".equalsIgnoreCase(map.get("isAdmin").toString()))
+                }
+                if (toBool(map.get("isAdmin"))) {
                     al.setIsAdmin(true);
-                else
+                } else {
                     al.setIsAdmin(false);
-                if (admin) al.setOrdine((Integer) map.get("ordine"));
+                }
+                if (admin && map.get("ordine") != null) {
+                    al.setOrdine(toInt(map.get("ordine")));
+                }
                 i++;
                 allenatoriRepository.save(al);
             }
@@ -880,7 +994,15 @@ public class MyControllerAsta {
             configurazione.setMinD(getMinD());
             configurazione.setMinC(getMinC());
             configurazione.setMinA(getMinA());
+            configurazione.setMantra(getIsMantra());
+            String nomeLegaCfg = body.get("nomeLega") != null ? body.get("nomeLega").toString().trim() : "";
+            if (!nomeLegaCfg.isEmpty()) {
+                configurazione.setNomeLega(nomeLegaCfg);
+            }
             configurazioneRepository.save(configurazione);
+            syncConfigFromDb();
+            log.info("[CONFIG] aggiornaConfigLega nomeLega={} budget={} durataAsta={}s isATurni={} isSingle={} isMantra={} maxP={} maxA={}",
+                    configurazione.getNomeLega(), getBudget(), getDurataAsta(), isATurni, getIsSingle(), getIsMantra(), getMaxP(), getMaxA());
             if (isATurni) {
                 ret.put("isATurni", "S");
             } else {
@@ -897,11 +1019,55 @@ public class MyControllerAsta {
                 ret.put("isMantra", "N");
             }
             ret.put("esitoDispositiva", "OK");
+            ret.put("nomeLega", resolveNomeLega(configurazione));
+            ret.put("budget", getBudget());
+            ret.put("durataAsta", getDurataAsta());
+            ret.put("numAcquisti", getNumAcquisti());
+            ret.put("numMinAcquisti", getNumMinAcquisti());
+            ret.put("maxP", getMaxP());
+            ret.put("maxD", getMaxD());
+            ret.put("maxC", getMaxC());
+            ret.put("maxA", getMaxA());
+            ret.put("minP", getMinP());
+            ret.put("minD", getMinD());
+            ret.put("minC", getMinC());
+            ret.put("minA", getMinA());
+            Allenatori adminSalvato = trovaAllenatoreAdminSalvato();
+            if (adminSalvato != null) {
+                String idLoggatoStr = (String) httpSession.getAttribute("idLoggato");
+                Integer idLoggato = null;
+                if (idLoggatoStr != null && !idLoggatoStr.isEmpty()) {
+                    try {
+                        idLoggato = Integer.parseInt(idLoggatoStr);
+                    } catch (NumberFormatException ignored) {
+                        idLoggato = null;
+                    }
+                }
+                if (idLoggato == null || !idLoggato.equals(adminSalvato.getId())) {
+                    httpSession.setAttribute("nomeGiocatoreLoggato", adminSalvato.getNome());
+                    httpSession.setAttribute("idLoggato", String.valueOf(adminSalvato.getId()));
+                    ret.put("sessioneAllenatore", adminSalvato.getNome());
+                    ret.put("sessioneAllenatoreId", adminSalvato.getId());
+                    log.info("[CONFIG] sessione allineata al nuovo admin: {} (id={})", adminSalvato.getNome(), adminSalvato.getId());
+                }
+            }
             socketHandler.aggiornaConfigLega(utentiRinominati, getAllAllenatori(), configurazione, request.getRemoteAddr());
         } else {
             ret.put("esitoDispositiva", "KO");
         }
         return ret;
+    }
+
+    private Allenatori trovaAllenatoreAdminSalvato() {
+        Allenatori admin = null;
+        for (Allenatori al : getAllAllenatori()) {
+            if (Boolean.TRUE.equals(al.getIsAdmin())) {
+                if (admin == null || (al.getOrdine() != null && admin.getOrdine() != null && al.getOrdine() < admin.getOrdine())) {
+                    admin = al;
+                }
+            }
+        }
+        return admin;
     }
 
     @GetMapping("/cripta")
@@ -970,6 +1136,73 @@ public class MyControllerAsta {
         return ret;
     }
 
+    @PostMapping("/assegnaGiocatore")
+    public synchronized Map<String, Object> assegnaGiocatore(@RequestBody Map<String, Object> body,
+                                                             HttpServletRequest request) throws Exception {
+        Map<String, Object> ret = new HashMap<>();
+        if (!isOkDispositiva(body)) {
+            ret.put("esitoDispositiva", "KO");
+            ret.put("errore", "Verifica dispositiva fallita");
+            return ret;
+        }
+        Integer idCalciatore = toInt(body.get("idCalciatore"));
+        Integer idAllenatore = toInt(body.get("idAllenatore"));
+        Integer costo = toInt(body.get("costo"));
+        if (idCalciatore == null || idAllenatore == null || costo == null || costo < 1) {
+            ret.put("esitoDispositiva", "KO");
+            ret.put("errore", "Dati assegnazione non validi");
+            return ret;
+        }
+        if (fantaroseRepository.findById(idCalciatore).isPresent()) {
+            ret.put("esitoDispositiva", "KO");
+            ret.put("errore", "Giocatore già assegnato");
+            return ret;
+        }
+        Optional<Giocatori> giocatoreOpt = giocatoriRepository.findById(idCalciatore);
+        if (!giocatoreOpt.isPresent()) {
+            ret.put("esitoDispositiva", "KO");
+            ret.put("errore", "Giocatore non trovato");
+            return ret;
+        }
+        Allenatori allenatore = null;
+        for (Allenatori a : getAllAllenatori()) {
+            if (a.getId() != null && a.getId().intValue() == idAllenatore.intValue()) {
+                allenatore = a;
+                break;
+            }
+        }
+        if (allenatore == null) {
+            ret.put("esitoDispositiva", "KO");
+            ret.put("errore", "Squadra non trovata");
+            return ret;
+        }
+        Giocatori g = giocatoreOpt.get();
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+        Fantarose fantarosa = new Fantarose();
+        fantarosa.setCosto(costo);
+        fantarosa.setIdAllenatore(idAllenatore);
+        fantarosa.setIdGiocatore(idCalciatore);
+        fantarosa.setSqlTime(sdf.format(c.getTime()));
+        fantaroseRepository.save(fantarosa);
+        try {
+            socketHandler.assegnaDirettoAndBroadcast(
+                    request.getRemoteAddr(),
+                    g.getNome(),
+                    g.getRuolo(),
+                    g.getSquadra(),
+                    allenatore.getNome(),
+                    costo);
+        } catch (IOException e) {
+            ret.put("esitoDispositiva", "KO");
+            ret.put("errore", "Assegnazione salvata ma broadcast fallito: " + e.getMessage());
+            return ret;
+        }
+        ret.put("esitoDispositiva", "OK");
+        ret.put("insert", "OK");
+        return ret;
+    }
+
 	/*
 	@RequestMapping("/x")
 	public Iterable<Fantarose> x() {
@@ -997,11 +1230,25 @@ public class MyControllerAsta {
     }
 
     @Value("${security.user.name}")
-    private String nomeLega;
+    private String nomeLegaDefault;
+
+    private String resolveNomeLega(Configurazione configurazione) {
+        if (configurazione != null && configurazione.getNomeLega() != null) {
+            String n = configurazione.getNomeLega().trim();
+            if (!n.isEmpty()) {
+                return n;
+            }
+        }
+        return nomeLegaDefault != null ? nomeLegaDefault : "FantaAsta";
+    }
+
+    private String resolveNomeLega() {
+        return resolveNomeLega(getConfigurazione());
+    }
 
     @RequestMapping(value = "/esportaMantra")
     public void esportaMantra(HttpServletResponse response) throws IOException {
-        String csvFileName = nomeLega + "_export_per_sito.csv";
+        String csvFileName = resolveNomeLega() + "_export_per_sito.csv";
         response.setContentType("text/csv");
         String headerKey = "Content-Disposition";
         String headerValue = String.format("attachment; filename=\"%s\"", csvFileName);
@@ -1021,7 +1268,7 @@ public class MyControllerAsta {
 
     @RequestMapping(value = "/esporta")
     public void esporta(HttpServletResponse response) throws IOException {
-        String csvFileName = nomeLega + "_export.csv";
+        String csvFileName = resolveNomeLega() + "_export.csv";
         response.setContentType("text/csv");
         String headerKey = "Content-Disposition";
         String headerValue = String.format("attachment; filename=\"%s\"", csvFileName);
@@ -1097,6 +1344,8 @@ public class MyControllerAsta {
             }
             riga.put("squadra", giocatorePerSquadra.getSquadra());
             riga.put("costo", giocatorePerSquadra.getCosto());
+            riga.put("idGiocatore", giocatorePerSquadra.getIdGiocatore());
+            riga.put("idAllenatore", giocatorePerSquadra.getIdAllenatore());
             list.add(riga);
             mapRuoli.put(ruolo, list);
             Map<String, Object> t = new HashMap<>();
@@ -1375,6 +1624,46 @@ public class MyControllerAsta {
 
     public void setDurataAsta(Integer durataAsta) {
         this.durataAsta = durataAsta;
+    }
+
+    /** Allinea durata asta in-memory con il valore persistito in configurazione. */
+    public void syncDurataAstaFromDb() {
+        syncConfigFromDb();
+    }
+
+    /** Allinea tutta la configurazione in-memory con i valori persistiti nel DB. */
+    public void syncConfigFromDb() {
+        Configurazione configurazione = getConfigurazione();
+        if (configurazione == null) {
+            return;
+        }
+        if (configurazione.getBudget() != null) {
+            setBudget(configurazione.getBudget());
+        }
+        if (configurazione.getDurataAsta() != null && configurazione.getDurataAsta() > 0) {
+            setDurataAsta(configurazione.getDurataAsta());
+        }
+        if (configurazione.getNumeroAcquisti() != null) {
+            setNumAcquisti(configurazione.getNumeroAcquisti());
+        }
+        if (configurazione.getNumeroMinAcquisti() != null) {
+            setNumMinAcquisti(configurazione.getNumeroMinAcquisti());
+        }
+        setMaxP(configurazione.getMaxP());
+        setMaxD(configurazione.getMaxD());
+        setMaxC(configurazione.getMaxC());
+        setMaxA(configurazione.getMaxA());
+        setMinP(configurazione.getMinP());
+        setMinD(configurazione.getMinD());
+        setMinC(configurazione.getMinC());
+        setMinA(configurazione.getMinA());
+        if (configurazione.getIsATurni() != null) {
+            isATurni = configurazione.getIsATurni();
+        }
+        if (configurazione.getIsSingle() != null) {
+            setIsSingle(configurazione.getIsSingle());
+        }
+        setIsMantra(configurazione.isMantra());
     }
 
     public Integer getMinP() {

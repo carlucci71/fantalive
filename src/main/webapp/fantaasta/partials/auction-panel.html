@@ -1,0 +1,367 @@
+<div class="fa-panel fa-panel--auction">
+  <div class="fa-panel__head">
+    <span>Asta live</span>
+  </div>
+  <div class="fa-panel__body fa-auction">
+
+    <!-- IDLE senza selezione — solo desktop (su mobile usiamo sempre lo split) -->
+    <div class="fa-auction-empty-full"
+         ng-show="faseAsta==='IDLE' && !timeout && !selCalciatoreId && !isMobilePortraitUi()">
+      <div ng-show="puoSelezionareGiocatoreIdle()" class="fa-auction-empty-full__inner">
+        <div class="fa-auction-empty__icon">
+          <i class="fa fa-hand-pointer-o"></i>
+        </div>
+        <p class="fa-auction-empty__title">Seleziona un giocatore</p>
+        <p class="fa-auction-empty__sub" ng-show="isATurni && nomeGiocatoreTurno">
+          Prossimo turno: <strong>{{nomeGiocatoreTurno}}</strong>
+          <span> — tocca a te</span>
+        </p>
+        <p class="fa-auction-empty__sub" ng-show="!isATurni">Scegli un giocatore dalla lista per avviare l'asta</p>
+      </div>
+      <div ng-show="!puoSelezionareGiocatoreIdle()" class="fa-auction-empty-full__inner fa-auction-wait">
+        <div class="fa-auction-wait__avatar" aria-hidden="true"></div>
+        <p class="fa-auction-empty__title">Attesa giocatore</p>
+        <p class="fa-auction-empty__sub" ng-show="isATurni && nomeGiocatoreTurno">
+          Turno di <strong>{{nomeGiocatoreTurno}}</strong>
+        </p>
+        <p class="fa-auction-empty__title" ng-show="!nomeUtenteAttivo()">Connettiti per partecipare</p>
+      </div>
+    </div>
+
+    <!-- IDLE mobile: 2 sezioni (player|live) tutti; 3 sezioni se admin. Desktop: solo con giocatore selezionato -->
+    <div class="fa-auction-split" ng-class="{'fa-auction-split--admin': isAdmin}"
+         ng-show="faseAsta==='IDLE' && !timeout && (selCalciatoreId || isMobilePortraitUi())">
+      <div class="fa-auction-split__player">
+        <div class="fa-auction-player" ng-show="selCalciatoreId">
+          <div class="fa-auction-player__main">
+            <span class="fa-role-badge fa-role-badge--lg" ng-class="roleClass(selCalciatoreRuolo)">{{selCalciatoreRuolo}}</span>
+            <div class="fa-auction-player__info">
+              <h2 class="fa-auction__name" title="{{selCalciatoreNome}}">{{selCalciatoreNome}}</h2>
+              <span class="fa-auction__meta">{{selCalciatoreSquadra}}</span>
+              <span class="fa-auction__base">Quot. <strong>{{selCalciatoreQuotazione}}</strong></span>
+            </div>
+          </div>
+          <button type="button"
+                  class="fa-auction-change-btn"
+                  ng-show="isMobilePortraitUi()"
+                  ng-click="setUiTab('players')"
+                  title="Scegli un altro giocatore">
+            <i class="fa fa-exchange" aria-hidden="true"></i>
+            <span>Cambia</span>
+          </button>
+        </div>
+        <div class="fa-auction-empty-full fa-auction-empty-full--slot" ng-show="!selCalciatoreId">
+          <div ng-show="puoSelezionareGiocatoreIdle()" class="fa-auction-empty-full__inner">
+            <button type="button"
+                    class="fa-auction-empty__icon fa-auction-empty__icon--action"
+                    ng-click="setUiTab('players')"
+                    aria-label="Vai ai giocatori"
+                    title="Vai ai giocatori">
+              <i class="fa fa-hand-pointer-o"></i>
+            </button>
+            <p class="fa-auction-empty__title">Seleziona un giocatore</p>
+          </div>
+          <div ng-show="!puoSelezionareGiocatoreIdle()" class="fa-auction-empty-full__inner fa-auction-wait">
+            <div class="fa-auction-wait__avatar" aria-hidden="true"></div>
+            <p class="fa-auction-empty__title">Attesa giocatore</p>
+          </div>
+        </div>
+      </div>
+      <div class="fa-auction-split__live fa-auction-split__live--idle">
+        <button type="button" class="fa-auction-cta"
+                ng-show="selCalciatoreId && !isAdmin && puoAvviareAstaCorrente()"
+                ng-click="avviaAstaCorrente()">
+          <i class="fa fa-gavel"></i>
+          <span>Avvia asta</span>
+        </button>
+        <button type="button" class="fa-auction-cta"
+                ng-show="selCalciatoreId && isAdmin && adminPuoAvviareComeSelezionato()"
+                ng-click="adminAvviaComeSelezionato()">
+          <i class="fa fa-gavel"></i>
+          <span>Avvia per {{astaPuntaLabel()}}</span>
+        </button>
+        <p class="fa-auction-split__hint" ng-show="selCalciatoreId && !isAdmin && !puoAvviareAstaCorrente()">Non puoi avviare l'asta per questo giocatore</p>
+        <p class="fa-auction-split__hint" ng-show="selCalciatoreId && isAdmin && adminHintIdleCentrale()">{{adminHintIdleCentrale()}}</p>
+        <p class="fa-auction-empty__sub" ng-show="!selCalciatoreId && isATurni && nomeGiocatoreTurno">
+          Prossimo turno: <strong>{{nomeGiocatoreTurno}}</strong>
+          <span ng-show="!isAdmin && nomeGiocatoreTurno===nomeUtenteAttivo()"> — tocca a te</span>
+          <span ng-show="isAdmin && astaPuntaNome()===nomeGiocatoreTurno"> — puoi scegliere al suo posto</span>
+        </p>
+        <p class="fa-auction-split__hint" ng-show="!selCalciatoreId && !isATurni">Scegli un giocatore dalla lista Giocatori</p>
+      </div>
+      <div class="fa-auction-split__admin" ng-if="isAdmin"
+           ng-class="{'is-assegna-view': $root.abilitaForza}">
+        <div class="fa-admin-panel__head">Admin</div>
+        <div class="fa-admin-panel__body" ng-show="!$root.abilitaForza">
+          <span class="fa-admin-section__label">Opera come</span>
+          <div class="fa-admin-team-grid">
+            <button type="button"
+                    class="fa-admin-team-btn"
+                    ng-repeat="a in adminElencoImpersonazione()"
+                    ng-class="{'is-active': isSquadraPuntaAttiva(a), 'is-me': isMiaSquadra(a), 'is-turn': isAllenatoreDiTurno(a)}"
+                    ng-click="selezionaSquadraPunta(a)"
+                    title="{{nomeAllenatoreVisibile(a)}}">
+              <span>{{nomeAllenatoreVisibile(a)}}</span>
+            </button>
+          </div>
+        </div>
+        <div class="fa-admin-panel__foot" ng-show="!$root.abilitaForza">
+          <div class="fa-admin-ctrls">
+            <button type="button" class="fa-admin-ctrl" ng-click="apriAssegna()"
+                    title="Assegna il giocatore a una squadra senza asta">
+              <i class="fa fa-exchange"></i><span>Assegna</span>
+            </button>
+          </div>
+        </div>
+        <!-- Navigazione Assegna: sostituisce tutto il riquadro admin -->
+        <div class="fa-admin-assegna fa-admin-assegna--full" ng-show="$root.abilitaForza">
+          <div class="fa-admin-assegna__fields">
+            <input class="fa-admin-input" type="number" ng-model="$root.forzaOfferta" min="1" aria-label="Offerta assegnata">
+            <select class="fa-admin-select" ng-model="$root.forzaAllenatore"
+                    ng-options="a.id as (a.nuovoNome || a.nome) for a in elencoAllenatori | orderBy:'ordine'">
+            </select>
+            <p class="fa-admin-forza-hint">Scegli squadra e cifre, poi Conferma.</p>
+          </div>
+          <button type="button" class="fa-admin-ctrl fa-admin-ctrl--ok" ng-click="confermaAssegna()"
+                  title="Conferma assegnazione">
+            <i class="fa fa-check"></i><span>Conferma</span>
+          </button>
+          <button type="button" class="fa-admin-ctrl" ng-click="chiudiForza()" title="Indietro">
+            <i class="fa fa-arrow-left"></i><span>Indietro</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE / CONFERMA -->
+    <div class="fa-auction-split"
+         ng-class="{'fa-auction-split--admin': isAdmin, 'fa-auction-split--live-phase': faseAsta==='BIDDING' || faseAsta==='DA_CONFERMARE'}"
+         ng-show="offertaVincente && offertaVincente.giocatore && (faseAsta==='BIDDING' || faseAsta==='DA_CONFERMARE') && !isAstaInPausa()">
+
+      <div class="fa-auction-split__player">
+        <div class="fa-auction-player">
+          <span class="fa-role-badge fa-role-badge--lg" ng-class="roleClass(offertaVincente.giocatore.ruolo)">{{offertaVincente.giocatore.ruolo}}</span>
+          <div class="fa-auction-player__info">
+            <h2 class="fa-auction__name" title="{{offertaVincente.giocatore.nome}}">{{offertaVincente.giocatore.nome}}</h2>
+            <span class="fa-auction__meta">{{offertaVincente.giocatore.squadra}}</span>
+            <span class="fa-auction__base">Quot. <strong>{{offertaVincente.giocatore.quotazione}}</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fa-auction-split__live" ng-class="{'fa-auction-split__live--confirm': faseAsta==='DA_CONFERMARE'}">
+
+        <div class="fa-auction-winner-banner"
+             ng-show="faseAsta==='BIDDING'"
+             ng-class="{'is-you': isUtenteVincendoAsta()}">
+          <i class="fa fa-trophy"></i>
+          <span>{{auctionWinnerBannerText()}}</span>
+        </div>
+
+        <div class="fa-auction-winner-banner is-confirm"
+             ng-show="faseAsta==='DA_CONFERMARE'"
+             ng-class="{'is-you': isUtenteVincendoAsta()}">
+          <div class="fa-auction-winner-banner__body">
+            <p class="fa-auction-winner-banner__title">{{auctionConfirmBannerText()}}</p>
+            <p class="fa-auction-winner-banner__wait">In attesa di conferma dell'amministratore</p>
+          </div>
+        </div>
+
+        <div class="fa-auction-live-head">
+          <div class="fa-auction-metric">
+            <span class="fa-auction-metric__label">Offerta</span>
+            <span class="fa-auction-metric__value fa-auction-metric__value--price">{{offertaVincente.offerta}}</span>
+          </div>
+          <div class="fa-auction-metric">
+            <span class="fa-auction-metric__label" ng-show="faseAsta==='BIDDING'">In testa</span>
+            <span class="fa-auction-metric__label" ng-show="faseAsta==='DA_CONFERMARE'">Vincitore</span>
+            <span class="fa-auction-metric__value fa-auction-metric__value--leader">{{offertaVincente.nomegiocatore}}</span>
+          </div>
+          <div class="fa-auction-metric fa-auction-metric--timer" ng-show="faseAsta==='BIDDING'">
+            <span class="fa-auction-metric__label">Tempo</span>
+            <div class="fa-countdown-ring fa-countdown-ring--lg"
+                 ng-class="auctionTimerRingClass()"
+                 ng-style="{'--ring-pct': auctionTimerRingPct()}">
+              <span class="fa-countdown-ring__secs">{{auctionTimerSeconds()}}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fa-auction-live-body" ng-show="faseAsta==='BIDDING' && astaPuoRilanciare()">
+          <form class="fa-bid-strip"
+               ng-submit="inviaOffertaPrivDaTastiera($event)"
+               ng-class="{'is-winning': isUtenteVincendoAsta(),
+                          'is-invalid': isOffertaPrivEditing() && offertaPrivTroppoBassa() && !isUtenteVincendoAsta(),
+                          'is-editing': isOffertaPrivEditing()}">
+            <input class="fa-bid-strip__input"
+                   type="text"
+                   inputmode="numeric"
+                   pattern="[0-9]*"
+                   enterkeyhint="go"
+                   autocomplete="off"
+                   autocorrect="off"
+                   spellcheck="false"
+                   ng-model="offertaPriv"
+                   ng-model-options="{ allowInvalid: true, updateOn: 'default blur change' }"
+                   ng-focus="onOffertaPrivFocus($event)"
+                   ng-blur="onOffertaPrivBlur()"
+                   ng-keydown="onOffertaPrivKeydown($event)"
+                   aria-label="Offerta">
+            <!-- Solo iOS: tastierino numerico senza Enter -->
+            <button type="button"
+                    class="fa-bid-strip__btn fa-bid-strip__btn--primary fa-bid-strip__btn--send"
+                    ng-show="isOffertaPrivEditing() && isIosUi()"
+                    ng-click="onOffertaPrivInviaTouch($event)"
+                    title="Invia offerta">
+              Invia
+            </button>
+            <button type="button" class="fa-bid-strip__btn fa-bid-strip__btn--primary" title="Rilancia"
+                    ng-show="!isOffertaPrivEditing() && testRilancia(astaPuntaNome(),offertaPriv*1) && (offertaPriv*1)<=getFromMapSpesoTotale('MAXRILANCIO',astaPuntaNome())"
+                    ng-click="inviaOffertaLibera(astaPuntaNome(),astaPuntaId(),offertaPriv*1)">
+              <i class="fa fa-gavel"></i>
+            </button>
+            <button type="button" class="fa-bid-strip__btn"
+                    ng-show="!isOffertaPrivEditing() && (offertaPriv*1)<=getFromMapSpesoTotale('MAXRILANCIO',astaPuntaNome())-1 && testRilancia(astaPuntaNome(), (offertaPriv*1)+1)"
+                    ng-click="inviaOffertaLibera(astaPuntaNome(),astaPuntaId(),(offertaPriv*1)+1)">+1</button>
+            <button type="button" class="fa-bid-strip__btn"
+                    ng-show="!isOffertaPrivEditing() && (offertaPriv*1)<=getFromMapSpesoTotale('MAXRILANCIO',astaPuntaNome())-5 && testRilancia(astaPuntaNome(), (offertaPriv*1)+5)"
+                    ng-click="inviaOffertaLibera(astaPuntaNome(),astaPuntaId(),(offertaPriv*1)+5)">+5</button>
+            <button type="button" class="fa-bid-strip__btn"
+                    ng-show="!isOffertaPrivEditing() && (offertaPriv*1)<=getFromMapSpesoTotale('MAXRILANCIO',astaPuntaNome())-10 && testRilancia(astaPuntaNome(), (offertaPriv*1)+10)"
+                    ng-click="inviaOffertaLibera(astaPuntaNome(),astaPuntaId(),(offertaPriv*1)+10)">+10</button>
+          </form>
+          <span class="fa-auction-split__hint fa-auction-split__hint--warn"
+                ng-show="isOffertaPrivEditing() && offertaPrivTroppoBassa() && !isUtenteVincendoAsta()">Minimo rilancio <strong>{{astaMinOfferta()}}</strong></span>
+          <span class="fa-auction-split__hint" ng-show="isAdmin && !(isOffertaPrivEditing() && offertaPrivTroppoBassa())">Rilancio per <strong>{{astaPuntaLabel()}}</strong> — max <strong>{{getFromMapSpesoTotale('MAXRILANCIO',astaPuntaNome())}}</strong></span>
+          <span class="fa-auction-split__hint" ng-show="!isAdmin && !(isOffertaPrivEditing() && offertaPrivTroppoBassa())">Min <strong>{{astaMinOfferta()}}</strong> — max <strong>{{getFromMapSpesoTotale('MAXRILANCIO',astaPuntaNome())}}</strong></span>
+        </div>
+
+        <p class="fa-auction-split__alert" ng-show="faseAsta==='BIDDING' && astaPuntaNome() && avviabili.indexOf(astaPuntaNome())<0 && offertaVincente.nomegiocatore!=astaPuntaNome()">
+          {{astaPuntaLabel()}} non può acquistare altri giocatori in quel ruolo
+        </p>
+        <p class="fa-auction-split__alert" ng-show="faseAsta==='BIDDING' && astaPuntaNome() && !astaPuoRilanciare() && avviabili.indexOf(astaPuntaNome())>=0 && offertaVincente.offerta>=getFromMapSpesoTotale('MAXRILANCIO',astaPuntaNome())">
+          {{astaPuntaLabel()}} non ha crediti sufficienti per rilanciare
+        </p>
+      </div>
+
+      <!-- Colonna admin: lista scrollabile, azioni fisse in footer -->
+      <div class="fa-auction-split__admin" ng-if="isAdmin"
+           ng-class="{'is-assegna-view': $root.abilitaForza}">
+        <div class="fa-admin-panel__head">Admin</div>
+
+        <div class="fa-admin-panel__body" ng-show="faseAsta==='BIDDING' && !$root.abilitaForza">
+          <span class="fa-admin-section__label">Opera come</span>
+          <div class="fa-admin-team-grid">
+            <button type="button"
+                    class="fa-admin-team-btn"
+                    ng-repeat="a in adminElencoImpersonazione()"
+                    ng-class="{'is-active': isSquadraPuntaAttiva(a), 'is-me': isMiaSquadra(a), 'is-turn': isAllenatoreDiTurno(a)}"
+                    ng-click="selezionaSquadraPunta(a)"
+                    title="{{nomeAllenatoreVisibile(a)}}">
+              {{nomeAllenatoreVisibile(a)}}
+            </button>
+          </div>
+        </div>
+
+        <div class="fa-admin-panel__foot"
+             ng-show="!$root.abilitaForza"
+             ng-class="{'is-confirm-actions': faseAsta==='DA_CONFERMARE'}">
+          <div class="fa-admin-ctrls fa-admin-ctrls--row" ng-show="faseAsta==='BIDDING'">
+            <button type="button" class="fa-admin-ctrl" ng-click="pausaAsta()">
+              <i class="fa fa-pause"></i><span>Pausa</span>
+            </button>
+            <button type="button" class="fa-admin-ctrl fa-admin-ctrl--danger" ng-click="terminaAsta()">
+              <i class="fa fa-stop"></i><span>Termina</span>
+            </button>
+          </div>
+          <div class="fa-admin-ctrls fa-admin-ctrls--confirm" ng-show="faseAsta==='DA_CONFERMARE'">
+            <button type="button" class="fa-admin-ctrl fa-admin-ctrl--ok" ng-click="conferma()">
+              <i class="fa fa-check"></i><span>Conferma</span>
+            </button>
+            <button type="button" class="fa-admin-ctrl fa-admin-ctrl--danger" ng-click="annulla()">
+              <i class="fa fa-times"></i><span>Annulla</span>
+            </button>
+            <button type="button" class="fa-admin-ctrl" ng-click="apriAssegna()"
+                    title="Assegna la vincita a un’altra squadra o cambia l’offerta">
+              <i class="fa fa-exchange"></i><span>Assegna</span>
+            </button>
+            <button type="button" class="fa-admin-ctrl" ng-click="riapri()"
+                    title="Riapri l’asta in corso (torna al bidding)">
+              <i class="fa fa-undo"></i><span>Riavvia asta</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Navigazione Assegna: sostituisce tutto il riquadro admin -->
+        <div class="fa-admin-assegna fa-admin-assegna--full"
+             ng-show="$root.abilitaForza">
+          <div class="fa-admin-assegna__fields">
+            <input class="fa-admin-input" type="number" ng-model="$root.forzaOfferta" min="1" aria-label="Offerta assegnata">
+            <select class="fa-admin-select" ng-model="$root.forzaAllenatore"
+                    ng-options="a.id as (a.nuovoNome || a.nome) for a in elencoAllenatori | orderBy:'ordine'">
+            </select>
+            <p class="fa-admin-forza-hint">Scegli squadra e cifre, poi Conferma.</p>
+          </div>
+          <button type="button" class="fa-admin-ctrl fa-admin-ctrl--ok" ng-click="confermaAssegna()"
+                  title="Applica assegnazione e conferma l’asta">
+            <i class="fa fa-check"></i><span>Conferma</span>
+          </button>
+          <button type="button" class="fa-admin-ctrl" ng-click="chiudiForza()" title="Indietro">
+            <i class="fa fa-arrow-left"></i><span>Indietro</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pausa -->
+    <div class="fa-auction-split" ng-class="{'fa-auction-split--admin': isAdmin}" ng-show="isAstaInPausa() && offertaVincente && offertaVincente.nomegiocatore">
+      <div class="fa-auction-split__player">
+        <div class="fa-auction-player" ng-if="offertaVincente.giocatore">
+          <span class="fa-role-badge fa-role-badge--lg" ng-class="roleClass(offertaVincente.giocatore.ruolo)">{{offertaVincente.giocatore.ruolo}}</span>
+          <div class="fa-auction-player__info">
+            <h2 class="fa-auction__name" title="{{offertaVincente.giocatore.nome}}">{{offertaVincente.giocatore.nome}}</h2>
+            <span class="fa-auction__meta">{{offertaVincente.giocatore.squadra}}</span>
+            <span class="fa-auction__base">Quot. <strong>{{offertaVincente.giocatore.quotazione}}</strong></span>
+          </div>
+        </div>
+      </div>
+      <div class="fa-auction-split__live fa-auction-split__live--idle">
+        <p class="fa-auction-empty__title">Asta in pausa</p>
+        <p class="fa-auction-empty__sub"><strong>{{offertaVincente.nomegiocatore}}</strong> @ {{offertaVincente.offerta}}</p>
+        <button type="button" class="fa-auction-cta" ng-show="!isAdmin" ng-click="resumeAsta()">
+          <i class="fa fa-play"></i><span>Riprendi</span>
+        </button>
+      </div>
+      <div class="fa-auction-split__admin" ng-if="isAdmin">
+        <div class="fa-admin-panel__head">Admin</div>
+        <div class="fa-admin-panel__body">
+          <p class="fa-admin-pause-msg">Asta in pausa</p>
+        </div>
+        <div class="fa-admin-panel__foot">
+          <div class="fa-admin-ctrls fa-admin-ctrls--row">
+            <button type="button" class="fa-admin-ctrl fa-admin-ctrl--ok" ng-click="resumeAsta()">
+              <i class="fa fa-play"></i><span>Riprendi</span>
+            </button>
+            <button type="button" class="fa-admin-ctrl fa-admin-ctrl--danger" ng-click="terminaAsta()">
+              <i class="fa fa-stop"></i><span>Termina</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fa-hidden-legacy">
+      <div ng-show="isAdmin && sezOperaComeVisible && faseAsta==='BIDDING'">
+        <div ng-repeat="allenatore in elencoAllenatori" ng-click="selezionaAllenatoreOperaCome(allenatore)" ng-if="allenatore.id!=idgiocatore">{{allenatore.nome}}</div>
+        <span ng-show="idgiocatoreOperaCome>=0">
+          <input type="number" ng-model="offertaPrivOC">
+          <button type="button" ng-click="inviaOffertaLibera(nomegiocatoreOperaCome,idgiocatoreOperaCome,offertaPrivOC)">OC</button>
+        </span>
+      </div>
+      <div ng-show="isSingle" ng-repeat="allenatore in elencoAllenatori">
+        <button ng-if="allenatore.id==idgiocatore || isAdmin" ng-click="inviaOffertaLibera(allenatore.nome,allenatore.id,offertaPriv)">{{allenatore.nome}}</button>
+      </div>
+    </div>
+
+  </div>
+</div>

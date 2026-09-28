@@ -1,0 +1,65 @@
+<div class="fa-panel fa-ops-drawer fa-desktop-only">
+  <div class="fa-panel__head fa-ops-drawer__toggle" ng-click="$root.opsPanelOpen=!$root.opsPanelOpen" role="button" tabindex="0" aria-expanded="{{!!opsPanelOpen}}">
+    <span>Log e offerte</span>
+    <span class="fa-ops-drawer__chevron" aria-hidden="true">{{opsPanelOpen ? '▲' : '▼'}}</span>
+  </div>
+  <div class="fa-panel__body" ng-show="opsPanelOpen">
+    <div class="fa-ops-tabs">
+      <button type="button" ng-class="{'is-active': opsTab==='log'}" ng-click="setOpsTab('log')">Log</button>
+      <button type="button" ng-class="{'is-active': opsTab==='offerte'}" ng-click="setOpsTab('offerte')">Offerte</button>
+    </div>
+    <div ng-show="opsTab==='log'">
+      <table class="fa-log-table">
+        <tr ng-repeat="messaggio in messaggi | orderBy: 'data': 'reverse' | limitTo: 50">
+          <td>{{messaggio.data | date:'HH:mm:ss'}}</td>
+          <td>{{messaggio.categoria}}</td>
+          <td>{{messaggio.testo}}</td>
+        </tr>
+      </table>
+      <p ng-show="!messaggi.length" class="fa-empty">Nessun messaggio</p>
+    </div>
+    <div ng-show="opsTab==='offerte'">
+      <table class="fa-log-table">
+        <tr ng-repeat="offerta in $root.cronologiaOfferte">
+          <td>{{offerta.sqlTime || '—'}}</td>
+          <td>{{offerta.ruolo}}</td>
+          <td>{{offerta.giocatore}} ({{offerta.squadra}}) — {{offerta.allenatore}} @ {{offerta.costo}}</td>
+          <td ng-show="isAdmin" class="fa-offerte-table__action">
+            <button type="button" class="fa-btn fa-btn--danger fa-btn--compact" title="Cancella offerta" ng-click="cancellaOfferta(offerta)">Cancella</button>
+          </td>
+        </tr>
+      </table>
+      <p ng-show="!$root.cronologiaOfferte || !$root.cronologiaOfferte.length" class="fa-empty">Nessuna offerta</p>
+    </div>
+  </div>
+</div>
+
+<div class="fa-tab-pane fa-mobile-tab fa-panel" ng-class="{'is-active': uiTab === 'ops'}" style="margin:12px;border-radius:var(--radius-lg);">
+  <div class="fa-panel__head">Operazioni</div>
+  <div class="fa-panel__body">
+    <div class="fa-ops-tabs">
+      <button type="button" ng-class="{'is-active': opsTab==='log'}" ng-click="setOpsTab('log')">Log</button>
+      <button type="button" ng-class="{'is-active': opsTab==='offerte'}" ng-click="setOpsTab('offerte')">Offerte</button>
+    </div>
+    <div ng-show="opsTab==='log'" style="max-height:60vh;overflow-y:auto;">
+      <table class="fa-log-table">
+        <tr ng-repeat="messaggio in messaggi | orderBy: 'data': 'reverse' | limitTo: 100">
+          <td>{{messaggio.data | date:'HH:mm:ss'}}</td>
+          <td>{{messaggio.testo}}</td>
+        </tr>
+      </table>
+    </div>
+    <div ng-show="opsTab==='offerte'" style="max-height:60vh;overflow-y:auto;">
+      <table class="fa-log-table">
+        <tr ng-repeat="offerta in $root.cronologiaOfferte">
+          <td>{{offerta.ruolo}}</td>
+          <td>{{offerta.giocatore}} ({{offerta.squadra}}) — {{offerta.allenatore}} @ {{offerta.costo}}</td>
+          <td ng-show="isAdmin" class="fa-offerte-table__action">
+            <button type="button" class="fa-btn fa-btn--danger fa-btn--compact" title="Cancella offerta" ng-click="cancellaOfferta(offerta)">Cancella</button>
+          </td>
+        </tr>
+      </table>
+      <p ng-show="!$root.cronologiaOfferte || !$root.cronologiaOfferte.length" class="fa-empty">Nessuna offerta</p>
+    </div>
+  </div>
+</div>

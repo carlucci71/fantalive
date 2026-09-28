@@ -52,6 +52,10 @@ public class Configurazione {
 
 	@Column(nullable = true)
 	private Integer numeroGiocatori;
+
+	@Column(nullable = true, length = 120)
+	private String nomeLega;
+
 	public Integer getBudget() {
 		return budget;
 	}
@@ -138,9 +142,15 @@ public class Configurazione {
 	public void setIsSingle(Boolean isSingle) {
 		this.isSingle = isSingle;
 	}
+	public String getNomeLega() {
+		return nomeLega;
+	}
+	public void setNomeLega(String nomeLega) {
+		this.nomeLega = nomeLega;
+	}
 	@Override
 	public String toString() {
-		return "Configurazione [id=" + id + ", isATurni=" + isATurni + ", isSingle=" + isSingle + ", isMantra="
+		return "Configurazione [id=" + id + ", nomeLega=" + nomeLega + ", isATurni=" + isATurni + ", isSingle=" + isSingle + ", isMantra="
 				+ isMantra + ", budget=" + budget + ", durataAsta=" + durataAsta + ", numeroAcquisti=" + numeroAcquisti
 				+ ", numeroMinAcquisti=" + numeroMinAcquisti + ", maxP=" + maxP + ", maxD=" + maxD + ", maxC=" + maxC
 				+ ", maxA=" + maxA + ", minP=" + minP + ", minD=" + minD + ", minC=" + minC + ", minA=" + minA

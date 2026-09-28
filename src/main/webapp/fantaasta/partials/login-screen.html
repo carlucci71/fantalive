@@ -1,0 +1,50 @@
+<div class="fa-overlay-screen">
+  <div class="fa-card">
+    <h2 style="margin:0 0 8px;font-family:var(--font-display);">Entra in asta</h2>
+    <p style="margin:0 0 20px;color:var(--text-muted);font-size:0.85rem;" ng-show="isSetupLogin()">
+      Nessuna lega pronta. Accedi come amministratore per creare la partita.
+    </p>
+    <p style="margin:0 0 20px;color:var(--text-muted);font-size:0.85rem;" ng-show="!isSetupLogin()">
+      Scegli la tua squadra ({{elencoAllenatori.length}} partecipanti). Una sola sessione per squadra.
+    </p>
+    <p ng-show="!isSetupLogin() && numeroGiocatori && numeroGiocatori !== elencoAllenatori.length"
+       class="fa-alert" style="margin:0 0 16px;font-size:0.85rem;">
+      La lega è configurata per {{numeroGiocatori}} partecipanti ma nel database ci sono solo {{elencoAllenatori.length}}.
+      Ricrea la lega dal wizard (reset + setup admin).
+    </p>
+
+    <!-- DA_CONFIGURARE: solo amministratore -->
+    <div ng-if="isSetupLogin()" class="fa-login-slot">
+      <div class="fa-team-card__avatar" ng-style="{'background': teamColor(0), 'color': '#0c1018'}">AD</div>
+      <div style="flex:1;">
+        <p style="margin:0;font-weight:600;">Amministratore</p>
+        <p style="margin:4px 0 0;font-size:0.75rem;color:var(--text-dim);">Configurerai la lega nel passo successivo.</p>
+      </div>
+      <button type="button" class="fa-btn fa-btn--primary" ng-click="entraComeAdminBootstrap()">Entra</button>
+    </div>
+
+    <!-- Lega creata: una riga + menu a tendina con tutte le squadre -->
+    <div ng-if="!isSetupLogin() && $root.loginUtenteSelezionatoId != null" class="fa-login-slot fa-login-picker">
+      <div class="fa-team-card__avatar" ng-style="{'background': teamColor(loginUtenteSelezionato().ordine), 'color': '#0c1018'}">
+        {{nomeSquadra(loginUtenteSelezionato()).substring(0,2).toUpperCase()}}
+      </div>
+      <div class="fa-login-picker__field">
+        <label class="fa-login-picker__label">
+          Squadra<span ng-show="!isUtenteConnesso(nomeSquadra(loginUtenteSelezionato())) && isUtenteAdmin(loginUtenteSelezionato())"> - Amministratore</span>
+        </label>
+        <select class="fa-input fa-login-picker__select"
+                ng-model="$root.loginUtenteSelezionatoId"
+                ng-options="u.id as loginEtichetta(u) for u in loginUtentiOrdinatiList">
+        </select>
+        <p class="fa-login-picker__hint" ng-show="isUtenteConnesso(nomeSquadra(loginUtenteSelezionato()))">
+          Già connessa da un'altra sessione
+        </p>
+      </div>
+      <button type="button" class="fa-btn fa-btn--primary"
+              ng-click="entraComeLoginSelezionato()"
+              ng-disabled="$root.loginUtenteSelezionatoId == null || isUtenteConnesso(nomeSquadra(loginUtenteSelezionato()))">Entra</button>
+    </div>
+
+    <p ng-show="connessioneKO" class="fa-alert" style="margin-top:16px;">{{connessioneKO}}</p>
+  </div>
+</div>

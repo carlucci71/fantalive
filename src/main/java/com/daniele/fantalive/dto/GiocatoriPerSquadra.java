@@ -11,8 +11,10 @@ public class GiocatoriPerSquadra {
 	private String giocatore;
 	private int costo;
 	private Calendar dataNascita;
+	private Integer idGiocatore;
+	private Integer idAllenatore;
 	
-	public GiocatoriPerSquadra(String allenatore, String squadra, String ruolo, String macroRuolo, String giocatore, int costo, Calendar dataNascita) {
+	public GiocatoriPerSquadra(String allenatore, String squadra, String ruolo, String macroRuolo, String giocatore, int costo, Calendar dataNascita, Integer idGiocatore, Integer idAllenatore) {
 		super();
 		this.allenatore = allenatore;
 		this.squadra = squadra;
@@ -21,6 +23,8 @@ public class GiocatoriPerSquadra {
 		this.giocatore = giocatore;
 		this.costo = costo;
 		this.dataNascita=dataNascita;
+		this.idGiocatore = idGiocatore;
+		this.idAllenatore = idAllenatore;
 	}
 	public String getAllenatore() {
 		return allenatore;
@@ -64,11 +68,23 @@ public class GiocatoriPerSquadra {
 	public void setDataNascita(Calendar dataNascita) {
 		this.dataNascita = dataNascita;
 	}
+	public Integer getIdGiocatore() {
+		return idGiocatore;
+	}
+	public void setIdGiocatore(Integer idGiocatore) {
+		this.idGiocatore = idGiocatore;
+	}
+	public Integer getIdAllenatore() {
+		return idAllenatore;
+	}
+	public void setIdAllenatore(Integer idAllenatore) {
+		this.idAllenatore = idAllenatore;
+	}
 	@Override
 	public String toString() {
 		return "GiocatoriPerSquadra [allenatore=" + allenatore + ", squadra=" + squadra + ", ruolo=" + ruolo
 				+ ", macroRuolo=" + macroRuolo + ", giocatore=" + giocatore + ", costo=" + costo + ", dataNascita="
-				+ dataNascita + "]";
+				+ dataNascita + ", idGiocatore=" + idGiocatore + ", idAllenatore=" + idAllenatore + "]";
 	}
 
 }

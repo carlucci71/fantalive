@@ -1,128 +1,82 @@
-<html>
+<!DOCTYPE html>
+<html lang="it">
 <head>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
-<title>Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>Admin — FantaAsta</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="./fantaasta-ui.css?v=20250925ui109">
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-resource.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
+  <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
+  <script src="./ws-connection.js?v=20250925ui109"></script>
+  <script src="./app.js?v=20250925ui109"></script>
+  <script src="./fa-ui.js?v=20250925ui109"></script>
 </head>
-<link href="./stile.css" rel="stylesheet" type="text/css">
-<link href="./bootstrap.css" rel="stylesheet" type="text/css">
-<link href="./bootstrap-theme.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<body class="fa-app" ng-app="app" style="padding:16px;max-width:800px;margin:0 auto;">
 
+  <div ng-controller="ModalDemoCtrl as pc" class="modal-demo"></div>
 
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-resource.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
-<script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
-<script type="text/javascript" src="./ws-connection.js?v=20250925s"></script>
-<script type="text/javascript" src="./app.js?v=20250925s"></script>
+  <h1 style="font-family:var(--font-display);color:var(--accent-primary);">Amministrazione</h1>
+  <p ng-show="connessioneKO" class="fa-alert">{{connessioneKO}}</p>
+  <p ng-show="!nomegiocatore && config" style="color:var(--danger);">Lega non configurata. Vai alla <a href="./index.html" style="color:var(--accent-focus);">home</a>.</p>
+  <p ng-show="!nomegiocatore && !config" style="color:var(--accent-primary);">Accesso admin in corso…</p>
 
-<body x-ng-app="app" style="margin-left:20px">
-<p ng-show="connessioneKO" style="color:red;font-weight:bold">{{connessioneKO}}</p>
-<p ng-show="!nomegiocatore && config" style="color:red">Lega non configurata. Vai alla <a href="./index.html">home</a>.</p>
-<p ng-show="!nomegiocatore && !config" style="color:orange">Accesso admin in corso...</p>
-<div ng-show="nomegiocatore">
-	<div style="border-style:dotted;width:98%;padding-left:10px;padding-right:10px; padding-top:10px;padding-bottom:10px"><label style="color:red;text-align:center;background-color:yellow;width:100%">Utenti</label>
-		<table>
-			  <tr>
-			  	<td ng-show="isAdmin" colspan=2>Ordine</td>
-			  	<td>Nome</td>
-			  	<td>Password</td>
-				<td ng-show="isAdmin">Admin</td>
-			  </tr>
-			  <tr ng-repeat="utente in elencoAllenatori | orderBy:'ordine'" ng-show="isAdmin || utente.nome==nomegiocatore">
-				<td ng-show="isAdmin" style="padding-left:5px;padding-right:5px;text-align:center;widht:50px">
-					<i ng-show="utente.ordine<elencoAllenatori.length-1" class="fa fa-angle-double-down" 
-					style="cursor: pointer" ng-click='ordinaUtente(utente,"D")'></i>
-				</td>
-				<td ng-show="isAdmin" style="padding-left:5px;padding-right:5px;text-align:center;widht:50px">
-					<i ng-show="utente.ordine>0" class="fa fa-angle-double-up"
-					style="cursor: pointer" ng-click='ordinaUtente(utente,"U")'></i>
-				</td>
-			  	<td>
-						<input  style='width: 300px;' type="text"  ng-model="utente.nuovoNome"></input>
-				</td>
-			  	<td>
-						<input  style='width: 300px;' type="password"  ng-model="utente.pwd"></input>
-				</td>
-				<td style="text-align:center" ng-show="isAdmin">
-								<i title="admin" ng-click="utente.isAdmin=!utente.isAdmin" ng-show="isAdmin && utente.isAdmin" class="fa fa-check-square"></i>
-								<i title="admin" ng-click="utente.isAdmin=!utente.isAdmin" ng-show="isAdmin && !utente.isAdmin" class="fa fa-square"></i>
-							
-				</td>	
-			  </tr>
-		</table>
+  <div ng-show="nomegiocatore">
+    <div class="fa-card" style="max-width:none;margin-bottom:16px;">
+      <h3 style="margin-top:0;">Utenti</h3>
+      <div ng-repeat="utente in elencoAllenatori | orderBy:'ordine'" style="margin-bottom:12px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <span style="color:var(--text-muted);width:30px;">{{utente.ordine}}</span>
+          <input class="fa-input" style="flex:1;min-width:140px;" type="text" ng-model="utente.nuovoNome">
+          <input class="fa-input" style="flex:1;min-width:120px;" type="password" ng-model="utente.pwd" placeholder="Password">
+          <button type="button" class="fa-chip" ng-show="isAdmin" ng-class="{'is-active': utente.isAdmin}" ng-click="utente.isAdmin=!utente.isAdmin">Admin</button>
+          <i ng-show="isAdmin && utente.ordine<elencoAllenatori.length-1" class="fa fa-angle-double-down" style="cursor:pointer" ng-click="ordinaUtente(utente,'D')"></i>
+          <i ng-show="isAdmin && utente.ordine>0" class="fa fa-angle-double-up" style="cursor:pointer" ng-click="ordinaUtente(utente,'U')"></i>
+        </div>
+      </div>
+    </div>
 
-	<div ng-show="isAdmin">	
-	<br>
-	<label style="color:red;text-align:center;background-color:yellow;width:100%">Configurazione</label>
-			<br>
-			<label style="width:190">Budget:</label><input  class="inputDato" type="number"  ng-model="budget"></input>
-			<br>
-			<label style="width:190">Secondi durata asta:</label><input  class="inputDato" type="number"  ng-model="durataAstaDefault"></input>
-			<br>
- 			<label style="width:190">Gestione a turni</label>
-					<i title="gestione a turni" ng-click="isATurni=!isATurni" ng-show="isATurni" class="fa fa-check-square"></i>
-					<i title="gestione a turni" ng-click="isATurni=!isATurni" ng-show="!isATurni" class="fa fa-square"></i>
-			<br>
- 			<label style="width:190">Gestione singolo admin</label>
-					<i title="gestione a turni" ng-click="isSingle=!isSingle" ng-show="isSingle" class="fa fa-check-square"></i>
-					<i title="gestione a turni" ng-click="isSingle=!isSingle" ng-show="!isSingle" class="fa fa-square"></i>
-			<br><br>
-			<label style="width:190;color:red">Composizione rose</label>
-			<table>
-				<tr>
-					<td></td>
-					<td style="text-align:center">Min</td>
-					<td style="text-align:center">Max</td>
-				</tr>
-				<tr>
-					<td style="padding-right:10px">Portieri</td>
-					<td><input style="width:40;text-align:center" ng-model="minP" type=number></input></td>
-					<td><input ng-show="!isMantra" style="width:40;text-align:center" ng-model="maxP" type=number></input></td>
-				</tr>
-				<tr ng-show="!isMantra">
-					<td style="padding-right:10px">Difensori</td>
-					<td><input style="width:40;text-align:center" ng-model="minD" type=number></input></td>
-					<td><input style="width:40;text-align:center" ng-model="maxD" type=number></input></td>
-				</tr>
-				<tr ng-show="!isMantra">
-					<td style="padding-right:10px">Centrocampisti</td>
-					<td><input style="width:40;text-align:center" ng-model="minC" type=number></input></td>
-					<td><input style="width:40;text-align:center" ng-model="maxC" type=number></input></td>
-				</tr>
-				<tr>
-					<td style="padding-right:10px"ng-show="!isMantra">Attaccanti</td>
-					<td style="padding-right:10px"ng-show="isMantra">Totali</td>
-					<td><input style="width:40;text-align:center" ng-model="minA" type=number></input></td>
-					<td><input style="width:40;text-align:center" ng-model="maxA" type=number></input></td>
-				</tr>
-			</table>
-		</div>	
-		<br>
-		<input type="button" value="AGGIORNA" style="width:100%;font-weight: bold;" ng-click="aggiornaConfigLega(isAdmin)"></input>
-	</div>
-<br>
-<div>
-	<div ng-show="isAdmin" >
-		<div style="width:98%;border-style:dotted;;padding-left:10px;padding-right:10px; padding-top:10px;padding-bottom:10px"">
-			<label style="color:red;text-align:center;background-color:yellow;width:100%">Carica file</label>
-			<div >
-				<input type="file" id="file" name="file"/>
-			</div>
-			<button ng-click="caricaFile('FS')">Carica Quotazioni (.xls / .xlsx)</button>
-			<button ng-show="isMantra" ng-click="caricaFile('MANTRA')">Carica Mantra (.txt)</button>
-			<label ng-show="caricamentoInCorso">CARICAMENTO IN CORSO</label>
-		</div>
-		<br><br>
-		<input style="width:98%;font-weight: bold;" type="button" value="AZZERA TUTTO" ng-click="azzera()"></input>
-	</div>
-</div>
-</div>	
-	<br>
-	<input style="width:98%;font-weight: bold;" type="button" value="Ritorna all'home page" ng-click="ritornaIndex()"></input>
+    <div class="fa-card" style="max-width:none;margin-bottom:16px;" ng-show="isAdmin">
+      <h3 style="margin-top:0;">Configurazione</h3>
+      <div class="fa-form-grid">
+        <div class="fa-form-row"><label>Budget</label><input class="fa-input" type="number" ng-model="budget"></div>
+        <div class="fa-form-row"><label>Secondi asta</label><input class="fa-input" type="number" ng-model="durataAstaDefault"></div>
+      </div>
+      <div class="fa-toggle-row">
+        <span>Gestione a turni</span>
+        <button type="button" class="fa-chip" ng-class="{'is-active': isATurni}" ng-click="isATurni=!isATurni">{{isATurni?'Sì':'No'}}</button>
+      </div>
+      <div class="fa-toggle-row">
+        <span>Gestione singolo admin</span>
+        <button type="button" class="fa-chip" ng-class="{'is-active': isSingle}" ng-click="isSingle=!isSingle">{{isSingle?'Sì':'No'}}</button>
+      </div>
+      <p style="color:var(--text-muted);margin:16px 0 8px;">Composizione rose (min / max)</p>
+      <div class="fa-form-grid">
+        <div class="fa-form-row"><label>Portieri</label><div style="display:flex;gap:8px;"><input class="fa-input" ng-model="minP" type="number"><input class="fa-input" ng-show="!isMantra" ng-model="maxP" type="number"></div></div>
+        <div class="fa-form-row" ng-show="!isMantra"><label>Difensori</label><div style="display:flex;gap:8px;"><input class="fa-input" ng-model="minD" type="number"><input class="fa-input" ng-model="maxD" type="number"></div></div>
+        <div class="fa-form-row" ng-show="!isMantra"><label>Centrocampisti</label><div style="display:flex;gap:8px;"><input class="fa-input" ng-model="minC" type="number"><input class="fa-input" ng-model="maxC" type="number"></div></div>
+        <div class="fa-form-row"><label ng-show="!isMantra">Attaccanti</label><label ng-show="isMantra">Totali</label><div style="display:flex;gap:8px;"><input class="fa-input" ng-model="minA" type="number"><input class="fa-input" ng-model="maxA" type="number"></div></div>
+      </div>
+      <input type="button" value="AGGIORNA" class="fa-btn fa-btn--primary" style="width:100%;margin-top:16px;" ng-click="aggiornaConfigLega(isAdmin)">
+    </div>
+
+    <div class="fa-card" style="max-width:none;margin-bottom:16px;" ng-show="isAdmin">
+      <h3 style="margin-top:0;">Carica file</h3>
+      <input type="file" id="file" name="file" class="fa-input" style="margin-bottom:12px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="button" class="fa-btn fa-btn--secondary" ng-click="caricaFile('FS')">Carica Quotazioni (.xls / .xlsx)</button>
+        <button type="button" class="fa-btn fa-btn--secondary" ng-show="isMantra" ng-click="caricaFile('MANTRA')">Carica Mantra (.txt)</button>
+      </div>
+      <p ng-show="caricamentoInCorso" style="color:var(--accent-primary);">CARICAMENTO IN CORSO</p>
+      <p ng-show="calciatori.length" style="color:var(--accent-secondary);">{{calciatori.length}} giocatori caricati</p>
+    </div>
+
+    <input class="fa-btn fa-btn--danger" style="width:100%;margin-bottom:12px;" type="button" value="AZZERA TUTTO" ng-click="azzera()" ng-show="isAdmin">
+    <input class="fa-btn fa-btn--secondary" style="width:100%;" type="button" value="Ritorna all'home page" ng-click="ritornaIndex()">
+  </div>
 </body>
 </html>

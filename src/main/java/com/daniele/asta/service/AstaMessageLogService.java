@@ -18,6 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class AstaMessageLogService {
 
     public static final int MAX_MESSAGGI_BROADCAST = 100;
+    public static final int MAX_MESSAGGIO_DB = 255;
 
     private final List<Map<String, Object>> messaggi = new CopyOnWriteArrayList<>();
 
@@ -41,20 +42,31 @@ public class AstaMessageLogService {
         messaggi.clear();
     }
 
+    static String truncateMessaggio(String messaggio) {
+        if (messaggio == null) {
+            return "";
+        }
+        if (messaggio.length() <= MAX_MESSAGGIO_DB) {
+            return messaggio;
+        }
+        return messaggio.substring(0, MAX_MESSAGGIO_DB - 1) + "…";
+    }
+
     /** Aggiunge al buffer in memoria (sync) e persiste su DB in async. */
     public void creaMessaggio(String indirizzo, String messaggio, EnumCategoria categoria) {
+        String testo = truncateMessaggio(messaggio);
         long now = System.currentTimeMillis();
         Map<String, Object> msg = new HashMap<>();
         msg.put("key", UUID.randomUUID().toString());
         msg.put("data", now);
-        msg.put("testo", messaggio);
+        msg.put("testo", testo);
         msg.put("indirizzo", indirizzo);
         msg.put("categoria", categoria);
         messaggi.add(msg);
 
         LoggerMessaggi entity = new LoggerMessaggi();
         entity.setId(now);
-        entity.setMessaggio(messaggio);
+        entity.setMessaggio(testo);
         entity.setCategoria(categoria.name());
         entity.setIndirizzo(indirizzo);
         persistAsync(entity);

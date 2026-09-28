@@ -307,6 +307,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                 timeOut = "N";
                 giocatoreTimeout = null;
                 millisFromPausa = 0L;
+                myController.syncConfigFromDb();
                 calInizioOfferta = Calendar.getInstance();
                 offertaVincente = new HashMap<>();
                 offertaVincente.put("giocatore", giocatoriRepository.findById(Integer.parseInt(idCalciatore)).get());
@@ -326,6 +327,9 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
                 m.put("sSemaforoAttivo", sSemaforoAttivo);
                 m.put("timeStart", -1);
                 m.put("contaTempo", 0);
+                int durataAvvio = myController.getDurataAsta();
+                m.put("durataAsta", durataAvvio);
+                log.info("[WS] start asta durataAsta={}s da {} per {}", durataAvvio, nomegiocatore, nomeCalciatore);
                 m.put("mapSpesoTotale", myController.getMapSpesoTotale());
                 String str = "Asta avviata da " + nomegiocatore + " per " + offertaVincente.get("nomeCalciatore") + "("
                         + ((Giocatori) offertaVincente.get("giocatore")).getRuolo() + ") "
@@ -431,14 +435,28 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
             } else if (operazione != null && operazione.equals("forza")) {
                 String nomegiocatore = (String) jsonToMap.get("nomegiocatore");
                 String idgiocatore = jsonToMap.get("idgiocatore").toString();
-                String forzaAllenatore = (String) jsonToMap.get("forzaAllenatore");
+                Object forzaAllenatoreObj = jsonToMap.get("forzaAllenatore");
+                if (forzaAllenatoreObj == null || forzaAllenatoreObj.toString().isEmpty()) {
+                    log.warn("[WS] forza rifiutata: forzaAllenatore mancante da {}", nomegiocatore);
+                    return;
+                }
+                String forzaAllenatore = forzaAllenatoreObj.toString();
                 Integer forzaOfferta = toInt(jsonToMap.get("forzaOfferta"));
+                if (forzaOfferta == null || forzaOfferta < 1) {
+                    log.warn("[WS] forza rifiutata: forzaOfferta non valida {}", forzaOfferta);
+                    return;
+                }
                 String nomeForzaAllenatore = "";
                 Iterable<Allenatori> allAllenatori = myController.getAllAllenatori();
+                int forzaAllenatoreId = Integer.parseInt(forzaAllenatore);
                 for (Allenatori allenatori : allAllenatori) {
-                    if (allenatori.getId() == Integer.parseInt(forzaAllenatore)) {
+                    if (allenatori.getId() == forzaAllenatoreId) {
                         nomeForzaAllenatore = allenatori.getNome();
                     }
+                }
+                if (nomeForzaAllenatore.isEmpty()) {
+                    log.warn("[WS] forza rifiutata: allenatore id {} non trovato", forzaAllenatoreId);
+                    return;
                 }
                 Map<String, Object> m = new HashMap<>();
                 offertaVincente.put("offerta", forzaOfferta);
@@ -551,6 +569,22 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
         inviaEvento(m);
     }
 
+    /** Assegnazione diretta (senza asta): aggiorna roster e torna IDLE. */
+    public synchronized void assegnaDirettoAndBroadcast(String indirizzo, String nomeCalciatore, String ruolo,
+                                                        String squadra, String nomeAllenatore, int costo) throws IOException {
+        messageLogService.clearMessaggi();
+        messageLogService.creaMessaggio(indirizzo,
+                "Assegnato " + nomeCalciatore + "(" + ruolo + ") " + squadra + " a " + nomeAllenatore + " per " + costo
+                        + " (senza asta)",
+                EnumCategoria.Asta);
+        resetStatoAstaInIdle();
+        Map<String, Object> m = buildIdleBroadcastPayload();
+        m.putAll(astaDataService.buildPostConfirmPayload());
+        m.put("messaggi", messageLogService.getMessaggiForBroadcast());
+        astaTurnoService.avanzaTurnoDopoConferma(m);
+        inviaEvento(m);
+    }
+
     public void aggiornaConfigLega(Map<String, String> utentiRinominati, Iterable<Allenatori> allAllenatori,
                                    Configurazione configurazione, String indirizzo) throws IOException {
 
@@ -564,7 +598,11 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
             }
         }
         Map<String, Object> m = new HashMap<>();
-        messageLogService.creaMessaggio(indirizzo, "Aggiornata configurazione: " + configurazione, EnumCategoria.Alert);
+        messageLogService.creaMessaggio(indirizzo,
+                "Aggiornata configurazione: nomeLega=" + (configurazione != null ? configurazione.getNomeLega() : null)
+                        + " budget=" + (configurazione != null ? configurazione.getBudget() : null)
+                        + " durata=" + (configurazione != null ? configurazione.getDurataAsta() : null),
+                EnumCategoria.Alert);
         if (!utentiRinominati.isEmpty())
             messageLogService.creaMessaggio(indirizzo, "Utenti rinominati: " + utentiRinominati, EnumCategoria.Alert);
         if (myController.getIsATurni()) {
@@ -763,6 +801,7 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
             m.put("timeout", timeOut);
             m.put("giocatoreTimeout", giocatoreTimeout);
             m.put("millisFromPausa", Long.toString(millisFromPausa));
+            m.put("durataAsta", myController.getDurataAsta());
             putAstaEpoch(m);
         }
         m.put("utentiScaduti", sessionRegistry.getExpiredUsers());
@@ -929,6 +968,14 @@ public class SocketHandler extends TextWebSocketHandler implements WebSocketHand
     public synchronized void resetForDevTest() {
         resetStatoAstaInIdle();
         messageLogService.clearMessaggi();
+    }
+
+    /** Forza asta IDLE e notifica tutti i client (dev/recovery). */
+    public synchronized void resetAstaIdleAndBroadcast() throws IOException {
+        resetStatoAstaInIdle();
+        Map<String, Object> m = buildIdleBroadcastPayload();
+        m.put("messaggi", messageLogService.getMessaggiForBroadcast());
+        inviaEvento(m);
     }
 
     private Map<String, Object> buildIdleBroadcastPayload() {

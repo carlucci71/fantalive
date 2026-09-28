@@ -1,0 +1,33 @@
+---
+description: FantaAsta UI — mobile portrait vs landscape, non rompere desktop
+globs: src/main/webapp/fantaasta/**/*.{css,html,js}
+alwaysApply: false
+---
+
+# FantaAsta — UI mobile
+
+## Vincolo attivo (2026-09-28)
+
+| Modalità | Layout |
+|---|---|
+| **Portrait** (`max-width: 899px` + verticale, o `?mobile=1`) | Tab bar + stack verticale |
+| **Landscape** (`max-width: 899px` + orizzontale, no force-mobile) | Stessa vista PC, board `min-width: 1100px`, scroll orizzontale custom |
+| **Desktop** (`≥900px`) | Board PC invariato |
+
+**Non regressare il layout PC** già consolidato (`@media (min-width: 900px)`).
+
+## Come implementare
+
+1. **Desktop intatto:** non cambiare regole base / `@media (min-width: 900px)` se non serve un fix desktop esplicito.
+2. **Mobile portrait:** `@media (max-width: 899px)` e, se serve distinguere, `and (orientation: portrait)`. JS: `isMobilePortraitUi()`.
+3. **Mobile landscape:** `@media (max-width: 899px) and (orientation: landscape)` con `html:not(.fa-force-mobile)`; scroll su `.fa-board-scroll`.
+4. **Scope stretto:** tocchi solo classi/blocchi della modalità intenzionata.
+5. **Test:** `?mobile=1` (force portrait) + telefono reale landscape + verifica ≥900px invariato.
+6. **Cache:** bump `?v=` in `index.html` dopo CSS/partials/JS.
+
+## Non fare
+
+- Non “unificare” portrait e desktop in un solo layout.
+- Non usare override globali che vincono anche a desktop.
+- Non rifattorizzare il grid desktop “di passaggio”.
+---

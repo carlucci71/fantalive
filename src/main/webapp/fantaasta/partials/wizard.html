@@ -1,0 +1,218 @@
+<div class="fa-overlay-screen fa-overlay-screen--wizard">
+  <div class="fa-card fa-card--wizard">
+    <div class="fa-wizard-header">
+      <div class="fa-wizard-header__top">
+        <div>
+          <h2 style="margin:0 0 8px;font-family:var(--font-display);">
+            {{showSettings ? 'Impostazioni lega' : (wizardSoloUpload() ? 'Completa configurazione' : 'Crea la tua lega')}}
+          </h2>
+          <p style="margin:0 0 16px;color:var(--text-muted);font-size:0.85rem;" ng-show="!showSettings && !wizardSoloUpload()">Configura regole, squadre e quotazioni.</p>
+          <p style="margin:0 0 16px;color:var(--text-muted);font-size:0.85rem;" ng-show="!showSettings && wizardSoloUpload()">La lega è pronta: carica il file delle quotazioni per iniziare.</p>
+          <p style="margin:0 0 16px;color:var(--text-muted);font-size:0.85rem;" ng-show="showSettings">Modifica un passo alla volta: Salva o Annulla le modifiche, poi usa Avanti per continuare.</p>
+        </div>
+        <button type="button"
+                class="fa-btn fa-btn--danger fa-btn--compact fa-wizard-reset-btn"
+                ng-show="isAdmin && showSettings"
+                ng-click="cancellaLega()">
+          Cancella lega
+        </button>
+      </div>
+      <div class="fa-wizard-steps" ng-hide="wizardSoloUpload()">
+        <button type="button"
+                class="fa-wizard-step"
+                ng-if="showSettings"
+                ng-repeat="n in settingsSteps()"
+                ng-class="{'is-done': wizardStep > n, 'is-current': wizardStep === n}"
+                ng-click="settingsGoToStep(n)"
+                ng-disabled="wizardBusy || isSettingsDirty()"
+                title="{{settingsStepTitle(n)}}"
+                aria-label="{{settingsStepTitle(n)}}"></button>
+        <div class="fa-wizard-step"
+             ng-if="!showSettings"
+             ng-class="{'is-done': wizardStep > n, 'is-current': wizardStep === n}"
+             ng-repeat="n in [1,2,3,4,5]"></div>
+      </div>
+    </div>
+
+    <div class="fa-wizard-body">
+
+    <!-- Step 1 -->
+    <div ng-show="wizardStep === 1 && !wizardSoloUpload()">
+      <div class="fa-form-row">
+        <label>Nome lega</label>
+        <input class="fa-input" type="text" ng-model="$root.nomeLega" placeholder="La mia asta 2025">
+      </div>
+      <div class="fa-form-row">
+        <label>Numero partecipanti</label>
+        <input class="fa-input" type="number" ng-model="$root.numeroUtenti" min="2" max="20">
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div ng-show="wizardStep === 2 && !wizardSoloUpload()">
+      <div class="fa-form-grid fa-form-grid--rules">
+        <div class="fa-form-row">
+          <label>Budget</label>
+          <input class="fa-input" type="number" ng-model="budget">
+        </div>
+        <div class="fa-form-row">
+          <label>Secondi per asta</label>
+          <input class="fa-input" type="number" ng-model="durataAstaDefault" min="2">
+        </div>
+      </div>
+      <p class="fa-wizard-step-hint" ng-show="showSettings">Clicca Salva per confermare le modifiche di questo passo.</p>
+      <div class="fa-toggle-row">
+        <span>Gestione a turni</span>
+        <button type="button" class="fa-chip" ng-class="{'is-active': isATurni}" ng-click="isATurni=!isATurni">{{isATurni ? 'Sì' : 'No'}}</button>
+      </div>
+      <div class="fa-toggle-row">
+        <span>Solo admin gestisce i rilanci</span>
+        <button type="button" class="fa-chip" ng-class="{'is-active': isSingle}" ng-click="isSingle=!isSingle">{{isSingle ? 'Sì' : 'No'}}</button>
+      </div>
+      <div class="fa-toggle-row">
+        <span>Modalità Mantra</span>
+        <button type="button" class="fa-chip" ng-class="{'is-active': isMantra}" ng-click="scegliMantra()">{{isMantra ? 'Mantra' : 'Classic'}}</button>
+      </div>
+    </div>
+
+    <!-- Step 3: composizione rosa -->
+    <div ng-show="wizardStep === 3 && !wizardSoloUpload()">
+      <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:12px;">Giocatori per ruolo in rosa</p>
+      <div class="fa-form-grid">
+        <div class="fa-form-row">
+          <label>Portieri</label>
+          <input class="fa-input" type="number" ng-model="maxP" min="0">
+        </div>
+        <div class="fa-form-row" ng-show="!isMantra">
+          <label>Difensori</label>
+          <input class="fa-input" type="number" ng-model="maxD" min="0">
+        </div>
+        <div class="fa-form-row" ng-show="!isMantra">
+          <label>Centrocampisti</label>
+          <input class="fa-input" type="number" ng-model="maxC" min="0">
+        </div>
+        <div class="fa-form-row">
+          <label ng-show="!isMantra">Attaccanti</label>
+          <label ng-show="isMantra">Giocatori totali</label>
+          <input class="fa-input" type="number" ng-model="maxA" min="0">
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: squadre + admin -->
+    <div ng-show="wizardStep === 4 && !wizardSoloUpload()">
+      <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:12px;">
+        Personalizza i nomi squadra e assegna l'admin ({{elencoAllenatori.length}} squadre).
+      </p>
+      <div class="fa-wizard-teams-list">
+        <div class="fa-wizard-team-row"
+             ng-repeat="utente in elencoAllenatori | orderBy:'ordine'"
+             ng-class="{'is-admin': isUtenteAdmin(utente)}"
+             ng-style="{'--team-accent': teamColor(utente.ordine)}">
+          <div class="fa-team-card__avatar fa-wizard-team-row__avatar" ng-style="{'background': teamColor(utente.ordine), 'color': '#0c1018'}">{{teamInitials(utente)}}</div>
+          <div class="fa-wizard-team-row__main">
+            <span class="fa-wizard-team-row__slot">Slot {{utente.nome}}</span>
+            <input class="fa-input fa-wizard-team-row__input" type="text" ng-model="utente.nuovoNome" placeholder="{{utente.nome}}">
+          </div>
+          <button type="button" class="fa-chip" ng-class="{'is-active': isUtenteAdmin(utente)}" ng-click="setAdminUtente(utente)">Admin</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: upload quotazioni -->
+    <div ng-show="wizardStep === 5">
+      <div class="fa-form-row">
+        <p style="color:var(--accent-primary);font-weight:600;margin:0 0 12px;" ng-show="!showSettings">Obbligatorio: carica le quotazioni</p>
+        <p style="color:var(--accent-primary);font-weight:600;margin:0 0 12px;" ng-show="showSettings">Quotazioni giocatori</p>
+        <p ng-show="showSettings && wizardHasQuotazioni()" style="margin:0 0 12px;color:var(--text-muted);font-size:0.85rem;">{{calciatori.length}} giocatori attualmente in lega. Usa Reset import per sostituire l'elenco.</p>
+        <label>File quotazioni</label>
+        <input type="file" id="wizardQuotazioniFile" name="wizardQuotazioniFile" class="fa-input" accept=".xls,.xlsx,.txt" ng-disabled="caricamentoInCorso" onchange="angular.element(this).scope().onWizardFilePicked(this)">
+        <p style="margin:8px 0 0;color:var(--text-dim);font-size:0.8rem;" ng-show="isMantra">Formati supportati: <strong>.xls</strong>, <strong>.xlsx</strong>, <strong>.txt</strong> (Mantra).</p>
+        <p style="margin:8px 0 0;color:var(--text-dim);font-size:0.8rem;" ng-show="!isMantra">Formati supportati: <strong>.xls</strong>, <strong>.xlsx</strong> (Classic).</p>
+        <p ng-show="caricamentoInCorso" style="color:var(--accent-primary);margin-top:8px;">Caricamento in corso…</p>
+        <div ng-show="wizardHasQuotazioni()" style="margin-top:8px;">
+          <button type="button" class="fa-btn fa-btn--secondary" ng-click="resetImportQuotazioni()" ng-disabled="caricamentoInCorso">Reset import</button>
+        </div>
+        <div ng-show="wizardUploadCount" class="fa-wizard-upload-ok">
+          <p style="margin:0 0 4px;font-weight:600;color:var(--accent-secondary);">✓ Caricamento completato</p>
+          <p style="margin:0;color:var(--text-muted);font-size:0.85rem;" ng-show="!showSettings">{{wizardUploadCount}} giocatori inseriti. Clicca «Vai in home» per continuare.</p>
+          <p style="margin:0;color:var(--text-muted);font-size:0.85rem;" ng-show="showSettings">{{wizardUploadCount}} giocatori inseriti. Clicca «Vai in home» per tornare all'asta.</p>
+        </div>
+        <div ng-show="showSettings && wizardHasQuotazioni() && !wizardUploadCount" class="fa-wizard-upload-ok">
+          <p style="margin:0 0 4px;font-weight:600;color:var(--accent-secondary);">✓ Quotazioni già caricate</p>
+          <p style="margin:0;color:var(--text-muted);font-size:0.85rem;">{{calciatori.length}} giocatori in lega. Usa «Vai in home» per tornare all'asta.</p>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- .fa-wizard-body -->
+
+    <!-- Footer Opzioni: Indietro a sinistra, Vai in home / Avanti a destra -->
+    <div class="fa-wizard-footer" ng-if="showSettings">
+      <div class="fa-wizard-footer__bar fa-wizard-footer__bar--settings">
+        <div class="fa-wizard-footer__exit">
+          <button type="button"
+                  class="fa-btn fa-btn--secondary fa-wizard-footer__btn"
+                  ng-class="{'is-shown': wizardFooter.cancel}"
+                  ng-click="discardSettingsChanges()"
+                  ng-disabled="wizardBusy"
+                  tabindex="{{wizardFooter.cancel ? 0 : -1}}">Annulla</button>
+          <button type="button"
+                  class="fa-btn fa-btn--secondary fa-wizard-footer__btn"
+                  ng-class="{'is-shown': wizardFooter.exit === 'close'}"
+                  ng-click="wizardFooterExitAction()"
+                  ng-disabled="wizardFooter.exitDisabled"
+                  tabindex="{{wizardFooter.exit === 'close' ? 0 : -1}}">Chiudi</button>
+          <button type="button"
+                  class="fa-btn fa-btn--secondary fa-wizard-footer__btn"
+                  ng-class="{'is-shown': wizardFooter.prev}"
+                  ng-click="wizardPrev()"
+                  ng-disabled="wizardBusy"
+                  tabindex="{{wizardFooter.prev ? 0 : -1}}">Indietro</button>
+        </div>
+        <div class="fa-wizard-footer__hint" ng-class="{'is-shown': wizardFooter.hint}">Modifiche da salvare</div>
+        <div class="fa-wizard-footer__actions">
+          <button type="button"
+                  class="fa-btn fa-wizard-footer__btn"
+                  ng-class="{
+                    'is-shown': wizardFooter.exit === 'home',
+                    'fa-btn--primary fa-wizard-footer__btn--primary': wizardFooter.exit === 'home' && isSettingsLastStep(),
+                    'fa-btn--secondary': wizardFooter.exit === 'home' && !isSettingsLastStep()
+                  }"
+                  ng-click="wizardFooterExitAction()"
+                  ng-disabled="wizardFooter.exitDisabled"
+                  tabindex="{{wizardFooter.exit === 'home' ? 0 : -1}}">Vai in home</button>
+          <button type="button"
+                  class="fa-btn fa-btn--primary fa-wizard-footer__btn fa-wizard-footer__btn--primary"
+                  ng-class="{'is-shown': wizardFooter.primary !== 'none'}"
+                  ng-click="wizardFooterPrimaryAction()"
+                  ng-disabled="wizardFooter.primaryDisabled"
+                  tabindex="{{wizardFooter.primary !== 'none' ? 0 : -1}}">{{wizardFooter.primaryLabel}}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer creazione lega -->
+    <div class="fa-wizard-footer" ng-if="!showSettings">
+      <div class="fa-wizard-footer__bar">
+        <div class="fa-wizard-footer__nav">
+          <button type="button"
+                  class="fa-btn fa-btn--secondary fa-wizard-footer__btn"
+                  ng-class="{'is-shown': wizardFooter.prev}"
+                  ng-click="wizardPrev()"
+                  ng-disabled="wizardBusy"
+                  tabindex="{{wizardFooter.prev ? 0 : -1}}">Indietro</button>
+        </div>
+        <div class="fa-wizard-footer__hint" ng-class="{'is-shown': wizardFooter.hint}">Modifiche da salvare</div>
+        <div class="fa-wizard-footer__actions">
+          <button type="button"
+                  class="fa-btn fa-btn--primary fa-wizard-footer__btn fa-wizard-footer__btn--primary"
+                  ng-class="{'is-shown': wizardFooter.primary !== 'none'}"
+                  ng-click="wizardFooterPrimaryAction()"
+                  ng-disabled="wizardFooter.primaryDisabled"
+                  tabindex="{{wizardFooter.primary !== 'none' ? 0 : -1}}">{{wizardFooter.primaryLabel}}</button>
+        </div>
+      </div>
+    </div><!-- .fa-wizard-footer -->
+  </div>
+</div>

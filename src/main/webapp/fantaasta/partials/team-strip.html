@@ -1,0 +1,159 @@
+<div class="fa-panel fa-team-section fa-desktop-only">
+  <div class="fa-panel__head fa-panel__head--compact">
+    <span>Squadre</span>
+    <span class="fa-panel__meta">{{elencoAllenatori.length}} partecipanti</span>
+  </div>
+  <div class="fa-team-grid-wrap">
+    <div class="fa-team-grid">
+      <div class="fa-team-card fa-team-card--compact"
+           ng-repeat="utente in elencoAllenatori | orderBy:'ordine'"
+           ng-class="{'is-me': isMiaSquadra(utente), 'is-turn': haIlTurnoUtente(utente)}"
+           ng-style="{'--team-accent': teamColor(utente.ordine)}">
+        <span class="fa-team-card__turn-icon" ng-show="haIlTurnoUtente(utente)" title="Ha il turno">
+          <i class="fa fa-gavel"></i>
+        </span>
+        <div class="fa-team-card__head">
+          <div class="fa-team-status-badge"
+               ng-class="teamStatusBadgeClass(utente)"
+               title="{{isSquadraConnessa(utente) ? (qualitaConnessioneSquadra(utente).label + ' (' + pingSquadraMs(utente) + 'ms)') : 'Disconnesso'}}">
+            <span class="fa-team-status-badge__label" ng-if="isSquadraConnessa(utente)">{{qualitaConnessioneSquadra(utente).label}}</span>
+            <span class="fa-team-status-badge__offline" ng-if="!isSquadraConnessa(utente)">—</span>
+          </div>
+          <div class="fa-team-card__name" title="{{utente.nuovoNome || utente.nome}}">{{utente.nuovoNome || utente.nome}}</div>
+        </div>
+        <div class="fa-team-card__body">
+          <div class="fa-budget-bar fa-budget-bar--compact">
+            <div class="fa-budget-bar__fill" ng-style="{'width': (getFromMapSpesoTotale('SPESO', utente.nome) / budget * 100) + '%'}"></div>
+          </div>
+          <div class="fa-purchase-list fa-purchase-list--strip">
+            <div class="fa-rosa-slot"
+                 ng-repeat="slot in rosaSlotSquadra(utente) track by $index"
+                 ng-class="{'is-empty': !slot.g, 'is-filled': !!slot.g, 'is-clickable': isAdmin && slot.g, 'is-new': slot.g && isAcquistoRecente(slot.g)}"
+                 ng-click="apriDettaglioAcquisto(slot, utente, $event)">
+              <span class="fa-role-badge" ng-class="roleClass(slot.ruolo)">{{slot.ruolo}}</span>
+              <span class="fa-rosa-slot__name" ng-if="slot.g" title="{{slot.g.nome}}">{{slot.g.nome}}</span>
+              <span class="fa-rosa-slot__new" ng-if="slot.g && isAcquistoRecente(slot.g)">Nuovo</span>
+              <span class="fa-rosa-slot__price" ng-if="slot.g">{{slot.g.costo}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="fa-team-card__footer fa-team-stats fa-team-stats--compact fa-team-stats--footer">
+          <span>Speso <strong>{{getFromMapSpesoTotale('SPESO', utente.nome)}}</strong></span>
+          <span>Residuo <strong>{{budget - getFromMapSpesoTotale('SPESO', utente.nome)}}</strong></span>
+          <span>Max <strong>{{getFromMapSpesoTotale('MAXRILANCIO', utente.nome)}}</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile teams tab -->
+<div class="fa-tab-pane fa-tab-pane--teams fa-mobile-tab" ng-class="{'is-active': uiTab === 'teams'}">
+  <div class="fa-teams-search" role="search">
+    <div class="fa-teams-search__row">
+      <label class="fa-teams-search__field">
+        <i class="fa fa-search" aria-hidden="true"></i>
+        <input type="search"
+               class="fa-teams-search__input"
+               ng-model="$root.teamsSearchQ"
+               ng-model-options="{ debounce: 120 }"
+               ng-change="onTeamsSearchInput()"
+               ng-keydown="onTeamsSearchKeydown($event)"
+               placeholder="Cerca giocatore o squadra"
+               autocomplete="off"
+               autocorrect="off"
+               spellcheck="false"
+               enterkeyhint="search"
+               aria-label="Cerca giocatore o squadra">
+        <button type="button"
+                class="fa-teams-search__clear"
+                ng-show="$root.teamsSearchQ"
+                ng-click="clearTeamsSearch()"
+                title="Cancella"
+                aria-label="Cancella ricerca">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
+      </label>
+      <div class="fa-teams-search__nav" ng-show="$root.teamsSearchQ">
+        <span class="fa-teams-search__count"
+              ng-class="{'is-empty': !$root.teamsSearchMatches.length}">
+          <span ng-show="$root.teamsSearchMatches.length">{{$root.teamsSearchIndex + 1}}/{{$root.teamsSearchMatches.length}}</span>
+          <span ng-show="!$root.teamsSearchMatches.length">0</span>
+        </span>
+        <button type="button"
+                class="fa-teams-search__btn"
+                ng-click="teamsSearchPrev()"
+                ng-disabled="!$root.teamsSearchMatches.length"
+                title="Precedente"
+                aria-label="Risultato precedente">
+          <i class="fa fa-chevron-up" aria-hidden="true"></i>
+        </button>
+        <button type="button"
+                class="fa-teams-search__btn"
+                ng-click="teamsSearchNext()"
+                ng-disabled="!$root.teamsSearchMatches.length"
+                title="Successivo"
+                aria-label="Risultato successivo">
+          <i class="fa fa-chevron-down" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="fa-team-grid-wrap fa-team-grid-wrap--mobile" id="fa-teams-scroll">
+    <div class="fa-team-grid fa-team-grid--responsive">
+      <div class="fa-team-card fa-team-card--compact"
+           ng-repeat="utente in elencoAllenatori | orderBy:'ordine'"
+           data-teams-hit="{{teamsSearchTeamKey(utente)}}"
+           ng-class="{
+             'is-me': isMiaSquadra(utente),
+             'is-turn': haIlTurnoUtente(utente),
+             'is-search-hit': isTeamsSearchHit(teamsSearchTeamKey(utente)),
+             'is-search-active': isTeamsSearchActive(teamsSearchTeamKey(utente))
+           }"
+           ng-style="{'--team-accent': teamColor(utente.ordine)}">
+        <span class="fa-team-card__turn-icon" ng-show="haIlTurnoUtente(utente)" title="Ha il turno">
+          <i class="fa fa-gavel"></i>
+        </span>
+        <div class="fa-team-card__head">
+          <div class="fa-team-status-badge"
+               ng-class="teamStatusBadgeClass(utente)"
+               title="{{isSquadraConnessa(utente) ? qualitaConnessioneSquadra(utente).label : 'Disconnesso'}}">
+            <span class="fa-team-status-badge__label" ng-if="isSquadraConnessa(utente)">{{qualitaConnessioneSquadra(utente).label}}</span>
+            <span class="fa-team-status-badge__offline" ng-if="!isSquadraConnessa(utente)">—</span>
+          </div>
+          <div class="fa-team-card__name" title="{{utente.nuovoNome || utente.nome}}">{{utente.nuovoNome || utente.nome}}</div>
+        </div>
+        <div class="fa-team-card__body">
+          <div class="fa-budget-bar fa-budget-bar--compact">
+            <div class="fa-budget-bar__fill" ng-style="{'width': (getFromMapSpesoTotale('SPESO', utente.nome) / budget * 100) + '%'}"></div>
+          </div>
+          <div class="fa-purchase-list fa-purchase-list--mobile">
+            <div class="fa-rosa-slot"
+                 ng-repeat="slot in rosaSlotSquadra(utente) track by $index"
+                 data-teams-hit="{{teamsSearchPlayerKey(utente, $index)}}"
+                 ng-class="{
+                   'is-empty': !slot.g,
+                   'is-filled': !!slot.g,
+                   'is-clickable': isAdmin && slot.g,
+                   'is-new': slot.g && isAcquistoRecente(slot.g),
+                   'is-search-hit': slot.g && isTeamsSearchHit(teamsSearchPlayerKey(utente, $index)),
+                   'is-search-active': slot.g && isTeamsSearchActive(teamsSearchPlayerKey(utente, $index))
+                 }"
+                 ng-click="apriDettaglioAcquisto(slot, utente, $event)">
+              <span class="fa-role-badge" ng-class="roleClass(slot.ruolo)">{{slot.ruolo}}</span>
+              <span class="fa-rosa-slot__name" ng-if="slot.g" title="{{slot.g.nome}}">{{slot.g.nome}}</span>
+              <span class="fa-rosa-slot__new" ng-if="slot.g && isAcquistoRecente(slot.g)">Nuovo</span>
+              <span class="fa-rosa-slot__price" ng-if="slot.g">{{slot.g.costo}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="fa-team-card__footer fa-team-stats fa-team-stats--compact fa-team-stats--footer">
+          <span>Speso <strong>{{getFromMapSpesoTotale('SPESO', utente.nome)}}</strong></span>
+          <span>Residuo <strong>{{budget - getFromMapSpesoTotale('SPESO', utente.nome)}}</strong></span>
+          <span>Max <strong>{{getFromMapSpesoTotale('MAXRILANCIO', utente.nome)}}</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

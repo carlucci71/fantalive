@@ -17,6 +17,9 @@ const {
   bidIncrement,
   selectOperaCome,
   terminaAsta,
+  pausaAsta,
+  resumeAsta,
+  annullaAsta,
   confermaAsta,
   setupAdminLega,
 } = require('./helpers/asta-helpers');
@@ -131,6 +134,40 @@ test.describe('FantaAsta browser flow (admin + utente)', () => {
 
     await ctxAdmin.close();
     await ctxUser.close();
+  });
+
+  test('pausa e riprendi: offerta e timer restano coerenti', async ({ page }) => {
+    await setupAdminLega(page);
+    await loginAsta(page, 'GIOC0', 0);
+    await startAuctionForPlayer(page, PLAYER_1);
+
+    await page.waitForFunction(() => {
+      const r = angular.element(document.body).scope().$root;
+      return r.faseAsta === 'BIDDING' && r.contaTempo > 500;
+    }, null, { timeout: 15000 });
+
+    await pausaAsta(page);
+    const paused = await getRootState(page);
+    expect(paused.faseAsta).toBe('PAUSA');
+    expect(paused.offertaVincente.calciatore).toBe(PLAYER_1);
+
+    await resumeAsta(page);
+    const live = await getRootState(page);
+    expect(live.faseAsta).toBe('BIDDING');
+    expect(live.offertaVincente.calciatore).toBe(PLAYER_1);
+  });
+
+  test('annulla asta e avvia subito la successiva', async ({ page }) => {
+    await setupAdminLega(page);
+    await loginAsta(page, 'GIOC0', 0);
+    await startAuctionForPlayer(page, PLAYER_1);
+    await terminaAsta(page);
+    await annullaAsta(page);
+
+    await startAuctionForPlayer(page, PLAYER_2);
+    const state = await getRootState(page);
+    expect(state.faseAsta).toBe('BIDDING');
+    expect(state.offertaVincente.calciatore).toBe(PLAYER_2);
   });
 
   test('flusso completo: setup admin → 2 aste → stato finale coerente', async ({ browser }) => {

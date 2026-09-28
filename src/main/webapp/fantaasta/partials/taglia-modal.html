@@ -1,0 +1,24 @@
+<div class="fa-overlay-screen fa-taglia-overlay" ng-if="tagliaModal" ng-click="chiudiTagliaModal()">
+  <div class="fa-card fa-taglia-card" ng-click="$event.stopPropagation()">
+    <h2 class="fa-taglia-card__title">Dettaglio acquisto</h2>
+    <div class="fa-taglia-card__player">
+      <span class="fa-role-badge fa-role-badge--lg" ng-class="roleClass(tagliaModal.ruolo)">{{tagliaModal.ruolo}}</span>
+      <div>
+        <div class="fa-taglia-card__name" title="{{tagliaModal.giocatore}}">{{tagliaModal.giocatore}}</div>
+        <div class="fa-taglia-card__meta" title="{{tagliaModal.squadra}}">{{tagliaModal.squadra}} <span ng-if="tagliaModal.under23">· Under 23</span></div>
+      </div>
+    </div>
+    <dl class="fa-taglia-card__facts">
+      <div><dt>Allenatore</dt><dd>{{tagliaModal.allenatore}}</dd></div>
+      <div><dt>Costo asta</dt><dd>{{tagliaModal.costo}}</dd></div>
+      <div><dt>ID giocatore</dt><dd>{{tagliaModal.idGiocatore}}</dd></div>
+    </dl>
+    <p class="fa-taglia-card__hint">Il taglio restituisce <strong>{{tagliaModal.costo}}</strong> crediti a {{tagliaModal.allenatore}} e rimette il giocatore tra i liberi.</p>
+    <div class="fa-taglia-card__actions">
+      <button type="button" class="fa-btn fa-btn--secondary" ng-click="chiudiTagliaModal()" ng-disabled="tagliaBusy">Annulla</button>
+      <button type="button" class="fa-btn fa-btn--danger" ng-click="confermaTagliaAcquisto()" ng-disabled="tagliaBusy">
+        {{tagliaBusy ? 'Taglio…' : 'Taglia'}}
+      </button>
+    </div>
+  </div>
+</div>

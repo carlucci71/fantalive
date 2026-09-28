@@ -49,8 +49,33 @@ public class AstaDevSeedController {
         this.socketHandler = socketHandler;
     }
 
+    @PostMapping("/reset-asta")
+    public Map<String, Object> resetAsta() throws Exception {
+        socketHandler.resetAstaIdleAndBroadcast();
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("ok", true);
+        ret.put("faseAsta", "IDLE");
+        return ret;
+    }
+
+    @PostMapping("/reset")
+    public Map<String, Object> reset() throws Exception {
+        socketHandler.disconnectAll();
+        socketHandler.resetForDevTest();
+        loggerRepository.deleteAll();
+        fantaroseRepository.deleteAll();
+        giocatoriRepository.deleteAll();
+        allenatoriRepository.deleteAll();
+        configurazioneRepository.deleteAll();
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("ok", true);
+        ret.put("stato", "DA_CONFIGURARE");
+        return ret;
+    }
+
     @PostMapping("/seed")
-    public Map<String, Object> seed() {
+    public Map<String, Object> seed() throws Exception {
+        socketHandler.disconnectAll();
         socketHandler.resetForDevTest();
         loggerRepository.deleteAll();
         fantaroseRepository.deleteAll();
@@ -60,7 +85,7 @@ public class AstaDevSeedController {
 
         Configurazione cfg = new Configurazione();
         cfg.setId(0);
-        cfg.setNumeroGiocatori(3);
+        cfg.setNumeroGiocatori(8);
         cfg.setBudget(500);
         cfg.setDurataAsta(30);
         cfg.setNumeroAcquisti(25);
@@ -78,11 +103,12 @@ public class AstaDevSeedController {
         cfg.setMantra(false);
         configurazioneRepository.save(cfg);
 
-        for (int i = 0; i < 3; i++) {
+        String[] squadre = {"GIOC0", "GIOC1", "ROMA", "MILAN", "NAPOLI", "INTER", "LAZIO", "JUVE"};
+        for (int i = 0; i < squadre.length; i++) {
             Allenatori al = new Allenatori();
             al.setId(i);
             al.setOrdine(i);
-            al.setNome("GIOC" + i);
+            al.setNome(squadre[i]);
             al.setPwd("");
             al.setIsAdmin(i == 0);
             allenatoriRepository.save(al);
@@ -94,7 +120,7 @@ public class AstaDevSeedController {
 
         Map<String, Object> ret = new HashMap<>();
         ret.put("ok", true);
-        ret.put("utenti", 3);
+        ret.put("utenti", 8);
         ret.put("giocatori", 3);
         return ret;
     }
