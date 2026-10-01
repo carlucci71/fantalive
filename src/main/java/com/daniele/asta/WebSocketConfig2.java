@@ -41,6 +41,7 @@ public class WebSocketConfig2 implements WebSocketConfigurer {
 	@Autowired SocketHandler socketHandler;
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		registry.addHandler(socketHandler, "/messaggi-websocket")
+		.setAllowedOriginPatterns("*")
 		.addInterceptors(new HttpSessionIdHandshakeInterceptor());
 	}
 

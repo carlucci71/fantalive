@@ -85,7 +85,7 @@ app.run(
 				}
 			});
 			$rootScope.budget=500;
-			$rootScope.FA_CACHE_BUST = '20250925ui178';
+			$rootScope.FA_CACHE_BUST = '20250925ui182';
 			$rootScope.durataAstaDefault=15;
 			$rootScope.applyDurataAstaFromServer = function(seconds) {
 				var n = parseInt(seconds, 10);

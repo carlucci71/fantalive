@@ -1,8 +1,8 @@
 # Roadmap sistemazione FantaLive
 
-> Ultimo aggiornamento: 2026-10-01 — Admin seleziona sempre i giocatori (ui178); Opera come solo per Avvia.
+> Ultimo aggiornamento: 2026-10-01 — ?mobile=1: UI portrait + gabbia 390px; overlay ruota solo UA reale (ui182).
 > **Iniziativa attiva:** S14 UI/UX FantaAsta — rifinitura mobile verticale  
-> **Prossimo passo:** deploy ui178 su web e verifica click giocatore come admin fuori turno
+> **Prossimo passo:** conferma ?mobile=1 vs PC senza param
 
 ---
 
@@ -27,6 +27,10 @@
 
 ### Note recenti (2026-10-01)
 
+- **S14 home ui182:** `?mobile=1` — `isMobilePortraitUi()` sempre true + gabbia body 390px (debug telefono su PC); overlay ruota solo UA mobile reale.
+- **S14 home ui181:** `?mobile=1` → `isMobilePortraitUi()` sempre true (layout mobile/tab bar anche su finestra landscape); overlay ruota resta solo UA telefono.
+- **S14 home ui180:** overlay «Solo verticale» solo se UA telefono/tablet; `?mobile=1` forza layout mobile ma non più l’overlay (restava attivo in Cursor via localStorage da test precedenti).
+- **S14 home ui179:** overlay «Solo verticale» / `fa-ui-mobile-land` solo se dispositivo mobile (UA/touch) o `?mobile=1`; rimosso trigger CSS `orientation+max-height:560` che scattava ridimensionando il browser PC.
 - **S14 home ui178:** admin — click su giocatore seleziona sempre (anche fuori turno); non va più in preferito. `puoSelezionareGiocatoreIdle` torna `true` per admin; Opera come resta solo per abilitare Avvia.
 - **S14 home ui177:** admin su PC/web — in IDLE lo split a 3 (giocatore | live | Opera come) è sempre visibile, anche senza giocatore selezionato (prima solo su mobile). Codice remoto era già allineato: differenza di viewport.
 - **S14 home ui176:** login — un solo `connessioneKO` (niente doppio banner globale+card); dopo fine sessione riapre WS anonimo e azzera il messaggio a socket pronto (`$applyAsync`); PC + telefono.

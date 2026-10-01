@@ -41,6 +41,28 @@
 			return { w: w, h: h };
 		}
 
+		/** Telefono/tablet reale da UA/touch. Non include ?mobile=1 (solo layout debug). */
+		function faIsPhoneDevice() {
+			try {
+				var ua = navigator.userAgent || navigator.vendor || '';
+				if (/Android.+Mobile|iPhone|iPod|Windows Phone|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua)) {
+					return true;
+				}
+				if (/iPad/i.test(ua)) {
+					return true;
+				}
+				if (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1) {
+					return true;
+				}
+				if (/Android/i.test(ua) && !/Windows NT/i.test(ua)) {
+					return true;
+				}
+				return false;
+			} catch (e) {
+				return false;
+			}
+		}
+
 		function faIsLandscapeViewport() {
 			try {
 				var s = faViewportSize();
@@ -50,13 +72,13 @@
 			}
 		}
 
+		/** Layout responsive stretto (tab bar, split). Su PC ridimensionato OK; non implica "telefono". */
 		function faIsMobileViewport() {
 			try {
 				if (document.documentElement.classList.contains('fa-force-mobile')) {
 					return true;
 				}
 				var s = faViewportSize();
-				// Telefono: lato corto < 520 (vale anche in landscape largo)
 				if (Math.min(s.w, s.h) < 520) {
 					return true;
 				}
@@ -71,6 +93,9 @@
 
 		function faTryLockPortrait() {
 			try {
+				if (!faIsPhoneDevice()) {
+					return;
+				}
 				if (screen.orientation && typeof screen.orientation.lock === 'function') {
 					var p = screen.orientation.lock('portrait');
 					if (p && typeof p.catch === 'function') {
@@ -84,24 +109,37 @@
 			try {
 				var s = faViewportSize();
 				var land = faIsLandscapeViewport();
-				var mobile = faIsMobileViewport();
+				var phone = faIsPhoneDevice();
 				document.documentElement.classList.toggle('fa-ui-landscape', land);
 				document.documentElement.classList.toggle('fa-ui-portrait', !land);
-				document.documentElement.classList.toggle('fa-ui-mobile-land', !!(land && mobile));
+				// Overlay ruota + layout phone-landscape: solo dispositivo mobile reale (mai ?mobile=1 su PC)
+				document.documentElement.classList.toggle('fa-ui-mobile-land', !!(land && phone));
 				document.documentElement.style.setProperty('--fa-vw', s.w + 'px');
 				document.documentElement.style.setProperty('--fa-vh', s.h + 'px');
-				if (mobile) {
+				if (phone) {
 					faTryLockPortrait();
 				}
 			} catch (e) {}
 		}
 
 		$rootScope.isMobilePortraitUi = function() {
+			// ?mobile=1: forza UI portrait mobile anche se la finestra PC è landscape
+			if (document.documentElement.classList.contains('fa-force-mobile')) {
+				return true;
+			}
 			return faIsMobileViewport() && !faIsLandscapeViewport();
 		};
 
 		$rootScope.isMobileLandscapeUi = function() {
-			return faIsMobileViewport() && faIsLandscapeViewport();
+			// Landscape telefono reale; con ?mobile=1 restiamo in modalità portrait debug
+			if (document.documentElement.classList.contains('fa-force-mobile')) {
+				return false;
+			}
+			return faIsPhoneDevice() && faIsLandscapeViewport();
+		};
+
+		$rootScope.isPhoneDeviceUi = function() {
+			return faIsPhoneDevice();
 		};
 
 		// Rotazione telefono: classe html + digest Angular

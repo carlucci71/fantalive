@@ -4157,21 +4157,28 @@ body.fa-app img:not([title]) { width: auto; height: auto; max-width: 100%; }
 .calciatoreSelezionato { background: rgba(123, 156, 255, 0.15) !important; }
 .calciatoreNonSelezionato { background: transparent; }
 
-/* Force mobile layout for testing (?mobile=1) — full width, stack verticale */
+/* Force mobile layout for testing (?mobile=1) — colonna telefono ~390px, stack verticale */
+html.fa-force-mobile {
+  background: #070a10;
+}
 html.fa-force-mobile body.fa-app {
-  max-width: none;
-  width: 100%;
-  margin: 0;
+  max-width: 390px !important;
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
   min-height: 100dvh;
   height: 100dvh !important;
   max-height: 100dvh !important;
   overflow: hidden !important;
   padding-bottom: calc(var(--tab-bar-h) + var(--safe-bottom)) !important;
   border: none;
-  box-shadow: none;
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  background: var(--bg-deep);
 }
 html.fa-force-mobile .fa-mobile-only:not(.ng-hide) { display: block !important; }
 html.fa-force-mobile .fa-mobile-only.ng-hide { display: none !important; }
@@ -4617,12 +4624,6 @@ html.fa-ui-mobile-land .fa-rotate-lock {
   display: flex;
 }
 
-@media (orientation: landscape) and (max-height: 560px) {
-  .fa-rotate-lock {
-    display: flex;
-  }
-}
-
 .fa-rotate-lock__card {
   text-align: center;
   max-width: 320px;
@@ -4676,12 +4677,7 @@ html.fa-ui-mobile-land .fa-rotate-lock {
 }
 
 /* —— Phone landscape: layout PC a tutta larghezza, scroll verticale —— */
-/* Trigger: classe JS fa-ui-mobile-land OPPURE altezza corta in landscape (iOS) */
-@media (orientation: landscape) and (max-height: 560px) {
-  html:not(.fa-ui-portrait) {
-    /* marker per regole sotto via stessa media */
-  }
-}
+/* Solo via classe JS fa-ui-mobile-land (dispositivo mobile o ?mobile=1), mai solo viewport PC */
 
 html.fa-ui-mobile-land,
 html.fa-force-mobile.fa-ui-mobile-land {
@@ -4982,88 +4978,4 @@ html.fa-ui-mobile-land .fa-auction-split--admin .fa-auction-split__admin {
   min-height: 0 !important;
   height: auto !important;
   overflow: auto;
-}
-
-/* Backup CSS puro (se la classe JS arriva in ritardo): telefono landscape basso */
-@media (orientation: landscape) and (max-height: 560px) {
-  body.fa-app {
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding-bottom: 0 !important;
-    padding-left: env(safe-area-inset-left, 0px) !important;
-    padding-right: env(safe-area-inset-right, 0px) !important;
-  }
-
-  .fa-tab-bar.fa-mobile-only,
-  .fa-mobile-only.fa-tab-bar {
-    display: none !important;
-  }
-
-  .fa-desktop-only { display: block !important; }
-  .fa-team-section.fa-desktop-only { display: flex !important; }
-
-  .fa-tab-pane--teams.fa-mobile-tab,
-  .fa-tab-pane--ops.fa-mobile-tab,
-  .fa-tab-pane--teams.fa-mobile-tab.is-active,
-  .fa-tab-pane--ops.fa-mobile-tab.is-active {
-    display: none !important;
-  }
-
-  .fa-board-scroll {
-    display: block !important;
-    width: 100% !important;
-    max-width: none !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-  }
-
-  .fa-board {
-    display: grid !important;
-    grid-template-rows: auto minmax(220px, auto) auto !important;
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    height: auto !important;
-  }
-
-  .fa-board__main {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) minmax(160px, 28%) !important;
-    width: 100% !important;
-  }
-
-  .fa-tab-pane--auction,
-  .fa-tab-pane--players {
-    display: flex !important;
-  }
-
-  .fa-team-section {
-    min-height: 280px !important;
-    height: 42vh !important;
-  }
-
-  .fa-team-section .fa-team-grid {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: stretch !important;
-    width: 100% !important;
-    height: 100% !important;
-    grid-template-columns: none !important;
-  }
-
-  .fa-team-section .fa-team-card,
-  .fa-team-section .fa-team-card--compact {
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-    height: 100% !important;
-  }
-
-  .fa-team-section .fa-purchase-list--strip {
-    display: flex !important;
-    flex-direction: column !important;
-    overflow-y: auto !important;
-    min-height: 96px !important;
-    flex: 1 1 auto !important;
-  }
 }
