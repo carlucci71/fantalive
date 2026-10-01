@@ -1,8 +1,8 @@
 # Roadmap sistemazione FantaLive
 
-> Ultimo aggiornamento: 2026-09-28 — Login: un solo alert socket, si toglie a WS pronto (ui176).
+> Ultimo aggiornamento: 2026-10-01 — Admin seleziona sempre i giocatori (ui178); Opera come solo per Avvia.
 > **Iniziativa attiva:** S14 UI/UX FantaAsta — rifinitura mobile verticale  
-> **Prossimo passo:** verifica login messaggio socket PC + telefono (ui176)
+> **Prossimo passo:** deploy ui178 su web e verifica click giocatore come admin fuori turno
 
 ---
 
@@ -25,9 +25,14 @@
 |----|------|----------|
 | — | `$apply()` → `$applyAsync` in `getMessaggio` | Bassa |
 
+### Note recenti (2026-10-01)
+
+- **S14 home ui178:** admin — click su giocatore seleziona sempre (anche fuori turno); non va più in preferito. `puoSelezionareGiocatoreIdle` torna `true` per admin; Opera come resta solo per abilitare Avvia.
+- **S14 home ui177:** admin su PC/web — in IDLE lo split a 3 (giocatore | live | Opera come) è sempre visibile, anche senza giocatore selezionato (prima solo su mobile). Codice remoto era già allineato: differenza di viewport.
+- **S14 home ui176:** login — un solo `connessioneKO` (niente doppio banner globale+card); dopo fine sessione riapre WS anonimo e azzera il messaggio a socket pronto (`$applyAsync`); PC + telefono.
+
 ### Note recenti (2026-09-28)
 
-- **S14 home ui176:** login — un solo `connessioneKO` (niente doppio banner globale+card); dopo fine sessione riapre WS anonimo e azzera il messaggio a socket pronto (`$applyAsync`); PC + telefono.
 - **S14 home ui166:** tab Giocatori — lista sempre attiva; fuori turno click riga = toggle preferito (come stella), non selezione asta; tolto `is-locked`.
 - **S14 home ui165:** tab Giocatori — tasto **Reset** filtri a sinistra della ★ (nome/ruolo/squadra/preferiti/sort); attivo solo se filtri modificati; PC+mobile.
 - **S14 home ui164:** fix scroll tab Giocatori — catena flex `pane → panel → body → .fa-player-list` con `min-height:0` + `overflow-y:auto` (mobile + force-mobile).

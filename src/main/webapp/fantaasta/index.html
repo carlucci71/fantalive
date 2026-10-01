@@ -72,7 +72,7 @@
     })();
   </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="./fantaasta-ui.css?v=20250925ui176">
+  <link rel="stylesheet" href="./fantaasta-ui.css?v=20250925ui178">
   <link rel="stylesheet" href="./stile.css?v=20250925ui">
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-resource.js"></script>
@@ -81,8 +81,8 @@
 <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.6.1/angular-locale_it-it.min.js"></script>
   <script src="./ws-connection.js?v=20250925ui"></script>
-  <script src="./app.js?v=20250925ui176"></script>
-  <script src="./fa-ui.js?v=20250925ui176"></script>
+  <script src="./app.js?v=20250925ui178"></script>
+  <script src="./fa-ui.js?v=20250925ui178"></script>
 </head>
 <body class="fa-app" ng-app="app">
 
@@ -122,10 +122,10 @@
   <div class="fa-alert" ng-show="connessioneKO && !showLoginScreen()">{{connessioneKO}}</div>
 
   <!-- Login (sempre primo passo se non connesso) -->
-  <div ng-if="showLoginScreen()" ng-include="'./partials/login-screen.html?v=20250925ui176'"></div>
+  <div ng-if="showLoginScreen()" ng-include="'./partials/login-screen.html?v=20250925ui178'"></div>
 
   <!-- Wizard / setup admin -->
-  <div ng-if="needsWizard()" ng-include="'./partials/wizard.html?v=20250925ui176'"></div>
+  <div ng-if="needsWizard()" ng-include="'./partials/wizard.html?v=20250925ui178'"></div>
 
   <!-- Main board (scrollport landscape = layout PC) -->
   <div class="fa-board-scroll" ng-if="!needsWizard() && !showLoginScreen() && nomegiocatore">
@@ -133,17 +133,17 @@
 
     <div class="fa-board__main">
       <div class="fa-tab-pane fa-tab-pane--auction" ng-class="{'is-active': uiTab === 'asta'}"
-           ng-include="'./partials/auction-panel.html?v=20250925ui176'"></div>
+           ng-include="'./partials/auction-panel.html?v=20250925ui178'"></div>
       <div class="fa-tab-pane fa-tab-pane--players" ng-class="{'is-active': uiTab === 'players'}"
-           ng-include="'./partials/player-sidebar.html?v=20250925ui176'"></div>
+           ng-include="'./partials/player-sidebar.html?v=20250925ui178'"></div>
 				</div>
 				
-    <div class="fa-board__teams-host" ng-include="'./partials/team-strip.html?v=20250925ui176'"></div>
-    <div class="fa-board__ops-host" ng-include="'./partials/ops-panel.html?v=20250925ui176'"></div>
+    <div class="fa-board__teams-host" ng-include="'./partials/team-strip.html?v=20250925ui178'"></div>
+    <div class="fa-board__ops-host" ng-include="'./partials/ops-panel.html?v=20250925ui178'"></div>
 			</div>
   </div>
 
-  <div ng-include="'./partials/taglia-modal.html?v=20250925ui176'"></div>
+  <div ng-include="'./partials/taglia-modal.html?v=20250925ui178'"></div>
 
   <!-- Mobile tab bar (solo portrait) -->
   <nav class="fa-tab-bar fa-mobile-only" ng-show="!needsWizard() && !showLoginScreen() && isMobilePortraitUi()">

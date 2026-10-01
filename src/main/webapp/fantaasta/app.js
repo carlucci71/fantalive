@@ -85,7 +85,7 @@ app.run(
 				}
 			});
 			$rootScope.budget=500;
-			$rootScope.FA_CACHE_BUST = '20250925ui176';
+			$rootScope.FA_CACHE_BUST = '20250925ui178';
 			$rootScope.durataAstaDefault=15;
 			$rootScope.applyDurataAstaFromServer = function(seconds) {
 				var n = parseInt(seconds, 10);
@@ -1759,8 +1759,10 @@ app.run(
 				if (!calciatore || !$rootScope.calciatoreAncoraDisponibile(calciatore.id)) {
 					return;
 				}
-				// Fuori turno: click riga = preferito (come la stella). Eccezione: flusso Assegna admin.
-				if (!$rootScope.pendingAssegna
+				// Fuori turno: click riga = preferito (come la stella).
+				// Eccezioni: admin (seleziona sempre) e flusso Assegna.
+				if (!$rootScope.isAdmin
+						&& !$rootScope.pendingAssegna
 						&& $rootScope.puoSelezionareGiocatoreIdle
 						&& !$rootScope.puoSelezionareGiocatoreIdle()) {
 					$rootScope.togglePreferito(calciatore);

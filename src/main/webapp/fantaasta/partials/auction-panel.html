@@ -4,9 +4,9 @@
   </div>
   <div class="fa-panel__body fa-auction">
 
-    <!-- IDLE senza selezione — solo desktop (su mobile usiamo sempre lo split) -->
+    <!-- IDLE senza selezione — solo desktop non-admin (admin e mobile: sempre lo split con Opera come) -->
     <div class="fa-auction-empty-full"
-         ng-show="faseAsta==='IDLE' && !timeout && !selCalciatoreId && !isMobilePortraitUi()">
+         ng-show="faseAsta==='IDLE' && !timeout && !selCalciatoreId && !isMobilePortraitUi() && !isAdmin">
       <div ng-show="puoSelezionareGiocatoreIdle()" class="fa-auction-empty-full__inner">
         <div class="fa-auction-empty__icon">
           <i class="fa fa-hand-pointer-o"></i>
@@ -28,9 +28,9 @@
       </div>
     </div>
 
-    <!-- IDLE mobile: 2 sezioni (player|live) tutti; 3 sezioni se admin. Desktop: solo con giocatore selezionato -->
+    <!-- IDLE: split 2 (player|live) / 3 se admin. Anche su PC admin senza selezione (Opera come sempre visibile) -->
     <div class="fa-auction-split" ng-class="{'fa-auction-split--admin': isAdmin}"
-         ng-show="faseAsta==='IDLE' && !timeout && (selCalciatoreId || isMobilePortraitUi())">
+         ng-show="faseAsta==='IDLE' && !timeout && (selCalciatoreId || isMobilePortraitUi() || isAdmin)">
       <div class="fa-auction-split__player">
         <div class="fa-auction-player" ng-show="selCalciatoreId">
           <div class="fa-auction-player__main">

@@ -1906,7 +1906,7 @@
 		};
 
 		/** Detentore del turno (o tutti se non a turni) può aprire la selezione.
-		 *  Admin: solo se Opera come è chi ha il turno (come su PC al suo posto). */
+		 *  Admin: può sempre selezionare; Opera come influenza solo Avvia asta. */
 		$rootScope.puoSelezionareGiocatoreIdle = function() {
 			if (!$rootScope.nomeUtenteAttivo || !$rootScope.nomeUtenteAttivo()) {
 				return false;
@@ -1915,18 +1915,7 @@
 				return true;
 			}
 			if ($rootScope.isAdmin) {
-				var puntaId = $rootScope.astaPuntaId && $rootScope.astaPuntaId();
-				var teams = $rootScope.elencoAllenatori || [];
-				for (var i = 0; i < teams.length; i++) {
-					if (String(teams[i].id) === String(puntaId) && $rootScope.isAllenatoreDiTurno(teams[i])) {
-						return true;
-					}
-				}
-				var punta = $rootScope.astaPuntaNome && $rootScope.astaPuntaNome();
-				if ($rootScope.nomeGiocatoreTurno && punta && $rootScope.nomeGiocatoreTurno === punta) {
-					return true;
-				}
-				return false;
+				return true;
 			}
 			var me = $rootScope.nomeUtenteAttivo();
 			if ($rootScope.nomeGiocatoreTurno && me && $rootScope.nomeGiocatoreTurno === me) {
