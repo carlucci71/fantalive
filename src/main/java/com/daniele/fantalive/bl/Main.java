@@ -513,10 +513,10 @@ motm->0.0
             sq.put(129, "SPE");
             sq.put(137, "SAL");
             sq.put(138, "VEN");
-//            sq.put(143, "MON");
-            sq.put(144, "CRE");
+            sq.put(143, "MON");
+//            sq.put(144, "CRE");
             sq.put(153, "COM");
-            sq.put(157, "PIS");
+//            sq.put(157, "PIS");
         }
         if (configsCampionato == null) {
             configsCampionato = new ArrayList<ConfigCampionato>();
@@ -3647,6 +3647,9 @@ motm->0.0
     public static void cambiaNomiFS(Giocatore giocatore) {
         //https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/20/live_14.json VERIFICA
         giocatore.setNomeFSCambiato(giocatore.getNomeFS());
+        if (giocatore.getIdFs().equals("111438")){//1111438
+            giocatore.setNomeFSCambiato("Soulè");
+        }
         if (giocatore.getSquadra().equalsIgnoreCase("Cag") && giocatore.getNomeFS().equalsIgnoreCase("esposito"))
             giocatore.setNomeFSCambiato("Esposito Se.");
         if (giocatore.getSquadra().equalsIgnoreCase("Int") && giocatore.getNomeFS().equalsIgnoreCase("esposito"))
