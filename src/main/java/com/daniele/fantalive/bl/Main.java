@@ -3645,162 +3645,66 @@ motm->0.0
     }
 
     public static void cambiaNomiFS(Giocatore giocatore) {
-        //https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/20/live_14.json VERIFICA
+        //https://d2lhpso9w1g8dk.cloudfront.net/web/risorse/dati/live/21/live_14.json VERIFICA
         giocatore.setNomeFSCambiato(giocatore.getNomeFS());
-        if (giocatore.getIdFs().equals("111438")){//1111438
-            giocatore.setNomeFSCambiato("Soulè");
-        }
-        if (giocatore.getSquadra().equalsIgnoreCase("Cag") && giocatore.getNomeFS().equalsIgnoreCase("esposito"))
-            giocatore.setNomeFSCambiato("Esposito Se.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Int") && giocatore.getNomeFS().equalsIgnoreCase("esposito"))
-            giocatore.setNomeFSCambiato("Esposito F.P.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Int") && giocatore.getNomeFS().equalsIgnoreCase("josep martinez"))
-            giocatore.setNomeFSCambiato("Martinez Jo.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Nap") && giocatore.getNomeFS().equalsIgnoreCase("højlund"))
-            giocatore.setNomeFSCambiato("Hojlund");
-        if (giocatore.getSquadra().equalsIgnoreCase("Gen") && giocatore.getNomeFS().equalsIgnoreCase("grønbaek"))
-            giocatore.setNomeFSCambiato("Gronbaek");
-        if (giocatore.getSquadra().equalsIgnoreCase("Bol") && giocatore.getNomeFS().equalsIgnoreCase("juan miranda"))
-            giocatore.setNomeFSCambiato("Miranda J.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Com") && giocatore.getNomeFS().equalsIgnoreCase("nicolas paz"))
-            giocatore.setNomeFSCambiato("Paz N.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Juv") && giocatore.getNomeFS().equalsIgnoreCase("joao mario lopes"))
-            giocatore.setNomeFSCambiato("Joao Mario");
-        if (giocatore.getSquadra().equalsIgnoreCase("Lec") && giocatore.getNomeFS().equalsIgnoreCase("kialonda"))
-            giocatore.setNomeFSCambiato("Gaspar K.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Rom") && giocatore.getNomeFS().equalsIgnoreCase("kone"))
-            giocatore.setNomeFSCambiato("Konè M.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Mil") && giocatore.getNomeFS().equalsIgnoreCase("rafael leao"))
-            giocatore.setNomeFSCambiato("Leao");
-        if (giocatore.getSquadra().equalsIgnoreCase("Juv") && giocatore.getNomeFS().equalsIgnoreCase("francisco conceicao"))
-            giocatore.setNomeFSCambiato("Conceicao");
-        if (giocatore.getSquadra().equalsIgnoreCase("Rom") && giocatore.getNomeFS().equalsIgnoreCase("soule"))
-            giocatore.setNomeFSCambiato("Soulè");
-        if (giocatore.getSquadra().equalsIgnoreCase("Laz") && giocatore.getNomeFS().equalsIgnoreCase("mario gila"))
-            giocatore.setNomeFSCambiato("Gila");
-        if (giocatore.getSquadra().equalsIgnoreCase("Com") && giocatore.getNomeFS().equalsIgnoreCase("jacobo ramon"))
-            giocatore.setNomeFSCambiato("Ramon");
-        if (giocatore.getSquadra().equalsIgnoreCase("Bol") && giocatore.getNomeFS().equalsIgnoreCase("lucumi"))
-            giocatore.setNomeFSCambiato("Lucumì");
-        if (giocatore.getSquadra().equalsIgnoreCase("Ata") && giocatore.getNomeFS().equalsIgnoreCase("ederson"))
-            giocatore.setNomeFSCambiato("Ederson D.S.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Laz") && giocatore.getNomeFS().equalsIgnoreCase("nuno tavares"))
-            giocatore.setNomeFSCambiato("Tavares N.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Nap") && giocatore.getNomeFS().equalsIgnoreCase("miguel gutierrez"))
-            giocatore.setNomeFSCambiato("Gutierrez");
-        if (giocatore.getSquadra().equalsIgnoreCase("Com") && giocatore.getNomeFS().equalsIgnoreCase("alex valle"))
-            giocatore.setNomeFSCambiato("Valle");
-        if (giocatore.getSquadra().equalsIgnoreCase("Par") && giocatore.getNomeFS().equalsIgnoreCase("adrian bernabe"))
-            giocatore.setNomeFSCambiato("Bernabè");
-        if (giocatore.getSquadra().equalsIgnoreCase("Cre") && giocatore.getNomeFS().equalsIgnoreCase("pezzella"))
-            giocatore.setNomeFSCambiato("Pezzella Giu.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Sas") && giocatore.getNomeFS().equalsIgnoreCase("lauriente"))
-            giocatore.setNomeFSCambiato("Laurientè");
-        if (giocatore.getSquadra().equalsIgnoreCase("Nap") && giocatore.getNomeFS().equalsIgnoreCase("david neres"))
-            giocatore.setNomeFSCambiato("Neres");
-        if (giocatore.getSquadra().equalsIgnoreCase("Gen") && giocatore.getNomeFS().equalsIgnoreCase("aaron martin"))
-            giocatore.setNomeFSCambiato("Martin");
-        if (giocatore.getSquadra().equalsIgnoreCase("Fio") && giocatore.getNomeFS().equalsIgnoreCase("dodô"))
-            giocatore.setNomeFSCambiato("Dodò");
-        if (giocatore.getSquadra().equalsIgnoreCase("Ver") && giocatore.getNomeFS().equalsIgnoreCase("montipo"))
-            giocatore.setNomeFSCambiato("Montipò");
-        if (giocatore.getSquadra().equalsIgnoreCase("Int") && giocatore.getNomeFS().equalsIgnoreCase("Martinez"))
-            giocatore.setNomeFSCambiato("Martinez L.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Tor") && giocatore.getNomeFS().equalsIgnoreCase("Zapata"))
-            giocatore.setNomeFSCambiato("Zapata D.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Fio") && giocatore.getNomeFS().equalsIgnoreCase("Gudmundsson"))
-            giocatore.setNomeFSCambiato("Gudmundsson A.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Bol") && giocatore.getNomeFS().equalsIgnoreCase("Castro"))
-            giocatore.setNomeFSCambiato("Castro S.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Tor") && giocatore.getNomeFS().equalsIgnoreCase("Adams"))
-            giocatore.setNomeFSCambiato("Adams C.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Juv") && giocatore.getNomeFS().equalsIgnoreCase("Thuram"))
-            giocatore.setNomeFSCambiato("Thuram K.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Par") && giocatore.getNomeFS().equalsIgnoreCase("Pellegrino"))
-            giocatore.setNomeFSCambiato("Pellegrino M.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Rom") && giocatore.getNomeFS().equalsIgnoreCase("Ferguson"))
-            giocatore.setNomeFSCambiato("Ferguson E.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Mil") && giocatore.getNomeFS().equalsIgnoreCase("Fofana"))
-            giocatore.setNomeFSCambiato("Fofana Y.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Nap") && giocatore.getNomeFS().equalsIgnoreCase("Milinkovic-Savic"))
-            giocatore.setNomeFSCambiato("Milinkovic-Savic V.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Mil") && giocatore.getNomeFS().equalsIgnoreCase("Ricci"))
-            giocatore.setNomeFSCambiato("Ricci S.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Pis") && giocatore.getNomeFS().equalsIgnoreCase("Tramoni"))
-            giocatore.setNomeFSCambiato("Tramoni M.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Ver") && giocatore.getNomeFS().equalsIgnoreCase("Orban"))
-            giocatore.setNomeFSCambiato("Orban G.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Int") && giocatore.getNomeFS().equalsIgnoreCase("Sucic"))
-            giocatore.setNomeFSCambiato("Sucic P.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Ver") && giocatore.getNomeFS().equalsIgnoreCase("Sarr"))
-            giocatore.setNomeFSCambiato("Sarr A.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Ata") && giocatore.getNomeFS().equalsIgnoreCase("Sulemana"))
-            giocatore.setNomeFSCambiato("Sulemana K.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Sas") && giocatore.getNomeFS().equalsIgnoreCase("Moro"))
-            giocatore.setNomeFSCambiato("Moro L.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Udi") && giocatore.getNomeFS().equalsIgnoreCase("Davis"))
-            giocatore.setNomeFSCambiato("Davis K.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Par") && giocatore.getNomeFS().equalsIgnoreCase("Keita"))
-            giocatore.setNomeFSCambiato("Keita M.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Bol") && giocatore.getNomeFS().equalsIgnoreCase("Dominguez"))
-            giocatore.setNomeFSCambiato("Dominguez B.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Fio") && giocatore.getNomeFS().equalsIgnoreCase("Ranieri"))
-            giocatore.setNomeFSCambiato("Ranieri L.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Lec") && giocatore.getNomeFS().equalsIgnoreCase("Coulibaly"))
-            giocatore.setNomeFSCambiato("Coulibaly L.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Bol") && giocatore.getNomeFS().equalsIgnoreCase("Sulemana"))
-            giocatore.setNomeFSCambiato("Sulemana I.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Pis") && giocatore.getNomeFS().equalsIgnoreCase("Piccinini"))
-            giocatore.setNomeFSCambiato("Piccinini G.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Udi") && giocatore.getNomeFS().equalsIgnoreCase("Kamara"))
-            giocatore.setNomeFSCambiato("Kamara H.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Gen") && giocatore.getNomeFS().equalsIgnoreCase("Carboni"))
-            giocatore.setNomeFSCambiato("Carboni V.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Udi") && giocatore.getNomeFS().equalsIgnoreCase("Kristensen"))
-            giocatore.setNomeFSCambiato("Kristensen T.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Cre") && giocatore.getNomeFS().equalsIgnoreCase("Sarmiento"))
-            giocatore.setNomeFSCambiato("Sarmiento J.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Juv") && giocatore.getNomeFS().equalsIgnoreCase("Kelly"))
-            giocatore.setNomeFSCambiato("Kelly L.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Lec") && giocatore.getNomeFS().equalsIgnoreCase("Berisha"))
-            giocatore.setNomeFSCambiato("Berisha M.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Bol") && giocatore.getNomeFS().equalsIgnoreCase("Moro"))
-            giocatore.setNomeFSCambiato("Moro N.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Cre") && giocatore.getNomeFS().equalsIgnoreCase("Terracciano"))
-            giocatore.setNomeFSCambiato("Terracciano F.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Gen") && giocatore.getNomeFS().equalsIgnoreCase("Onana"))
-            giocatore.setNomeFSCambiato("Onana J.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Par") && giocatore.getNomeFS().equalsIgnoreCase("Ordonez"))
-            giocatore.setNomeFSCambiato("Ordonez C.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Pis") && giocatore.getNomeFS().equalsIgnoreCase("Marin"))
-            giocatore.setNomeFSCambiato("Marin M.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Com") && giocatore.getNomeFS().equalsIgnoreCase("Smolcic"))
-            giocatore.setNomeFSCambiato("Smolcic I.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Sas") && giocatore.getNomeFS().equalsIgnoreCase("Paz"))
-            giocatore.setNomeFSCambiato("Paz Y.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Ver") && giocatore.getNomeFS().equalsIgnoreCase("Valentini"))
-            giocatore.setNomeFSCambiato("Valentini N.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Rom") && giocatore.getNomeFS().equalsIgnoreCase("Vasquez"))
-            giocatore.setNomeFSCambiato("Vasquez D.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Udi") && giocatore.getNomeFS().equalsIgnoreCase("Bayo"))
-            giocatore.setNomeFSCambiato("Bayo V.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Udi") && giocatore.getNomeFS().equalsIgnoreCase("Miller"))
-            giocatore.setNomeFSCambiato("Miller L.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Bol") && giocatore.getNomeFS().equalsIgnoreCase("Ilic"))
-            giocatore.setNomeFSCambiato("Ilic M.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Ata") && giocatore.getNomeFS().equalsIgnoreCase("Rossi"))
-            giocatore.setNomeFSCambiato("Rossi F.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Bol") && giocatore.getNomeFS().equalsIgnoreCase("Ravaglia"))
-            giocatore.setNomeFSCambiato("Ravaglia F.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Cag") && giocatore.getNomeFS().equalsIgnoreCase("Idrissi"))
-            giocatore.setNomeFSCambiato("Idrissi R.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Fio") && giocatore.getNomeFS().equalsIgnoreCase("Martinelli"))
-            giocatore.setNomeFSCambiato("Martinelli T.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Lec") && giocatore.getNomeFS().equalsIgnoreCase("Perez"))
-            giocatore.setNomeFSCambiato("Perez M.");
-        if (giocatore.getSquadra().equalsIgnoreCase("Pis") && giocatore.getNomeFS().equalsIgnoreCase("Buffon"))
-            giocatore.setNomeFSCambiato("Buffon L.");
-
+        //System.out.println(giocatore.getIdFs() + ";" + giocatore.getNomeFS()+ ";" + giocatore.getSquadra());
+        if (giocatore.getSquadra().equalsIgnoreCase("Tor") && giocatore.getNomeFS().equalsIgnoreCase("lucas perri")) giocatore.setNomeFSCambiato("Perri");
+        if (giocatore.getSquadra().equalsIgnoreCase("Com") && giocatore.getNomeFS().equalsIgnoreCase("yan couto")) giocatore.setNomeFSCambiato("Couto");
+        if (giocatore.getSquadra().equalsIgnoreCase("Juv") && giocatore.getNomeFS().equalsIgnoreCase("francisco conceicao")) giocatore.setNomeFSCambiato("Conceicao");
+        if (giocatore.getSquadra().equalsIgnoreCase("Ata") && giocatore.getNomeFS().equalsIgnoreCase("ederson")) giocatore.setNomeFSCambiato("Ederson D.S.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Ven") && giocatore.getNomeFS().equalsIgnoreCase("yeboah")) giocatore.setNomeFSCambiato("Yeboah J.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Rom") && giocatore.getNomeFS().equalsIgnoreCase("pellegrini")) giocatore.setNomeFSCambiato("Pellegrini Lo.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Mon") && giocatore.getNomeFS().equalsIgnoreCase("ricardo mangas")) giocatore.setNomeFSCambiato("Mangas");
+        if (giocatore.getSquadra().equalsIgnoreCase("Com") && giocatore.getNomeFS().equalsIgnoreCase("jacobo ramon")) giocatore.setNomeFSCambiato("Ramon");
+        if (giocatore.getSquadra().equalsIgnoreCase("Juv") && giocatore.getNomeFS().equalsIgnoreCase("lucumi")) giocatore.setNomeFSCambiato("Lucumì");
+        if (giocatore.getSquadra().equalsIgnoreCase("Mil") && giocatore.getNomeFS().equalsIgnoreCase("cisse")) giocatore.setNomeFSCambiato("Cissè A.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Nap") && giocatore.getNomeFS().equalsIgnoreCase("højlund")) giocatore.setNomeFSCambiato("Hojlund");
+        if (giocatore.getSquadra().equalsIgnoreCase("Com") && giocatore.getNomeFS().equalsIgnoreCase("chalobah")) giocatore.setNomeFSCambiato("Chalobah T.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Lec") && giocatore.getNomeFS().equalsIgnoreCase("kialonda gaspar")) giocatore.setNomeFSCambiato("Gaspar K.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Juv") && giocatore.getNomeFS().equalsIgnoreCase("sarr")) giocatore.setNomeFSCambiato("Sarr P.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Cag") && giocatore.getNomeFS().equalsIgnoreCase("mendy")) giocatore.setNomeFSCambiato("Mendy P.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Com") && giocatore.getNomeFS().equalsIgnoreCase("alex valle")) giocatore.setNomeFSCambiato("Valle");
+        if (giocatore.getSquadra().equalsIgnoreCase("Rom") && giocatore.getNomeFS().equalsIgnoreCase("molina")) giocatore.setNomeFSCambiato("Molina N.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Ata") && giocatore.getNomeFS().equalsIgnoreCase("kessie")) giocatore.setNomeFSCambiato("Kessiè");
+        if (giocatore.getSquadra().equalsIgnoreCase("Sas") && giocatore.getNomeFS().equalsIgnoreCase("esposito")) giocatore.setNomeFSCambiato("Esposito Se.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Int") && giocatore.getNomeFS().equalsIgnoreCase("esposito")) giocatore.setNomeFSCambiato("Esposito F.P.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Sas") && giocatore.getNomeFS().equalsIgnoreCase("lauriente")) giocatore.setNomeFSCambiato("Laurientè");
+        if (giocatore.getSquadra().equalsIgnoreCase("Laz") && giocatore.getNomeFS().equalsIgnoreCase("taylor")) giocatore.setNomeFSCambiato("Taylor K.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Bol") && giocatore.getNomeFS().equalsIgnoreCase("juan miranda")) giocatore.setNomeFSCambiato("Miranda J.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Gen") && giocatore.getNomeFS().equalsIgnoreCase("østigård")) giocatore.setNomeFSCambiato("Ostigard");
+        if (giocatore.getSquadra().equalsIgnoreCase("Udi") && giocatore.getNomeFS().equalsIgnoreCase("kamara")) giocatore.setNomeFSCambiato("Kamara H.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Com") && giocatore.getNomeFS().equalsIgnoreCase("paz")) giocatore.setNomeFSCambiato("Paz N.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Rom") && giocatore.getNomeFS().equalsIgnoreCase("rodrigo mora")) giocatore.setNomeFSCambiato("Mora");
+        if (giocatore.getSquadra().equalsIgnoreCase("Fio") && giocatore.getNomeFS().equalsIgnoreCase("pellegrino")) giocatore.setNomeFSCambiato("Pellegrino M.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Par") && giocatore.getNomeFS().equalsIgnoreCase("romero")) giocatore.setNomeFSCambiato("Romero D.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Nap") && giocatore.getNomeFS().equalsIgnoreCase("milinkovic-savic")) giocatore.setNomeFSCambiato("Milinkovic-Savic V.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Nap") && giocatore.getNomeFS().equalsIgnoreCase("david neres")) giocatore.setNomeFSCambiato("Neres");
+        if (giocatore.getSquadra().equalsIgnoreCase("Int") && giocatore.getNomeFS().equalsIgnoreCase("josep martinez")) giocatore.setNomeFSCambiato("Martinez Jo.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Mon") && giocatore.getNomeFS().equalsIgnoreCase("gustavo varela")) giocatore.setNomeFSCambiato("Varela G.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Udi") && giocatore.getNomeFS().equalsIgnoreCase("davis")) giocatore.setNomeFSCambiato("Davis K.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Rom") && giocatore.getNomeFS().equalsIgnoreCase("ndicka")) giocatore.setNomeFSCambiato("N'Dicka");
+        if (giocatore.getSquadra().equalsIgnoreCase("Fio") && giocatore.getNomeFS().equalsIgnoreCase("alex jimenez")) giocatore.setNomeFSCambiato("Jimenez A.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Rom") && giocatore.getNomeFS().equalsIgnoreCase("castro")) giocatore.setNomeFSCambiato("Castro S.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Rom") && giocatore.getNomeFS().equalsIgnoreCase("kone")) giocatore.setNomeFSCambiato("Konè M.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Nap") && giocatore.getNomeFS().equalsIgnoreCase("anguissa")) giocatore.setNomeFSCambiato("Zambo Anguissa");
+        if (giocatore.getSquadra().equalsIgnoreCase("Laz") && giocatore.getNomeFS().equalsIgnoreCase("gudmundsson")) giocatore.setNomeFSCambiato("Gudmundsson A.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Int") && giocatore.getNomeFS().equalsIgnoreCase("jones")) giocatore.setNomeFSCambiato("Jones C.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Laz") && giocatore.getNomeFS().equalsIgnoreCase("nuno tavares")) giocatore.setNomeFSCambiato("Tavares N.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Laz") && giocatore.getNomeFS().equalsIgnoreCase("sutalo")) giocatore.setNomeFSCambiato("Sutalo J.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Fio") && giocatore.getNomeFS().equalsIgnoreCase("david de gea")) giocatore.setNomeFSCambiato("De Gea");
+        if (giocatore.getSquadra().equalsIgnoreCase("Fro") && giocatore.getNomeFS().equalsIgnoreCase("calo")) giocatore.setNomeFSCambiato("Calò");
+        if (giocatore.getSquadra().equalsIgnoreCase("Nap") && giocatore.getNomeFS().equalsIgnoreCase("alisson santos")) giocatore.setNomeFSCambiato("Santos A.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Mil") && giocatore.getNomeFS().equalsIgnoreCase("goncalo ramos")) giocatore.setNomeFSCambiato("Ramos G.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Rom") && giocatore.getNomeFS().equalsIgnoreCase("soule")) giocatore.setNomeFSCambiato("Soulè");
+        if (giocatore.getSquadra().equalsIgnoreCase("Lec") && giocatore.getNomeFS().equalsIgnoreCase("coulibaly")) giocatore.setNomeFSCambiato("Coulibaly L.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Cag") && giocatore.getNomeFS().equalsIgnoreCase("rodriguez")) giocatore.setNomeFSCambiato("Rodriguez Ju.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Mil") && giocatore.getNomeFS().equalsIgnoreCase("mario gila")) giocatore.setNomeFSCambiato("Gila");
+        if (giocatore.getSquadra().equalsIgnoreCase("Laz") && giocatore.getNomeFS().equalsIgnoreCase("provstgaard nielsen")) giocatore.setNomeFSCambiato("Provstgaard");
+        if (giocatore.getSquadra().equalsIgnoreCase("Rom") && giocatore.getNomeFS().equalsIgnoreCase("mario hermoso")) giocatore.setNomeFSCambiato("Hermoso");
+        if (giocatore.getSquadra().equalsIgnoreCase("Int") && giocatore.getNomeFS().equalsIgnoreCase("sucic")) giocatore.setNomeFSCambiato("Sucic P.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Tor") && giocatore.getNomeFS().equalsIgnoreCase("adams")) giocatore.setNomeFSCambiato("Adams C.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Juv") && giocatore.getNomeFS().equalsIgnoreCase("gonzalez")) giocatore.setNomeFSCambiato("Gonzalez N.");
+        if (giocatore.getSquadra().equalsIgnoreCase("Int") && giocatore.getNomeFS().equalsIgnoreCase("martinez")) giocatore.setNomeFSCambiato("Martinez L.");
     }
 
     public static String cambiaNomi(String nomeG, String squadra) {
